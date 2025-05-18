@@ -22,7 +22,8 @@ import About from "./components/magnus/MagnusAbout";
 import Blog from "./components/magnus/MagnusFeatures"; // Using Features as Blog
 import BlogPost from "./components/magnus/MagnusFeatures"; // Using Features as BlogPost
 import Contact from "./components/magnus/MagnusContact";
-import HealthResources from "./components/magnus/MagnusDoctors"; // Using Doctors as HealthResources
+import HealthResources from "./components/magnus/MagnusDoctors"; 
+import MagnusHealth from './components/magnus/MagnusHealth';// Using Doctors as HealthResources
 
 // Dashboard Pages
 // Only implemented dashboards
@@ -571,58 +572,16 @@ const studentRoutes = [
 ];
 
 const publicRoutes = [
-  { path: "/", element: <Navigate to="/login" replace /> },
-  {
-    path: "/home",
-    element: (
-      <PublicLayout>
-        <Home />
-      </PublicLayout>
-    ),
-  },
-  {
-    path: "/about",
-    element: (
-      <PublicLayout>
-        <About />
-      </PublicLayout>
-    ),
-  },
-  {
-    path: "/blog",
-    element: (
-      <PublicLayout>
-        <Blog />
-      </PublicLayout>
-    ),
-  },
-  {
-    path: "/blog/:id",
-    element: (
-      <PublicLayout>
-        <BlogPost />
-      </PublicLayout>
-    ),
-  },
-  {
-    path: "/contact",
-    element: (
-      <PublicLayout>
-        <Contact />
-      </PublicLayout>
-    ),
-  },
-  {
-    path: "/resources",
-    element: (
-      <PublicLayout>
-        <HealthResources />
-      </PublicLayout>
-    ),
-  },
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
-  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: '/', element: <MagnusHealth /> },
+  { path: '/home', element: <MagnusHealth /> },
+  { path: '/about', element: <PublicLayout><About /></PublicLayout> },
+  { path: '/blog', element: <PublicLayout><Blog /></PublicLayout> },
+  { path: '/blog/:id', element: <PublicLayout><BlogPost /></PublicLayout> },
+  { path: '/contact', element: <PublicLayout><Contact /></PublicLayout> },
+  { path: '/resources', element: <PublicLayout><HealthResources /></PublicLayout> },
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Register /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
 ];
 
 const routes = [
