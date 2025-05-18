@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Background shield -->
+  <path d="M40 10 C20 10 10 20 10 40 C10 50 20 60 40 60 C60 60 70 50 70 40 C70 20 60 10 40 10"
+    fill="#4c9aff" />
+
+  <!-- Medical cross -->
+  <rect x="30" y="25" width="20" height="4" fill="white" />
+  <rect x="38" y="17" width="4" height="20" fill="white" />
+
+  <!-- Heart line -->
+  <path d="M30 45 C33 40 38 42 40 45 C42 42 47 40 50 45 C52 48 52 53 40 58 C28 53 28 48 30 45"
+    fill="#ff5a5f" />
+
+  <!-- School text -->
+  <text x="80" y="30" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">
+    SCHOOL</text>
+
+  <!-- Medical text -->
+  <text x="80" y="48" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">
+    MEDICAL</text>
+</svg>

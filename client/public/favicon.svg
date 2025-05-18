@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <!-- Background shield -->
+  <path d="M40 10 C20 10 10 20 10 40 C10 50 20 70 40 70 C60 70 70 50 70 40 C70 20 60 10 40 10"
+    fill="#0052cc" />
+
+  <!-- Medical cross -->
+  <rect x="30" y="25" width="20" height="6" fill="white" />
+  <rect x="37" y="15" width="6" height="26" fill="white" />
+
+  <!-- Heart line -->
+  <path d="M30 48 C33 42 38 44 40 48 C42 44 47 42 50 48 C52 52 52 58 40 65 C28 58 28 52 30 48"
+    fill="#ff5a5f" />
+</svg>

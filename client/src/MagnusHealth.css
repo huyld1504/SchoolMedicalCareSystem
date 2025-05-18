@@ -1,0 +1,1071 @@
+/* Magnus Health CSS */
+:root {
+  --magnus-primary: #0052cc;
+  --magnus-secondary: #253858;
+  --magnus-accent: #00c7e6;
+  --magnus-light: #f4f5f7;
+  --magnus-text-dark: #172b4d;
+  --magnus-text-medium: #42526e;
+  --magnus-text-light: #6b778c;
+  --magnus-bg-light: #ffffff;
+  --magnus-bg-gray: #f4f5f7;
+  --magnus-border: #dfe1e6;
+  --animation-duration: 0.5s;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--magnus-text-dark);
+  line-height: 1.5;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.magnus-app {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2.5rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+p {
+  margin: 0 0 1.5rem;
+}
+
+a {
+  color: var(--magnus-primary);
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+  color: var(--magnus-accent);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn var(--animation-duration) ease-out forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft var(--animation-duration) ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight var(--animation-duration) ease-out forwards;
+}
+
+.animate-zoomIn {
+  animation: zoomIn var(--animation-duration) ease-out forwards;
+}
+
+/* Section Headers */
+.section-header {
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.section-header h2 {
+  color: var(--magnus-secondary);
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 60px;
+  height: 3px;
+  background-color: var(--magnus-primary);
+  transform: translateX(-50%);
+}
+
+.section-header p {
+  color: var(--magnus-text-medium);
+  font-size: 1.15rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Buttons */
+.button {
+  display: inline-block;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.button-primary {
+  background-color: var(--magnus-primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 82, 204, 0.25);
+}
+
+.button-primary:hover {
+  background-color: #0047b3;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 82, 204, 0.3);
+}
+
+.button-secondary {
+  background-color: white;
+  color: var(--magnus-primary);
+  border: 2px solid var(--magnus-primary);
+}
+
+.button-secondary:hover {
+  background-color: #f0f5ff;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 82, 204, 0.15);
+}
+
+.magnus-light {
+  color: black;
+  border-color: white;
+}
+
+/* Magnus Header */
+.magnus-header {
+  background-color: var(--magnus-bg-light);
+  background-image: linear-gradient(135deg, #f5f7fa 0%, #e4ecfb 100%);
+  padding: 10rem 0 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.magnus-header::before {
+  content: '';
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  background-color: rgba(0, 82, 204, 0.03);
+  top: -400px;
+  right: -200px;
+  z-index: 0;
+}
+
+.magnus-header::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background-color: rgba(0, 199, 230, 0.03);
+  bottom: -200px;
+  left: -100px;
+  z-index: 0;
+}
+
+.magnus-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.magnus-header__content {
+  max-width: 600px;
+  flex: 1 1 500px;
+  padding-right: 2rem;
+  animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.magnus-header__image {
+  flex: 1 1 400px;
+  display: flex;
+  justify-content: center;
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+.magnus-header__img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transition: transform 0.5s ease;
+}
+
+.magnus-header__img:hover {
+  transform: scale(1.02) translateY(-5px);
+}
+
+.magnus-header__title {
+  font-size: 3.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--magnus-secondary);
+  line-height: 1.1;
+}
+
+.magnus-header__subtitle {
+  font-size: 1.25rem;
+  color: var(--magnus-text-medium);
+  margin-bottom: 2.5rem;
+}
+
+.magnus-header__buttons {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* Magnus Features */
+.magnus-features {
+  padding: 6rem 0;
+  background-color: var(--magnus-bg-light);
+}
+
+.feature-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  background-color: rgba(0, 82, 204, 0.1);
+  color: var(--magnus-primary);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 28px;
+}
+
+.feature-card__title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--magnus-secondary);
+  text-align: center;
+
+}
+
+.feature-card__text {
+  color: var(--magnus-text-medium);
+  margin-bottom: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+/* Magnus Testimonials */
+.magnus-testimonials {
+  padding: 6rem 0;
+  background-color: var(--magnus-bg-gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.magnus-testimonials::before {
+  content: '"';
+  position: absolute;
+  font-size: 400px;
+  color: rgba(0, 82, 204, 0.03);
+  top: -100px;
+  right: 10%;
+  font-family: Georgia, serif;
+  z-index: 0;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  transition: all 0.4s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-card__content {
+  font-size: 1.05rem;
+  color: var(--magnus-text-dark);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  flex-grow: 1;
+  font-style: italic;
+}
+
+.testimonial-card__author {
+  display: flex;
+  align-items: center;
+}
+
+.testimonial-card__avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+  border: 3px solid var(--magnus-accent);
+}
+
+.testimonial-card__name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--magnus-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.testimonial-card__role {
+  font-size: 0.85rem;
+  color: var(--magnus-text-light);
+  margin-bottom: 0;
+}
+
+/* Magnus Contact */
+.magnus-contact {
+  padding: 6rem 0;
+  background-color: var(--magnus-bg-light);
+  background-image: linear-gradient(315deg, #f5f7fa 0%, #e4ecfb 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.magnus-contact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%230052cc' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 20L20 0h10L0 30V20zm0 10L20 10h10L0 40v-10zM30 0L10 20v10l30-30V0z'/%3E%3C/g%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+.magnus-contact .container {
+  position: relative;
+  z-index: 1;
+}
+
+.magnus-contact__form {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: zoomIn 0.6s ease-out forwards;
+}
+
+.form-group {
+  margin-bottom: 1.75rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--magnus-text-dark);
+  font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid var(--magnus-border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--magnus-text-dark);
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--magnus-primary);
+  box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.15);
+}
+
+/* Magnus Footer */
+.magnus-footer {
+  background-color: var(--magnus-secondary);
+  color: white;
+  padding: 5rem 0 2rem;
+}
+
+.magnus-footer__logo {
+  margin-bottom: 2.5rem;
+}
+
+.magnus-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 3.5rem;
+  gap: 2.5rem;
+}
+
+.magnus-footer__column h4 {
+  font-size: 1.15rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  position: relative;
+  display: inline-block;
+}
+
+.magnus-footer__column h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 40px;
+  height: 2px;
+  background-color: var(--magnus-accent);
+}
+
+.magnus-footer__column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.magnus-footer__column li {
+  margin-bottom: 0.9rem;
+}
+
+.magnus-footer__column a {
+  color: #a5adba;
+  transition: all 0.3s;
+  display: inline-block;
+  padding: 0.2rem 0;
+}
+
+.magnus-footer__column a:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+.magnus-footer__bottom {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  color: #a5adba;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.3rem;
+  }
+
+  h2 {
+    font-size: 1.85rem;
+  }
+
+  h3 {
+    font-size: 1.6rem;
+  }
+
+  .magnus-header {
+    padding: 7rem 0 4rem;
+  }
+
+  .magnus-header__title {
+    font-size: 2.5rem;
+  }
+
+  .magnus-header__content {
+    margin-bottom: 3rem;
+  }
+
+  .magnus-features,
+  .magnus-testimonials,
+  .magnus-contact {
+    padding: 4rem 0;
+  }
+
+  .magnus-footer__links {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .feature-card,
+  .testimonial-card {
+    margin-bottom: 2rem;
+  }
+}
+
+/* Magnus Navbar */
+.magnus-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 1rem 0;
+  background-color: transparent;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(0);
+}
+
+.magnus-navbar--scrolled {
+  background-color: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 0.8rem 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(222, 226, 230, 0.3);
+}
+
+.magnus-navbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 1.5rem;
+  margin: 0 auto;
+}
+
+.magnus-navbar__logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.magnus-navbar__logo svg {
+  transition: all 0.3s ease;
+  transform-origin: left center;
+  max-width: 160px;
+  width: 100%;
+  height: auto;
+}
+
+.magnus-navbar__logo:hover svg {
+  transform: scale(1.03);
+}
+
+.magnus-navbar__logo:hover svg path {
+  fill-opacity: 0.9;
+}
+
+.magnus-navbar__links {
+  display: flex;
+  gap: 1.5rem;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.magnus-navbar__link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--magnus-text-dark);
+  padding: 0.5rem 0;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.magnus-navbar--scrolled .magnus-navbar__link {
+  color: var(--magnus-text-dark);
+}
+
+.magnus-navbar__link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--magnus-accent);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 2px;
+}
+
+.magnus-navbar__link:hover {
+  color: var(--magnus-accent);
+}
+
+.magnus-navbar__link:hover::after {
+  width: 100%;
+}
+
+.magnus-navbar__link--active {
+  color: var(--magnus-accent);
+}
+
+.magnus-navbar__link--active::after {
+  width: 100%;
+  background-color: var(--magnus-accent);
+}
+
+.magnus-navbar__link--dropdown {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.magnus-navbar__link--dropdown span {
+  display: flex;
+  align-items: center;
+}
+
+.magnus-navbar__link--dropdown span::after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+  margin-left: 0.5rem;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.magnus-navbar__link--dropdown:hover span::after {
+  transform: rotate(-135deg) translateY(1px);
+}
+
+.magnus-navbar__dropdown {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  left: -1.25rem;
+  background-color: white;
+  border-radius: 12px;
+  min-width: 240px;
+  padding: 0.75rem 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+  overflow: hidden;
+}
+
+.magnus-navbar__link--dropdown:hover .magnus-navbar__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.magnus-navbar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.5rem;
+  color: var(--magnus-text-dark);
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.magnus-navbar__dropdown-item svg {
+  color: var(--magnus-primary);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.magnus-navbar__dropdown-item:hover {
+  background-color: var(--magnus-bg-gray);
+  color: var(--magnus-primary);
+  transform: translateX(5px);
+}
+
+.magnus-navbar__dropdown-item:hover svg {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.magnus-navbar__right {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.magnus-navbar__right .button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.95rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.magnus-navbar__right .button:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.magnus-navbar__right .button-icon {
+  transition: all 0.3s ease;
+}
+
+.magnus-navbar__right .button:hover .button-icon {
+  transform: translateX(2px);
+}
+
+.magnus-navbar__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.magnus-navbar__mobile-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 1200px) {
+  .magnus-navbar__links {
+    gap: 1.25rem;
+  }
+
+  .magnus-navbar__link {
+    font-size: 0.8rem;
+  }
+
+  .magnus-navbar__right .button {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .magnus-navbar__links {
+    display: none;
+  }
+
+  .magnus-navbar__mobile-toggle {
+    display: block;
+  }
+
+  .magnus-navbar__right {
+    display: none;
+  }
+
+  .magnus-navbar__mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    padding: 1.5rem;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+    animation: slideUpMobile 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    z-index: 9;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .magnus-navbar__mobile-menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .magnus-navbar__mobile-menu-item {
+    padding: 1rem 1.25rem;
+    color: var(--magnus-text-dark);
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .magnus-navbar__mobile-menu-item:hover {
+    background-color: var(--magnus-bg-gray);
+    color: var(--magnus-primary);
+  }
+
+  .magnus-navbar__mobile-menu-dropdown {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .magnus-navbar__mobile-menu-dropdown.active {
+    background-color: var(--magnus-bg-gray);
+  }
+
+  .magnus-navbar__mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .dropdown-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .dropdown-arrow.open {
+    transform: rotate(180deg);
+  }
+
+  .magnus-navbar__mobile-submenu {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 0.5rem 0;
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .magnus-navbar__mobile-submenu a {
+    padding: 0.8rem 1.25rem 0.8rem 2.5rem;
+    color: var(--magnus-text-medium);
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .magnus-navbar__mobile-submenu a:hover {
+    color: var(--magnus-primary);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  .magnus-navbar__mobile-submenu a::before {
+    content: '';
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--magnus-primary);
+    transform: translateY(-50%);
+    opacity: 0.5;
+  }
+
+  .magnus-navbar__mobile-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .magnus-navbar__mobile-buttons .button {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 576px) {
+  .magnus-navbar {
+    padding: 0.75rem 0;
+  }
+
+  .magnus-navbar--scrolled {
+    padding: 0.6rem 0;
+  }
+
+  .magnus-navbar__logo svg {
+    width: 110px;
+  }
+
+  .magnus-navbar__container {
+    padding: 0 1rem;
+  }
+
+  .magnus-navbar__mobile-menu {
+    top: 60px;
+    padding: 1.25rem;
+  }
+
+  .magnus-navbar__mobile-menu-item,
+  .magnus-navbar__mobile-menu-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .magnus-navbar__mobile-submenu a {
+    padding: 0.7rem 1rem 0.7rem 2rem;
+  }
+}
+
+/* Contact section animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.contact-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
