@@ -63,12 +63,7 @@ function AdminLayout({ children }) {
           >
             <i className="bi bi-people me-2"></i> User Management
           </a>
-          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/admin/users/new"
-          >
-            <i className="bi bi-person-plus me-2"></i> Add User
-          </a>
+        
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/settings"

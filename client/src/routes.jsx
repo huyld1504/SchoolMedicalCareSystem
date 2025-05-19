@@ -29,6 +29,8 @@ import MagnusHealth from './components/magnus/MagnusHealth';// Using Doctors as 
 // Only implemented dashboards
 import NurseDashboard from "./pages/nurse/Dashboard";
 import ParentDashboard from "./pages/parent/Dashboard";
+import UsersList from "./pages/admin/UsersList";
+
 // Placeholder components for missing dashboards
 const AdminDashboard = () => (
   <div className="p-8">
@@ -135,12 +137,6 @@ const HealthCheckResults = () => (
 );
 
 // User Management
-const UsersList = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Users List</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
 const UserProfile = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold mb-4">User Profile</h1>
