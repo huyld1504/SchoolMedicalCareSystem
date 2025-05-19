@@ -22,7 +22,7 @@ import About from "./components/magnus/MagnusAbout";
 import Blog from "./components/magnus/MagnusFeatures"; // Using Features as Blog
 import BlogPost from "./components/magnus/MagnusFeatures"; // Using Features as BlogPost
 import Contact from "./components/magnus/MagnusContact";
-import HealthResources from "./components/magnus/MagnusDoctors"; 
+import HealthResources from "./components/magnus/MagnusDoctors";
 import MagnusHealth from './components/magnus/MagnusHealth';// Using Doctors as HealthResources
 
 // Dashboard Pages
@@ -65,12 +65,12 @@ import MedicationsList from "./pages/medications/MedicationsList";
 import MedicationRequest from "./pages/medications/MedicationRequest";
 import MedicationAdministration from "./pages/medications/MedicationAdministration";
 import MedicationAdministrationRecord from "./pages/medications/MedicationAdministrationRecord";
-import MedicationInventory from "./pages/medications/MedicationInventory";
 import MedicationApproval from "./pages/medications/MedicationApproval";
 import MedicationDashboard from "./pages/medications/MedicationDashboard";
 import MedicationReports from "./pages/medications/MedicationReports";
 import BatchAdministration from "./pages/medications/BatchAdministration";
 import ParentMedicationTracking from "./pages/medications/ParentMedicationTracking";
+import MedicationInventory from "./pages/medications/MedicationInventory";
 
 // Medical Events
 const MedicalEventsList = () => (
@@ -93,12 +93,7 @@ const MedicalEventDetails = () => (
 );
 
 // Vaccinations
-const VaccinationCampaigns = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Vaccination Campaigns</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
+import VaccinationCampaigns from "./pages/vaccinations/VaccinationCampaigns";
 const VaccinationConsentForm = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold mb-4">Vaccination Consent Form</h1>
@@ -119,12 +114,7 @@ const VaccinationRecords = () => (
 );
 
 // Health Checks
-const HealthCheckCampaigns = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Health Check Campaigns</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
+import HealthCheckCampaigns from "./pages/health/HealthCheckCampaigns";
 const HealthCheckConsentForm = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold mb-4">Health Check Consent Form</h1>
