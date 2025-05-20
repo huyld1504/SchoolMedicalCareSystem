@@ -1,282 +1,594 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function HealthCheckCampaigns() {
-    // Sample data for health check campaigns
-    const [campaigns, setCampaigns] = useState([
+    const { currentUser } = useAuth();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [campaigns, setCampaigns] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedCampaign, setSelectedCampaign] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const isNurseOrManager = ['nurse', 'manager', 'admin'].includes(currentUser?.role);
+
+    // Form state for new campaign
+    const [newCampaign, setNewCampaign] = useState({
+        title: "",
+        checkType: "",
+        targetGroup: "",
+        startDate: "",
+        endDate: "",
+        description: "",
+        status: "planning"
+    });
+
+    // Sample campaign data
+    const sampleCampaigns = [
         {
             id: 1,
-            name: "Annual Physical Examination",
-            description: "Comprehensive physical examination for all students",
+            title: "Annual Physical Examination",
+            checkType: "Full physical exam",
+            targetGroup: "All students",
             startDate: "2025-08-10",
             endDate: "2025-09-30",
-            status: "Active",
-            targetGroups: "All students",
-            checkupType: "Full physical exam",
-            completedExams: 45,
-            totalStudents: 120,
+            description: "Comprehensive physical examination for all students",
+            status: "active",
+            createdBy: "Nurse Jane",
+            createdAt: "2025-01-15",
+            stats: {
+                eligible: 120,
+                consented: 100,
+                screened: 90
+            }
         },
         {
             id: 2,
-            name: "Vision Screening",
-            description: "Annual vision screening for early detection of vision problems",
+            title: "Vision Screening",
+            checkType: "Vision screening",
+            targetGroup: "All students",
             startDate: "2025-10-05",
             endDate: "2025-10-25",
-            status: "Upcoming",
-            targetGroups: "All students",
-            checkupType: "Vision screening",
-            completedExams: 0,
-            totalStudents: 120,
+            description: "Annual vision screening for early detection of vision problems",
+            status: "upcoming",
+            createdBy: "Nurse John",
+            createdAt: "2025-02-20",
+            stats: {
+                eligible: 120,
+                consented: 0,
+                screened: 0
+            }
         },
         {
             id: 3,
-            name: "Dental Check-up",
-            description: "Routine dental examination and hygiene education",
+            title: "Dental Check-up",
+            checkType: "Dental examination",
+            targetGroup: "All students",
             startDate: "2025-04-15",
             endDate: "2025-05-15",
-            status: "Completed",
-            targetGroups: "All students",
-            checkupType: "Dental examination",
-            completedExams: 118,
-            totalStudents: 120,
+            description: "Routine dental examination and hygiene education",
+            status: "completed",
+            createdBy: "Nurse Jane",
+            createdAt: "2025-03-10",
+            stats: {
+                eligible: 120,
+                consented: 110,
+                screened: 110
+            }
         },
         {
             id: 4,
-            name: "Mental Health Screening",
-            description: "Confidential mental health assessment for middle and high school students",
+            title: "Mental Health Screening",
+            checkType: "Mental health assessment",
+            targetGroup: "Grades 6-12",
             startDate: "2025-11-01",
             endDate: "2025-12-15",
-            status: "Planning",
-            targetGroups: "Grades 6-12",
-            checkupType: "Mental health assessment",
-            completedExams: 0,
-            totalStudents: 75,
+            description: "Confidential mental health assessment for middle and high school students",
+            status: "planning",
+            createdBy: "Nurse John",
+            createdAt: "2025-04-05",
+            stats: {
+                eligible: 75,
+                consented: 0,
+                screened: 0
+            }
         },
-    ]);
+    ];
 
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [newCampaign, setNewCampaign] = useState({
-        name: "",
-        description: "",
-        startDate: "",
-        endDate: "",
-        targetGroups: "",
-        checkupType: "",
+    // Load campaigns data
+    useEffect(() => {
+        const fetchCampaigns = async () => {
+            try {
+                setLoading(true);
+
+                // In a real app, this would be an API call
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                setCampaigns(sampleCampaigns);
+            } catch (error) {
+                console.error('Error fetching health check campaigns:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCampaigns();
+    }, []);
+
+    // Filter campaigns based on search term and status filter
+    const filteredCampaigns = campaigns.filter(campaign => {
+        const matchesSearch = campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            campaign.checkType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            campaign.targetGroup.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
     });
 
-    // Filter campaigns by status
-    const [filter, setFilter] = useState("all");
+    // Handle creating a new campaign
+    const handleCreateCampaign = () => {
+        setNewCampaign({
+            title: "",
+            checkType: "",
+            targetGroup: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+            status: "planning"
+        });
+        setSelectedCampaign(null);
+        setShowModal(true);
+    };
 
-    const filteredCampaigns = filter === "all"
-        ? campaigns
-        : campaigns.filter(campaign => campaign.status.toLowerCase() === filter.toLowerCase());
+    // Handle editing an existing campaign
+    const handleEditCampaign = (campaign) => {
+        setSelectedCampaign(campaign);
+        setNewCampaign({
+            title: campaign.title,
+            checkType: campaign.checkType,
+            targetGroup: campaign.targetGroup,
+            startDate: campaign.startDate,
+            endDate: campaign.endDate,
+            description: campaign.description,
+            status: campaign.status,
+        });
+        setShowModal(true);
+    };
+
+    // Handle form input changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewCampaign({
+            ...newCampaign,
+            [name]: value
+        });
+    };
+
+    // Handle form submission
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (selectedCampaign) {
+            // Edit existing campaign
+            setCampaigns((prev) =>
+                prev.map((campaign) =>
+                    campaign.id === selectedCampaign.id ? { ...campaign, ...newCampaign } : campaign
+                )
+            );
+        } else {
+            // Create new campaign
+            setCampaigns((prev) => [
+                ...prev,
+                {
+                    id: prev.length + 1,
+                    ...newCampaign,
+                    status: "upcoming",
+                    createdBy: "Current User",
+                    createdAt: new Date().toISOString(),
+                    stats: {
+                        eligible: 0,
+                        consented: 0,
+                        screened: 0
+                    }
+                },
+            ]);
+        }
+        setShowModal(false);
+        setSelectedCampaign(null);
+        setNewCampaign({
+            title: "",
+            checkType: "",
+            targetGroup: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+            status: "planning"
+        });
+    };
+
+    // Get status badge color
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'active':
+                return 'bg-green-500 text-white';
+            case 'upcoming':
+                return 'bg-blue-500 text-white';
+            case 'completed':
+                return 'bg-gray-500 text-white';
+            case 'cancelled':
+                return 'bg-red-500 text-white';
+            case 'planning':
+            default:
+                return 'bg-yellow-500 text-white';
+        }
+    };
+
+    // Format date for display
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    };
+
+    // Check if a campaign is recent (created in the last 7 days)
+    const isRecentCampaign = (createdAt) => {
+        const createdDate = new Date(createdAt);
+        const currentDate = new Date();
+        const diffTime = Math.abs(currentDate - createdDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 7;
+    };
 
     return (
-        <div className="p-6">
-            <div className="mb-6 flex flex-wrap justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800">Health Check Campaigns</h1>
+        <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold mb-1">Health Check Campaigns</h1>
+                    <p className="text-gray-600">Manage and monitor health screening programs</p>
+                </div>
 
-                <div className="flex flex-wrap gap-3 mt-2 sm:mt-0">
+                {isNurseOrManager && (
                     <button
-                        onClick={() => setShowAddModal(true)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center transition duration-150"
+                        onClick={handleCreateCampaign}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        New Campaign
+                        Create Campaign
                     </button>
-
-                    <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        Export Report
-                    </button>
-                </div>
+                )}
             </div>
 
-            {/* Search and filter */}
-            <div className="mb-6 flex flex-wrap gap-4">
-                <div className="flex-1 min-w-[200px]">
-                    <input
-                        type="text"
-                        placeholder="Search health check campaigns..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
-                <select
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                >
-                    <option value="all">All Campaigns</option>
-                    <option value="active">Active</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="completed">Completed</option>
-                    <option value="planning">Planning</option>
-                </select>
-            </div>
-
-            {/* Campaign Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCampaigns.map((campaign) => (
-                    <div
-                        key={campaign.id}
-                        className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
-                    >
-                        <div className={`px-4 py-2 text-white font-semibold 
-              ${campaign.status === 'Active' ? 'bg-green-600' :
-                                campaign.status === 'Upcoming' ? 'bg-blue-600' :
-                                    campaign.status === 'Planning' ? 'bg-purple-600' : 'bg-gray-600'}`}
-                        >
-                            {campaign.status}
-                        </div>
-
-                        <div className="p-5">
-                            <h3 className="text-lg font-semibold mb-2">{campaign.name}</h3>
-                            <p className="text-gray-600 text-sm mb-4">{campaign.description}</p>
-
-                            <div className="mb-4">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Progress:</span>
-                                    <span className="font-medium">{campaign.completedExams}/{campaign.totalStudents}</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
-                                    <div
-                                        className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${(campaign.completedExams / campaign.totalStudents) * 100}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-                                <div>
-                                    <span className="text-gray-600 block">Start Date:</span>
-                                    <span>{campaign.startDate}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-600 block">End Date:</span>
-                                    <span>{campaign.endDate}</span>
-                                </div>
-                                <div className="col-span-2">
-                                    <span className="text-gray-600 block">Target Groups:</span>
-                                    <span>{campaign.targetGroups}</span>
-                                </div>
-                                <div className="col-span-2">
-                                    <span className="text-gray-600 block">Check-up Type:</span>
-                                    <span>{campaign.checkupType}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-between pt-2 border-t border-gray-200">
-                                <Link
-                                    to={`/nurse/health-checks/${campaign.id}/schedule`}
-                                    className="text-blue-600 hover:text-blue-800"
-                                >
-                                    View Schedule
-                                </Link>
-                                <Link
-                                    to={`/nurse/health-checks/${campaign.id}/results`}
-                                    className="text-blue-600 hover:text-blue-800"
-                                >
-                                    View Results
-                                </Link>
-                            </div>
-                        </div>
+            {/* Filters */}
+            <div className="bg-white rounded-lg shadow p-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+                            Search Campaigns
+                        </label>
+                        <input
+                            type="text"
+                            id="search"
+                            placeholder="Search by title, check type, or target group"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        />
                     </div>
-                ))}
+
+                    <div>
+                        <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700 mb-1">
+                            Status
+                        </label>
+                        <select
+                            id="statusFilter"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="all">All Statuses</option>
+                            <option value="planning">Planning</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            {/* Add Campaign Modal */}
-            {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Add New Health Check Campaign</h2>
-                        <form>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Campaign Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={newCampaign.name}
-                                    onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
-                                />
+            {/* Campaigns List */}
+            {loading ? (
+                <div className="bg-white rounded-lg shadow p-12 flex justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            ) : filteredCampaigns.length === 0 ? (
+                <div className="bg-white rounded-lg shadow p-12 text-center">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <p className="mt-4 text-gray-500">No health check campaigns found matching your criteria.</p>
+                    {isNurseOrManager && (
+                        <button
+                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            onClick={handleCreateCampaign}
+                        >
+                            Create New Campaign
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredCampaigns.map((campaign) => (
+                        <div key={campaign.id} className="bg-white rounded-lg shadow overflow-hidden">
+                            {isRecentCampaign(campaign.createdAt) && (
+                                <div className="absolute top-0 right-0 mt-4 mr-4">
+                                    <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">NEW</span>
+                                </div>
+                            )}
+
+                            <div className="p-6">
+                                <div className="flex justify-between items-start">
+                                    <h3 className="text-lg font-semibold text-gray-900">{campaign.title}</h3>
+                                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(campaign.status)}`}>
+                                        {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+                                    </span>
+                                </div>
+
+                                <div className="mt-4 space-y-2">
+                                    <div className="flex items-start">
+                                        <svg className="h-5 w-5 text-gray-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Check Type</p>
+                                            <p className="text-sm font-medium">{campaign.checkType}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start">
+                                        <svg className="h-5 w-5 text-gray-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Target Group</p>
+                                            <p className="text-sm font-medium">{campaign.targetGroup}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start">
+                                        <svg className="h-5 w-5 text-gray-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Campaign Dates</p>
+                                            <p className="text-sm font-medium">{formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p className="mt-4 text-sm text-gray-600 line-clamp-2">{campaign.description}</p>
+
+                                {/* Campaign Stats */}
+                                {campaign.stats && (
+                                    <div className="mt-6">
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Campaign Status</h4>
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div
+                                                className="bg-blue-600 h-2.5 rounded-full"
+                                                style={{
+                                                    width: `${(campaign.stats.consented / campaign.stats.eligible) * 100}%`
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                                            <div>
+                                                <p className="text-gray-500">Eligible</p>
+                                                <p className="font-medium">{campaign.stats.eligible}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-500">Consented</p>
+                                                <p className="font-medium">{campaign.stats.consented}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-500">Screened</p>
+                                                <p className="font-medium">{campaign.stats.screened}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                                <textarea
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows="3"
-                                    value={newCampaign.description}
-                                    onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })}
-                                ></textarea>
+
+                            <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+                                <div className="text-xs text-gray-500">
+                                    Created by {campaign.createdBy}
+                                </div>
+
+                                <div className="flex space-x-2">
+                                    {isNurseOrManager && (
+                                        <button
+                                            className="px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm font-medium hover:bg-blue-200"
+                                            onClick={() => handleEditCampaign(campaign)}
+                                        >
+                                            Edit
+                                        </button>
+                                    )}
+
+                                    {(campaign.status === 'upcoming' || campaign.status === 'active' || campaign.status === 'planning') && (
+                                        <button
+                                            className="px-3 py-1 bg-green-100 text-green-600 rounded text-sm font-medium hover:bg-green-200"
+                                            onClick={() => navigate(`/nurse/health-checks/${campaign.id}/schedule`)}
+                                        >
+                                            Schedule
+                                        </button>
+                                    )}
+
+                                    <button
+                                        className="px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm font-medium hover:bg-gray-200"
+                                        onClick={() => navigate(`/nurse/health-checks/${campaign.id}/results`)}
+                                    >
+                                        Results
+                                    </button>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Create/Edit Campaign Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
+                        <div className="p-6 border-b">
+                            <h3 className="text-xl font-semibold">
+                                {selectedCampaign ? 'Edit Health Check Campaign' : 'Create New Health Check Campaign'}
+                            </h3>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">Start Date</label>
+                                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Campaign Title<span className="text-red-500">*</span>
+                                    </label>
                                     <input
-                                        type="date"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={newCampaign.startDate}
-                                        onChange={(e) => setNewCampaign({ ...newCampaign, startDate: e.target.value })}
+                                        type="text"
+                                        id="title"
+                                        name="title"
+                                        value={newCampaign.title}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        required
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">End Date</label>
+                                    <label htmlFor="checkType" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Check Type<span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        id="checkType"
+                                        name="checkType"
+                                        value={newCampaign.checkType}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    >
+                                        <option value="">Select Check Type</option>
+                                        <option value="Vision">Vision</option>
+                                        <option value="Hearing">Hearing</option>
+                                        <option value="Dental">Dental</option>
+                                        <option value="Height & Weight">Height & Weight</option>
+                                        <option value="Posture/Spine">Posture/Spine</option>
+                                        <option value="Blood Pressure">Blood Pressure</option>
+                                        <option value="General Health">General Health</option>
+                                        <option value="Mental Health">Mental Health</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="targetGroup" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Target Group<span className="text-red-500">*</span>
+                                    </label>
                                     <input
-                                        type="date"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={newCampaign.endDate}
-                                        onChange={(e) => setNewCampaign({ ...newCampaign, endDate: e.target.value })}
+                                        type="text"
+                                        id="targetGroup"
+                                        name="targetGroup"
+                                        value={newCampaign.targetGroup}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        required
                                     />
                                 </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Start Date<span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="startDate"
+                                            name="startDate"
+                                            value={newCampaign.startDate}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                                            End Date<span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="endDate"
+                                            name="endDate"
+                                            value={newCampaign.endDate}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Description
+                                    </label>                                    <textarea
+                                        id="description"
+                                        name="description"
+                                        rows="3"
+                                        value={newCampaign.description}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    ></textarea>                                </div>                                <div>
+                                    <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Status
+                                    </label>
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        value={newCampaign.status}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="planning">Planning</option>
+                                        <option value="upcoming">Upcoming</option>
+                                        <option value="active">Active</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Target Groups</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={newCampaign.targetGroups}
-                                    onChange={(e) => setNewCampaign({ ...newCampaign, targetGroups: e.target.value })}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Check-up Type</label>
-                                <select
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={newCampaign.checkupType}
-                                    onChange={(e) => setNewCampaign({ ...newCampaign, checkupType: e.target.value })}
-                                >
-                                    <option value="">Select type...</option>
-                                    <option value="Full physical exam">Full physical exam</option>
-                                    <option value="Vision screening">Vision screening</option>
-                                    <option value="Hearing test">Hearing test</option>
-                                    <option value="Dental examination">Dental examination</option>
-                                    <option value="Mental health assessment">Mental health assessment</option>
-                                    <option value="Growth and development">Growth and development</option>
-                                    <option value="Nutrition assessment">Nutrition assessment</option>
-                                </select>
-                            </div>
-                            <div className="flex justify-end space-x-2">
+
+                            <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                                 <button
                                     type="button"
-                                    onClick={() => setShowAddModal(false)}
-                                    className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
+                                    className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setSelectedCampaign(null);
+                                    }}
                                 >
                                     Cancel
                                 </button>
+
                                 <button
                                     type="submit"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                                 >
-                                    Create Campaign
+                                    {selectedCampaign ? 'Update Campaign' : 'Create Campaign'}
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div>
-            )}
+                </div>)}
         </div>
     );
 }
