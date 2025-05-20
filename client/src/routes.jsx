@@ -29,33 +29,9 @@ import MagnusTestimonials from './components/magnus/MagnusTestimonials';
 // Dashboard Pages - All dashboards are implemented
 import NurseDashboard from "./pages/nurse/Dashboard";
 import ParentDashboard from "./pages/parent/Dashboard";
-<<<<<<< Updated upstream
-import UsersList from "./pages/admin/UsersList";
-
-// Placeholder components for missing dashboards
-const AdminDashboard = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const ManagerDashboard = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Manager Dashboard</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const StudentDashboard = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-=======
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManagerDashboard from "./pages/manager/Dashboard";
 import StudentDashboard from "./pages/student/Dashboard";
->>>>>>> Stashed changes
 
 // Health Records
 import HealthRecordsList from "./pages/health/HealthRecordsList";
@@ -129,17 +105,9 @@ const HealthCheckSchedule = () => (
 );
 
 // User Management
-<<<<<<< Updated upstream
-const UserProfile = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">User Profile</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-=======
+
 import UsersList from "./pages/admin/UsersList";
 import UserProfile from "./pages/common/UserProfile";
->>>>>>> Stashed changes
 const UserSettings = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold mb-4">User Settings</h1>
