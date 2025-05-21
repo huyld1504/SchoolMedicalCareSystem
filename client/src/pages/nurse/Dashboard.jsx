@@ -216,12 +216,17 @@ function NurseDashboard() {
               </tbody>
             </table>
           </div>
-          <div className="mt-4">
-            <a
+          <div className="mt-4">            <a
               href="/nurse/events/new"
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
             >
               Record New Incident
+            </a>
+            <a
+              href="/nurse/medical-events/dashboard"
+              className="inline-block bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out ml-2"
+            >
+              View Medical Events Dashboard
             </a>
           </div>
         </div>
@@ -289,9 +294,17 @@ function NurseDashboard() {
               <p className="text-sm text-gray-600 mt-1">
                 Approve pending medication requests
               </p>
+            </a>            <a
+              href="/nurse/medical-events/dashboard"
+              className="block p-4 bg-amber-50 hover:bg-amber-100 rounded-lg transition"
+            >
+              <h3 className="font-medium">Medical Events Dashboard</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Monitor and manage medical events
+              </p>
             </a>
             <a
-              href="/nurse/events/new"
+              href="/nurse/medical-events/new"
               className="block p-4 bg-red-50 hover:bg-red-100 rounded-lg transition"
             >
               <h3 className="font-medium">Record Medical Event</h3>

@@ -62,25 +62,12 @@ import HealthDeclaration from "./components/health/HealthDeclaration";
 import MedicationForm from "./components/health/MedicationForm";
 import StudentInfo from "./components/student/StudentInfo";
 
-// Medical Events - Placeholders for now
-const MedicalEventsList = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Medical Events List</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const MedicalEventForm = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Record Medical Event</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const MedicalEventDetails = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Medical Event Details</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
+// Medical Events - Fully implemented components
+import MedicalEventsList from "./pages/medical-events/MedicalEventsList";
+import MedicalEventForm from "./pages/medical-events/MedicalEventForm";
+import MedicalEventDetails from "./pages/medical-events/MedicalEventDetails";
+import MedicalEventsDashboard from "./pages/medical-events/MedicalEventsDashboard";
+import MedicalEventReports from "./pages/medical-events/MedicalEventReports";
 
 // Vaccinations - All implemented components
 import VaccinationCampaigns from "./pages/vaccinations/VaccinationCampaigns";
@@ -444,9 +431,57 @@ const nurseRoutes = [
       <NurseLayout>
         <Calendar />
       </NurseLayout>
+    ),  },  
+  // Fixed the route ordering - more specific routes first, then routes with dynamic segments
+  {
+    path: "/nurse/medical-events/new",
+    element: (
+      <NurseLayout>
+        <MedicalEventForm />
+      </NurseLayout>
     ),
   },
-  // Fixed the route ordering - more specific routes first, then routes with dynamic segments
+  {
+    path: "/nurse/medical-events/dashboard",
+    element: (
+      <NurseLayout>
+        <MedicalEventsDashboard />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/medical-events/reports",
+    element: (
+      <NurseLayout>
+        <MedicalEventReports />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/medical-events/:id/edit",
+    element: (
+      <NurseLayout>
+        <MedicalEventForm />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/medical-events/:id",
+    element: (
+      <NurseLayout>
+        <MedicalEventDetails />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/medical-events",
+    element: (
+      <NurseLayout>
+        <MedicalEventsList />
+      </NurseLayout>
+    ),
+  },
+  // Events routes
   {
     path: "/nurse/events/new",
     element: (
