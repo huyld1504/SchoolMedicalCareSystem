@@ -9,6 +9,8 @@ function VaccinationCampaigns() {
   const [campaigns, setCampaigns] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleCampaign, setScheduleCampaign] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const isNurseOrManager = ['nurse', 'manager', 'admin'].includes(currentUser?.role);
@@ -141,6 +143,114 @@ function VaccinationCampaigns() {
       }
     }
   ];
+
+  // Sample schedule data
+  const sampleSchedules = {
+    1: [ // Schedule for Campaign ID 1
+      {
+        date: "2023-10-15",
+        timeSlots: [
+          { 
+            time: "9:00 AM - 11:00 AM",
+            location: "School Gymnasium",
+            group: "1st & 2nd Grade",
+            vaccinator: "Dr. Johnson",
+            progress: { scheduled: 95, completed: 0 }
+          },
+          { 
+            time: "1:00 PM - 3:00 PM",
+            location: "School Gymnasium",
+            group: "3rd & 4th Grade",
+            vaccinator: "Dr. Williams",
+            progress: { scheduled: 102, completed: 0 }
+          }
+        ]
+      },
+      {
+        date: "2023-10-16",
+        timeSlots: [
+          { 
+            time: "9:00 AM - 11:00 AM",
+            location: "School Gymnasium",
+            group: "5th & 6th Grade",
+            vaccinator: "Dr. Johnson",
+            progress: { scheduled: 110, completed: 0 }
+          },
+          { 
+            time: "1:00 PM - 3:00 PM",
+            location: "School Gymnasium",
+            group: "7th & 8th Grade",
+            vaccinator: "Dr. Williams",
+            progress: { scheduled: 108, completed: 0 }
+          }
+        ]
+      },
+      {
+        date: "2023-10-17",
+        timeSlots: [
+          { 
+            time: "9:00 AM - 12:00 PM",
+            location: "School Gymnasium",
+            group: "Make-up Session",
+            vaccinator: "Dr. Johnson & Dr. Williams",
+            progress: { scheduled: 45, completed: 0 }
+          }
+        ]
+      }
+    ],
+    2: [ // Schedule for Campaign ID 2
+      {
+        date: "2023-09-05",
+        timeSlots: [
+          { 
+            time: "8:30 AM - 11:30 AM",
+            location: "School Auditorium",
+            group: "7th Grade",
+            vaccinator: "Dr. Martin",
+            progress: { scheduled: 110, completed: 0 }
+          },
+          { 
+            time: "12:30 PM - 3:30 PM",
+            location: "School Auditorium",
+            group: "8th Grade",
+            vaccinator: "Dr. Brown",
+            progress: { scheduled: 105, completed: 0 }
+          }
+        ]
+      },
+      {
+        date: "2023-09-06",
+        timeSlots: [
+          { 
+            time: "8:30 AM - 11:30 AM",
+            location: "School Auditorium",
+            group: "9th Grade",
+            vaccinator: "Dr. Martin",
+            progress: { scheduled: 115, completed: 0 }
+          },
+          { 
+            time: "12:30 PM - 3:30 PM",
+            location: "School Auditorium",
+            group: "10th Grade",
+            vaccinator: "Dr. Brown",
+            progress: { scheduled: 95, completed: 0 }
+          }
+        ]
+      },
+      {
+        date: "2023-09-07",
+        timeSlots: [
+          { 
+            time: "8:30 AM - 11:30 AM",
+            location: "School Auditorium",
+            group: "11th & 12th Grade",
+            vaccinator: "Dr. Martin",
+            progress: { scheduled: 100, completed: 0 }
+          }
+        ]
+      }
+    ]
+  };
 
   // Load campaigns data
   useEffect(() => {
@@ -278,6 +388,12 @@ function VaccinationCampaigns() {
     const diffTime = Math.abs(now - campaignDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays <= 7;
+  };
+
+  // Handle viewing schedule
+  const handleViewSchedule = (campaign) => {
+    setScheduleCampaign(campaign);
+    setShowScheduleModal(true);
   };
 
   return (
@@ -459,7 +575,7 @@ function VaccinationCampaigns() {
                   {(campaign.status === 'upcoming' || campaign.status === 'active' || campaign.status === 'planning') && (
                     <button
                       className="px-3 py-1 bg-green-100 text-green-600 rounded text-sm font-medium hover:bg-green-200"
-                      onClick={() => navigate(`/nurse/vaccinations/${campaign.id}/schedule`)}
+                      onClick={() => handleViewSchedule(campaign)}
                     >
                       Schedule
                     </button>
@@ -621,6 +737,151 @@ function VaccinationCampaigns() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Modal - Điều chỉnh vị trí nằm giữa */}
+      {showScheduleModal && scheduleCampaign && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div 
+            className="w-full max-w-3xl bg-white shadow-xl rounded-lg overflow-hidden flex flex-col max-h-[90vh]"
+            style={{ marginLeft: "130px" }} // Điều chỉnh để cân đối với sidebar
+          >
+            <div className="bg-green-50 p-6 border-b border-green-100 flex justify-between items-center sticky top-0 z-10">
+              <h3 className="text-xl font-semibold text-green-800">
+                {scheduleCampaign.title} - Vaccination Schedule
+              </h3>
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="text-green-600 hover:text-green-800 focus:outline-none"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="mb-5">
+                <div className="flex flex-wrap gap-4 mb-3">
+                  <div className="bg-blue-50 p-3 rounded-lg flex-grow">
+                    <h4 className="text-sm font-medium text-gray-500">Target Group</h4>
+                    <p className="font-medium">{scheduleCampaign.targetGroup}</p>
+                  </div>
+                  <div className="bg-blue-50 p-3 rounded-lg flex-grow">
+                    <h4 className="text-sm font-medium text-gray-500">Vaccine Type</h4>
+                    <p className="font-medium">{scheduleCampaign.vaccineType}</p>
+                  </div>
+                  <div className="bg-blue-50 p-3 rounded-lg flex-grow">
+                    <h4 className="text-sm font-medium text-gray-500">Campaign Period</h4>
+                    <p className="font-medium">
+                      {formatDate(scheduleCampaign.startDate)} - {formatDate(scheduleCampaign.endDate)}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-yellow-700">
+                        All schedules are subject to change. Parents and students will be notified of any updates.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {sampleSchedules[scheduleCampaign.id] ? (
+                <div className="space-y-8">
+                  {sampleSchedules[scheduleCampaign.id].map((day, index) => (
+                    <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                      <h4 className="font-medium text-lg mb-4 text-gray-800">{formatDate(day.date)}</h4>
+                      
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vaccinator</th>
+                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {day.timeSlots.map((slot, slotIndex) => (
+                              <tr key={slotIndex} className={slotIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.time}</td>
+                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.group}</td>
+                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.location}</td>
+                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.vaccinator}</td>
+                                <td className="px-4 py-3 text-sm text-gray-900">
+                                  <div className="flex items-center">
+                                    <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                      <div 
+                                        className="bg-green-600 h-2 rounded-full" 
+                                        style={{ 
+                                          width: `${(slot.progress.completed / slot.progress.scheduled) * 100}%`
+                                        }}
+                                      ></div>
+                                    </div>
+                                    <span className="text-xs whitespace-nowrap">
+                                      {slot.progress.completed} / {slot.progress.scheduled}
+                                    </span>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <svg 
+                    className="mx-auto h-12 w-12 text-gray-400" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor" 
+                    aria-hidden="true"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                    />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No schedule available</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    The schedule for this campaign is still being prepared.
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <div className="bg-gray-50 px-6 py-4 flex justify-between border-t">
+              <button
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                onClick={() => window.print()}
+              >
+                Print Schedule
+              </button>
+              <button
+                className="px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                onClick={() => setShowScheduleModal(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

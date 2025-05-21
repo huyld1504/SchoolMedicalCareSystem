@@ -20,6 +20,84 @@ function HealthCheckCampaigns() {
       totalStudents: 250,
       consentsReceived: 220,
       checkupsCompleted: 150,
+      // Thêm dữ liệu lịch trình theo ngày
+      schedule: [
+        {
+          date: "2023-10-15",
+          timeSlots: [
+            {
+              time: "9:00 AM - 11:00 AM",
+              location: "Gymnasium Section A",
+              group: "1st Grade",
+              staffAssigned: "Dr. Johnson",
+            },
+            {
+              time: "1:00 PM - 3:00 PM",
+              location: "Gymnasium Section A",
+              group: "2nd Grade",
+              staffAssigned: "Dr. Smith",
+            },
+          ],
+        },
+        {
+          date: "2023-10-16",
+          timeSlots: [
+            {
+              time: "9:00 AM - 11:00 AM",
+              location: "Gymnasium Section B",
+              group: "3rd Grade",
+              staffAssigned: "Dr. Johnson",
+            },
+            {
+              time: "1:00 PM - 3:00 PM",
+              location: "Gymnasium Section B",
+              group: "4th Grade",
+              staffAssigned: "Dr. Smith",
+            },
+          ],
+        },
+        {
+          date: "2023-10-17",
+          timeSlots: [
+            {
+              time: "9:00 AM - 11:00 AM",
+              location: "Gymnasium Section A",
+              group: "5th Grade",
+              staffAssigned: "Dr. Johnson",
+            },
+            {
+              time: "1:00 PM - 3:00 PM",
+              location: "Gymnasium Section A",
+              group: "6th Grade",
+              staffAssigned: "Dr. Wilson",
+            },
+          ],
+        },
+      ],
+      // Thêm dữ liệu kết quả theo ngày
+      dailyResults: [
+        {
+          date: "2023-10-15",
+          completed: 60,
+          scheduled: 65,
+          issuesDetected: 5,
+          notes: "5 students referred for further vision testing",
+        },
+        {
+          date: "2023-10-16",
+          completed: 55,
+          scheduled: 60,
+          issuesDetected: 3,
+          notes: "2 students referred for audiology, 1 for vision follow-up",
+        },
+        {
+          date: "2023-10-17",
+          completed: 35,
+          scheduled: 60,
+          issuesDetected: 2,
+          notes: "2 students referred for vision follow-up",
+        },
+      ],
     },
     {
       id: 2,
@@ -59,6 +137,10 @@ function HealthCheckCampaigns() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [submittedConsentIds, setSubmittedConsentIds] = useState([]);
 
   // Filter campaigns based on search term and status
   const filteredCampaigns = campaigns.filter((campaign) => {
@@ -80,6 +162,36 @@ function HealthCheckCampaigns() {
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Xử lý hiển thị lịch trình
+  const handleViewSchedule = (campaign) => {
+    setSelectedCampaign(campaign);
+    setShowScheduleModal(true);
+  };
+
+  // Xử lý hiển thị kết quả
+  const handleViewResults = (campaign) => {
+    setSelectedCampaign(campaign);
+    setShowResultsModal(true);
+  };
+
+  // Xử lý submit consent form
+  const handleSubmitConsent = (campaignId) => {
+    // Cập nhật danh sách ID đã submit consent
+    setSubmittedConsentIds([...submittedConsentIds, campaignId]);
+
+    // Cập nhật số lượng consents received
+    setCampaigns(
+      campaigns.map((campaign) =>
+        campaign.id === campaignId
+          ? {
+              ...campaign,
+              consentsReceived: campaign.consentsReceived + 1,
+            }
+          : campaign
+      )
+    );
   };
 
   return (
@@ -305,35 +417,84 @@ function HealthCheckCampaigns() {
                   </div>
                 )}
 
-                {/* Campaign Actions */}
-                <div className="mt-6 flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                {/* Campaign Actions - Cải thiện layout */}
+                <div className="mt-6 flex flex-wrap justify-end gap-2">
                   {campaign.status === "Active" && campaign.consentRequired && (
-                    <Link
-                      to={`/parent/health-checks/${campaign.id}/consent`}
-                      className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Submit Consent Form
-                    </Link>
+                    submittedConsentIds.includes(campaign.id) ? (
+                      <button
+                        disabled
+                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-500 opacity-75 cursor-not-allowed"
+                      >
+                        <svg
+                          className="-ml-1 mr-2 h-5 w-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Have Submitted
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleSubmitConsent(campaign.id)}
+                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Submit Consent Form
+                      </button>
+                    )
                   )}
 
                   {campaign.status === "Active" && (
-                    <Link
-                      to={`/parent/health-checks/${campaign.id}/schedule`}
-                      className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    <button
+                      onClick={() => handleViewSchedule(campaign)}
+                      className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 z-10"
                     >
+                      <svg
+                        className="-ml-1 mr-2 h-5 w-5 text-gray-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2z"
+                        />
+                      </svg>
                       View Schedule
-                    </Link>
+                    </button>
                   )}
 
                   {(campaign.status === "Active" ||
                     campaign.status === "Completed") &&
                     campaign.checkupsCompleted > 0 && (
-                      <Link
-                        to={`/parent/health-checks/${campaign.id}/results`}
-                        className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      <button
+                        onClick={() => handleViewResults(campaign)}
+                        className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 z-10"
                       >
+                        <svg
+                          className="-ml-1 mr-2 h-5 w-5 text-gray-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
                         View Results
-                      </Link>
+                      </button>
                     )}
                 </div>
               </div>
@@ -393,6 +554,224 @@ function HealthCheckCampaigns() {
           </div>
         </div>
       </div>
+
+      {/* Schedule Modal - Cải thiện vị trí */}
+      {showScheduleModal && selectedCampaign && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-end p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col relative mr-0 ml-auto my-8">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+              <h3 className="text-lg font-medium text-gray-900">
+                {selectedCampaign.name} - Schedule
+              </h3>
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 overflow-auto flex-1">
+              <div className="space-y-6">
+                {selectedCampaign.schedule.map((day) => (
+                  <div key={day.date} className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-lg mb-3">
+                      {formatDate(day.date)}
+                    </h4>
+
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Time
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Group
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Location
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Staff
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {day.timeSlots.map((slot, index) => (
+                            <tr
+                              key={index}
+                              className={
+                                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                              }
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {slot.time}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {slot.group}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {slot.location}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {slot.staffAssigned}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Results Modal - Cải thiện vị trí */}
+      {showResultsModal && selectedCampaign && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-end p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col relative mr-0 ml-auto my-8">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+              <h3 className="text-lg font-medium text-gray-900">
+                {selectedCampaign.name} - Daily Results
+              </h3>
+              <button
+                onClick={() => setShowResultsModal(false)}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 overflow-auto flex-1">
+              <div className="space-y-8">
+                {selectedCampaign.dailyResults.map((result) => (
+                  <div key={result.date} className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-lg mb-3">
+                      {formatDate(result.date)}
+                    </h4>
+
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-gray-700">
+                          Progress
+                        </span>
+                        <span className="text-sm font-medium text-gray-700">
+                          {result.completed} of {result.scheduled} students (
+                          {Math.round((result.completed / result.scheduled) * 100)}%)
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                          className="bg-green-600 h-2.5 rounded-full"
+                          style={{
+                            width: `${Math.round(
+                              (result.completed / result.scheduled) *
+                                100
+                            )}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">
+                        Summary
+                      </h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {result.completed}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Checkups Completed
+                          </div>
+                        </div>
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          <div className="text-2xl font-bold text-yellow-600">
+                            {result.issuesDetected}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Issues Detected
+                          </div>
+                        </div>
+                      </div>
+
+                      {result.notes && (
+                        <div className="mt-4">
+                          <h5 className="text-sm font-medium text-gray-700 mb-1">
+                            Notes
+                          </h5>
+                          <p className="text-sm text-gray-600 bg-white p-3 rounded border border-gray-200">
+                            {result.notes}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setShowResultsModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

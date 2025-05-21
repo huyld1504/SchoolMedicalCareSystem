@@ -66,8 +66,6 @@ import StudentInfo from "./components/student/StudentInfo";
 import MedicalEventsList from "./pages/medical-events/MedicalEventsList";
 import MedicalEventForm from "./pages/medical-events/MedicalEventForm";
 import MedicalEventDetails from "./pages/medical-events/MedicalEventDetails";
-import MedicalEventsDashboard from "./pages/medical-events/MedicalEventsDashboard";
-import MedicalEventReports from "./pages/medical-events/MedicalEventReports";
 
 // Vaccinations - All implemented components
 import VaccinationCampaigns from "./pages/vaccinations/VaccinationCampaigns";
@@ -438,22 +436,6 @@ const nurseRoutes = [
     element: (
       <NurseLayout>
         <MedicalEventForm />
-      </NurseLayout>
-    ),
-  },
-  {
-    path: "/nurse/medical-events/dashboard",
-    element: (
-      <NurseLayout>
-        <MedicalEventsDashboard />
-      </NurseLayout>
-    ),
-  },
-  {
-    path: "/nurse/medical-events/reports",
-    element: (
-      <NurseLayout>
-        <MedicalEventReports />
       </NurseLayout>
     ),
   },

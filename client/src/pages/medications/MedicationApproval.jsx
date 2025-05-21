@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 function MedicationApproval() {
+  // Add state variables for prescription modal
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [currentPrescriptionImage, setCurrentPrescriptionImage] = useState("");
+
   // Demo data for medication requests
   const [medicationRequests, setMedicationRequests] = useState([
     {
@@ -17,11 +21,14 @@ function MedicationApproval() {
       endDate: "2023-05-30",
       instructions: "For headache or fever above 100F",
       prescriptionUploaded: true,
+      // Add a sample prescription image URL
+      prescriptionImage: "https://i.imgur.com/7lXEIII.jpg",
       requestDate: "2023-04-28",
       status: "pending",
       parentName: "Sarah Johnson",
       parentPhone: "(555) 123-4567",
     },
+    // Update second medication request
     {
       id: 2,
       studentName: "Thomas Johnson",
@@ -35,6 +42,8 @@ function MedicationApproval() {
       endDate: "2023-12-31",
       instructions: "For asthma symptoms. May take before exercise.",
       prescriptionUploaded: true,
+      // Add a different sample prescription image
+      prescriptionImage: "https://i.imgur.com/X5Nzn8I.jpg",
       requestDate: "2023-05-10",
       status: "pending",
       parentName: "Sarah Johnson",
@@ -132,6 +141,24 @@ function MedicationApproval() {
     }
 
     alert("Additional information has been requested from the parent.");
+  };
+
+  // Open prescription modal
+  const handleOpenPrescription = (image) => {
+    setCurrentPrescriptionImage(image);
+    setShowPrescriptionModal(true);
+  };
+
+  // Close prescription modal
+  const handleClosePrescription = () => {
+    setCurrentPrescriptionImage("");
+    setShowPrescriptionModal(false);
+  };
+
+  // Add this function to handle viewing prescriptions
+  const handleViewPrescription = (imageUrl) => {
+    setCurrentPrescriptionImage(imageUrl);
+    setShowPrescriptionModal(true);
   };
 
   return (
@@ -336,7 +363,13 @@ function MedicationApproval() {
                         <p className="ml-2 text-green-600">
                           Prescription uploaded
                         </p>
-                        <button className="ml-4 text-blue-600 hover:text-blue-800 text-sm">
+                        <button
+                          className="ml-4 text-blue-600 hover:text-blue-800 text-sm"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering parent click handlers
+                            handleViewPrescription(selectedRequest.prescriptionImage);
+                          }}
+                        >
                           View Prescription
                         </button>
                       </div>
@@ -522,6 +555,43 @@ function MedicationApproval() {
           </div>
         </div>
       </div>
+      
+      {/* Prescription Modal */}
+      {showPrescriptionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-medium text-gray-900">Prescription Documentation</h3>
+              <button 
+                onClick={() => setShowPrescriptionModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 flex-1 overflow-auto">
+              {currentPrescriptionImage ? (
+                <img 
+                  src={currentPrescriptionImage} 
+                  alt="Prescription" 
+                  className="w-full h-auto object-contain"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    // Fallback to a sample prescription image if URL fails
+                    e.target.src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSExMWFhUXGBgYFxgYFxgXGBgYGhgYGBgYFxoYHSggHRolHRcYITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICYtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAFAAIDBAYBBwj/xABHEAACAQIEAwUEBwUGBAYDAAABAhEAAwQSITEFQVEGEyJhcTKBkaEUI0JSscHRB3KC4fAzYpKisvEkQ1NjFRZUc8LSJDVF/8QAGgEAAgMBAQAAAAAAAAAAAAAAAwQBAgUABv/EADIRAAICAQMCBAQFBAMBAAAAAAABAhEDEiExBEETIlFhcYGR8BShsdHhIzLB8UJSU2L/2gAMAwEAAhEDEQA/AEKY4r7RYeppriWOP3x8anayOhPwojw/h1p7SW2VSWA0JI+cwazF1UE95I0nglJVVlRceehKjzim3L9xupHrWlXgjASPCT0UfpUeO4atm3nMQJAO/wCNWXV45cMrLgmt2gDb4oyaOu3KdD+VDbHGXt+GYiiFjHKCNPiQPxrR4Zwu1fUvklgfaULv1mP51z6tKWnGn8yPw1rVkb+RTwvGbTkFxk/h8Pzo3h8VbcQriR0O9Zri3B1tDMp7xiR4eXvnSk2HNu3lXKSNBoD1+VOY02tsiFnUXTZrS9RtQS5xK4htBnBYEN7Rk6eFhtAgj3VQxGIu2wYdbiaSVaCR1IP41b6SalcrKvqox2ovf+Lj/wCmxHpHr6109p7Q+yCR1Gh/GgOHxl5ySGFsE/31+MD50Qwh0E6k786nNhUFa5FeNnnk/tRcuY62BqTI6Df5VXfFg6A0nu28U+yum+9MOLY5rbBVQHMOvuoUenyThfy/kOsfU4MUvL9Qet0fd+VPF8fcPwqL6UvQ/AfrUtnEW2OhHy/Wi+E0WEsck7aLI9KxGlcS2p2A+FS28OJ3mnxiT9gBTm+Wc1tRyp626ky/Cu+FduB+FWURR9kVLZaCELvZAQrBnMKfnTu6bpp50UrgSufho+gthIIwp6N8KZCdGFE+5peEcxTdA3UBS7YB2MUwOfOnuN8SfjUT221BHLao3XJDqXJZyU4U22ND769xxUgkJ06nmaaXcQBOvSPumoQy9KcGBp1CbZOtnVpZolQRrUKnL4YMmOcDY1KHqyYOULJVYUiajVqeGohmS5pUzNXtXs6ywK2PSucQEof3vwFdw2x9akxFvOhX01rMzL+tdGjhfkiXrKrt86j+igc6ltmKkCzSFhuPLgqZ9aIXOCpcTK6giIPpFVboA2NGcLdlDTw7hnFMLZLOCcsFspIMgDSDMEaiRQZuDW7SOzNcYlQSCcqanZQQIgHf3UWwHEe+LqVyFYkSYkGNgRIO9UMJgmxSXLNx80GQRpIMgj0I2p3Jillg4y4CN1OLvgp4fAm4wtq5RW09AmuvvozwfguS81stmKbZxGb";
+                  }}
+                />
+              ) : (
+                <div className="text-center text-gray-500">
+                  <p>No prescription image available.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
