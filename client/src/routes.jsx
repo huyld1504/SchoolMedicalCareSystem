@@ -116,30 +116,11 @@ const UserSettings = () => (
 );
 
 // Reports
-const ReportsOverview = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Reports Overview</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const HealthStatusReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Health Status Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const MedicationReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Medication Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const VaccinationReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Vaccination Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
+import ReportsOverview from "./pages/admin/reports/ReportsOverview";
+import HealthReports from "./pages/admin/reports/HealthReports";
+import AdminMedicationReports from "./pages/admin/reports/MedicationReports";
+import VaccinationReports from "./pages/admin/reports/VaccinationReports";
+
 const IncidentReport = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold mb-4">Incident Report</h1>
@@ -264,12 +245,34 @@ const adminRoutes = [
         <UserProfile />
       </AdminLayout>
     ),
-  },
-  {
-    path: "/admin/reports/*",
+  }, {
+    path: "/admin/reports",
     element: (
       <AdminLayout>
         <ReportsOverview />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/reports/health",
+    element: (
+      <AdminLayout>
+        <HealthReports />
+      </AdminLayout>
+    ),
+  }, {
+    path: "/admin/reports/medication",
+    element: (
+      <AdminLayout>
+        <AdminMedicationReports />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/reports/vaccination",
+    element: (
+      <AdminLayout>
+        <VaccinationReports />
       </AdminLayout>
     ),
   },
