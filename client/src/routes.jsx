@@ -180,6 +180,7 @@ const StaffScheduling = () => (
   </div>
 );
 
+
 // Resource Management Components (for Manager)
 import ResourceManagement from "./pages/manager/ResourceManagement";
 
@@ -396,10 +397,34 @@ const managerRoutes = [
     ),
   },
   {
-    path: "/manager/reports/*",
+    path: "/manager/reports/health-status",
     element: (
       <ManagerLayout>
-        <ReportsOverview />
+        <HealthReports  />
+      </ManagerLayout>
+    ),
+  },
+   {
+    path: "/manager/reports/medications",
+    element: (
+      <ManagerLayout>
+        <HealthReports  />
+      </ManagerLayout>
+    ),
+  },
+   {
+    path: "/manager/reports/vaccinations",
+    element: (
+      <ManagerLayout>
+        <AdminMedicationReports   />
+      </ManagerLayout>
+    ),
+  },
+   {
+    path: "/manager/reports/Incidents",
+    element: (
+      <ManagerLayout>
+        <HealthReports  />
       </ManagerLayout>
     ),
   },
