@@ -408,7 +408,7 @@ const managerRoutes = [
     path: "/manager/reports/medications",
     element: (
       <ManagerLayout>
-        <HealthReports  />
+        <AdminMedicationReports   />
       </ManagerLayout>
     ),
   },
@@ -416,7 +416,7 @@ const managerRoutes = [
     path: "/manager/reports/vaccinations",
     element: (
       <ManagerLayout>
-        <AdminMedicationReports   />
+        <VaccinationReports    />
       </ManagerLayout>
     ),
   },
