@@ -56,18 +56,16 @@ function NurseLayout({ children }) {
 
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Medical Services
-          </div>
-          <a
+          </div>          <a
             className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/events"
+            href="/nurse/medical-events"
           >
-            <i className="bi bi-journal-medical me-2"></i> Medical Events
-          </a>
-          <a
+            <i className="bi bi-journal-medical me-2"></i> Events List
+          </a>          <a
             className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/events/new"
+            href="/nurse/medical-events/new"
           >
-            <i className="bi bi-plus-circle me-2"></i> New Event
+            <i className="bi bi-plus-circle me-2"></i> New Medical Event
           </a>
           <a
             className="nav-link text-white d-flex align-items-center py-2"

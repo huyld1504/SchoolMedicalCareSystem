@@ -61,6 +61,21 @@ function MedicationInventory() {
       usageRate: "High",
     },
     {
+      id: 8,
+      name: "Methylphenidate",
+      genericName: "Methylphenidate HCl",
+      category: "ADHD",
+      dose: "10mg",
+      form: "Tablet",
+      quantity: 45,
+      minQuantity: 20,
+      expiryDate: "2024-07-15",
+      location: "Controlled Substances Cabinet",
+      notes: "Controlled substance - requires documentation for each dose",
+      lastRestocked: "2023-05-10",
+      usageRate: "Medium",
+    },
+    {
       id: 3,
       name: "Diphenhydramine",
       genericName: "Benadryl",
@@ -466,6 +481,64 @@ function MedicationInventory() {
         </div>
       </div>
 
+      {/* Low Stock Alert - Moved to appear above medications table */}
+      {medications.filter(
+        (med) => med.quantity === 0 || med.quantity <= med.minQuantity
+      ).length > 0 && (
+          <div className="mb-8 bg-red-50 border-l-4 border-red-500 p-5 rounded-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Low Stock Alert</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>The following medications require attention:</p>
+                  <ul className="list-disc list-inside mt-1">
+                    {medications
+                      .filter(
+                        (med) => med.quantity === 0 || med.quantity <= med.minQuantity
+                      )
+                      .slice(0, 5)
+                      .map((med) => (
+                        <li key={med.id}>
+                          {med.name} (
+                          {med.quantity === 0
+                            ? "Out of stock"
+                            : `Low stock: ${med.quantity} units`}
+                          )
+                        </li>
+                      ))}
+                    {medications.filter(
+                      (med) => med.quantity === 0 || med.quantity <= med.minQuantity
+                    ).length > 5 && (
+                        <li>
+                          And{" "}
+                          {
+                            medications.filter(
+                              (med) => med.quantity === 0 || med.quantity <= med.minQuantity
+                            ).length - 5
+                          }{" "}
+                          more...
+                        </li>
+                      )}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       {/* Medications List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="p-6 border-b flex justify-between items-center">
@@ -594,9 +667,11 @@ function MedicationInventory() {
 
       {/* Add/Edit/Restock Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
-            <div className="p-6 border-b">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-8">
+          {/* Added p-8 padding to ensure spacing from edges */}
+          <div className="bg-white rounded-lg shadow-lg mx-auto max-w-md w-full max-h-[85vh] flex flex-col">
+            {/* Added max-h-[85vh] to limit height to 85% of viewport */}
+            <div className="p-5 border-b flex justify-between items-center">
               <h3 className="text-xl font-semibold">
                 {modalType === "add"
                   ? "Add New Medication"
@@ -604,10 +679,27 @@ function MedicationInventory() {
                     ? "Edit Medication"
                     : "Restock Medication"}
               </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedMedication(null);
+                }}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
             </div>
 
             <form onSubmit={handleSubmit}>
-              <div className="p-6 space-y-4">
+              <div className="p-5 space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(70vh - 140px)' }}>
+                {/* Added overflow-y-auto and maxHeight style to make content scrollable */}
                 {/* Show different forms based on modalType */}
                 {modalType === "restock" ? (
                   <>
@@ -876,21 +968,21 @@ function MedicationInventory() {
                 )}
               </div>
 
-              <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+              <div className="px-5 py-4 bg-gray-50 flex justify-end space-x-3 border-t">
                 <button
                   type="button"
-                  className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   onClick={() => {
                     setShowModal(false);
                     setSelectedMedication(null);
                   }}
                 >
-                  Cancel
+                  Close
                 </button>
 
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-white font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
                   {modalType === "add"
                     ? "Add Medication"
@@ -903,64 +995,6 @@ function MedicationInventory() {
           </div>
         </div>
       )}
-
-      {/* Low Stock Alert */}
-      {medications.filter(
-        (med) => med.quantity === 0 || med.quantity <= med.minQuantity
-      ).length > 0 && (
-          <div className="mt-8 bg-red-50 border-l-4 border-red-500 p-5 rounded-lg">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-red-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Low Stock Alert</h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>The following medications require attention:</p>
-                  <ul className="list-disc list-inside mt-1">
-                    {medications
-                      .filter(
-                        (med) => med.quantity === 0 || med.quantity <= med.minQuantity
-                      )
-                      .slice(0, 5)
-                      .map((med) => (
-                        <li key={med.id}>
-                          {med.name} (
-                          {med.quantity === 0
-                            ? "Out of stock"
-                            : `Low stock: ${med.quantity} units`}
-                          )
-                        </li>
-                      ))}
-                    {medications.filter(
-                      (med) => med.quantity === 0 || med.quantity <= med.minQuantity
-                    ).length > 5 && (
-                        <li>
-                          And{" "}
-                          {
-                            medications.filter(
-                              (med) => med.quantity === 0 || med.quantity <= med.minQuantity
-                            ).length - 5
-                          }{" "}
-                          more...
-                        </li>
-                      )}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
       {/* Expiring Medications Alert */}
       {medications.filter(

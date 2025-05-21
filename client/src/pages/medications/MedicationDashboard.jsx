@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function MedicationDashboard() {
+  // Add navigate function from react-router
+  const navigate = useNavigate();
+
   const [currentDate] = useState(
     new Date().toLocaleDateString("en-US", {
       weekday: "long",
@@ -115,28 +118,78 @@ function MedicationDashboard() {
 
   // Mark medication as skipped/missed
   const handleSkip = (id, reason) => {
-    const now = new Date();
-    const currentTime = now.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    try {
+      const now = new Date();
+      const currentTime = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-    // In a real app, this would include authentication to know who recorded it
-    const nurseUser = "Nurse Sarah";
+      // In a real app, this would include authentication to know who recorded it
+      const nurseUser = "Nurse Sarah";
 
-    setMedicationsToday(
-      medicationsToday.map((med) =>
-        med.id === id
-          ? {
-              ...med,
-              status: "missed",
-              administeredAt: currentTime,
-              administeredBy: nurseUser,
-              notes: reason,
-            }
-          : med
-      )
-    );
+      setMedicationsToday(
+        (prevMeds) =>
+          prevMeds.map((med) =>
+            med.id === id
+              ? {
+                  ...med,
+                  status: "missed",
+                  administeredAt: currentTime,
+                  administeredBy: nurseUser,
+                  notes: reason || "No reason provided",
+                }
+              : med
+          )
+      );
+
+      // Update stats after skipping a medication
+      const updatedMeds = medicationsToday.map((med) =>
+        med.id === id ? { ...med, status: "missed" } : med
+      );
+
+      // Optional: Show success message
+      alert("Medication marked as skipped successfully");
+    } catch (error) {
+      console.error("Error skipping medication:", error);
+      alert("Error skipping medication. Please try again.");
+    }
+  };
+
+  // Custom function to handle medication administration directly from the dashboard
+  const handleAdministerDirectly = (medicationId) => {
+    try {
+      // Use React Router's navigate function instead of window.location
+      navigate(`/nurse/medications/administer/${medicationId}`);
+    } catch (error) {
+      console.error("Navigation error:", error);
+
+      // Fallback to window.location if navigate fails
+      try {
+        window.location.href = `/nurse/medications/administer/${medicationId}`;
+      } catch (fallbackError) {
+        console.error("Fallback navigation failed:", fallbackError);
+        alert(
+          "Could not navigate to medication administration page. Please try again."
+        );
+      }
+    }
+  };
+
+  // Add state for the details modal
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedMedication, setSelectedMedication] = useState(null);
+
+  // Function to open the details modal
+  const openDetailsModal = (medication) => {
+    setSelectedMedication(medication);
+    setShowDetailsModal(true);
+  };
+
+  // Function to close the details modal
+  const closeDetailsModal = () => {
+    setShowDetailsModal(false);
+    setSelectedMedication(null);
   };
 
   return (
@@ -173,7 +226,7 @@ function MedicationDashboard() {
               viewBox="0 0 20 20"
               fill="currentColor"
             >
-              <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+              <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 002-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
             </svg>
             Inventory
           </Link>{" "}
@@ -463,9 +516,8 @@ function MedicationDashboard() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {medication.status === "pending" ? (
                       <div className="flex justify-end space-x-2">
-                        {" "}
-                        <Link
-                          to={`/nurse/medications/administer/${medication.id}`}
+                        <button
+                          onClick={() => handleAdministerDirectly(medication.id)}
                           className="text-green-600 hover:text-green-900 flex items-center"
                         >
                           <svg
@@ -481,13 +533,15 @@ function MedicationDashboard() {
                             />
                           </svg>
                           Record Administration
-                        </Link>
+                        </button>
                         <button
                           onClick={() => {
-                            const reason = prompt(
+                            const reason = window.prompt(
                               "Enter reason for skipping medication:"
                             );
-                            if (reason) handleSkip(medication.id, reason);
+                            if (reason !== null) {
+                              handleSkip(medication.id, reason);
+                            }
                           }}
                           className="text-red-600 hover:text-red-900"
                         >
@@ -495,12 +549,12 @@ function MedicationDashboard() {
                         </button>
                       </div>
                     ) : (
-                      <Link
-                        to={`/nurse/medications/history/${medication.id}`}
+                      <button
+                        onClick={() => openDetailsModal(medication)}
                         className="text-blue-600 hover:text-blue-900"
                       >
                         View Details
-                      </Link>
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -516,7 +570,7 @@ function MedicationDashboard() {
         </table>
       </div>
       {/* Upcoming Schedule Summary */}
-      <div className="mt-8 bg-white shadow rounded-lg p-6">
+      {/* <div className="mt-8 bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           Upcoming Medication Schedule
         </h2>
@@ -543,10 +597,10 @@ function MedicationDashboard() {
             <p className="text-sm text-gray-500">0 administered, 2 pending</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Reports Overview */}
-      <div className="mt-8 bg-white shadow rounded-lg p-6">
+      {/* <div className="mt-8 bg-white shadow rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">
             Medication Reports Overview
@@ -646,7 +700,7 @@ function MedicationDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Helper Info */}
       <div className="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4">
@@ -674,6 +728,166 @@ function MedicationDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Medication Details Modal */}
+      {showDetailsModal && selectedMedication && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Medication Record Details
+                </h2>
+                <button
+                  onClick={closeDetailsModal}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Student Information */}
+              <div className="mb-6 pb-6 border-b border-gray-200">
+                <div className="flex items-center mb-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <svg
+                      className="h-6 w-6 text-blue-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold">
+                      {selectedMedication.studentName}
+                    </h3>
+                    <p className="text-gray-600">
+                      {selectedMedication.grade} • ID: {selectedMedication.studentId}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Medication Information */}
+              <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                    Medication
+                  </h4>
+                  <p className="font-medium text-lg">
+                    {selectedMedication.medication}
+                  </p>
+                  <p className="text-gray-600">{selectedMedication.dosage}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                    Status
+                  </h4>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      selectedMedication.status === "administered"
+                        ? "bg-green-100 text-green-800"
+                        : selectedMedication.status === "missed"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    {selectedMedication.status.charAt(0).toUpperCase() +
+                      selectedMedication.status.slice(1)}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                    Scheduled Time
+                  </h4>
+                  <p className="font-medium">{selectedMedication.time}</p>
+                </div>
+
+                {selectedMedication.administeredAt && (
+                  <div>
+                    <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                      Administered At
+                    </h4>
+                    <p className="font-medium">{selectedMedication.administeredAt}</p>
+                  </div>
+                )}
+
+                {selectedMedication.administeredBy && (
+                  <div>
+                    <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                      Administered By
+                    </h4>
+                    <p className="font-medium">{selectedMedication.administeredBy}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Instructions */}
+              <div className="mb-6">
+                <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                  Instructions
+                </h4>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-gray-700">
+                    {selectedMedication.instructions}
+                  </p>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {selectedMedication.notes && (
+                <div className="mb-6">
+                  <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-2">
+                    Administration Notes
+                  </h4>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-gray-700">{selectedMedication.notes}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={closeDetailsModal}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded mr-2"
+                >
+                  Close
+                </button>
+                <Link
+                  to={`/nurse/medications/history/${selectedMedication.id}`}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
+                >
+                  Full History
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
