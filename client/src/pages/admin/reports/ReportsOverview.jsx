@@ -216,8 +216,7 @@ function ReportsOverview() {
 
             {/* Recent Reports */}      <div className="mb-8">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Recent Reports</h2>
-                    <div className="flex space-x-4">
+                    <h2 className="text-xl font-semibold">Recent Reports</h2>                    <div className="flex space-x-4">
                         <Link to="/admin/reports/health" className="text-blue-600 hover:text-blue-800 flex items-center text-sm font-medium">
                             Health Reports
                         </Link>
@@ -226,6 +225,9 @@ function ReportsOverview() {
                         </Link>
                         <Link to="/admin/reports/vaccination" className="text-purple-600 hover:text-purple-800 flex items-center text-sm font-medium">
                             Vaccination Reports
+                        </Link>
+                        <Link to="/admin/reports/incidents" className="text-orange-600 hover:text-orange-800 flex items-center text-sm font-medium">
+                            Incident Reports
                         </Link>
                     </div>
                 </div>
@@ -341,8 +343,7 @@ function ReportsOverview() {
 
                         <div className="mt-6 flex justify-end">              <button
                             type="button"
-                            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            onClick={(e) => {
+                            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onClick={(e) => {
                                 e.preventDefault();
                                 const reportType = document.getElementById('reportType').value;
                                 if (reportType === 'health') {
@@ -351,6 +352,8 @@ function ReportsOverview() {
                                     window.location.href = '/admin/reports/medication';
                                 } else if (reportType === 'vaccination') {
                                     window.location.href = '/admin/reports/vaccination';
+                                } else if (reportType === 'incident') {
+                                    window.location.href = '/admin/reports/incidents';
                                 } else {
                                     alert('This report type is coming soon.');
                                 }

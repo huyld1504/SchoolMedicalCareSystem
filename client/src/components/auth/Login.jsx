@@ -148,7 +148,7 @@ function Login() {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-3">
+            {/* <div className="mt-6 grid grid-cols-1 gap-3">
               <div className="text-sm text-center text-gray-600">
                 <p>admin@school.edu / admin123</p>
                 <p>manager@school.edu / manager123</p>
@@ -156,7 +156,7 @@ function Login() {
                 <p>parent@example.com / parent123</p>
                 <p>student@school.edu / student123</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

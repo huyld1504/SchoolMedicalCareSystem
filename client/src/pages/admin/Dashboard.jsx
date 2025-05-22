@@ -308,11 +308,16 @@ function AdminDashboard() {
                                         <span className="text-gray-800">Medication Usage Report</span>
                                         <span className="text-gray-500 text-sm">May 15, 2025</span>
                                     </Link>
-                                </li>
-                                <li className="p-2 hover:bg-gray-50 rounded-lg">
+                                </li>                                <li className="p-2 hover:bg-gray-50 rounded-lg">
                                     <Link to="/admin/reports/vaccination/latest" className="flex justify-between">
                                         <span className="text-gray-800">Vaccination Compliance</span>
                                         <span className="text-gray-500 text-sm">May 10, 2025</span>
+                                    </Link>
+                                </li>
+                                <li className="p-2 hover:bg-gray-50 rounded-lg">
+                                    <Link to="/admin/reports/incidents" className="flex justify-between">
+                                        <span className="text-gray-800">Incident Reports</span>
+                                        <span className="text-gray-500 text-sm">May 18, 2025</span>
                                     </Link>
                                 </li>
                             </ul>
