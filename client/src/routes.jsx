@@ -105,13 +105,7 @@ import ReportsOverview from "./pages/admin/reports/ReportsOverview";
 import HealthReports from "./pages/admin/reports/HealthReports";
 import AdminMedicationReports from "./pages/admin/reports/MedicationReports";
 import VaccinationReports from "./pages/admin/reports/VaccinationReports";
-
-const IncidentReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Incident Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
+import IncidentReports from "./pages/admin/reports/IncidentReports";
 
 // System Settings Components (Placeholders)
 const SystemSettings = () => (
@@ -253,12 +247,19 @@ const adminRoutes = [
         <AdminMedicationReports />
       </AdminLayout>
     ),
-  },
-  {
+  }, {
     path: "/admin/reports/vaccination",
     element: (
       <AdminLayout>
         <VaccinationReports />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/reports/incidents",
+    element: (
+      <AdminLayout>
+        <IncidentReports />
       </AdminLayout>
     ),
   },

@@ -63,7 +63,7 @@ function AdminLayout({ children }) {
           >
             <i className="bi bi-people me-2"></i> User Management
           </a>
-        
+
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/settings"
@@ -92,12 +92,17 @@ function AdminLayout({ children }) {
             href="/admin/reports/medication"
           >
             <i className="bi bi-capsule me-2"></i> Medication Reports
-          </a>
-          <a
+          </a>          <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/reports/vaccination"
           >
             <i className="bi bi-shield me-2"></i> Vaccination Reports
+          </a>
+          <a
+            className="nav-link text-white d-flex align-items-center py-2"
+            href="/admin/reports/incidents"
+          >
+            <i className="bi bi-exclamation-triangle me-2"></i> Incident Reports
           </a>
         </nav>
         <div className="mt-auto p-3 border-top">
