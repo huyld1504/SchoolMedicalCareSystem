@@ -2,10 +2,9 @@ import React, { useState } from "react";
 
 function HealthRecordForm() {
   const [activeTab, setActiveTab] = useState(1);
-  const [formData, setFormData] = useState({
+  const [previewImage, setPreviewImage] = useState(null);  const [formData, setFormData] = useState({
     // Student Personal Information
-    firstName: "",
-    lastName: "",
+    firstName: "", // Using firstName field for full name
     dateOfBirth: "",
     gender: "",
     grade: "",
@@ -32,10 +31,8 @@ function HealthRecordForm() {
     vaccinations: [],
 
     // Medical Treatment History
-    treatments: [],
-
-    // Emergency Contacts
-    emergencyContacts: [{ name: "", relationship: "", phone: "", email: "" }],
+    treatments: [],    // Emergency Contacts
+    emergencyContacts: [{ name: "", relationship: "", otherRelationship: "", phone: "", email: "" }],
 
     // Medical Coverage
     insuranceProvider: "",
@@ -57,13 +54,19 @@ function HealthRecordForm() {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
   const handleArrayInput = (field, value) => {
     if (value.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: [...prev[field], value],
-      }));
+      // Check if the value already exists in the array (case insensitive)
+      const valueExists = formData[field].some(
+        item => item.toLowerCase() === value.trim().toLowerCase()
+      );
+      
+      if (!valueExists) {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: [...prev[field], value.trim()],
+        }));
+      }
     }
   };
 
@@ -85,10 +88,9 @@ function HealthRecordForm() {
 
   const addContact = () => {
     setFormData((prev) => ({
-      ...prev,
-      emergencyContacts: [
+      ...prev,      emergencyContacts: [
         ...prev.emergencyContacts,
-        { name: "", relationship: "", phone: "", email: "" },
+        { name: "", relationship: "", otherRelationship: "", phone: "", email: "" },
       ],
     }));
   };
@@ -106,14 +108,13 @@ function HealthRecordForm() {
     // In a real app, you would send this data to your API
     alert("Health record submitted successfully!");
   };
-
   // Tab content components
   const renderPersonalInfo = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            First Name
+            Full Name
           </label>
           <input
             type="text"
@@ -122,24 +123,141 @@ function HealthRecordForm() {
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
             required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Last Name
-          </label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
+            placeholder="Enter full name"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Student ID
+          </label>
+          <input
+            type="text"
+            name="studentId"
+            value={formData.studentId}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+            placeholder="Enter studentID"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Class
+          </label>
+          <input
+            type="text"
+            name="class"
+            value={formData.class}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Enter class"
+          />
+        </div>      </div>
+      
+      <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          Student Photo
+        </label>
+        
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          {/* Photo Preview */}
+          <div className="w-full md:w-1/3 flex justify-center">
+            <div className="relative w-40 h-40 overflow-hidden border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-100">
+              {previewImage ? (
+                <img 
+                  src={previewImage} 
+                  alt="Preview" 
+                  className="h-full w-full object-cover" 
+                />
+              ) : (
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-16 w-16 text-gray-400" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={1} 
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                  />
+                </svg>
+              )}
+            </div>
+          </div>
+          
+          {/* Upload Controls */}
+          <div className="w-full md:w-2/3">
+            <div className="flex items-center justify-center w-full">
+              <label
+                htmlFor="photo-upload"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg
+                    className="w-8 h-8 mb-3 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    ></path>
+                  </svg>
+                  <p className="mb-1 text-sm text-gray-500">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 2MB)</p>
+                </div>
+                <input 
+                  id="photo-upload" 
+                  type="file" 
+                  name="photo" 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setFormData({ ...formData, photo: file });
+                      setPreviewImage(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            
+            {formData.photo && (
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-sm text-gray-500 truncate max-w-[200px]">
+                  {formData.photo.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, photo: null });
+                    setPreviewImage(null);
+                  }}
+                  className="text-red-500 hover:text-red-700 text-sm font-medium"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Date of Birth
@@ -170,78 +288,6 @@ function HealthRecordForm() {
             <option value="other">Other</option>
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Student ID
-          </label>
-          <input
-            type="text"
-            name="studentId"
-            value={formData.studentId}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Grade
-          </label>
-          <select
-            name="grade"
-            value={formData.grade}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          >
-            <option value="">Select Grade</option>
-            <option value="k">Kindergarten</option>
-            <option value="1">1st Grade</option>
-            <option value="2">2nd Grade</option>
-            <option value="3">3rd Grade</option>
-            <option value="4">4th Grade</option>
-            <option value="5">5th Grade</option>
-            <option value="6">6th Grade</option>
-            <option value="7">7th Grade</option>
-            <option value="8">8th Grade</option>
-            <option value="9">9th Grade</option>
-            <option value="10">10th Grade</option>
-            <option value="11">11th Grade</option>
-            <option value="12">12th Grade</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Class
-          </label>
-          <input
-            type="text"
-            name="class"
-            value={formData.class}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Student Photo
-        </label>
-        <input
-          type="file"
-          name="photo"
-          onChange={(e) =>
-            setFormData({ ...formData, photo: e.target.files[0] })
-          }
-          className="w-full p-2 border border-gray-300 rounded"
-          accept="image/*"
-        />
-        <p className="mt-1 text-sm text-gray-500">
-          Upload a recent photo of your child.
-        </p>
       </div>
     </div>
   );
@@ -270,34 +316,45 @@ function HealthRecordForm() {
             <option value="O-">O-</option>
             <option value="unknown">Unknown</option>
           </select>
-        </div>
-        <div>
+        </div>        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Height (cm)
           </label>
-          <input
-            type="number"
+          <select
             name="height"
             value={formData.height}
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
-          />
+          >
+            <option value="">Select height</option>
+            {/* Generate height options from 50 to 220 cm */}
+            {Array.from({ length: 171 }, (_, i) => i + 50).map((h) => (
+              <option key={h} value={h.toString()}>
+                {h} cm
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Weight (kg)
           </label>
-          <input
-            type="number"
+          <select
             name="weight"
             value={formData.weight}
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
-          />
+          >
+            <option value="">Select weight</option>
+            {/* Generate weight options from 1 to 150 kg */}
+            {Array.from({ length: 150 }, (_, i) => i + 1).map((w) => (
+              <option key={w} value={w.toString()}>
+                {w} kg
+              </option>
+            ))}
+          </select>
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Allergies
         </label>
@@ -307,6 +364,14 @@ function HealthRecordForm() {
             id="allergy-input"
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="Enter allergy and press Add"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = document.getElementById("allergy-input");
+                handleArrayInput("allergies", input.value);
+                input.value = "";
+              }
+            }}
           />
           <button
             type="button"
@@ -314,6 +379,7 @@ function HealthRecordForm() {
               const input = document.getElementById("allergy-input");
               handleArrayInput("allergies", input.value);
               input.value = "";
+              input.focus();
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
@@ -340,9 +406,7 @@ function HealthRecordForm() {
             <span className="text-sm text-gray-500">No allergies added</span>
           )}
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Chronic Conditions
         </label>
@@ -352,6 +416,14 @@ function HealthRecordForm() {
             id="condition-input"
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="Enter condition and press Add"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = document.getElementById("condition-input");
+                handleArrayInput("chronicConditions", input.value);
+                input.value = "";
+              }
+            }}
           />
           <button
             type="button"
@@ -359,6 +431,7 @@ function HealthRecordForm() {
               const input = document.getElementById("condition-input");
               handleArrayInput("chronicConditions", input.value);
               input.value = "";
+              input.focus();
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
@@ -501,8 +574,7 @@ function HealthRecordForm() {
       </p>
 
       {formData.emergencyContacts.map((contact, index) => (
-        <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
-          <div className="flex justify-between items-center mb-4">
+        <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">          <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-800">
               Contact {index + 1}
             </h3>
@@ -532,8 +604,7 @@ function HealthRecordForm() {
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div>              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Relationship
               </label>
               <select
@@ -554,7 +625,23 @@ function HealthRecordForm() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          {/* Additional field for "Other" relationship */}
+          {contact.relationship === "other" && (
+            <div className="mt-4">              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Relationship details
+              </label>
+              <input
+                type="text"
+                value={contact.otherRelationship}
+                onChange={(e) =>
+                  handleContactChange(index, "otherRelationship", e.target.value)
+                }
+                className="w-full p-2 border border-gray-300 rounded"
+                placeholder="e.g., Family Friend"
+                required
+              />
+            </div>
+          )}          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone Number
