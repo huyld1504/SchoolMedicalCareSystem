@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 function MedicationRequest() {
   // Demo data for students
@@ -8,33 +8,58 @@ function MedicationRequest() {
     { id: 2, name: "Thomas Johnson", grade: "8th Grade", age: 13 },
     { id: 3, name: "Olivia Smith", grade: "3rd Grade", age: 8 },
   ];
+
+  // Get selected student from localStorage if available
+  useEffect(() => {
+    const selectedStudentId = localStorage.getItem('selectedStudentId');
+    if (selectedStudentId) {
+      // Convert to same type as student.id might be (string or number)
+      const studentId = selectedStudentId;
+      setFormData(prev => ({
+        ...prev,
+        studentId
+      }));
+
+      // Clear the localStorage after using it
+      localStorage.removeItem('selectedStudentId');
+      localStorage.removeItem('selectedStudentName');
+      localStorage.removeItem('selectedStudentGrade');
+    }
+  }, []);
   // Form state
   const [formData, setFormData] = useState({
     studentId: "",
-    medicationName: "",
-    medicationType: "prescription",
-    dosage: "",
-    frequency: "",
+    medications: [
+      {
+        id: 1,
+        medicationName: "",
+        medicationType: "prescription",
+        dosage: "",
+        frequency: "",
+        timeOfDay: [],
+        instructions: ""
+      }
+    ],
     startDate: "",
     endDate: "",
-    timeOfDay: [],
-    instructions: "",
     prescriptionImage: null,
     prescriptionDocuments: [],
     allergies: "",
     sideEffects: "",
     isSelfAdministered: false,
     needsRefrigeration: false,
-    pharmacyName: "",
-    pharmacyPhone: "",
-    physicianName: "",
-    physicianPhone: "",
     consentToAdminister: false,
     additionalNotes: "",
   });
-  // Form handling
+
+  const [validationErrors, setValidationErrors] = useState({});  // Form handling
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
+
+    // Clear validation errors when user starts typing
+    if (validationErrors.consent && name === 'consentToAdminister') {
+      setValidationErrors(prev => ({ ...prev, consent: null }));
+    }
 
     if (type === "file") {
       if (name === "prescriptionDocuments") {
@@ -51,8 +76,48 @@ function MedicationRequest() {
           [name]: files[0],
         }));
       }
+    } else if (name.startsWith("medications[")) {
+      // Handle medication fields with format: medications[index].fieldName
+      const regex = /medications\[(\d+)\]\.(.+)/;
+      const matches = name.match(regex);
+
+      if (matches) {
+        const index = parseInt(matches[1]);
+        const fieldName = matches[2];
+
+        setFormData((prev) => {
+          const updatedMedications = [...prev.medications];
+
+          if (fieldName === "timeOfDay") {
+            // Handle checkbox array for timeOfDay
+            const currentTimes = updatedMedications[index].timeOfDay || [];
+            if (checked) {
+              updatedMedications[index] = {
+                ...updatedMedications[index],
+                timeOfDay: [...currentTimes, value]
+              };
+            } else {
+              updatedMedications[index] = {
+                ...updatedMedications[index],
+                timeOfDay: currentTimes.filter(time => time !== value)
+              };
+            }
+          } else {
+            // Handle regular field updates
+            updatedMedications[index] = {
+              ...updatedMedications[index],
+              [fieldName]: type === "checkbox" ? checked : value
+            };
+          }
+
+          return {
+            ...prev,
+            medications: updatedMedications
+          };
+        });
+      }
     } else if (type === "checkbox" && name === "timeOfDay") {
-      // Handle multiple checkbox selections for timeOfDay
+      // Handle multiple checkbox selections for timeOfDay (legacy support)
       const updatedTimes = [...formData.timeOfDay];
       if (checked) {
         updatedTimes.push(value);
@@ -82,7 +147,6 @@ function MedicationRequest() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
-
   // Remove a document from the uploaded list
   const handleRemoveDocument = (indexToRemove) => {
     setFormData((prev) => ({
@@ -92,26 +156,81 @@ function MedicationRequest() {
       ),
     }));
   };
-  const handleSubmit = (e) => {
+
+  // Add a new medication to the list
+  const handleAddMedication = () => {
+    setFormData((prev) => ({
+      ...prev,
+      medications: [
+        ...prev.medications,
+        {
+          id: prev.medications.length + 1,
+          medicationName: "",
+          medicationType: "prescription",
+          dosage: "",
+          frequency: "",
+          timeOfDay: [],
+          instructions: ""
+        }
+      ]
+    }));
+  };
+
+  // Remove a medication from the list
+  const handleRemoveMedication = (indexToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      medications: prev.medications.filter((_, index) => index !== indexToRemove)
+    }));
+  }; const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate the form
+    // Clear previous validation errors
+    setValidationErrors({});
+
+    // Check consent first (most important validation)
+    if (!formData.consentToAdminister) {
+      setValidationErrors({ consent: "Consent is required to submit medication request" });
+      alert("⚠️ CONSENT REQUIRED\n\nYou must provide consent for the school to administer medication to your child. Please check the consent checkbox at the bottom of the form before submitting your request.");
+      // Scroll to consent section
+      const consentElement = document.getElementById('consentToAdminister');
+      if (consentElement) {
+        consentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        consentElement.focus();
+      }
+      return;
+    }
+
+    // Validate other required fields
     if (
       !formData.studentId ||
-      !formData.medicationName ||
-      !formData.dosage ||
-      !formData.frequency ||
       !formData.startDate ||
-      !formData.endDate ||
-      !formData.consentToAdminister
+      !formData.endDate
     ) {
-      alert("Please fill in all required fields.");
+      alert("Please fill in all required fields (Student, Start Date, End Date).");
+      return;
+    }
+
+    // Validate medications
+    if (formData.medications.length === 0) {
+      alert("Please add at least one medication.");
+      return;
+    }
+
+    // Check each medication
+    const invalidMedications = formData.medications.filter(
+      med => !med.medicationName || !med.dosage || med.timeOfDay.length === 0
+    );
+
+    if (invalidMedications.length > 0) {
+      alert("Please complete all required fields for each medication.");
       return;
     }
 
     // For prescription medications, require prescription documentation
+    const hasPrescriptionMeds = formData.medications.some(med => med.medicationType === "prescription");
     if (
-      formData.medicationType === "prescription" &&
+      hasPrescriptionMeds &&
       !formData.prescriptionImage &&
       formData.prescriptionDocuments.length === 0
     ) {
@@ -138,9 +257,24 @@ function MedicationRequest() {
         <p className="text-gray-600">
           Complete this form to request medication administration at school
         </p>
-      </div>
+      </div>      <div className="bg-white rounded-lg shadow p-6">
+        {/* Important Notice */}
+        <div className="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-amber-700">
+                <strong>Important:</strong> Parent/Guardian consent is required to submit this medication request.
+                Please ensure you complete all required fields and provide consent at the bottom of this form.
+              </p>
+            </div>
+          </div>
+        </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSubmit}>
           {/* Student Selection */}
           <div className="mb-6">
@@ -165,175 +299,202 @@ function MedicationRequest() {
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Medication Information */}
-          <h2 className="text-xl font-bold mb-4 border-b pb-2">
-            Medication Information
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="medicationName"
-              >
-                Medication Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="medicationName"
-                name="medicationName"
-                type="text"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="e.g., Ibuprofen, Albuterol"
-                value={formData.medicationName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="dosage"
-              >
-                Dosage <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="dosage"
-                name="dosage"
-                type="text"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="e.g., 200mg, 2 puffs"
-                value={formData.dosage}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Medication Type <span className="text-red-500">*</span>
-            </label>
-            <div className="flex space-x-6">
-              <div className="flex items-center">
-                <input
-                  id="prescription"
-                  name="medicationType"
-                  type="radio"
-                  value="prescription"
-                  checked={formData.medicationType === "prescription"}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <label
-                  htmlFor="prescription"
-                  className="ml-2 block text-gray-700"
-                >
-                  Prescription Medication
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="otc"
-                  name="medicationType"
-                  type="radio"
-                  value="otc"
-                  checked={formData.medicationType === "otc"}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <label htmlFor="otc" className="ml-2 block text-gray-700">
-                  Over-the-Counter (OTC)
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="frequency"
+          </div>          {/* Medication Information */}
+          <div className="flex justify-between items-center border-b pb-2 mb-4">
+            <h2 className="text-xl font-bold">Medication Information</h2>
+            <button
+              type="button"
+              onClick={handleAddMedication}
+              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm flex items-center"
             >
-              Frequency <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="frequency"
-              name="frequency"
-              type="text"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="e.g., Once daily, Every 4-6 hours as needed"
-              value={formData.frequency}
-              onChange={handleChange}
-              required
-            />
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Add Medication
+            </button>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Time of Day for Administration{" "}
-              <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="flex items-center">
-                <input
-                  id="morning"
-                  name="timeOfDay"
-                  type="checkbox"
-                  value="morning"
-                  checked={formData.timeOfDay.includes("morning")}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="morning" className="ml-2 block text-gray-700">
-                  Morning (8-10 AM)
-                </label>
+          {formData.medications.map((medication, index) => (
+            <div key={medication.id} className="mb-8 p-4 border rounded-lg bg-gray-50 relative">
+              {formData.medications.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveMedication(index)}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                  aria-label="Remove medication"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              )}
+
+              <div className="text-lg font-semibold mb-3 text-blue-700">Medication #{index + 1}</div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor={`medications[${index}].medicationName`}
+                  >
+                    Medication Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id={`medications[${index}].medicationName`}
+                    name={`medications[${index}].medicationName`}
+                    type="text"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    placeholder="e.g., Ibuprofen, Albuterol"
+                    value={medication.medicationName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor={`medications[${index}].dosage`}
+                  >
+                    Dosage <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id={`medications[${index}].dosage`}
+                    name={`medications[${index}].dosage`}
+                    type="text"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    placeholder="e.g., 200mg, 2 puffs"
+                    value={medication.dosage}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
-              <div className="flex items-center">
-                <input
-                  id="midday"
-                  name="timeOfDay"
-                  type="checkbox"
-                  value="midday"
-                  checked={formData.timeOfDay.includes("midday")}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="midday" className="ml-2 block text-gray-700">
-                  Midday (11 AM-1 PM)
+
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Medication Type <span className="text-red-500">*</span>
                 </label>
+                <div className="flex space-x-6">
+                  <div className="flex items-center">
+                    <input
+                      id={`medications[${index}].medicationType-prescription`}
+                      name={`medications[${index}].medicationType`}
+                      type="radio"
+                      value="prescription"
+                      checked={medication.medicationType === "prescription"}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <label
+                      htmlFor={`medications[${index}].medicationType-prescription`}
+                      className="ml-2 block text-gray-700"
+                    >
+                      Prescription Medication
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      id={`medications[${index}].medicationType-otc`}
+                      name={`medications[${index}].medicationType`}
+                      type="radio"
+                      value="otc"
+                      checked={medication.medicationType === "otc"}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <label htmlFor={`medications[${index}].medicationType-otc`} className="ml-2 block text-gray-700">
+                      Over-the-Counter (OTC)
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center">
-                <input
-                  id="afternoon"
-                  name="timeOfDay"
-                  type="checkbox"
-                  value="afternoon"
-                  checked={formData.timeOfDay.includes("afternoon")}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="afternoon" className="ml-2 block text-gray-700">
-                  Afternoon (2-4 PM)
+
+
+
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Time of Day for Administration <span className="text-red-500">*</span>
                 </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="flex items-center">
+                    <input
+                      id={`medications[${index}].timeOfDay-morning`}
+                      name={`medications[${index}].timeOfDay`}
+                      type="checkbox"
+                      value="morning"
+                      checked={medication.timeOfDay?.includes("morning")}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor={`medications[${index}].timeOfDay-morning`} className="ml-2 block text-gray-700">
+                      Morning
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      id={`medications[${index}].timeOfDay-midday`}
+                      name={`medications[${index}].timeOfDay`}
+                      type="checkbox"
+                      value="midday"
+                      checked={medication.timeOfDay?.includes("midday")}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor={`medications[${index}].timeOfDay-midday`} className="ml-2 block text-gray-700">
+                      Midday
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      id={`medications[${index}].timeOfDay-afternoon`}
+                      name={`medications[${index}].timeOfDay`}
+                      type="checkbox"
+                      value="afternoon"
+                      checked={medication.timeOfDay?.includes("afternoon")}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor={`medications[${index}].timeOfDay-afternoon`} className="ml-2 block text-gray-700">
+                      Afternoon
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      id={`medications[${index}].timeOfDay-asNeeded`}
+                      name={`medications[${index}].timeOfDay`}
+                      type="checkbox"
+                      value="asNeeded"
+                      checked={medication.timeOfDay?.includes("asNeeded")}
+                      onChange={handleChange}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor={`medications[${index}].timeOfDay-asNeeded`} className="ml-2 block text-gray-700">
+                      As Needed
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center">
-                <input
-                  id="asNeeded"
-                  name="timeOfDay"
-                  type="checkbox"
-                  value="asNeeded"
-                  checked={formData.timeOfDay.includes("asNeeded")}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="asNeeded" className="ml-2 block text-gray-700">
-                  As Needed (PRN)
+
+              <div className="mb-6">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor={`medications[${index}].instructions`}
+                >
+                  Special Instructions
                 </label>
+                <textarea
+                  id={`medications[${index}].instructions`}
+                  name={`medications[${index}].instructions`}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  rows="2"
+                  placeholder="e.g., Take with food, Follow with water"
+                  value={medication.instructions}
+                  onChange={handleChange}
+                ></textarea>
               </div>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          ))}          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
@@ -369,24 +530,6 @@ function MedicationRequest() {
                 required
               />
             </div>
-          </div>
-
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="instructions"
-            >
-              Special Instructions
-            </label>
-            <textarea
-              id="instructions"
-              name="instructions"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              rows="3"
-              placeholder="e.g., Take with food, Follow with water"
-              value={formData.instructions}
-              onChange={handleChange}
-            ></textarea>
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -486,27 +629,9 @@ function MedicationRequest() {
             </p>
           </div>
           {/* Health Information Section */}
-          <h2 className="text-xl font-bold mb-4 border-b pb-2">
-            Health Information
-          </h2>
 
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="allergies"
-            >
-              Known Allergies or Sensitivities
-            </label>
-            <textarea
-              id="allergies"
-              name="allergies"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              rows="2"
-              placeholder="List any known allergies or drug sensitivities"
-              value={formData.allergies}
-              onChange={handleChange}
-            ></textarea>
-          </div>
+
+
 
           <div className="mb-6">
             <label
@@ -523,132 +648,13 @@ function MedicationRequest() {
               placeholder="List any side effects that the school nurse should monitor for"
               value={formData.sideEffects}
               onChange={handleChange}
-            ></textarea>
-          </div>
-
-          {/* Contact Information */}
-          <h2 className="text-xl font-bold mb-4 border-b pb-2">
-            Medical Contact Information
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="physicianName"
-              >
-                Prescribing Physician
-              </label>
-              <input
-                id="physicianName"
-                name="physicianName"
-                type="text"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Dr. Name"
-                value={formData.physicianName}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="physicianPhone"
-              >
-                Physician Phone
-              </label>
-              <input
-                id="physicianPhone"
-                name="physicianPhone"
-                type="tel"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="(555) 123-4567"
-                value={formData.physicianPhone}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="pharmacyName"
-              >
-                Pharmacy Name
-              </label>
-              <input
-                id="pharmacyName"
-                name="pharmacyName"
-                type="text"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="Pharmacy name"
-                value={formData.pharmacyName}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="pharmacyPhone"
-              >
-                Pharmacy Phone
-              </label>
-              <input
-                id="pharmacyPhone"
-                name="pharmacyPhone"
-                type="tel"
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="(555) 123-4567"
-                value={formData.pharmacyPhone}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+            ></textarea>          </div>
 
           {/* Additional Information */}
-          <h2 className="text-xl font-bold mb-4 border-b pb-2">
-            Additional Information
-          </h2>
 
-          <div className="mb-6">
-            <div className="flex items-center">
-              <input
-                id="isSelfAdministered"
-                name="isSelfAdministered"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={formData.isSelfAdministered}
-                onChange={handleChange}
-              />
-              <label
-                className="ml-2 block text-gray-700"
-                htmlFor="isSelfAdministered"
-              >
-                Student is capable of self-administering this medication
-              </label>
-            </div>
-          </div>
 
-          <div className="mb-6">
-            <div className="flex items-center">
-              <input
-                id="needsRefrigeration"
-                name="needsRefrigeration"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={formData.needsRefrigeration}
-                onChange={handleChange}
-              />
-              <label
-                className="ml-2 block text-gray-700"
-                htmlFor="needsRefrigeration"
-              >
-                This medication requires refrigeration
-              </label>
-            </div>
-          </div>
+
+
 
           <div className="mb-6">
             <label
@@ -666,34 +672,53 @@ function MedicationRequest() {
               value={formData.additionalNotes}
               onChange={handleChange}
             ></textarea>
-          </div>
-
-          {/* Consent */}
-          <div className="mb-6 bg-gray-50 p-4 border rounded">
-            <div className="flex items-center">
-              <input
-                id="consentToAdminister"
-                name="consentToAdminister"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={formData.consentToAdminister}
-                onChange={handleChange}
-                required
-              />
-              <label
-                className="ml-2 block text-gray-700"
-                htmlFor="consentToAdminister"
-              >
-                <span className="font-medium">I consent</span> for the school
-                nurse or designated personnel to administer the medication as
-                directed above. I understand that the school administrator may
-                designate other personnel to administer the medication as
-                needed.
-              </label>
+          </div>          {/* Consent */}
+          <div className="mb-6 bg-red-50 border-2 border-red-200 p-6 rounded-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-lg font-bold text-red-800 mb-3">
+                  REQUIRED: Parent/Guardian Consent
+                </h3>
+                <div className="flex items-start">
+                  <input
+                    id="consentToAdminister"
+                    name="consentToAdminister"
+                    type="checkbox"
+                    className="h-5 w-5 text-red-600 focus:ring-red-500 border-red-300 rounded mt-1"
+                    checked={formData.consentToAdminister}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label
+                    className="ml-3 block text-gray-800 leading-relaxed"
+                    htmlFor="consentToAdminister"
+                  >
+                    <span className="font-bold text-red-800">I hereby give my consent</span> for the school
+                    nurse or designated personnel to administer the medication(s) listed above to my child as
+                    directed. I understand that:
+                    <ul className="list-disc list-inside mt-2 ml-4 space-y-1 text-sm text-gray-700">
+                      <li>The school administrator may designate other qualified personnel to administer medication</li>
+                      <li>All medication must be provided in original, labeled containers</li>
+                      <li>I am responsible for ensuring adequate medication supply</li>
+                      <li>This consent is valid for the dates specified above</li>
+                    </ul>
+                  </label>
+                </div>
+                {!formData.consentToAdminister && (
+                  <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">
+                    <p className="text-sm font-medium text-red-800">
+                      ⚠️ Consent is required to submit this medication request. Please check the box above to provide your consent.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-
-          {/* Submit Buttons */}
+          </div>          {/* Submit Buttons */}
           <div className="flex items-center justify-between mt-8">
             <Link
               to="/parent/medications"
@@ -701,12 +726,24 @@ function MedicationRequest() {
             >
               Cancel
             </Link>
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded transition duration-150 ease-in-out"
-            >
-              Submit Request
-            </button>
+            <div className="flex flex-col items-end">
+              <button
+                type="submit"
+                disabled={!formData.consentToAdminister}
+                className={`font-medium py-2 px-6 rounded transition duration-150 ease-in-out ${formData.consentToAdminister
+                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                title={!formData.consentToAdminister ? "Please provide consent before submitting" : "Submit medication request"}
+              >
+                Submit Request
+              </button>
+              {!formData.consentToAdminister && (
+                <p className="text-xs text-red-600 mt-1 font-medium">
+                  Consent required to submit
+                </p>
+              )}
+            </div>
           </div>
         </form>
       </div>
