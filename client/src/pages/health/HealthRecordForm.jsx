@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 function HealthRecordForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(id ? true : false);
+  const [isEditMode, setIsEditMode] = useState(!!id);
   const [activeTab, setActiveTab] = useState(1);
-  const [previewImage, setPreviewImage] = useState(null);  const [formData, setFormData] = useState({
+  const [previewImage, setPreviewImage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
     // Student Personal Information
     firstName: "", // Using firstName field for full name
     dateOfBirth: "",
@@ -45,6 +52,178 @@ function HealthRecordForm() {
     consentMedicationAdmin: false,
     consentInformationSharing: false,
   });
+
+  // Fetch student health record data for editing
+  useEffect(() => {
+    if (isEditMode) {
+      // Simulate API fetch for health record data
+      // In a real application, you would fetch from your backend
+      const mockStudentRecords = {
+        1: {
+          // Student Personal Information
+          firstName: "Emma Johnson",
+          dateOfBirth: "2013-05-10",
+          gender: "female",
+          grade: "5th Grade",
+          class: "5A",
+          studentId: "STU-2023-001",
+          photoUrl: null,
+  
+          // Medical Background
+          bloodType: "A+",
+          height: "145",
+          weight: "38",
+          allergies: ["Peanuts", "Dust mites"],
+          chronicConditions: ["Asthma"],
+  
+          // Vision and Hearing
+          visionLeft: "20/25",
+          visionRight: "20/25",
+          wearGlasses: true,
+          hearingLeft: "normal",
+          hearingRight: "normal",
+          hearingAid: false,
+  
+          // Vaccination History
+          vaccinations: ["MMR", "Tetanus", "Polio", "Hepatitis B"],
+  
+          // Medical Treatment History
+          treatments: ["Asthma medication - prescribed Jan 2023"],
+  
+          // Emergency Contacts
+          emergencyContacts: [
+            {
+              name: "Michael Johnson",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-123-4567",
+              email: "michael.johnson@example.com",
+            },
+            {
+              name: "Susan Johnson",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-987-6543",
+              email: "susan.johnson@example.com",
+            },
+          ],
+  
+          // Medical Coverage
+          insuranceProvider: "HealthPlus Insurance",
+          insuranceNumber: "HP-98765432",
+          familyDoctor: "Dr. Sarah Williams",
+          doctorPhone: "555-222-3333",
+  
+          // Consent
+          consentEmergencyTreatment: true,
+          consentMedicationAdmin: true,
+          consentInformationSharing: true,
+        },
+        2: {
+          firstName: "Thomas Johnson",
+          dateOfBirth: "2010-03-15",
+          gender: "male",
+          grade: "8th Grade",
+          class: "8B",
+          studentId: "STU-2023-002",
+          photoUrl: null,
+          bloodType: "O+",
+          height: "162",
+          weight: "52",
+          allergies: ["Shellfish"],
+          chronicConditions: ["ADHD"],
+          visionLeft: "20/20",
+          visionRight: "20/20",
+          wearGlasses: false,
+          hearingLeft: "normal",
+          hearingRight: "normal",
+          hearingAid: false,
+          vaccinations: ["MMR", "Tetanus", "Polio", "Hepatitis B", "HPV"],
+          treatments: ["ADHD medication - prescribed Sep 2022"],
+          emergencyContacts: [
+            {
+              name: "Michael Johnson",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-123-4567",
+              email: "michael.johnson@example.com",
+            },
+          ],
+          insuranceProvider: "HealthPlus Insurance",
+          insuranceNumber: "HP-98765433",
+          familyDoctor: "Dr. Sarah Williams",
+          doctorPhone: "555-222-3333",
+          consentEmergencyTreatment: true,
+          consentMedicationAdmin: true,
+          consentInformationSharing: true,
+        },
+        3: {
+          firstName: "Olivia Smith",
+          dateOfBirth: "2015-07-20",
+          gender: "female",
+          grade: "3rd Grade",
+          class: "3C",
+          studentId: "STU-2023-003",
+          photoUrl: null,
+          bloodType: "B-",
+          height: "135",
+          weight: "30",
+          allergies: ["Bee stings", "Penicillin"],
+          chronicConditions: [],
+          visionLeft: "20/30",
+          visionRight: "20/30",
+          wearGlasses: true,
+          hearingLeft: "mild_loss",
+          hearingRight: "normal",
+          hearingAid: false,
+          vaccinations: ["MMR", "Tetanus", "Polio"],
+          treatments: ["EpiPen for bee sting allergy"],
+          emergencyContacts: [
+            {
+              name: "James Smith",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-444-5555",
+              email: "james.smith@example.com",
+            },
+            {
+              name: "Mary Smith",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-666-7777",
+              email: "mary.smith@example.com",
+            },
+            {
+              name: "Robert Smith",
+              relationship: "grandparent",
+              otherRelationship: "",
+              phone: "555-888-9999",
+              email: "robert.smith@example.com",
+            },
+          ],
+          insuranceProvider: "MediCare Plus",
+          insuranceNumber: "MC-12345678",
+          familyDoctor: "Dr. John Davis",
+          doctorPhone: "555-111-2222",
+          consentEmergencyTreatment: true,
+          consentMedicationAdmin: true,
+          consentInformationSharing: false,
+        },
+      };
+
+      setTimeout(() => {
+        const studentRecord = mockStudentRecords[id];
+        if (studentRecord) {
+          // Update form with student record data
+          setFormData({
+            ...formData,
+            ...studentRecord
+          });
+        }
+        setLoading(false);
+      }, 500);
+    }
+  }, [id, isEditMode]);
 
   // Handle form field changes
   const handleInputChange = (e) => {
@@ -102,63 +281,30 @@ function HealthRecordForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault();
+    
+    setIsSubmitting(true);
     console.log("Form submitted:", formData);
+    
     // In a real app, you would send this data to your API
-    alert("Health record submitted successfully!");
+    // Simulate API call with setTimeout
+    setTimeout(() => {
+      // Prepare success message based on mode
+      const message = isEditMode 
+        ? "Health record updated successfully!"
+        : "Health record created successfully!";
+      
+      alert(message);
+      // Redirect to the list page after submission
+      navigate('/parent/health-records');
+      setIsSubmitting(false);
+    }, 1000);
   };
   // Tab content components
   const renderPersonalInfo = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
-          </label>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-            placeholder="Enter full name"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Student ID
-          </label>
-          <input
-            type="text"
-            name="studentId"
-            value={formData.studentId}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-            placeholder="Enter studentID"
-            
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Class
-          </label>
-          <input
-            type="text"
-            name="class"
-            value={formData.class}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            placeholder="Enter class"
-          />
-        </div>      </div>
-      
-      <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <label className="block text-sm font-medium text-gray-700 mb-3">
           Student Photo
         </label>
@@ -256,6 +402,53 @@ function HealthRecordForm() {
           </div>
         </div>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+            placeholder="Enter full name"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Student ID
+          </label>
+          <input
+            type="text"
+            name="studentId"
+            value={formData.studentId}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+            placeholder="Enter studentID"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Class
+          </label>
+          <input
+            type="text"
+            name="class"
+            value={formData.class}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Enter class"
+          />
+        </div>      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -802,11 +995,12 @@ function HealthRecordForm() {
     { id: 4, name: "Emergency Contacts", icon: "phone" },
     { id: 5, name: "Consents", icon: "check-circle" },
   ];
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Student Health Record</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {isEditMode ? "Edit Health Record" : "New Health Record"}
+        </h1>
         <p className="text-gray-600">
           Please complete all sections of this health record form. Information
           provided will be kept confidential and used only for your child's
@@ -814,67 +1008,64 @@ function HealthRecordForm() {
         </p>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
-        <div className="overflow-x-auto">
-          <nav className="flex border-b border-gray-200">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  px-4 py-4 text-center flex-1 whitespace-nowrap
-                  ${
-                    activeTab === tab.id
-                      ? "border-b-2 border-blue-500 font-medium text-blue-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }
-                `}
-              >
-                {tab.name}
-              </button>
-            ))}
-          </nav>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Tabs Navigation */}
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === tab.id
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+          </div>
 
-        <div className="p-6">
-          <form onSubmit={handleSubmit}>
+          {/* Tab Content */}
+          <div className="mt-8">
             {activeTab === 1 && renderPersonalInfo()}
             {activeTab === 2 && renderMedicalBackground()}
             {activeTab === 3 && renderVisionHearing()}
             {activeTab === 4 && renderEmergencyContacts()}
             {activeTab === 5 && renderConsents()}
+          </div>
 
-            <div className="mt-8 flex justify-between">
-              <button
-                type="button"
-                onClick={() => activeTab > 1 && setActiveTab(activeTab - 1)}
-                className={`px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 ${
-                  activeTab === 1 ? "invisible" : ""
-                }`}
-              >
-                Previous
-              </button>
-
-              {activeTab < 5 ? (
-                <button
-                  type="button"
-                  onClick={() => activeTab < 5 && setActiveTab(activeTab + 1)}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Next
-                </button>
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <span>Saving...</span>
               ) : (
-                <button
-                  type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
-                >
-                  Submit Health Record
-                </button>
+                <span>{isEditMode ? "Update" : "Save"}</span>
               )}
-            </div>
-          </form>
-        </div>
-      </div>
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
