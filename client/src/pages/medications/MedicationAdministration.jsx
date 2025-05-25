@@ -13,6 +13,9 @@ function MedicationAdministration() {
       instructions: "For headache or fever above 100F",
       time: "12:00 PM",
       status: "Pending",
+      consentToAdminister: true,
+      startDate: "2023-05-01",
+      endDate: "2023-06-01",
       history: [
         {
           date: "2023-05-10",
@@ -39,6 +42,9 @@ function MedicationAdministration() {
       instructions: "For asthma symptoms. May take before exercise.",
       time: "10:30 AM",
       status: "Pending",
+      consentToAdminister: true,
+      startDate: "2023-05-01",
+      endDate: "2023-08-31",
       history: [
         {
           date: "2023-05-10",
@@ -70,6 +76,9 @@ function MedicationAdministration() {
       instructions: "For seasonal allergies. Take in the morning.",
       time: "09:00 AM",
       status: "Administered",
+      consentToAdminister: true,
+      startDate: "2023-04-15",
+      endDate: "2023-06-15",
       history: [
         { date: "2023-05-11", time: "09:05 AM", administered: true, notes: "" },
         {
@@ -91,6 +100,9 @@ function MedicationAdministration() {
       instructions: "Take with food.",
       time: "12:00 PM",
       status: "Pending",
+      consentToAdminister: false,
+      startDate: "2023-05-01",
+      endDate: "2023-12-31",
       history: [
         { date: "2023-05-10", time: "12:01 PM", administered: true, notes: "" },
         { date: "2023-05-09", time: "12:00 PM", administered: true, notes: "" },
@@ -203,31 +215,28 @@ function MedicationAdministration() {
         </div>
         <div className="flex border-b">
           <button
-            className={`py-3 px-6 font-medium text-sm focus:outline-none ${
-              selectedTab === "pending"
+            className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "pending"
                 ? "border-b-2 border-blue-500 text-blue-600"
                 : "text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
             onClick={() => setSelectedTab("pending")}
           >
             Pending Today
           </button>
           <button
-            className={`py-3 px-6 font-medium text-sm focus:outline-none ${
-              selectedTab === "administered"
+            className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "administered"
                 ? "border-b-2 border-blue-500 text-blue-600"
                 : "text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
             onClick={() => setSelectedTab("administered")}
           >
             Administered Today
           </button>
           <button
-            className={`py-3 px-6 font-medium text-sm focus:outline-none ${
-              selectedTab === "all"
+            className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "all"
                 ? "border-b-2 border-blue-500 text-blue-600"
                 : "text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
             onClick={() => setSelectedTab("all")}
           >
             All Medications
@@ -245,8 +254,8 @@ function MedicationAdministration() {
               {selectedTab === "pending"
                 ? "to Administer"
                 : selectedTab === "administered"
-                ? "Administered"
-                : ""}
+                  ? "Administered"
+                  : ""}
             </h2>
             <p className="text-sm text-gray-500">
               {formatDate(currentDate)} ({filteredMedications.length}{" "}
@@ -258,20 +267,18 @@ function MedicationAdministration() {
               filteredMedications.map((med) => (
                 <button
                   key={med.id}
-                  className={`w-full text-left p-4 hover:bg-gray-50 focus:outline-none ${
-                    selectedMedicationId === med.id ? "bg-blue-50" : ""
-                  }`}
+                  className={`w-full text-left p-4 hover:bg-gray-50 focus:outline-none ${selectedMedicationId === med.id ? "bg-blue-50" : ""
+                    }`}
                   onClick={() => setSelectedMedicationId(med.id)}
                 >
                   <div className="flex items-center">
                     <span
-                      className={`w-3 h-3 rounded-full mr-3 ${
-                        med.status === "Administered"
+                      className={`w-3 h-3 rounded-full mr-3 ${med.status === "Administered"
                           ? "bg-green-500"
                           : med.status === "Skipped"
-                          ? "bg-yellow-500"
-                          : "bg-blue-500"
-                      }`}
+                            ? "bg-yellow-500"
+                            : "bg-blue-500"
+                        }`}
                     ></span>
                     <div>
                       <h3 className="font-medium">{med.studentName}</h3>
@@ -306,13 +313,12 @@ function MedicationAdministration() {
                     </p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      getSelectedMedication().status === "Administered"
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getSelectedMedication().status === "Administered"
                         ? "bg-green-100 text-green-800"
                         : getSelectedMedication().status === "Skipped"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-blue-100 text-blue-800"
-                    }`}
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
                   >
                     {getSelectedMedication().status}
                   </span>
@@ -353,8 +359,40 @@ function MedicationAdministration() {
                       <p className="text-sm font-medium text-gray-500">
                         Instructions
                       </p>
+                      <p className="font-medium">                        {getSelectedMedication().instructions}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">
+                        Consent to Administer
+                      </p>
                       <p className="font-medium">
-                        {getSelectedMedication().instructions}
+                        <span
+                          className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getSelectedMedication().consentToAdminister
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                            }`}
+                        >
+                          {getSelectedMedication().consentToAdminister
+                            ? "Consent Provided"
+                            : "No Consent"}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">
+                        Start Date
+                      </p>
+                      <p className="font-medium">
+                        {getSelectedMedication().startDate}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">
+                        End Date
+                      </p>
+                      <p className="font-medium">
+                        {getSelectedMedication().endDate}
                       </p>
                     </div>
                   </div>
@@ -442,11 +480,10 @@ function MedicationAdministration() {
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    record.administered
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${record.administered
                                       ? "bg-green-100 text-green-800"
                                       : "bg-yellow-100 text-yellow-800"
-                                  }`}
+                                    }`}
                                 >
                                   {record.administered
                                     ? "Administered"

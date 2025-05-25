@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 function ParentDashboard() {
   const { currentUser } = useAuth();
@@ -77,41 +78,59 @@ function ParentDashboard() {
           <h2 className="text-xl font-semibold mb-4">My Children</h2>
           <div className="space-y-4">
             {children.map((child) => (
-              <div key={child.id} className="bg-white p-4 rounded-md shadow-sm">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-medium">{child.name}</h3>
-                    <p className="text-sm text-gray-600">{child.grade}</p>
-                  </div>
-                  <div
-                    className={`px-3 py-1 rounded-full text-xs ${
-                      child.healthStatus === "Good"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {child.healthStatus}
-                  </div>
+              <div key={child.id} className="bg-white p-4 rounded-md shadow-sm">                <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-medium">{child.name}</h3>
+                  <p className="text-sm text-gray-600">{child.grade}</p>
                 </div>
-                {child.alerts > 0 && (
-                  <div className="mt-2 flex items-center text-red-600 text-sm">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
+                <div
+                  className={`px-3 py-1 rounded-full text-xs ${child.healthStatus === "Good"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                    }`}
+                >
+                  {child.healthStatus}
+                </div>
+              </div>
+                <div className="mt-2 flex items-center justify-between">
+                  {child.alerts > 0 && (
+                    <div className="flex items-center text-red-600 text-sm">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      {child.alerts} action{child.alerts > 1 ? "s" : ""} needed
+                    </div>
+                  )}
+                  <Link
+                    to={{
+                      pathname: "/parent/medications/request",
+                      state: { selectedStudentId: child.id }
+                    }}
+                    className="text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded flex items-center"
+                    onClick={(e) => {
+                      // Store the selected student in localStorage for cross-page state
+                      localStorage.setItem('selectedStudentId', child.id);
+                      localStorage.setItem('selectedStudentName', child.name);
+                      localStorage.setItem('selectedStudentGrade', child.grade);
+                    }}
+                  >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    {child.alerts} action{child.alerts > 1 ? "s" : ""} needed
-                  </div>
-                )}
+                    Add Medication
+                  </Link>
+                </div>
               </div>
             ))}
             <a
@@ -136,13 +155,12 @@ function ParentDashboard() {
                 </div>
                 <p className="mt-1">{activity.description}</p>
                 <span
-                  className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${
-                    activity.status === "Completed"
+                  className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${activity.status === "Completed"
                       ? "bg-green-100 text-green-800"
                       : activity.status === "Action Needed"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
                 >
                   {activity.status}
                 </span>
