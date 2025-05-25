@@ -403,12 +403,20 @@ const nurseRoutes = [
     ),
   },
   {
-    path: "/nurse/students/search",
+    path: "/nurse/students/:id/record",
     element: (
+      <NurseLayout>
+        <HealthRecordView />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/students/search",
+    element:
       <NurseLayout>
         <StudentSearch />
       </NurseLayout>
-    ),
+    ,
   },
   // Activities and Calendar
   {

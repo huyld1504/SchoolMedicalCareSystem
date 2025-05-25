@@ -304,8 +304,7 @@ function HealthRecordView() {
     <div className="max-w-4xl mx-auto py-8 px-4 print:p-0">
       <div className="flex justify-between items-center mb-6 print:mb-8">
         <h1 className="text-3xl font-bold">Health Record</h1>
-        <div className="space-x-4 print:hidden">
-          <button
+        <div className="space-x-4 print:hidden">          <button
             onClick={handlePrint}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
@@ -326,12 +325,6 @@ function HealthRecordView() {
               </svg>
               Print Record
             </span>
-          </button>
-          <button
-            onClick={() => navigate(`/health-records/${id}/edit`)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Edit Record
           </button>
           <button
             onClick={() => navigate(-1)}

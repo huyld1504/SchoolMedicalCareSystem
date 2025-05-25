@@ -5,6 +5,7 @@ function StudentRecords() {
     const [students] = useState([
         {
             id: 1,
+            studentId: "ST2025001",
             name: "John Doe",
             grade: "10",
             age: 16,
@@ -16,6 +17,7 @@ function StudentRecords() {
         },
         {
             id: 2,
+            studentId: "ST2025002", 
             name: "Jane Smith",
             grade: "11",
             age: 17,
@@ -27,6 +29,7 @@ function StudentRecords() {
         },
         {
             id: 3,
+            studentId: "ST2025003",
             name: "Mike Johnson",
             grade: "9",
             age: 15,
@@ -38,6 +41,7 @@ function StudentRecords() {
         },
         {
             id: 4,
+            studentId: "ST2025004",
             name: "Emily Brown",
             grade: "12",
             age: 18,
@@ -49,12 +53,9 @@ function StudentRecords() {
         }
     ]);
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
-    
-    const filteredStudents = students.filter(student => 
+    const [searchTerm, setSearchTerm] = useState('');      const filteredStudents = students.filter(student => 
         student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.grade.toString().includes(searchTerm)
+        student.studentId.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -62,10 +63,9 @@ function StudentRecords() {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Student Health Records</h1>
                 <div className="flex gap-4">
-                    <div className="relative">
-                        <input
+                    <div className="relative">                        <input
                             type="text"
-                            placeholder="Search by name, class, or grade..."
+                            placeholder="Search by name or studentID"
                             className="w-72 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -94,10 +94,10 @@ function StudentRecords() {
                 {filteredStudents.length > 0 ? (
                     filteredStudents.map(student => (
                         <div key={student.id} className="bg-white shadow rounded-lg p-4">
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-start">
                                 <div>
-                                    <h2 className="text-xl font-semibold">{student.name}</h2>
-                                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 mt-2 text-sm">
+                                    <h2 className="text-xl font-semibold">{student.name}</h2>                                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 mt-2 text-sm">
+                                        <p className="text-gray-600">Student ID: <span className="text-gray-900">{student.studentId}</span></p>
                                         <p className="text-gray-600">Grade: <span className="text-gray-900">{student.grade}</span></p>
                                         <p className="text-gray-600">Class: <span className="text-gray-900">{student.class}</span></p>
                                         <p className="text-gray-600">Age: <span className="text-gray-900">{student.age}</span></p>
@@ -105,22 +105,30 @@ function StudentRecords() {
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
-                                    <button
-                                        className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-150 flex items-center"
-                                        onClick={() => navigate(`/health-records/${student.id}/view`)}
-                                    >
-                                        <div className="mr-4 p-2 bg-blue-100 rounded-full">
-                                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
+                                    {/* View Record Button */}
+                                    <div className="relative group">
+                                        <button                                            className="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-150 flex items-center group-hover:ring-2 group-hover:ring-blue-300"
+                                            onClick={() => navigate(`/nurse/students/${student.id}/record`)}
+                                        >
+                                            <div className="mr-4 p-2 bg-blue-100 rounded-full">
+                                                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <div className="font-medium">View Record</div>
+                                                <div className="text-sm text-gray-500">Last updated: {new Date(student.lastCheckup).toLocaleDateString()}</div>
+                                            </div>
+                                        </button>
+                                        {/* Tooltip */}
+                                        <div className="absolute hidden group-hover:block -top-12 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap">
+                                            Click to view full health record
+                                            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
                                         </div>
-                                        <div>
-                                            <div className="font-medium">View Record</div>
-                                            <div className="text-sm text-gray-500">See health details</div>
-                                        </div>
-                                    </button>
+                                    </div>
 
+                                    {/* Plan Health Screening Button */}
                                     <button
                                         className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition duration-150 flex items-center"
                                         onClick={() => alert(`Open health screening for ${student.name}`)}
@@ -152,7 +160,7 @@ function StudentRecords() {
                             </div>
                             
                             <div className="mt-2">
-                                <p className="text-gray-600 text-sm">Last Checkup: <span className="text-gray-900">{student.lastCheckup}</span></p>
+                                <p className="text-gray-600 text-sm">Last Checkup: <span className="text-gray-900">{new Date(student.lastCheckup).toLocaleDateString()}</span></p>
                                 <p className="text-gray-600 text-sm">Emergency Contact: <span className="text-gray-900">{student.emergencyContact}</span></p>
                             </div>
                         </div>
