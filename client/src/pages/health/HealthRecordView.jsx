@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function HealthRecordView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
   const [recordData, setRecordData] = useState({
@@ -303,8 +305,16 @@ function HealthRecordView() {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 print:p-0">
       <div className="flex justify-between items-center mb-6 print:mb-8">
-        <h1 className="text-3xl font-bold">Health Record</h1>
-        <div className="space-x-4 print:hidden">          <button
+        <h1 className="text-3xl font-bold">Health Record</h1>        <div className="space-x-4 print:hidden">
+          {currentUser?.role === 'parent' && (
+            <button
+              onClick={() => navigate(`/parent/health-records/${id}/edit`)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Edit Record
+            </button>
+          )}
+          <button
             onClick={handlePrint}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
