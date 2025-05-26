@@ -225,6 +225,11 @@ const ParentResources = () => (
   </div>
 );
 
+// Reports Components
+import AdminMedicationReports from "./pages/admin/reports/MedicationReports";
+import VaccinationReports from "./pages/admin/reports/VaccinationReports"; 
+import HealthReports from "./pages/admin/reports/HealthReports";
+
 // Define routes accessible by different user roles
 const adminRoutes = [
   {
@@ -445,13 +450,12 @@ const nurseRoutes = [
         <NurseDashboard />
       </NurseLayout>
     ),
-  },
-  // Student Records
+  },  // Student Records - Fixed order to avoid conflicts
   {
-    path: "/nurse/students",
+    path: "/nurse/students/search",
     element: (
       <NurseLayout>
-        <StudentRecords />
+        <StudentSearch />
       </NurseLayout>
     ),
   },
@@ -464,12 +468,12 @@ const nurseRoutes = [
     ),
   },
   {
-    path: "/nurse/students/search",
-    element:
+    path: "/nurse/students",
+    element: (
       <NurseLayout>
-        <StudentSearch />
+        <StudentRecords />
       </NurseLayout>
-    ,
+    ),
   },
   // Activities and Calendar
   {
