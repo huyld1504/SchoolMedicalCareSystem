@@ -15,118 +15,163 @@ export const getStudentHealthRecords = (studentId = null) => {
         id: "HR10045",
         studentId: "S10045",
         studentName: "Emma Johnson",
-        birthDate: "2013-07-15",
+        dateOfBirth: "2013-07-15",
         bloodType: "A+",
+        height: "145",
+        weight: "38",
         allergies: ["Peanuts", "Dust mites"],
         chronicConditions: ["Occasional migraine headaches"],
+        visionLeft: "20/20",
+        visionRight: "20/20",
+        wearGlasses: false,
+        hearingLeft: "normal",
+        hearingRight: "normal",
+        hearingAid: false,
         vaccinations: [
-          { name: "MMR", date: "2014-08-20" },
-          { name: "DTaP", date: "2014-08-20" },
-          { name: "Hepatitis B", date: "2013-09-15" },
-          { name: "Influenza", date: "2023-10-10" }
+          { name: "MMR", date: "2014-08-20", provider: "Dr. Sarah Johnson" },
+          { name: "DTaP", date: "2014-08-20", provider: "Dr. Sarah Johnson" },
+          { name: "Hepatitis B", date: "2013-09-15", provider: "Dr. Sarah Johnson" },
+          { name: "Influenza", date: "2023-10-10", provider: "Dr. Michael Chen" }
         ],
         medications: [
           { name: "Ibuprofen", dosage: "200mg", frequency: "As needed", condition: "Headache" }
         ],
         visits: [
-          { date: "2023-09-05", reason: "Headache", treatment: "Ibuprofen administered, rested 30 min" },
-          { date: "2023-10-12", reason: "Seasonal allergies", treatment: "Given antihistamine" }
-        ]
+          { date: "2023-09-05", reason: "Headache", treatment: "Ibuprofen administered, rested 30 min", provider: "School Nurse" },
+          { date: "2023-10-12", reason: "Seasonal allergies", treatment: "Given antihistamine", provider: "School Nurse" }
+        ],
+        emergencyContacts: [
+          {
+            name: "Mary Johnson",
+            relationship: "mother",
+            phone: "555-0123",
+            email: "mary.johnson@email.com"
+          },
+          {
+            name: "Robert Johnson",
+            relationship: "father",
+            phone: "555-0124",
+            email: "robert.johnson@email.com"
+          }
+        ],
+        insuranceProvider: "HealthFirst",
+        insuranceNumber: "HF123456",
+        familyDoctor: "Dr. Sarah Johnson",
+        doctorPhone: "555-9876",
+        consentEmergencyTreatment: true,
+        consentMedicationAdmin: true,
+        consentInformationSharing: true
       },
       {
         id: "HR10046",
         studentId: "S10046",
         studentName: "Thomas Johnson",
-        birthDate: "2010-03-22",
+        dateOfBirth: "2010-03-22",
         bloodType: "O+",
+        height: "165",
+        weight: "55",
         allergies: ["None"],
         chronicConditions: ["Asthma"],
+        visionLeft: "20/20",
+        visionRight: "20/20",
+        wearGlasses: true,
+        hearingLeft: "normal",
+        hearingRight: "normal",
+        hearingAid: false,
         vaccinations: [
-          { name: "MMR", date: "2011-04-10" },
-          { name: "DTaP", date: "2011-04-10" },
-          { name: "Hepatitis B", date: "2010-04-22" },
-          { name: "Influenza", date: "2023-10-10" }
+          { name: "MMR", date: "2011-04-10", provider: "Dr. James Wilson" },
+          { name: "DTaP", date: "2011-04-10", provider: "Dr. James Wilson" },
+          { name: "Hepatitis B", date: "2010-04-22", provider: "Dr. James Wilson" },
+          { name: "Influenza", date: "2023-10-10", provider: "Dr. Michael Chen" }
         ],
         medications: [
           { name: "Albuterol", dosage: "90mcg, 2 puffs", frequency: "As needed before exercise", condition: "Asthma" }
         ],
         visits: [
-          { date: "2023-09-15", reason: "Asthma check", treatment: "No issues, advised to continue current regimen" },
-          { date: "2023-10-05", reason: "Wheezing after PE", treatment: "Albuterol administered, symptoms improved" }
-        ]
+          { date: "2023-09-15", reason: "Asthma check", treatment: "No issues, advised to continue current regimen", provider: "Dr. James Wilson" },
+          { date: "2023-10-05", reason: "Wheezing after PE", treatment: "Albuterol administered, symptoms improved", provider: "School Nurse" }
+        ],
+        emergencyContacts: [
+          {
+            name: "Sarah Johnson",
+            relationship: "mother",
+            phone: "555-0125",
+            email: "sarah.johnson@email.com"
+          },
+          {
+            name: "David Johnson",
+            relationship: "father",
+            phone: "555-0126",
+            email: "david.johnson@email.com"
+          }
+        ],
+        insuranceProvider: "BlueCross",
+        insuranceNumber: "BC789012",
+        familyDoctor: "Dr. James Wilson",
+        doctorPhone: "555-8765",
+        consentEmergencyTreatment: true,
+        consentMedicationAdmin: true,
+        consentInformationSharing: true
       },
       {
         id: "HR10058",
         studentId: "S10058",
         studentName: "Olivia Smith",
-        birthDate: "2015-11-10",
+        dateOfBirth: "2015-11-10",
         bloodType: "B-",
+        height: "120",
+        weight: "25",
         allergies: ["Pollen", "Cat dander"],
         chronicConditions: ["Seasonal allergies"],
+        visionLeft: "20/25",
+        visionRight: "20/25",
+        wearGlasses: true,
+        hearingLeft: "normal",
+        hearingRight: "normal",
+        hearingAid: false,
         vaccinations: [
-          { name: "MMR", date: "2016-12-15" },
-          { name: "DTaP", date: "2016-12-15" },
-          { name: "Hepatitis B", date: "2015-12-10" },
-          { name: "Influenza", date: "2023-10-10" }
+          { name: "MMR", date: "2016-12-15", provider: "Dr. Lisa Chen" },
+          { name: "DTaP", date: "2016-12-15", provider: "Dr. Lisa Chen" },
+          { name: "Hepatitis B", date: "2015-12-10", provider: "Dr. Lisa Chen" },
+          { name: "Influenza", date: "2023-10-10", provider: "Dr. Michael Chen" }
         ],
         medications: [
           { name: "Cetirizine", dosage: "5mg", frequency: "Once daily", condition: "Seasonal allergies" }
         ],
         visits: [
-          { date: "2023-09-20", reason: "Runny nose", treatment: "Recommended increased fluid intake" },
-          { date: "2023-10-18", reason: "Allergy symptoms", treatment: "Confirmed medication administration" }
-        ]
-      },
-      {
-        id: "HR10062",
-        studentId: "S10062",
-        studentName: "Michael Brown",
-        birthDate: "2011-05-18",
-        bloodType: "AB+",
-        allergies: ["None"],
-        chronicConditions: ["ADHD"],
-        vaccinations: [
-          { name: "MMR", date: "2012-06-22" },
-          { name: "DTaP", date: "2012-06-22" },
-          { name: "Hepatitis B", date: "2011-06-18" },
-          { name: "Influenza", date: "2023-10-10" }
+          { date: "2023-09-20", reason: "Runny nose", treatment: "Recommended increased fluid intake", provider: "School Nurse" },
+          { date: "2023-10-18", reason: "Allergy symptoms", treatment: "Confirmed medication administration", provider: "School Nurse" }
         ],
-        medications: [
-          { name: "Methylphenidate", dosage: "10mg", frequency: "Once daily with lunch", condition: "ADHD" }
+        emergencyContacts: [
+          {
+            name: "Emily Smith",
+            relationship: "mother",
+            phone: "555-0127",
+            email: "emily.smith@email.com"
+          },
+          {
+            name: "William Smith",
+            relationship: "father",
+            phone: "555-0128",
+            email: "william.smith@email.com"
+          }
         ],
-        visits: [
-          { date: "2023-09-08", reason: "Medication check", treatment: "No side effects reported" },
-          { date: "2023-10-22", reason: "Minor scrape on playground", treatment: "Cleaned wound, applied bandage" }
-        ]
-      },
-      {
-        id: "HR10078",
-        studentId: "S10078",
-        studentName: "Sophia Davis",
-        birthDate: "2014-09-30",
-        bloodType: "O-",
-        allergies: ["Latex"],
-        chronicConditions: ["Type 1 Diabetes"],
-        vaccinations: [
-          { name: "MMR", date: "2015-10-15" },
-          { name: "DTaP", date: "2015-10-15" },
-          { name: "Hepatitis B", date: "2014-10-30" },
-          { name: "Influenza", date: "2023-10-10" }
-        ],
-        medications: [
-          { name: "Insulin", dosage: "As per glucose reading", frequency: "With meals", condition: "Type 1 Diabetes" }
-        ],
-        visits: [
-          { date: "2023-09-12", reason: "High glucose reading", treatment: "Insulin administered, monitored for 30 min" },
-          { date: "2023-10-15", reason: "Routine check", treatment: "Blood sugar normal" }
-        ]
+        insuranceProvider: "Aetna",
+        insuranceNumber: "AE345678",
+        familyDoctor: "Dr. Lisa Chen",
+        doctorPhone: "555-7654",
+        consentEmergencyTreatment: true,
+        consentMedicationAdmin: true,
+        consentInformationSharing: true
       }
     ];
 
+    // If studentId is provided, return only that student's records
     if (studentId) {
       const studentRecord = healthRecords.find(record => record.studentId === studentId);
-      resolve(studentRecord ? [studentRecord] : []);
+      resolve(studentRecord || null);
     } else {
+      // Otherwise return all records
       resolve(healthRecords);
     }
   });

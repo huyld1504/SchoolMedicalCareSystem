@@ -36,13 +36,7 @@ import StudentDashboard from "./pages/student/Dashboard";
 // Health Records
 import HealthRecordsList from "./pages/health/HealthRecordsList";
 import HealthRecordForm from "./pages/health/HealthRecordForm";
-// Placeholder for missing components
-const HealthRecordView = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Health Record Details</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
+import HealthRecordView from "./pages/health/HealthRecordView";
 
 // Medication Management - All implemented components
 import MedicationsList from "./pages/medications/MedicationsList";
@@ -66,6 +60,8 @@ import StudentInfo from "./components/student/StudentInfo";
 import MedicalEventsList from "./pages/medical-events/MedicalEventsList";
 import MedicalEventForm from "./pages/medical-events/MedicalEventForm";
 import MedicalEventDetails from "./pages/medical-events/MedicalEventDetails";
+import MedicalEventsDashboard from "./pages/medical-events/MedicalEventsDashboard";
+import MedicalEventReports from "./pages/medical-events/MedicalEventReports";
 
 // Vaccinations - All implemented components
 import VaccinationCampaigns from "./pages/vaccinations/VaccinationCampaigns";
@@ -106,11 +102,36 @@ const UserSettings = () => (
 );
 
 // Reports
-import ReportsOverview from "./pages/admin/reports/ReportsOverview";
-import HealthReports from "./pages/admin/reports/HealthReports";
-import AdminMedicationReports from "./pages/admin/reports/MedicationReports";
-import VaccinationReports from "./pages/admin/reports/VaccinationReports";
-import IncidentReports from "./pages/admin/reports/IncidentReports";
+const ReportsOverview = () => (
+  <div className="p-8">
+    <h1 className="text-2xl font-bold mb-4">Reports Overview</h1>
+    <p>This feature is coming soon.</p>
+  </div>
+);
+const HealthStatusReport = () => (
+  <div className="p-8">
+    <h1 className="text-2xl font-bold mb-4">Health Status Report</h1>
+    <p>This feature is coming soon.</p>
+  </div>
+);
+const MedicationReport = () => (
+  <div className="p-8">
+    <h1 className="text-2xl font-bold mb-4">Medication Report</h1>
+    <p>This feature is coming soon.</p>
+  </div>
+);
+const VaccinationReport = () => (
+  <div className="p-8">
+    <h1 className="text-2xl font-bold mb-4">Vaccination Report</h1>
+    <p>This feature is coming soon.</p>
+  </div>
+);
+const IncidentReport = () => (
+  <div className="p-8">
+    <h1 className="text-2xl font-bold mb-4">Incident Report</h1>
+    <p>This feature is coming soon.</p>
+  </div>
+);
 
 // System Settings Components (Placeholders)
 const SystemSettings = () => (
@@ -164,7 +185,6 @@ const StaffScheduling = () => (
   </div>
 );
 
-
 // Resource Management Components (for Manager)
 import ResourceManagement from "./pages/manager/ResourceManagement";
 
@@ -205,6 +225,11 @@ const ParentResources = () => (
   </div>
 );
 
+// Reports Components
+import AdminMedicationReports from "./pages/admin/reports/MedicationReports";
+import VaccinationReports from "./pages/admin/reports/VaccinationReports"; 
+import HealthReports from "./pages/admin/reports/HealthReports";
+
 // Define routes accessible by different user roles
 const adminRoutes = [
   {
@@ -230,41 +255,12 @@ const adminRoutes = [
         <UserProfile />
       </AdminLayout>
     ),
-  }, {
-    path: "/admin/reports",
+  },
+  {
+    path: "/admin/reports/*",
     element: (
       <AdminLayout>
         <ReportsOverview />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/admin/reports/health",
-    element: (
-      <AdminLayout>
-        <HealthReports />
-      </AdminLayout>
-    ),
-  }, {
-    path: "/admin/reports/medication",
-    element: (
-      <AdminLayout>
-        <AdminMedicationReports />
-      </AdminLayout>
-    ),
-  }, {
-    path: "/admin/reports/vaccination",
-    element: (
-      <AdminLayout>
-        <VaccinationReports />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/admin/reports/incidents",
-    element: (
-      <AdminLayout>
-        <IncidentReports />
       </AdminLayout>
     ),
   },
@@ -411,9 +407,10 @@ const managerRoutes = [
     ),
   },
   {
-    path: "/manager/reports/health-status",
+    path: "/manager/reports/*",
     element: (
       <ManagerLayout>
+        <ReportsOverview />
         <HealthReports />
       </ManagerLayout>
     ),
@@ -453,21 +450,28 @@ const nurseRoutes = [
         <NurseDashboard />
       </NurseLayout>
     ),
-  },
-  // Student Records
-  {
-    path: "/nurse/students",
-    element: (
-      <NurseLayout>
-        <StudentRecords />
-      </NurseLayout>
-    ),
-  },
+  },  // Student Records - Fixed order to avoid conflicts
   {
     path: "/nurse/students/search",
     element: (
       <NurseLayout>
         <StudentSearch />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/students/:id/record",
+    element: (
+      <NurseLayout>
+        <HealthRecordView />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/students",
+    element: (
+      <NurseLayout>
+        <StudentRecords />
       </NurseLayout>
     ),
   },
@@ -494,6 +498,22 @@ const nurseRoutes = [
     element: (
       <NurseLayout>
         <MedicalEventForm />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/medical-events/dashboard",
+    element: (
+      <NurseLayout>
+        <MedicalEventsDashboard />
+      </NurseLayout>
+    ),
+  },
+  {
+    path: "/nurse/medical-events/reports",
+    element: (
+      <NurseLayout>
+        <MedicalEventReports />
       </NurseLayout>
     ),
   },
@@ -702,12 +722,19 @@ const parentRoutes = [
         <HealthRecordsList />
       </ParentLayout>
     ),
-  },
-  {
+  },  {
     path: "/parent/health-records/:id",
     element: (
       <ParentLayout>
         <HealthRecordView />
+      </ParentLayout>
+    ),
+  },
+  {
+    path: "/parent/health-records/:id/edit",
+    element: (
+      <ParentLayout>
+        <HealthRecordForm />
       </ParentLayout>
     ),
   },

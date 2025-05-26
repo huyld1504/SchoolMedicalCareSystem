@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 function HealthRecordForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(id ? true : false);
+  const [isEditMode, setIsEditMode] = useState(!!id);
   const [activeTab, setActiveTab] = useState(1);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     // Student Personal Information
-    firstName: "",
-    lastName: "",
+    firstName: "", // Using firstName field for full name
     dateOfBirth: "",
     gender: "",
     grade: "",
@@ -32,10 +38,8 @@ function HealthRecordForm() {
     vaccinations: [],
 
     // Medical Treatment History
-    treatments: [],
-
-    // Emergency Contacts
-    emergencyContacts: [{ name: "", relationship: "", phone: "", email: "" }],
+    treatments: [],    // Emergency Contacts
+    emergencyContacts: [{ name: "", relationship: "", otherRelationship: "", phone: "", email: "" }],
 
     // Medical Coverage
     insuranceProvider: "",
@@ -49,6 +53,178 @@ function HealthRecordForm() {
     consentInformationSharing: false,
   });
 
+  // Fetch student health record data for editing
+  useEffect(() => {
+    if (isEditMode) {
+      // Simulate API fetch for health record data
+      // In a real application, you would fetch from your backend
+      const mockStudentRecords = {
+        1: {
+          // Student Personal Information
+          firstName: "Emma Johnson",
+          dateOfBirth: "2013-05-10",
+          gender: "female",
+          grade: "5th Grade",
+          class: "5A",
+          studentId: "STU-2023-001",
+          photoUrl: null,
+  
+          // Medical Background
+          bloodType: "A+",
+          height: "145",
+          weight: "38",
+          allergies: ["Peanuts", "Dust mites"],
+          chronicConditions: ["Asthma"],
+  
+          // Vision and Hearing
+          visionLeft: "20/25",
+          visionRight: "20/25",
+          wearGlasses: true,
+          hearingLeft: "normal",
+          hearingRight: "normal",
+          hearingAid: false,
+  
+          // Vaccination History
+          vaccinations: ["MMR", "Tetanus", "Polio", "Hepatitis B"],
+  
+          // Medical Treatment History
+          treatments: ["Asthma medication - prescribed Jan 2023"],
+  
+          // Emergency Contacts
+          emergencyContacts: [
+            {
+              name: "Michael Johnson",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-123-4567",
+              email: "michael.johnson@example.com",
+            },
+            {
+              name: "Susan Johnson",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-987-6543",
+              email: "susan.johnson@example.com",
+            },
+          ],
+  
+          // Medical Coverage
+          insuranceProvider: "HealthPlus Insurance",
+          insuranceNumber: "HP-98765432",
+          familyDoctor: "Dr. Sarah Williams",
+          doctorPhone: "555-222-3333",
+  
+          // Consent
+          consentEmergencyTreatment: true,
+          consentMedicationAdmin: true,
+          consentInformationSharing: true,
+        },
+        2: {
+          firstName: "Thomas Johnson",
+          dateOfBirth: "2010-03-15",
+          gender: "male",
+          grade: "8th Grade",
+          class: "8B",
+          studentId: "STU-2023-002",
+          photoUrl: null,
+          bloodType: "O+",
+          height: "162",
+          weight: "52",
+          allergies: ["Shellfish"],
+          chronicConditions: ["ADHD"],
+          visionLeft: "20/20",
+          visionRight: "20/20",
+          wearGlasses: false,
+          hearingLeft: "normal",
+          hearingRight: "normal",
+          hearingAid: false,
+          vaccinations: ["MMR", "Tetanus", "Polio", "Hepatitis B", "HPV"],
+          treatments: ["ADHD medication - prescribed Sep 2022"],
+          emergencyContacts: [
+            {
+              name: "Michael Johnson",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-123-4567",
+              email: "michael.johnson@example.com",
+            },
+          ],
+          insuranceProvider: "HealthPlus Insurance",
+          insuranceNumber: "HP-98765433",
+          familyDoctor: "Dr. Sarah Williams",
+          doctorPhone: "555-222-3333",
+          consentEmergencyTreatment: true,
+          consentMedicationAdmin: true,
+          consentInformationSharing: true,
+        },
+        3: {
+          firstName: "Olivia Smith",
+          dateOfBirth: "2015-07-20",
+          gender: "female",
+          grade: "3rd Grade",
+          class: "3C",
+          studentId: "STU-2023-003",
+          photoUrl: null,
+          bloodType: "B-",
+          height: "135",
+          weight: "30",
+          allergies: ["Bee stings", "Penicillin"],
+          chronicConditions: [],
+          visionLeft: "20/30",
+          visionRight: "20/30",
+          wearGlasses: true,
+          hearingLeft: "mild_loss",
+          hearingRight: "normal",
+          hearingAid: false,
+          vaccinations: ["MMR", "Tetanus", "Polio"],
+          treatments: ["EpiPen for bee sting allergy"],
+          emergencyContacts: [
+            {
+              name: "James Smith",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-444-5555",
+              email: "james.smith@example.com",
+            },
+            {
+              name: "Mary Smith",
+              relationship: "parent",
+              otherRelationship: "",
+              phone: "555-666-7777",
+              email: "mary.smith@example.com",
+            },
+            {
+              name: "Robert Smith",
+              relationship: "grandparent",
+              otherRelationship: "",
+              phone: "555-888-9999",
+              email: "robert.smith@example.com",
+            },
+          ],
+          insuranceProvider: "MediCare Plus",
+          insuranceNumber: "MC-12345678",
+          familyDoctor: "Dr. John Davis",
+          doctorPhone: "555-111-2222",
+          consentEmergencyTreatment: true,
+          consentMedicationAdmin: true,
+          consentInformationSharing: false,
+        },
+      };
+
+      setTimeout(() => {
+        const studentRecord = mockStudentRecords[id];
+        if (studentRecord) {
+          // Update form with student record data
+          setFormData({
+            ...formData,
+            ...studentRecord
+          });
+        }
+        setLoading(false);
+      }, 500);
+    }
+  }, [id, isEditMode]);
+
   // Handle form field changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -57,13 +233,19 @@ function HealthRecordForm() {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
   const handleArrayInput = (field, value) => {
     if (value.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: [...prev[field], value],
-      }));
+      // Check if the value already exists in the array (case insensitive)
+      const valueExists = formData[field].some(
+        item => item.toLowerCase() === value.trim().toLowerCase()
+      );
+      
+      if (!valueExists) {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: [...prev[field], value.trim()],
+        }));
+      }
     }
   };
 
@@ -85,10 +267,9 @@ function HealthRecordForm() {
 
   const addContact = () => {
     setFormData((prev) => ({
-      ...prev,
-      emergencyContacts: [
+      ...prev,      emergencyContacts: [
         ...prev.emergencyContacts,
-        { name: "", relationship: "", phone: "", email: "" },
+        { name: "", relationship: "", otherRelationship: "", phone: "", email: "" },
       ],
     }));
   };
@@ -100,20 +281,132 @@ function HealthRecordForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault();
+    
+    setIsSubmitting(true);
     console.log("Form submitted:", formData);
+    
     // In a real app, you would send this data to your API
-    alert("Health record submitted successfully!");
+    // Simulate API call with setTimeout
+    setTimeout(() => {
+      // Prepare success message based on mode
+      const message = isEditMode 
+        ? "Health record updated successfully!"
+        : "Health record created successfully!";
+      
+      alert(message);
+      // Redirect to the list page after submission
+      navigate('/parent/health-records');
+      setIsSubmitting(false);
+    }, 1000);
   };
-
   // Tab content components
   const renderPersonalInfo = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          Student Photo
+        </label>
+        
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          {/* Photo Preview */}
+          <div className="w-full md:w-1/3 flex justify-center">
+            <div className="relative w-40 h-40 overflow-hidden border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-100">
+              {previewImage ? (
+                <img 
+                  src={previewImage} 
+                  alt="Preview" 
+                  className="h-full w-full object-cover" 
+                />
+              ) : (
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-16 w-16 text-gray-400" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={1} 
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                  />
+                </svg>
+              )}
+            </div>
+          </div>
+          
+          {/* Upload Controls */}
+          <div className="w-full md:w-2/3">
+            <div className="flex items-center justify-center w-full">
+              <label
+                htmlFor="photo-upload"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg
+                    className="w-8 h-8 mb-3 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    ></path>
+                  </svg>
+                  <p className="mb-1 text-sm text-gray-500">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 2MB)</p>
+                </div>
+                <input 
+                  id="photo-upload" 
+                  type="file" 
+                  name="photo" 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setFormData({ ...formData, photo: file });
+                      setPreviewImage(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            
+            {formData.photo && (
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-sm text-gray-500 truncate max-w-[200px]">
+                  {formData.photo.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, photo: null });
+                    setPreviewImage(null);
+                  }}
+                  className="text-red-500 hover:text-red-700 text-sm font-medium"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            First Name
+            Full Name
           </label>
           <input
             type="text"
@@ -122,24 +415,42 @@ function HealthRecordForm() {
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
             required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Last Name
-          </label>
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
+            placeholder="Enter full name"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Student ID
+          </label>
+          <input
+            type="text"
+            name="studentId"
+            value={formData.studentId}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+            placeholder="Enter studentID"
+            
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Class
+          </label>
+          <input
+            type="text"
+            name="class"
+            value={formData.class}
+            onChange={handleInputChange}
+            className="w-full p-2 border border-gray-300 rounded"
+            placeholder="Enter class"
+          />
+        </div>      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Date of Birth
@@ -170,78 +481,6 @@ function HealthRecordForm() {
             <option value="other">Other</option>
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Student ID
-          </label>
-          <input
-            type="text"
-            name="studentId"
-            value={formData.studentId}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Grade
-          </label>
-          <select
-            name="grade"
-            value={formData.grade}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          >
-            <option value="">Select Grade</option>
-            <option value="k">Kindergarten</option>
-            <option value="1">1st Grade</option>
-            <option value="2">2nd Grade</option>
-            <option value="3">3rd Grade</option>
-            <option value="4">4th Grade</option>
-            <option value="5">5th Grade</option>
-            <option value="6">6th Grade</option>
-            <option value="7">7th Grade</option>
-            <option value="8">8th Grade</option>
-            <option value="9">9th Grade</option>
-            <option value="10">10th Grade</option>
-            <option value="11">11th Grade</option>
-            <option value="12">12th Grade</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Class
-          </label>
-          <input
-            type="text"
-            name="class"
-            value={formData.class}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Student Photo
-        </label>
-        <input
-          type="file"
-          name="photo"
-          onChange={(e) =>
-            setFormData({ ...formData, photo: e.target.files[0] })
-          }
-          className="w-full p-2 border border-gray-300 rounded"
-          accept="image/*"
-        />
-        <p className="mt-1 text-sm text-gray-500">
-          Upload a recent photo of your child.
-        </p>
       </div>
     </div>
   );
@@ -270,34 +509,45 @@ function HealthRecordForm() {
             <option value="O-">O-</option>
             <option value="unknown">Unknown</option>
           </select>
-        </div>
-        <div>
+        </div>        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Height (cm)
           </label>
-          <input
-            type="number"
+          <select
             name="height"
             value={formData.height}
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
-          />
+          >
+            <option value="">Select height</option>
+            {/* Generate height options from 50 to 220 cm */}
+            {Array.from({ length: 171 }, (_, i) => i + 50).map((h) => (
+              <option key={h} value={h.toString()}>
+                {h} cm
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Weight (kg)
           </label>
-          <input
-            type="number"
+          <select
             name="weight"
             value={formData.weight}
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
-          />
+          >
+            <option value="">Select weight</option>
+            {/* Generate weight options from 1 to 150 kg */}
+            {Array.from({ length: 150 }, (_, i) => i + 1).map((w) => (
+              <option key={w} value={w.toString()}>
+                {w} kg
+              </option>
+            ))}
+          </select>
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Allergies
         </label>
@@ -307,6 +557,14 @@ function HealthRecordForm() {
             id="allergy-input"
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="Enter allergy and press Add"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = document.getElementById("allergy-input");
+                handleArrayInput("allergies", input.value);
+                input.value = "";
+              }
+            }}
           />
           <button
             type="button"
@@ -314,6 +572,7 @@ function HealthRecordForm() {
               const input = document.getElementById("allergy-input");
               handleArrayInput("allergies", input.value);
               input.value = "";
+              input.focus();
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
@@ -340,9 +599,7 @@ function HealthRecordForm() {
             <span className="text-sm text-gray-500">No allergies added</span>
           )}
         </div>
-      </div>
-
-      <div>
+      </div>      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Chronic Conditions
         </label>
@@ -352,6 +609,14 @@ function HealthRecordForm() {
             id="condition-input"
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="Enter condition and press Add"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = document.getElementById("condition-input");
+                handleArrayInput("chronicConditions", input.value);
+                input.value = "";
+              }
+            }}
           />
           <button
             type="button"
@@ -359,6 +624,7 @@ function HealthRecordForm() {
               const input = document.getElementById("condition-input");
               handleArrayInput("chronicConditions", input.value);
               input.value = "";
+              input.focus();
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
@@ -501,8 +767,7 @@ function HealthRecordForm() {
       </p>
 
       {formData.emergencyContacts.map((contact, index) => (
-        <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
-          <div className="flex justify-between items-center mb-4">
+        <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">          <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-medium text-gray-800">
               Contact {index + 1}
             </h3>
@@ -532,8 +797,7 @@ function HealthRecordForm() {
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div>              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Relationship
               </label>
               <select
@@ -554,7 +818,23 @@ function HealthRecordForm() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          {/* Additional field for "Other" relationship */}
+          {contact.relationship === "other" && (
+            <div className="mt-4">              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Relationship details
+              </label>
+              <input
+                type="text"
+                value={contact.otherRelationship}
+                onChange={(e) =>
+                  handleContactChange(index, "otherRelationship", e.target.value)
+                }
+                className="w-full p-2 border border-gray-300 rounded"
+                placeholder="e.g., Family Friend"
+                required
+              />
+            </div>
+          )}          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone Number
@@ -715,11 +995,12 @@ function HealthRecordForm() {
     { id: 4, name: "Emergency Contacts", icon: "phone" },
     { id: 5, name: "Consents", icon: "check-circle" },
   ];
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Student Health Record</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {isEditMode ? "Edit Health Record" : "New Health Record"}
+        </h1>
         <p className="text-gray-600">
           Please complete all sections of this health record form. Information
           provided will be kept confidential and used only for your child's
@@ -727,67 +1008,64 @@ function HealthRecordForm() {
         </p>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
-        <div className="overflow-x-auto">
-          <nav className="flex border-b border-gray-200">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  px-4 py-4 text-center flex-1 whitespace-nowrap
-                  ${
-                    activeTab === tab.id
-                      ? "border-b-2 border-blue-500 font-medium text-blue-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }
-                `}
-              >
-                {tab.name}
-              </button>
-            ))}
-          </nav>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Tabs Navigation */}
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === tab.id
+                      ? "border-blue-600 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+          </div>
 
-        <div className="p-6">
-          <form onSubmit={handleSubmit}>
+          {/* Tab Content */}
+          <div className="mt-8">
             {activeTab === 1 && renderPersonalInfo()}
             {activeTab === 2 && renderMedicalBackground()}
             {activeTab === 3 && renderVisionHearing()}
             {activeTab === 4 && renderEmergencyContacts()}
             {activeTab === 5 && renderConsents()}
+          </div>
 
-            <div className="mt-8 flex justify-between">
-              <button
-                type="button"
-                onClick={() => activeTab > 1 && setActiveTab(activeTab - 1)}
-                className={`px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 ${
-                  activeTab === 1 ? "invisible" : ""
-                }`}
-              >
-                Previous
-              </button>
-
-              {activeTab < 5 ? (
-                <button
-                  type="button"
-                  onClick={() => activeTab < 5 && setActiveTab(activeTab + 1)}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Next
-                </button>
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <span>Saving...</span>
               ) : (
-                <button
-                  type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
-                >
-                  Submit Health Record
-                </button>
+                <span>{isEditMode ? "Update" : "Save"}</span>
               )}
-            </div>
-          </form>
-        </div>
-      </div>
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
