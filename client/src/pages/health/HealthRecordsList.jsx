@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function HealthRecordsList() {
+  const navigate = useNavigate();
+
   // Demo data for health records list
   const [students, setStudents] = useState([
     {
@@ -10,8 +12,56 @@ function HealthRecordsList() {
       grade: "5th Grade",
       age: 10,
       healthStatus: "Complete",
-      lastUpdated: "2023-04-15",
+      lastUpdated: "2025-05-20",
       alerts: 0,
+      records: [
+        {
+          id: 101,
+          type: "Annual Comprehensive Health Exam",
+          date: "2025-05-20",
+          status: "Complete",
+          summary: "Comprehensive health assessment - Good results, normal development",
+          provider: "Dr. James Wilson",
+          details: {
+            height: "142 cm",
+            weight: "35 kg",
+            bmi: "17.3",
+            bloodPressure: "110/70",
+            generalHealth: "Good",
+            vaccinations: "Up to date",
+            nutrition: "Balanced"
+          }
+        },
+        {
+          id: 102,
+          type: "School Health Exam",
+          date: "2024-10-15",
+          status: "Complete",
+          summary: "First semester health check - Good condition",
+          provider: "School Nurse Barbara Thompson",
+          details: {
+            height: "140 cm",
+            weight: "34 kg",
+            vision: "20/20",
+            hearing: "Normal",
+            recommendations: "Continue current nutrition plan"
+          }
+        },
+        {
+          id: 103,
+          type: "Dental Checkup",
+          date: "2024-03-10",
+          status: "Complete",
+          summary: "Annual dental examination - No cavities",
+          provider: "Dr. Sarah Chen, Dentist",
+          details: {
+            teethCondition: "Excellent",
+            oralHygiene: "Good",
+            treatment: "Routine cleaning",
+            nextVisit: "March 2026"
+          }
+        }
+      ]
     },
     {
       id: 2,
@@ -19,8 +69,59 @@ function HealthRecordsList() {
       grade: "8th Grade",
       age: 13,
       healthStatus: "Incomplete",
-      lastUpdated: "2023-05-03",
+      lastUpdated: "2025-05-03",
       alerts: 2,
+      records: [
+        {
+          id: 201,
+          type: "Sports Physical Exam",
+          date: "2025-05-03",
+          status: "Incomplete",
+          summary: "Comprehensive assessment for athletic activities",
+          provider: "Dr. Michael Anderson, Sports Medicine",
+          details: {
+            height: "165 cm",
+            weight: "55 kg",
+            bloodPressure: "115/75",
+            heartRate: "72 bpm",
+            cardioHealth: "Good",
+            muscularStrength: "Fair",
+            flexibility: "Needs improvement",
+            notes: "Recommend additional stretching exercises to improve flexibility",
+            pendingTests: "Cardiac stress test"
+          }
+        },
+        {
+          id: 202,
+          type: "Allergy Assessment",
+          date: "2024-11-15",
+          status: "Complete",
+          summary: "Seasonal allergy evaluation and treatment plan",
+          provider: "Dr. Lisa Wong, Allergist",
+          details: {
+            allergens: "Pollen, dust mites",
+            symptoms: "Sneezing, itchy eyes, congestion",
+            severity: "Moderate",
+            treatment: "Daily antihistamine during spring and fall",
+            followUp: "Schedule visit if symptoms worsen"
+          }
+        },
+        {
+          id: 203,
+          type: "Vision Screening",
+          date: "2024-06-22",
+          status: "Complete",
+          summary: "Annual vision check - Minor astigmatism detected",
+          provider: "Dr. Robert Miller, Optometrist",
+          details: {
+            visionRight: "20/30",
+            visionLeft: "20/25",
+            colorPerception: "Normal",
+            prescription: "Light correction for astigmatism",
+            recommendations: "Use glasses for reading and screens"
+          }
+        }
+      ]
     },
     {
       id: 3,
@@ -28,9 +129,59 @@ function HealthRecordsList() {
       grade: "3rd Grade",
       age: 8,
       healthStatus: "Complete",
-      lastUpdated: "2023-05-10",
+      lastUpdated: "2025-05-10",
       alerts: 1,
-    },
+      records: [
+        {
+          id: 301,
+          type: "Annual Health Exam",
+          date: "2025-05-10",
+          status: "Complete",
+          summary: "Comprehensive health assessment - Need to monitor allergy condition",
+          provider: "Dr. James Wilson",
+          details: {
+            height: "128 cm",
+            weight: "27 kg",
+            bmi: "16.5",
+            bloodPressure: "100/65",
+            generalHealth: "Good",
+            allergies: "Dust and pollen allergies",
+            immunization: "Complete",
+            notes: "Keep living environment clean, minimize exposure to allergens"
+          }
+        },
+        {
+          id: 302,
+          type: "Allergy Assessment",
+          date: "2025-03-01",
+          status: "Complete",
+          summary: "Evaluation and management of seasonal allergies",
+          provider: "Dr. Emily Chen, Allergy Specialist",
+          details: {
+            allergens: "Household dust, pollen, pet dander",
+            severity: "Mild to moderate",
+            symptoms: "Sneezing, runny nose, itchy eyes",
+            treatment: "Antihistamines, avoid allergen exposure",
+            progress: "Improved condition compared to previous check"
+          }
+        },
+        {
+          id: 303,
+          type: "Nutrition Consultation",
+          date: "2024-09-15",
+          status: "Complete",
+          summary: "Dietary assessment and recommendations",
+          provider: "Ms. Jennifer Lopez, Nutritionist",
+          details: {
+            currentDiet: "Somewhat selective, avoids vegetables",
+            nutritionalStatus: "Adequate but needs improvement",
+            recommendations: "Increase vegetable intake, ensure adequate protein",
+            vitamins: "Daily multivitamin recommended",
+            followUp: "3 months"
+          }
+        }
+      ]
+    }
   ]);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,6 +201,11 @@ function HealthRecordsList() {
 
     return matchesSearch && matchesStatus;
   });
+  
+  // Navigate to student health record detail page
+  const navigateToStudentRecord = (studentId) => {
+    navigate(`/parent/health-records/${studentId}`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -120,83 +276,34 @@ function HealthRecordsList() {
             </select>
           </div>
         </div>
-      </div>
-
-      {/* Records List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      </div>      {/* Records List - Card Based Design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredStudents.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Student
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Grade/Age
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Status
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Last Updated
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Alerts
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredStudents.map((student) => (
-                  <tr key={student.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-600 font-medium">
-                              {student.name.charAt(0)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {student.name}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {student.grade}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {student.age} years old
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+          <>
+            {filteredStudents.map((student) => (
+              <div 
+                key={student.id}
+                onClick={() => navigateToStudentRecord(student.id)}
+                className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+              >
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                      <span className="text-blue-600 font-medium text-lg">
+                        {student.name.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{student.name}</h3>
+                      <p className="text-sm text-gray-500">{student.grade} · {student.age} years old</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium text-gray-600 mr-2">Status:</span>
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
                           student.healthStatus === "Complete"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
@@ -204,40 +311,46 @@ function HealthRecordsList() {
                       >
                         {student.healthStatus}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.lastUpdated}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {student.alerts > 0 ? (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                          {student.alerts} alert{student.alerts > 1 ? "s" : ""}
-                        </span>
-                      ) : (
-                        <span className="text-sm text-gray-500">None</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link
-                        to={`/parent/health-records/${student.id}`}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        View
-                      </Link>
-                      <Link
-                        to={`/parent/health-records/${student.id}/edit`}
-                        className="text-green-600 hover:text-green-900"
-                      >
-                        Edit
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Updated: {student.lastUpdated}
+                    </div>
+                  </div>
+                  
+                  {student.alerts > 0 && (
+                    <div className="mt-3 bg-red-50 rounded-md p-2 flex items-center">
+                      <svg className="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-sm text-red-600 font-medium">
+                        {student.alerts} alert{student.alerts > 1 ? "s" : ""} requiring attention
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="mt-4 border-t pt-4">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium">Latest record:</span> {student.records[0].type}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      {student.records[0].summary}
+                    </p>
+                  </div>
+                  
+                  <div className="mt-4 text-right">
+                    <span className="inline-flex items-center text-blue-600 text-sm font-medium">
+                      View all records
+                      <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
         ) : (
-          <div className="text-center py-10">
+          <div className="col-span-full text-center py-10 bg-white rounded-lg shadow">
             <svg
               className="mx-auto h-12 w-12 text-gray-400"
               xmlns="http://www.w3.org/2000/svg"
