@@ -1,6 +1,4 @@
 // Application routes configuration
-import React from "react";
-import { Navigate } from "react-router-dom";
 
 // Auth Components
 import Login from "./components/auth/Login";
@@ -23,7 +21,7 @@ import Blog from "./components/magnus/MagnusFeatures"; // Using Features as Blog
 import BlogPost from "./components/magnus/MagnusFeatures"; // Using Features as BlogPost
 import Contact from "./components/magnus/MagnusContact";
 import HealthResources from "./components/magnus/MagnusDoctors";
-import MagnusHealth from './components/magnus/MagnusHealth';// Using Doctors as HealthResources
+import MagnusHealth from './components/magnus/MagnusHealth'; // Using Doctors as HealthResources
 import MagnusTestimonials from './components/magnus/MagnusTestimonials';
 
 // Dashboard Pages - All dashboards are implemented
@@ -68,148 +66,28 @@ import VaccinationCampaigns from "./pages/vaccinations/VaccinationCampaigns";
 import VaccinationConsentForm from "./pages/vaccinations/VaccinationConsentForm";
 import VaccinationRecords from "./pages/vaccinations/VaccinationRecords";
 import VaccinationScheduler from "./pages/admin/VaccinationScheduler";
-const VaccinationSchedule = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Vaccination Schedule</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
 
 // Health Checks - Using components from health-checks folder
 import HealthCheckCampaigns from "./pages/health-checks/HealthCheckCampaigns";
 import HealthCheckConsentForm from "./pages/health-checks/HealthCheckConsentForm";
 import HealthCheckResults from "./pages/health-checks/HealthCheckResults";
-const HealthCheckSchedule = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Health Check Schedule</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
 
 // Admin Management
 import PendingApprovals from "./pages/admin/PendingApprovals";
 import AdminActivities from "./pages/admin/Activities";
 
 // User Management
-
 import UsersList from "./pages/admin/UsersList";
 import UserProfile from "./pages/common/UserProfile";
-const UserSettings = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">User Settings</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-
-// Reports
-const ReportsOverview = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Reports Overview</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const HealthStatusReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Health Status Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const MedicationReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Medication Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const VaccinationReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Vaccination Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-const IncidentReport = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Incident Report</h1>
-    <p>This feature is coming soon.</p>
-  </div>
-);
-
-// System Settings Components (Placeholders)
-const SystemSettings = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">System Settings</h1>
-    <p>Manage all system configuration and settings.</p>
-  </div>
-);
-
-const GeneralSettings = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">General Settings</h1>
-    <p>Configure general system parameters.</p>
-  </div>
-);
-
-const SecuritySettings = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Security Settings</h1>
-    <p>Configure system security parameters and access controls.</p>
-  </div>
-);
-
-const BackupSettings = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Backup & Maintenance</h1>
-    <p>Configure data backup and system maintenance options.</p>
-  </div>
-);
-
-const NotificationSettings = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Notification Settings</h1>
-    <p>Configure system notifications and alerts.</p>
-  </div>
-);
 
 // Staff Management Components (for Manager)
 import StaffDashboard from "./pages/manager/StaffDashboard";
-const StaffDirectory = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Staff Directory</h1>
-    <p>View and search the complete staff directory.</p>
-  </div>
-);
-
-const StaffScheduling = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Staff Scheduling</h1>
-    <p>Manage schedules and shifts for medical staff.</p>
-  </div>
-);
 
 // Resource Management Components (for Manager)
 import ResourceManagement from "./pages/manager/ResourceManagement";
 
-const ResourceInventory = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Resource Inventory</h1>
-    <p>Track and manage inventory of medical resources.</p>
-  </div>
-);
-
-const ResourceRequests = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Resource Requests</h1>
-    <p>Manage and approve resource requisition requests.</p>
-  </div>
-);
-
 // Student Records Components (for Nurse)
 import StudentRecords from "./pages/nurse/StudentRecords";
-const StudentSearch = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Student Search</h1>
-    <p>Search for students and access their medical information.</p>
-  </div>
-);
 
 // Activity Log Components
 import ActivityLog from "./pages/common/ActivityLog";
@@ -217,18 +95,12 @@ import ActivityLog from "./pages/common/ActivityLog";
 // Calendar Component
 import Calendar from "./pages/common/Calendar";
 
-// Parent Resource Center Component
-const ParentResources = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold mb-4">Parent Resource Center</h1>
-    <p>Access all health resources and educational materials for parents.</p>
-  </div>
-);
-
 // Reports Components
 import AdminMedicationReports from "./pages/admin/reports/MedicationReports";
-import VaccinationReports from "./pages/admin/reports/VaccinationReports"; 
+import VaccinationReports from "./pages/admin/reports/VaccinationReports";
 import HealthReports from "./pages/admin/reports/HealthReports";
+import IncidentReports from "./pages/admin/reports/IncidentReports";
+import ReportsOverviews from "./pages/admin/reports/ReportsOverview";
 
 // Define routes accessible by different user roles
 const adminRoutes = [
@@ -260,47 +132,38 @@ const adminRoutes = [
     path: "/admin/reports/*",
     element: (
       <AdminLayout>
-        <ReportsOverview />
-      </AdminLayout>
-    ),
-  },
-  // System Settings routes
-  {
-    path: "/admin/settings",
-    element: (
-      <AdminLayout>
-        <SystemSettings />
+        <ReportsOverviews />
       </AdminLayout>
     ),
   },
   {
-    path: "/admin/settings/general",
+    path: "/admin/reports/health",
     element: (
       <AdminLayout>
-        <GeneralSettings />
+        <HealthReports />
       </AdminLayout>
     ),
   },
   {
-    path: "/admin/settings/security",
+    path: "/admin/reports/medication",
     element: (
       <AdminLayout>
-        <SecuritySettings />
+        <AdminMedicationReports />
       </AdminLayout>
     ),
   },
   {
-    path: "/admin/settings/backup",
+    path: "/admin/reports/vaccination",
     element: (
       <AdminLayout>
-        <BackupSettings />
+        <VaccinationReports />
       </AdminLayout>
     ),
   }, {
-    path: "/admin/settings/notifications",
+    path: "/admin/reports/incidents",
     element: (
       <AdminLayout>
-        <NotificationSettings />
+        <IncidentReports />
       </AdminLayout>
     ),
   },
@@ -312,7 +175,8 @@ const adminRoutes = [
         <PendingApprovals />
       </AdminLayout>
     ),
-  }, {
+  },
+  {
     path: "/admin/activities",
     element: (
       <AdminLayout>
@@ -328,7 +192,49 @@ const adminRoutes = [
       </AdminLayout>
     ),
   },
-  // More admin routes...
+  // Health Checks Management
+  {
+    path: "/admin/health-checks",
+    element: (
+      <AdminLayout>
+        <HealthCheckCampaigns />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/health-checks/:id/results",
+    element: (
+      <AdminLayout>
+        <HealthCheckResults />
+      </AdminLayout>
+    ),
+  },
+  // Vaccination Management
+  {
+    path: "/admin/vaccinations",
+    element: (
+      <AdminLayout>
+        <VaccinationCampaigns />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/vaccinations/:id/records",
+    element: (
+      <AdminLayout>
+        <VaccinationRecords />
+      </AdminLayout>
+    ),
+  },
+  // Calendar
+  {
+    path: "/admin/calendar",
+    element: (
+      <AdminLayout>
+        <Calendar />
+      </AdminLayout>
+    ),
+  },
 ];
 
 const managerRoutes = [
@@ -349,44 +255,12 @@ const managerRoutes = [
       </ManagerLayout>
     ),
   },
-  {
-    path: "/manager/staff/directory",
-    element: (
-      <ManagerLayout>
-        <StaffDirectory />
-      </ManagerLayout>
-    ),
-  },
-  {
-    path: "/manager/staff/scheduling",
-    element: (
-      <ManagerLayout>
-        <StaffScheduling />
-      </ManagerLayout>
-    ),
-  },
   // Resource Management
   {
     path: "/manager/resources",
     element: (
       <ManagerLayout>
         <ResourceManagement />
-      </ManagerLayout>
-    ),
-  },
-  {
-    path: "/manager/resources/inventory",
-    element: (
-      <ManagerLayout>
-        <ResourceInventory />
-      </ManagerLayout>
-    ),
-  },
-  {
-    path: "/manager/resources/requests",
-    element: (
-      <ManagerLayout>
-        <ResourceRequests />
       </ManagerLayout>
     ),
   },
@@ -407,10 +281,9 @@ const managerRoutes = [
     ),
   },
   {
-    path: "/manager/reports/*",
+    path: "/manager/reports/health-status",
     element: (
       <ManagerLayout>
-        <ReportsOverview />
         <HealthReports />
       </ManagerLayout>
     ),
@@ -432,14 +305,13 @@ const managerRoutes = [
     ),
   },
   {
-    path: "/manager/reports/Incidents",
+    path: "/manager/reports/incidents",
     element: (
       <ManagerLayout>
         <HealthReports />
       </ManagerLayout>
     ),
   },
-  // More manager routes...
 ];
 
 const nurseRoutes = [
@@ -450,12 +322,13 @@ const nurseRoutes = [
         <NurseDashboard />
       </NurseLayout>
     ),
-  },  // Student Records - Fixed order to avoid conflicts
+  },
+  // Student Records - Fixed order to avoid conflicts
   {
-    path: "/nurse/students/search",
+    path: "/nurse/students",
     element: (
       <NurseLayout>
-        <StudentSearch />
+        <StudentRecords />
       </NurseLayout>
     ),
   },
@@ -464,14 +337,6 @@ const nurseRoutes = [
     element: (
       <NurseLayout>
         <HealthRecordView />
-      </NurseLayout>
-    ),
-  },
-  {
-    path: "/nurse/students",
-    element: (
-      <NurseLayout>
-        <StudentRecords />
       </NurseLayout>
     ),
   },
@@ -627,25 +492,16 @@ const nurseRoutes = [
     element: (
       <NurseLayout>
         <BatchAdministration />
-      </NurseLayout>
-    ),
+      </NurseLayout>),
   },
-  {
-    path: "/nurse/vaccinations",
-    element: (
-      <NurseLayout>
-        <VaccinationCampaigns />
-      </NurseLayout>
-    ),
-  },
-  {
-    path: "/nurse/vaccinations/:id/schedule",
-    element: (
-      <NurseLayout>
-        <VaccinationSchedule />
-      </NurseLayout>
-    ),
-  },
+  // {
+  //   path: "/nurse/vaccinations",
+  //   element: (
+  //     <NurseLayout>
+  //       <VaccinationCampaigns />
+  //     </NurseLayout>
+  //   ),
+  // },
   {
     path: "/nurse/vaccinations/:id/records",
     element: (
@@ -659,14 +515,6 @@ const nurseRoutes = [
     element: (
       <NurseLayout>
         <HealthCheckCampaigns />
-      </NurseLayout>
-    ),
-  },
-  {
-    path: "/nurse/health-checks/:id/schedule",
-    element: (
-      <NurseLayout>
-        <HealthCheckSchedule />
       </NurseLayout>
     ),
   },
@@ -720,9 +568,9 @@ const parentRoutes = [
     element: (
       <ParentLayout>
         <HealthRecordsList />
-      </ParentLayout>
-    ),
-  },  {
+      </ParentLayout>),
+  },
+  {
     path: "/parent/health-records/:id",
     element: (
       <ParentLayout>
@@ -791,22 +639,13 @@ const parentRoutes = [
     element: (
       <ParentLayout>
         <HealthCheckResults />
-      </ParentLayout>
-    ),
+      </ParentLayout>),
   },
   {
     path: "/parent/profile",
     element: (
       <ParentLayout>
         <UserProfile />
-      </ParentLayout>
-    ),
-  },
-  {
-    path: "/parent/settings",
-    element: (
-      <ParentLayout>
-        <UserSettings />
       </ParentLayout>
     ),
   },
@@ -842,15 +681,6 @@ const parentRoutes = [
       </ParentLayout>
     ),
   },
-  {
-    path: "/parent/resources",
-    element: (
-      <ParentLayout>
-        <ParentResources />
-      </ParentLayout>
-    ),
-  },
-  // More parent routes...
 ];
 
 const studentRoutes = [
@@ -899,9 +729,9 @@ const studentRoutes = [
     element: (
       <StudentLayout>
         <HealthCheckResults />
-      </StudentLayout>
-    ),
-  }, {
+      </StudentLayout>),
+  },
+  {
     path: "/student/profile",
     element: (
       <StudentLayout>
@@ -938,10 +768,11 @@ const studentRoutes = [
 
 const publicRoutes = [
   { path: '/', element: <PublicLayout><MagnusHealth /></PublicLayout> },
-  { path: '/home', element: <PublicLayout><MagnusHealth /></PublicLayout> },
+  { path: '/home', element: <PublicLayout><Home /></PublicLayout> },
   { path: '/about', element: <PublicLayout><About /></PublicLayout> },
   { path: '/blog', element: <PublicLayout><Blog /></PublicLayout> },
-  { path: '/blog/:id', element: <PublicLayout><BlogPost /></PublicLayout> }, { path: '/contact', element: <PublicLayout><Contact /></PublicLayout> },
+  { path: '/blog/:id', element: <PublicLayout><BlogPost /></PublicLayout> },
+  { path: '/contact', element: <PublicLayout><Contact /></PublicLayout> },
   { path: '/resources', element: <PublicLayout><HealthResources /></PublicLayout> },
   { path: '/testimonials', element: <PublicLayout><MagnusTestimonials /></PublicLayout> },
   { path: '/login', element: <Login /> },
