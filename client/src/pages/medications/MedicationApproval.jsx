@@ -7,66 +7,65 @@ function MedicationApproval() {
   const [currentPrescriptionImage, setCurrentPrescriptionImage] = useState("");
 
   // Demo data for medication requests
-  const [medicationRequests, setMedicationRequests] = useState([
-    {
-      id: 1,
-      studentName: "Emma Johnson",
-      studentId: "S10045",
-      grade: "5th Grade",
-      medication: "Ibuprofen",
-      dosage: "200mg",
-      frequency: "As needed",
-      timeOfDay: ["asNeeded"],
-      startDate: "2023-05-01",
-      endDate: "2023-05-30",
-      instructions: "For headache or fever above 100F",
-      prescriptionUploaded: true,
-      // Add a sample prescription image URL
-      prescriptionImage: "https://i.imgur.com/7lXEIII.jpg",
-      requestDate: "2023-04-28",
-      status: "pending",
-      parentName: "Sarah Johnson",
-      parentPhone: "(555) 123-4567",
-    },
-    // Update second medication request
-    {
-      id: 2,
-      studentName: "Thomas Johnson",
-      studentId: "S10046",
-      grade: "8th Grade",
-      medication: "Albuterol",
-      dosage: "90mcg, 2 puffs",
-      frequency: "Every 4-6 hours",
-      timeOfDay: ["morning", "afternoon"],
-      startDate: "2023-05-15",
-      endDate: "2023-12-31",
-      instructions: "For asthma symptoms. May take before exercise.",
-      prescriptionUploaded: true,
-      // Add a different sample prescription image
-      prescriptionImage: "https://i.imgur.com/X5Nzn8I.jpg",
-      requestDate: "2023-05-10",
-      status: "pending",
-      parentName: "Sarah Johnson",
-      parentPhone: "(555) 123-4567",
-    },
-    {
-      id: 3,
-      studentName: "Olivia Smith",
-      studentId: "S10058",
-      grade: "3rd Grade",
-      medication: "Cetirizine",
-      dosage: "5mg",
-      frequency: "Once daily",
-      timeOfDay: ["morning"],
-      startDate: "2023-04-10",
-      endDate: "2023-06-10",
-      instructions: "For seasonal allergies. Take in the morning.",
-      prescriptionUploaded: false,
-      requestDate: "2023-04-05",
-      status: "pending",
-      parentName: "Michael Smith",
-      parentPhone: "(555) 987-6543",
-    },
+  const [medicationRequests, setMedicationRequests] = useState([{
+    id: 1,
+    studentName: "Emma Johnson",
+    studentId: "S10045",
+    grade: "5th Grade",
+    medication: "Ibuprofen",
+    dosage: "200mg",
+    frequency: "As needed",
+    timeOfDay: ["asNeeded"],
+    startDate: "2023-05-01",
+    endDate: "2023-05-30",
+    instructions: "For headache or fever above 100F",
+    prescriptionUploaded: true,
+    // Add a sample prescription image URL
+    prescriptionImage: "https://i.imgur.com/7lXEIII.jpg",
+    requestDate: "2023-04-28",
+    status: "pending",
+    parentName: "Sarah Johnson",
+    parentPhone: "(555) 123-4567",
+    consentToAdminister: true,
+  }, {
+    id: 2,
+    studentName: "Thomas Johnson",
+    studentId: "S10046",
+    grade: "8th Grade",
+    medication: "Albuterol",
+    dosage: "90mcg, 2 puffs",
+    frequency: "Every 4-6 hours",
+    timeOfDay: ["morning", "afternoon"],
+    startDate: "2023-05-15",
+    endDate: "2023-12-31",
+    instructions: "For asthma symptoms. May take before exercise.",
+    prescriptionUploaded: true,
+    // Add a different sample prescription image
+    prescriptionImage: "https://i.imgur.com/X5Nzn8I.jpg",
+    requestDate: "2023-05-10",
+    status: "pending",
+    parentName: "Sarah Johnson",
+    parentPhone: "(555) 123-4567",
+    consentToAdminister: true,
+  },
+  {
+    id: 3,
+    studentName: "Olivia Smith",
+    studentId: "S10058",
+    grade: "3rd Grade",
+    medication: "Cetirizine",
+    dosage: "5mg",
+    frequency: "Once daily",
+    timeOfDay: ["morning"],
+    startDate: "2023-04-10",
+    endDate: "2023-06-10",
+    instructions: "For seasonal allergies. Take in the morning.",
+    prescriptionUploaded: false,
+    requestDate: "2023-04-05",
+    status: "pending",
+    parentName: "Michael Smith",
+    parentPhone: "(555) 987-6543",
+  },
   ]);
 
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -82,9 +81,17 @@ function MedicationApproval() {
     const request = medicationRequests.find((req) => req.id === id);
     setSelectedRequest(request);
   };
-
   // Approve medication request
   const handleApproveRequest = (id) => {
+    // Find the request to approve
+    const requestToApprove = medicationRequests.find(req => req.id === id);
+
+    // Check if consent was provided
+    if (requestToApprove && !requestToApprove.consentToAdminister) {
+      alert("Error: Cannot approve medication request without parent consent. Please request consent from parent first.");
+      return;
+    }
+
     setMedicationRequests(
       medicationRequests.map((request) =>
         request.id === id ? { ...request, status: "approved" } : request
@@ -220,37 +227,47 @@ function MedicationApproval() {
                 filteredRequests.map((request) => (
                   <li
                     key={request.id}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer ${
-                      selectedRequest && selectedRequest.id === request.id
+                    className={`p-4 hover:bg-gray-50 cursor-pointer ${selectedRequest && selectedRequest.id === request.id
                         ? "bg-blue-50"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => handleViewRequest(request.id)}
-                  >
-                    <div className="flex justify-between">
+                  >                    <div className="flex justify-between">
                       <p className="font-medium text-gray-900">
                         {request.studentName}
                       </p>
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          request.status === "approved"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${request.status === "approved"
                             ? "bg-green-100 text-green-800"
                             : request.status === "denied"
-                            ? "bg-red-100 text-red-800"
-                            : request.status === "info-requested"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
+                              ? "bg-red-100 text-red-800"
+                              : request.status === "info-requested"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-blue-100 text-blue-800"
+                          }`}
                       >
                         {request.status === "info-requested"
                           ? "Info Requested"
                           : request.status.charAt(0).toUpperCase() +
-                            request.status.slice(1)}
+                          request.status.slice(1)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      {request.medication}, {request.dosage}
-                    </p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-500">
+                        {request.medication}, {request.dosage}
+                      </p>
+                      {request.consentToAdminister !== undefined && (
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${request.consentToAdminister
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                            }`}
+                          title={request.consentToAdminister ? "Parent consent provided" : "No parent consent"}
+                        >
+                          {request.consentToAdminister ? "Consent ✓" : "No Consent ✗"}
+                        </span>
+                      )}
+                    </div>
                     <div className="mt-2 flex justify-between text-sm">
                       <p className="text-gray-500">
                         Requested: {request.requestDate}
@@ -393,15 +410,58 @@ function MedicationApproval() {
                       </div>
                     )}
                   </div>
-                </div>
-
-                <div className="mb-4">
+                </div>                <div className="mb-4">
                   <p className="text-sm font-medium text-gray-500">
                     Parent Contact
                   </p>
                   <p className="mt-1">
                     {selectedRequest.parentName} | {selectedRequest.parentPhone}
                   </p>
+                </div>
+
+                <div className="mb-4">
+                  <p className="text-sm font-medium text-gray-500">
+                    Parent Consent
+                  </p>
+                  <div className="mt-1 flex items-center">
+                    {selectedRequest.consentToAdminister ? (
+                      <>
+                        <svg
+                          className="h-5 w-5 text-green-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="ml-2 text-green-600 font-medium">
+                          Consent provided
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="h-5 w-5 text-red-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="ml-2 text-red-600 font-medium">
+                          No consent provided
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {selectedRequest.status === "denied" && (
@@ -430,11 +490,16 @@ function MedicationApproval() {
 
               {selectedRequest.status === "pending" && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={() => handleApproveRequest(selectedRequest.id)}
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                    >
+                  <div className="flex flex-wrap gap-3">                    <button
+                    onClick={() => handleApproveRequest(selectedRequest.id)}
+                    disabled={!selectedRequest.consentToAdminister}
+                    className={`inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium ${selectedRequest.consentToAdminister
+                        ? "border-transparent text-white bg-green-600 hover:bg-green-700"
+                        : "border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed"
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
+                    title={!selectedRequest.consentToAdminister ? "Cannot approve without parent consent" : "Approve medication request"}
+                  >
+                    {selectedRequest.consentToAdminister ? (
                       <svg
                         className="-ml-1 mr-2 h-5 w-5"
                         xmlns="http://www.w3.org/2000/svg"
@@ -447,8 +512,20 @@ function MedicationApproval() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      Approve
-                    </button>
+                    ) : (
+                      <svg
+                        className="-ml-1 mr-2 h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path fillRule="evenodd" d="M13 16.5a1 1 0 01-.78.419l-3.22.21a1 1 0 01-1.1-.76L7.5 12.55a1 1 0 01.76-1.19L11.5 11a1 1 0 011.19.76l.5 3a1 1 0 01-.19 1.74z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M8.7 7.3a1 1 0 11-1.4 1.4 1 1 0 011.4-1.4z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    {selectedRequest.consentToAdminister ? "Approve" : "Need Consent"}
+                  </button>
 
                     <button
                       onClick={() => {
@@ -555,14 +632,14 @@ function MedicationApproval() {
           </div>
         </div>
       </div>
-      
+
       {/* Prescription Modal */}
       {showPrescriptionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-lg font-medium text-gray-900">Prescription Documentation</h3>
-              <button 
+              <button
                 onClick={() => setShowPrescriptionModal(false)}
                 className="text-gray-400 hover:text-gray-500"
               >
@@ -573,9 +650,9 @@ function MedicationApproval() {
             </div>
             <div className="p-6 flex-1 overflow-auto">
               {currentPrescriptionImage ? (
-                <img 
-                  src={currentPrescriptionImage} 
-                  alt="Prescription" 
+                <img
+                  src={currentPrescriptionImage}
+                  alt="Prescription"
                   className="w-full h-auto object-contain"
                   onError={(e) => {
                     e.target.onerror = null;
