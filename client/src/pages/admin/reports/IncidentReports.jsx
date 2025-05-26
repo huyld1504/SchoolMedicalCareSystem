@@ -399,7 +399,7 @@ function IncidentReports() {
                 </table>
             </div>
 
-            {/* Incident Analysis Section */}
+            {/* Incident Analysis Section
             <div className="mt-8 bg-white rounded-lg shadow overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h2 className="text-xl font-semibold">Incident Analysis</h2>
@@ -431,7 +431,7 @@ function IncidentReports() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Emergency Protocol Reminder */}
             <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-5 rounded">

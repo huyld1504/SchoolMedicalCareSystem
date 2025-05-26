@@ -326,7 +326,7 @@ function VaccinationReports() {
             </div>
 
             {/* Vaccination Coverage Chart Section (Placeholder) */}
-            <div className="mt-8 bg-white rounded-lg shadow p-6">
+            {/* <div className="mt-8 bg-white rounded-lg shadow p-6">
                 <h2 className="text-xl font-semibold mb-4">Vaccination Coverage Analysis</h2>
                 <p className="text-gray-500 mb-4">Interactive charts and visualizations for vaccination coverage will appear here.</p>
 
@@ -339,7 +339,7 @@ function VaccinationReports() {
                         <p className="mt-2 text-sm text-gray-500">Vaccination coverage visualization</p>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -12,11 +12,6 @@ function PublicLayout({ children }) {
   return (
     <div className="public-layout">
       <MagnusNavbar />
-      <div className="container pt-4">
-        <button className="btn btn-outline-secondary mb-3" onClick={handleBack}>
-          <i className="bi bi-arrow-left"></i> Back
-        </button>
-      </div>
       <main>{children}</main>
       <MagnusFooter />
     </div>

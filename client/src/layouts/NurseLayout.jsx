@@ -89,12 +89,12 @@ function NurseLayout({ children }) {
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Preventive Care
           </div>
-          <a
+          {/* <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/vaccinations"
           >
             <i className="bi bi-shield-plus me-2"></i> Vaccination Programs
-          </a>
+          </a> */}
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/health-checks"
