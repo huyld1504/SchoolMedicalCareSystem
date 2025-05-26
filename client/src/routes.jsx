@@ -67,6 +67,7 @@ import MedicalEventReports from "./pages/medical-events/MedicalEventReports";
 import VaccinationCampaigns from "./pages/vaccinations/VaccinationCampaigns";
 import VaccinationConsentForm from "./pages/vaccinations/VaccinationConsentForm";
 import VaccinationRecords from "./pages/vaccinations/VaccinationRecords";
+import VaccinationScheduler from "./pages/admin/VaccinationScheduler";
 const VaccinationSchedule = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold mb-4">Vaccination Schedule</h1>
@@ -84,6 +85,10 @@ const HealthCheckSchedule = () => (
     <p>This feature is coming soon.</p>
   </div>
 );
+
+// Admin Management
+import PendingApprovals from "./pages/admin/PendingApprovals";
+import AdminActivities from "./pages/admin/Activities";
 
 // User Management
 
@@ -286,12 +291,35 @@ const adminRoutes = [
         <BackupSettings />
       </AdminLayout>
     ),
-  },
-  {
+  }, {
     path: "/admin/settings/notifications",
     element: (
       <AdminLayout>
         <NotificationSettings />
+      </AdminLayout>
+    ),
+  },
+  // Management routes
+  {
+    path: "/admin/pending-approvals",
+    element: (
+      <AdminLayout>
+        <PendingApprovals />
+      </AdminLayout>
+    ),
+  }, {
+    path: "/admin/activities",
+    element: (
+      <AdminLayout>
+        <AdminActivities />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/vaccination-scheduler",
+    element: (
+      <AdminLayout>
+        <VaccinationScheduler />
       </AdminLayout>
     ),
   },
@@ -378,6 +406,31 @@ const managerRoutes = [
     element: (
       <ManagerLayout>
         <ReportsOverview />
+        <HealthReports />
+      </ManagerLayout>
+    ),
+  },
+  {
+    path: "/manager/reports/medications",
+    element: (
+      <ManagerLayout>
+        <AdminMedicationReports />
+      </ManagerLayout>
+    ),
+  },
+  {
+    path: "/manager/reports/vaccinations",
+    element: (
+      <ManagerLayout>
+        <VaccinationReports />
+      </ManagerLayout>
+    ),
+  },
+  {
+    path: "/manager/reports/Incidents",
+    element: (
+      <ManagerLayout>
+        <HealthReports />
       </ManagerLayout>
     ),
   },
@@ -433,7 +486,8 @@ const nurseRoutes = [
       <NurseLayout>
         <Calendar />
       </NurseLayout>
-    ),  },  
+    ),
+  },
   // Fixed the route ordering - more specific routes first, then routes with dynamic segments
   {
     path: "/nurse/medical-events/new",

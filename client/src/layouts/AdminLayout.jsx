@@ -52,9 +52,7 @@ function AdminLayout({ children }) {
             href="/admin"
           >
             <i className="bi bi-speedometer2 me-2"></i> Dashboard
-          </a>
-
-          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
+          </a>          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Administration
           </div>
           <a
@@ -62,6 +60,25 @@ function AdminLayout({ children }) {
             href="/admin/users"
           >
             <i className="bi bi-people me-2"></i> User Management
+          </a>
+
+          <a
+            className="nav-link text-white d-flex align-items-center py-2"
+            href="/admin/pending-approvals"
+          >
+            <i className="bi bi-check-circle me-2"></i> Pending Approvals
+          </a>          <a
+            className="nav-link text-white d-flex align-items-center py-2"
+            href="/admin/activities"
+          >
+            <i className="bi bi-activity me-2"></i> System Activities
+          </a>
+
+          <a
+            className="nav-link text-white d-flex align-items-center py-2"
+            href="/admin/vaccination-scheduler"
+          >
+            <i className="bi bi-calendar-check me-2"></i> Vaccination Scheduler
           </a>
 
           <a

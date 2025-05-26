@@ -21,50 +21,105 @@ function AdminDashboard() {
         diskSpace: "78%",
         cpuUsage: "42%",
         memoryUsage: "53%"
-    });
-
-    // Sample recent user activities
+    });    // Sample recent user activities - enhanced to match Activities page
     const [recentActivities, setRecentActivities] = useState([
         {
             id: 1,
-            user: "Sarah Johnson (Nurse)",
+            type: "medication_request",
+            user: "Sarah Johnson",
+            userRole: "Nurse",
             action: "Updated medication inventory",
-            time: "10 minutes ago"
+            description: "Added 50 units of Ibuprofen to inventory",
+            time: "10 minutes ago",
+            timestamp: "2025-05-25 14:30:00",
+            ipAddress: "192.168.1.101",
+            severity: "info"
         },
         {
             id: 2,
-            user: "Robert Lee (Manager)",
+            type: "health_report",
+            user: "Robert Lee",
+            userRole: "Manager",
             action: "Generated monthly health report",
-            time: "1 hour ago"
+            description: "Generated comprehensive health report for May 2025",
+            time: "1 hour ago",
+            timestamp: "2025-05-25 13:15:00",
+            ipAddress: "192.168.1.102",
+            severity: "info"
         },
         {
             id: 3,
-            user: "Mary Williams (Admin)",
+            type: "user_registration",
+            user: "Mary Williams",
+            userRole: "Admin",
             action: "Added new user account",
-            time: "3 hours ago"
+            description: "Created parent account for Jennifer Davis",
+            time: "3 hours ago",
+            timestamp: "2025-05-25 11:20:00",
+            ipAddress: "192.168.1.100",
+            severity: "success"
         },
         {
             id: 4,
-            user: "James Brown (Parent)",
+            type: "medication_request",
+            user: "James Brown",
+            userRole: "Parent",
             action: "Submitted medication request",
-            time: "Yesterday"
+            description: "Requested daily Albuterol administration for child",
+            time: "Yesterday",
+            timestamp: "2025-05-24 16:45:00",
+            ipAddress: "10.0.0.15",
+            severity: "warning"
         },
         {
             id: 5,
+            type: "system_backup",
             user: "System",
+            userRole: "System",
             action: "Database backup completed",
-            time: "Yesterday"
+            description: "Automated daily backup completed successfully",
+            time: "Yesterday",
+            timestamp: "2025-05-24 02:00:00",
+            ipAddress: "127.0.0.1",
+            severity: "success"
         }
-    ]); return (
+    ]);
+
+    // Helper function to get activity icon
+    const getActivityIcon = (type) => {
+        const icons = {
+            'user_login': '🔐',
+            'user_logout': '🚪',
+            'user_registration': '👤',
+            'medication_request': '💊',
+            'medication_approval': '✅',
+            'health_record_update': '📋',
+            'vaccination_record': '💉',
+            'system_backup': '💾',
+            'health_report': '📊'
+        };
+        return icons[type] || '📝';
+    };
+
+    // Helper function to get severity badge style
+    const getSeverityBadge = (severity) => {
+        const styles = {
+            'info': 'bg-blue-100 text-blue-800',
+            'success': 'bg-green-100 text-green-800',
+            'warning': 'bg-yellow-100 text-yellow-800',
+            'error': 'bg-red-100 text-red-800'
+        };
+        return styles[severity] || 'bg-gray-100 text-gray-800';
+    };
+
+    return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
                 <p className="text-gray-600">
                     Welcome back, {currentUser?.name || "Admin"}. Here's what's happening in your system.
                 </p>
-            </div>
-
-            {/* Quick Access Top Bar */}
+            </div>            {/* Quick Access Top Bar */}
             <div className="bg-white rounded-lg shadow p-4 mb-8">
                 <div className="flex flex-wrap justify-between items-center">
                     <Link to="/admin/users" className="flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-150">
@@ -72,6 +127,13 @@ function AdminDashboard() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z"></path>
                         </svg>
                         <span className="text-gray-900 font-medium">Users</span>
+                    </Link>
+
+                    <Link to="/admin/vaccination-scheduler" className="flex items-center px-4 py-2 bg-teal-50 hover:bg-teal-100 rounded-lg transition duration-150">
+                        <svg className="w-5 h-5 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span className="text-gray-900 font-medium">Vaccination Scheduler</span>
                     </Link>
 
                     <Link to="/admin/settings" className="flex items-center px-4 py-2 bg-green-50 hover:bg-green-100 rounded-lg transition duration-150">
@@ -133,10 +195,9 @@ function AdminDashboard() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                    </div>
-                    <p className="text-3xl font-bold">{stats.pendingApprovals}</p>
+                    </div>                    <p className="text-3xl font-bold">{stats.pendingApprovals}</p>
                     <div className="mt-2 flex">
-                        <Link to="/admin/users/approval" className="text-sm text-blue-600 hover:text-blue-800">Review now</Link>
+                        <Link to="/admin/pending-approvals" className="text-sm text-blue-600 hover:text-blue-800">Review now</Link>
                     </div>
                 </div>                <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between mb-4">
@@ -219,28 +280,37 @@ function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white rounded-lg shadow">
                     <div className="p-6 border-b">
                         <h2 className="text-xl font-semibold">Recent Activities</h2>
-                    </div>
-                    <div className="p-6">
-                        <ul className="divide-y divide-gray-200">
+                    </div>                    <div className="p-6">
+                        <div className="space-y-4">
                             {recentActivities.map(activity => (
-                                <li key={activity.id} className="py-3">
-                                    <div className="flex items-start">
-                                        <div className="mr-4 mt-1">
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{activity.user}</p>
-                                            <p className="text-sm text-gray-500">{activity.action}</p>
-                                            <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+                                <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-lg">
+                                            {getActivityIcon(activity.type)}
                                         </div>
                                     </div>
-                                </li>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-2">
+                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                    {activity.user}
+                                                </p>
+                                                <span className="text-xs text-gray-500">({activity.userRole})</span>
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getSeverityBadge(activity.severity)}`}>
+                                                    {activity.severity}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-400">{activity.time}</p>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
+                                        <div className="flex items-center justify-between mt-2">
+                                            <p className="text-xs text-gray-500">IP: {activity.ipAddress}</p>
+                                            <p className="text-xs text-gray-400">{activity.timestamp}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             ))}
-                        </ul>                        <div className="mt-4">
+                        </div><div className="mt-4">
                             <Link to="/admin/activities" className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
                                 View all activities
                                 <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
