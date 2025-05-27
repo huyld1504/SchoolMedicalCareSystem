@@ -68,14 +68,14 @@ function HealthRecordForm() {
           class: "5A",
           studentId: "STU-2023-001",
           photoUrl: null,
-  
+
           // Medical Background
           bloodType: "A+",
           height: "145",
           weight: "38",
           allergies: ["Peanuts", "Dust mites"],
           chronicConditions: ["Asthma"],
-  
+
           // Vision and Hearing
           visionLeft: "20/25",
           visionRight: "20/25",
@@ -83,13 +83,13 @@ function HealthRecordForm() {
           hearingLeft: "normal",
           hearingRight: "normal",
           hearingAid: false,
-  
+
           // Vaccination History
           vaccinations: ["MMR", "Tetanus", "Polio", "Hepatitis B"],
-  
+
           // Medical Treatment History
           treatments: ["Asthma medication - prescribed Jan 2023"],
-  
+
           // Emergency Contacts
           emergencyContacts: [
             {
@@ -107,13 +107,13 @@ function HealthRecordForm() {
               email: "susan.johnson@example.com",
             },
           ],
-  
+
           // Medical Coverage
           insuranceProvider: "HealthPlus Insurance",
           insuranceNumber: "HP-98765432",
           familyDoctor: "Dr. Sarah Williams",
           doctorPhone: "555-222-3333",
-  
+
           // Consent
           consentEmergencyTreatment: true,
           consentMedicationAdmin: true,
@@ -239,7 +239,7 @@ function HealthRecordForm() {
       const valueExists = formData[field].some(
         item => item.toLowerCase() === value.trim().toLowerCase()
       );
-      
+
       if (!valueExists) {
         setFormData((prev) => ({
           ...prev,
@@ -267,7 +267,7 @@ function HealthRecordForm() {
 
   const addContact = () => {
     setFormData((prev) => ({
-      ...prev,      emergencyContacts: [
+      ...prev, emergencyContacts: [
         ...prev.emergencyContacts,
         { name: "", relationship: "", otherRelationship: "", phone: "", email: "" },
       ],
@@ -281,20 +281,19 @@ function HealthRecordForm() {
     }));
   };
 
-    const handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     setIsSubmitting(true);
     console.log("Form submitted:", formData);
-    
+
     // In a real app, you would send this data to your API
     // Simulate API call with setTimeout
-    setTimeout(() => {
-      // Prepare success message based on mode
-      const message = isEditMode 
-        ? "Health record updated successfully!"
-        : "Health record created successfully!";
-      
+    setTimeout(() => {      // Prepare success message based on mode
+      const message = isEditMode
+        ? "Hồ sơ sức khỏe đã được cập nhật thành công!"
+        : "Hồ sơ sức khỏe đã được tạo thành công!";
+
       alert(message);
       // Redirect to the list page after submission
       navigate('/parent/health-records');
@@ -303,111 +302,109 @@ function HealthRecordForm() {
   };
   // Tab content components
   const renderPersonalInfo = () => (
-    <div className="space-y-6">
-            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Student Photo
-        </label>
-        
-        <div className="flex flex-col md:flex-row items-center gap-6">
-          {/* Photo Preview */}
-          <div className="w-full md:w-1/3 flex justify-center">
-            <div className="relative w-40 h-40 overflow-hidden border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-100">
-              {previewImage ? (
-                <img 
-                  src={previewImage} 
-                  alt="Preview" 
-                  className="h-full w-full object-cover" 
-                />
-              ) : (
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-16 w-16 text-gray-400" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={1} 
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
-                  />
-                </svg>
-              )}
-            </div>
-          </div>
-          
-          {/* Upload Controls */}
-          <div className="w-full md:w-2/3">
-            <div className="flex items-center justify-center w-full">
-              <label
-                htmlFor="photo-upload"
-                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50"
+    <div className="space-y-6">            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+      <label className="block text-sm font-medium text-gray-700 mb-3">
+        Ảnh học sinh
+      </label>
+
+      <div className="flex flex-col md:flex-row items-center gap-6">
+        {/* Photo Preview */}
+        <div className="w-full md:w-1/3 flex justify-center">
+          <div className="relative w-40 h-40 overflow-hidden border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-100">
+            {previewImage ? (
+              <img
+                src={previewImage}
+                alt="Xem trước"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-16 w-16 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg
-                    className="w-8 h-8 mb-3 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    ></path>
-                  </svg>
-                  <p className="mb-1 text-sm text-gray-500">
-                    <span className="font-semibold">Click to upload</span> or drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 2MB)</p>
-                </div>
-                <input 
-                  id="photo-upload" 
-                  type="file" 
-                  name="photo" 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      setFormData({ ...formData, photo: file });
-                      setPreviewImage(URL.createObjectURL(file));
-                    }
-                  }}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
-              </label>
-            </div>
-            
-            {formData.photo && (
-              <div className="flex justify-between items-center mt-3">
-                <span className="text-sm text-gray-500 truncate max-w-[200px]">
-                  {formData.photo.name}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({ ...formData, photo: null });
-                    setPreviewImage(null);
-                  }}
-                  className="text-red-500 hover:text-red-700 text-sm font-medium"
-                >
-                  Remove
-                </button>
-              </div>
+              </svg>
             )}
           </div>
         </div>
+
+        {/* Upload Controls */}
+        <div className="w-full md:w-2/3">
+          <div className="flex items-center justify-center w-full">
+            <label
+              htmlFor="photo-upload"
+              className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50"
+            >
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg
+                  className="w-8 h-8 mb-3 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  ></path>
+                </svg>
+                <p className="mb-1 text-sm text-gray-500">
+                  <span className="font-semibold">Nhấp để tải lên</span> hoặc kéo thả
+                </p>
+                <p className="text-xs text-gray-500">PNG, JPG hoặc JPEG (TỐI ĐA 2MB)</p>
+              </div>
+              <input
+                id="photo-upload"
+                type="file"
+                name="photo"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setFormData({ ...formData, photo: file });
+                    setPreviewImage(URL.createObjectURL(file));
+                  }
+                }}
+              />
+            </label>
+          </div>
+
+          {formData.photo && (
+            <div className="flex justify-between items-center mt-3">
+              <span className="text-sm text-gray-500 truncate max-w-[200px]">
+                {formData.photo.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, photo: null });
+                  setPreviewImage(null);
+                }}
+                className="text-red-500 hover:text-red-700 text-sm font-medium"
+              >
+                Xóa
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+    </div>
 
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
-          </label>
+        <div>          <label className="block text-sm font-medium text-gray-700 mb-1">
+          Tên đầy đủ
+        </label>
           <input
             type="text"
             name="firstName"
@@ -415,16 +412,15 @@ function HealthRecordForm() {
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
             required
-            placeholder="Enter full name"
+            placeholder="Nhập tên đầy đủ"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Student ID
-          </label>
+        <div>          <label className="block text-sm font-medium text-gray-700 mb-1">
+          Mã học sinh
+        </label>
           <input
             type="text"
             name="studentId"
@@ -432,13 +428,12 @@ function HealthRecordForm() {
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
             required
-            placeholder="Enter studentID"
-            
+            placeholder="Nhập mã học sinh"
+
           />
-        </div>
-        <div>
+        </div>        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Class
+            Lớp
           </label>
           <input
             type="text"
@@ -446,14 +441,12 @@ function HealthRecordForm() {
             value={formData.class}
             onChange={handleInputChange}
             className="w-full p-2 border border-gray-300 rounded"
-            placeholder="Enter class"
+            placeholder="Nhập lớp"
           />
-        </div>      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        </div></div>      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Date of Birth
+            Ngày sinh
           </label>
           <input
             type="date"
@@ -466,7 +459,7 @@ function HealthRecordForm() {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Gender
+            Giới tính
           </label>
           <select
             name="gender"
@@ -475,10 +468,10 @@ function HealthRecordForm() {
             className="w-full p-2 border border-gray-300 rounded"
             required
           >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+            <option value="">Chọn giới tính</option>
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+            <option value="other">Khác</option>
           </select>
         </div>
       </div>
@@ -486,77 +479,76 @@ function HealthRecordForm() {
   );
 
   const renderMedicalBackground = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Blood Type
-          </label>
-          <select
-            name="bloodType"
-            value={formData.bloodType}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Select Blood Type</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="unknown">Unknown</option>
-          </select>
-        </div>        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Height (cm)
-          </label>
-          <select
-            name="height"
-            value={formData.height}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Select height</option>
-            {/* Generate height options from 50 to 220 cm */}
-            {Array.from({ length: 171 }, (_, i) => i + 50).map((h) => (
-              <option key={h} value={h.toString()}>
-                {h} cm
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Weight (kg)
-          </label>
-          <select
-            name="weight"
-            value={formData.weight}
-            onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            <option value="">Select weight</option>
-            {/* Generate weight options from 1 to 150 kg */}
-            {Array.from({ length: 150 }, (_, i) => i + 1).map((w) => (
-              <option key={w} value={w.toString()}>
-                {w} kg
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>      <div>
+    <div className="space-y-6">      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Allergies
+          Nhóm máu
+        </label>
+        <select
+          name="bloodType"
+          value={formData.bloodType}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">Chọn nhóm máu</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+          <option value="unknown">Chưa biết</option>
+        </select>
+      </div>        <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Chiều cao (cm)
+        </label>
+        <select
+          name="height"
+          value={formData.height}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">Chọn chiều cao</option>
+          {/* Generate height options from 50 to 220 cm */}
+          {Array.from({ length: 171 }, (_, i) => i + 50).map((h) => (
+            <option key={h} value={h.toString()}>
+              {h} cm
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Cân nặng (kg)
+        </label>
+        <select
+          name="weight"
+          value={formData.weight}
+          onChange={handleInputChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">Chọn cân nặng</option>
+          {/* Generate weight options from 1 to 150 kg */}
+          {Array.from({ length: 150 }, (_, i) => i + 1).map((w) => (
+            <option key={w} value={w.toString()}>
+              {w} kg
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Dị ứng
         </label>
         <div className="flex items-center space-x-2">
           <input
             type="text"
             id="allergy-input"
             className="w-full p-2 border border-gray-300 rounded"
-            placeholder="Enter allergy and press Add"
+            placeholder="Nhập dị ứng và nhấn Thêm"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -576,7 +568,7 @@ function HealthRecordForm() {
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Add
+            Thêm
           </button>
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -596,19 +588,19 @@ function HealthRecordForm() {
             </span>
           ))}
           {formData.allergies.length === 0 && (
-            <span className="text-sm text-gray-500">No allergies added</span>
+            <span className="text-sm text-gray-500">Chưa có dị ứng nào được thêm</span>
           )}
         </div>
       </div>      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Chronic Conditions
+          Bệnh mạn tính
         </label>
         <div className="flex items-center space-x-2">
           <input
             type="text"
             id="condition-input"
             className="w-full p-2 border border-gray-300 rounded"
-            placeholder="Enter condition and press Add"
+            placeholder="Nhập bệnh tình và nhấn Thêm"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -628,7 +620,7 @@ function HealthRecordForm() {
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Add
+            Thêm
           </button>
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -648,7 +640,7 @@ function HealthRecordForm() {
             </span>
           ))}
           {formData.chronicConditions.length === 0 && (
-            <span className="text-sm text-gray-500">No conditions added</span>
+            <span className="text-sm text-gray-500">Chưa có bệnh tình nào được thêm</span>
           )}
         </div>
       </div>
@@ -656,61 +648,58 @@ function HealthRecordForm() {
   );
 
   const renderVisionHearing = () => (
-    <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-medium text-gray-800 mb-4">
-          Vision Information
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Vision (Left Eye)
-            </label>
-            <input
-              type="text"
-              name="visionLeft"
-              value={formData.visionLeft}
-              onChange={handleInputChange}
-              placeholder="e.g., 20/20"
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Vision (Right Eye)
-            </label>
-            <input
-              type="text"
-              name="visionRight"
-              value={formData.visionRight}
-              onChange={handleInputChange}
-              placeholder="e.g., 20/20"
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-        </div>
-        <div className="mt-4">
-          <label className="inline-flex items-center">
-            <input
-              type="checkbox"
-              name="wearGlasses"
-              checked={formData.wearGlasses}
-              onChange={handleInputChange}
-              className="h-4 w-4 text-blue-600"
-            />
-            <span className="ml-2">Wears glasses or contacts</span>
+    <div className="space-y-8">      <div>
+      <h3 className="text-lg font-medium text-gray-800 mb-4">
+        Thông tin thị lực
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thị lực (Mắt trái)
           </label>
+          <input
+            type="text"
+            name="visionLeft"
+            value={formData.visionLeft}
+            onChange={handleInputChange}
+            placeholder="ví dụ: 20/20"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thị lực (Mắt phải)
+          </label>
+          <input
+            type="text"
+            name="visionRight"
+            value={formData.visionRight}
+            onChange={handleInputChange}
+            placeholder="ví dụ: 20/20"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
         </div>
       </div>
-
-      <div>
+      <div className="mt-4">
+        <label className="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="wearGlasses"
+            checked={formData.wearGlasses}
+            onChange={handleInputChange}
+            className="h-4 w-4 text-blue-600"
+          />
+          <span className="ml-2">Đeo kính hoặc kính áp tròng</span>
+        </label>
+      </div>
+    </div>      <div>
         <h3 className="text-lg font-medium text-gray-800 mb-4">
-          Hearing Information
+          Thông tin thính giác
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hearing (Left Ear)
+              Thính giác (Tai trái)
             </label>
             <select
               name="hearingLeft"
@@ -718,16 +707,16 @@ function HealthRecordForm() {
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             >
-              <option value="">Select Status</option>
-              <option value="normal">Normal</option>
-              <option value="mild_loss">Mild Loss</option>
-              <option value="moderate_loss">Moderate Loss</option>
-              <option value="severe_loss">Severe Loss</option>
+              <option value="">Chọn tình trạng</option>
+              <option value="normal">Bình thường</option>
+              <option value="mild_loss">Suy giảm nhẹ</option>
+              <option value="moderate_loss">Suy giảm vừa</option>
+              <option value="severe_loss">Suy giảm nặng</option>
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Hearing (Right Ear)
+              Thính giác (Tai phải)
             </label>
             <select
               name="hearingRight"
@@ -735,11 +724,11 @@ function HealthRecordForm() {
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
             >
-              <option value="">Select Status</option>
-              <option value="normal">Normal</option>
-              <option value="mild_loss">Mild Loss</option>
-              <option value="moderate_loss">Moderate Loss</option>
-              <option value="severe_loss">Severe Loss</option>
+              <option value="">Chọn tình trạng</option>
+              <option value="normal">Bình thường</option>
+              <option value="mild_loss">Suy giảm nhẹ</option>
+              <option value="moderate_loss">Suy giảm vừa</option>
+              <option value="severe_loss">Suy giảm nặng</option>
             </select>
           </div>
         </div>
@@ -752,149 +741,145 @@ function HealthRecordForm() {
               onChange={handleInputChange}
               className="h-4 w-4 text-blue-600"
             />
-            <span className="ml-2">Uses hearing aid</span>
+            <span className="ml-2">Sử dụng máy trợ thính</span>
           </label>
         </div>
       </div>
     </div>
   );
 
-  const renderEmergencyContacts = () => (
-    <div className="space-y-6">
-      <p className="text-gray-600">
-        Add at least one emergency contact who can be reached during school
-        hours in case of emergency.
-      </p>
+  const renderEmergencyContacts = () => (<div className="space-y-6">
+    <p className="text-gray-600">
+      Thêm ít nhất một liên hệ khẩn cấp có thể liên lạc được trong giờ học
+      trong trường hợp khẩn cấp.
+    </p>
 
-      {formData.emergencyContacts.map((contact, index) => (
-        <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-800">
-              Contact {index + 1}
-            </h3>
-            {index > 0 && (
-              <button
-                type="button"
-                onClick={() => removeContact(index)}
-                className="text-red-600 hover:text-red-800"
-              >
-                Remove
-              </button>
-            )}
+    {formData.emergencyContacts.map((contact, index) => (
+      <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">          <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium text-gray-800">
+          Liên hệ {index + 1}
+        </h3>
+        {index > 0 && (
+          <button
+            type="button"
+            onClick={() => removeContact(index)}
+            className="text-red-600 hover:text-red-800"
+          >
+            Xóa
+          </button>
+        )}
+      </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>              <label className="block text-sm font-medium text-gray-700 mb-1">
+            Họ và tên
+          </label>
+            <input
+              type="text"
+              value={contact.name}
+              onChange={(e) =>
+                handleContactChange(index, "name", e.target.value)
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={contact.name}
-                onChange={(e) =>
-                  handleContactChange(index, "name", e.target.value)
-                }
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              />
-            </div>
-            <div>              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Relationship
-              </label>
-              <select
-                value={contact.relationship}
-                onChange={(e) =>
-                  handleContactChange(index, "relationship", e.target.value)
-                }
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              >
-                <option value="">Select Relationship</option>
-                <option value="parent">Parent</option>
-                <option value="guardian">Guardian</option>
-                <option value="grandparent">Grandparent</option>
-                <option value="relative">Other Relative</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Additional field for "Other" relationship */}
-          {contact.relationship === "other" && (
-            <div className="mt-4">              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Relationship details
-              </label>
-              <input
-                type="text"
-                value={contact.otherRelationship}
-                onChange={(e) =>
-                  handleContactChange(index, "otherRelationship", e.target.value)
-                }
-                className="w-full p-2 border border-gray-300 rounded"
-                placeholder="e.g., Family Friend"
-                required
-              />
-            </div>
-          )}          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                value={contact.phone}
-                onChange={(e) =>
-                  handleContactChange(index, "phone", e.target.value)
-                }
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                value={contact.email}
-                onChange={(e) =>
-                  handleContactChange(index, "email", e.target.value)
-                }
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
+          <div>              <label className="block text-sm font-medium text-gray-700 mb-1">
+            Mối quan hệ
+          </label>
+            <select
+              value={contact.relationship}
+              onChange={(e) =>
+                handleContactChange(index, "relationship", e.target.value)
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            >
+              <option value="">Chọn mối quan hệ</option>
+              <option value="parent">Cha/Mẹ</option>
+              <option value="guardian">Người giám hộ</option>
+              <option value="grandparent">Ông/Bà</option>
+              <option value="relative">Họ hàng khác</option>
+              <option value="other">Khác</option>
+            </select>
           </div>
         </div>
-      ))}
 
-      <button
-        type="button"
-        onClick={addContact}
-        className="flex items-center justify-center w-full p-2 border border-dashed border-gray-300 rounded-lg hover:bg-gray-50"
+        {/* Additional field for "Other" relationship */}
+        {contact.relationship === "other" && (
+          <div className="mt-4">              <label className="block text-sm font-medium text-gray-700 mb-1">
+            Chi tiết mối quan hệ
+          </label>
+            <input
+              type="text"
+              value={contact.otherRelationship}
+              onChange={(e) =>
+                handleContactChange(index, "otherRelationship", e.target.value)
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+              placeholder="ví dụ: Bạn gia đình"
+              required
+            />
+          </div>
+        )}          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          <div>              <label className="block text-sm font-medium text-gray-700 mb-1">
+            Số điện thoại
+          </label>
+            <input
+              type="tel"
+              value={contact.phone}
+              onChange={(e) =>
+                handleContactChange(index, "phone", e.target.value)
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={contact.email}
+              onChange={(e) =>
+                handleContactChange(index, "email", e.target.value)
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <button
+      type="button"
+      onClick={addContact}
+      className="flex items-center justify-center w-full p-2 border border-dashed border-gray-300 rounded-lg hover:bg-gray-50"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 mr-1 text-gray-500"
+        viewBox="0 0 20 20"
+        fill="currentColor"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 mr-1 text-gray-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-            clipRule="evenodd"
-          />
-        </svg>
-        Add Another Contact
-      </button>
-    </div>
+        <path
+          fillRule="evenodd"
+          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+          clipRule="evenodd"
+        />
+      </svg>
+      Thêm liên hệ khác
+    </button>
+  </div>
   );
 
   const renderConsents = () => (
     <div className="space-y-6">
-      <div className="bg-yellow-50 p-4 border-l-4 border-yellow-400 mb-6">
-        <p className="text-sm text-yellow-700">
-          These consents are important for providing appropriate medical care to
-          your child during school hours. Please read each statement carefully.
-        </p>
+      <div className="bg-yellow-50 p-4 border-l-4 border-yellow-400 mb-6">        <p className="text-sm text-yellow-700">
+        Những đồng ý này rất quan trọng để cung cấp chăm sóc y tế phù hợp cho
+        con bạn trong giờ học. Vui lòng đọc kỹ từng tuyên bố.
+      </p>
       </div>
 
       <div className="space-y-4">
@@ -911,17 +896,16 @@ function HealthRecordForm() {
                 required
               />
             </div>
-            <div className="ml-3 text-sm">
-              <label
-                htmlFor="consent-emergency"
-                className="font-medium text-gray-700"
-              >
-                Emergency Medical Treatment
-              </label>
+            <div className="ml-3 text-sm">              <label
+              htmlFor="consent-emergency"
+              className="font-medium text-gray-700"
+            >
+              Điều trị y tế khẩn cấp
+            </label>
               <p className="text-gray-500">
-                I authorize the school to arrange for emergency medical
-                treatment for my child in the event I cannot be reached. This
-                includes transportation to a medical facility if necessary.
+                Tôi ủy quyền cho nhà trường sắp xếp điều trị y tế khẩn cấp
+                cho con tôi trong trường hợp không thể liên lạc với tôi. Điều này
+                bao gồm việc vận chuyển đến cơ sở y tế nếu cần thiết.
               </p>
             </div>
           </div>
@@ -939,18 +923,17 @@ function HealthRecordForm() {
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               />
             </div>
-            <div className="ml-3 text-sm">
-              <label
-                htmlFor="consent-medication"
-                className="font-medium text-gray-700"
-              >
-                Medication Administration
-              </label>
+            <div className="ml-3 text-sm">              <label
+              htmlFor="consent-medication"
+              className="font-medium text-gray-700"
+            >
+              Quản lý thuốc
+            </label>
               <p className="text-gray-500">
-                I authorize the school nurse or designated personnel to
-                administer prescribed medications that I have provided according
-                to instructions. I will update the school if there are any
-                changes to my child's medication needs.
+                Tôi ủy quyền cho y tá trường hoặc nhân viên được chỉ định
+                cấp phát thuốc theo toa đã được tôi cung cấp theo
+                hướng dẫn. Tôi sẽ cập nhật cho nhà trường nếu có bất kỳ
+                thay đổi nào về nhu cầu thuốc của con tôi.
               </p>
             </div>
           </div>
@@ -968,17 +951,16 @@ function HealthRecordForm() {
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               />
             </div>
-            <div className="ml-3 text-sm">
-              <label
-                htmlFor="consent-info-sharing"
-                className="font-medium text-gray-700"
-              >
-                Health Information Sharing
-              </label>
+            <div className="ml-3 text-sm">              <label
+              htmlFor="consent-info-sharing"
+              className="font-medium text-gray-700"
+            >
+              Chia sẻ thông tin sức khỏe
+            </label>
               <p className="text-gray-500">
-                I authorize the school nurse to share relevant health
-                information with appropriate school staff who may need to know
-                this information to maintain my child's health and safety.
+                Tôi ủy quyền cho y tá trường chia sẻ thông tin sức khỏe có liên quan
+                với nhân viên trường thích hợp, những người có thể cần biết
+                thông tin này để duy trì sức khỏe và an toàn của con tôi.
               </p>
             </div>
           </div>
@@ -986,27 +968,24 @@ function HealthRecordForm() {
       </div>
     </div>
   );
-
   // Tab navigation
   const tabs = [
-    { id: 1, name: "Personal Info", icon: "user" },
-    { id: 2, name: "Medical Background", icon: "heartbeat" },
-    { id: 3, name: "Vision & Hearing", icon: "eye" },
-    { id: 4, name: "Emergency Contacts", icon: "phone" },
-    { id: 5, name: "Consents", icon: "check-circle" },
+    { id: 1, name: "Thông tin cá nhân", icon: "user" },
+    { id: 2, name: "Thông tin y tế", icon: "heartbeat" },
+    { id: 3, name: "Thị lực & Thính giác", icon: "eye" },
+    { id: 4, name: "Liên hệ khẩn cấp", icon: "phone" },
+    { id: 5, name: "Đồng ý", icon: "check-circle" },
   ];
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          {isEditMode ? "Edit Health Record" : "New Health Record"}
-        </h1>
-        <p className="text-gray-600">
-          Please complete all sections of this health record form. Information
-          provided will be kept confidential and used only for your child's
-          healthcare at school.
-        </p>
-      </div>
+    <div className="max-w-4xl mx-auto py-8 px-4">      <div className="mb-8">
+      <h1 className="text-3xl font-bold mb-2">
+        {isEditMode ? "Chỉnh sửa hồ sơ sức khỏe" : "Hồ sơ sức khỏe mới"}
+      </h1>
+      <p className="text-gray-600">
+        Vui lòng hoàn thành tất cả các phần của biểu mẫu hồ sơ sức khỏe này. Thông tin
+        được cung cấp sẽ được bảo mật và chỉ được sử dụng cho việc chăm sóc sức khỏe của con bạn tại trường.
+      </p>
+    </div>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
@@ -1022,11 +1001,10 @@ function HealthRecordForm() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === tab.id
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                       ? "border-blue-600 text-blue-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
+                    }`}
                 >
                   {tab.name}
                 </button>
@@ -1041,16 +1019,14 @@ function HealthRecordForm() {
             {activeTab === 3 && renderVisionHearing()}
             {activeTab === 4 && renderEmergencyContacts()}
             {activeTab === 5 && renderConsents()}
-          </div>
-
-          {/* Form Actions */}
+          </div>          {/* Form Actions */}
           <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={() => navigate(-1)}
               className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -1058,9 +1034,9 @@ function HealthRecordForm() {
               className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               {isSubmitting ? (
-                <span>Saving...</span>
+                <span>Đang lưu...</span>
               ) : (
-                <span>{isEditMode ? "Update" : "Save"}</span>
+                <span>{isEditMode ? "Cập nhật" : "Lưu"}</span>
               )}
             </button>
           </div>

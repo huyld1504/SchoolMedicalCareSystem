@@ -62,13 +62,12 @@ function VaccinationScheduler() {
             description: "Liều nhắc lại vaccine viêm gan B cho học sinh THCS",
             location: "Phòng y tế",
             status: "planning",
-            createdBy: "Dr. Emily Wilson",
+            createdBy: "BS. Emily Wilson",
             createdAt: "2025-05-24",
             notificationsSent: false,
             reminderDays: 14,
-            timeSlots: [
-                { startTime: "09:00", endTime: "11:00", assigned: "Dr. Wilson", capacity: 25, registered: 0 },
-                { startTime: "14:00", endTime: "16:00", assigned: "Y tá David", capacity: 25, registered: 0 }
+            timeSlots: [{ startTime: "09:00", endTime: "11:00", assigned: "BS. Wilson", capacity: 25, registered: 0 },
+            { startTime: "14:00", endTime: "16:00", assigned: "Y tá David", capacity: 25, registered: 0 }
             ]
         }
     ];
@@ -89,11 +88,9 @@ function VaccinationScheduler() {
         "HPV (Ung thư cổ tử cung)",
         "Varicella (Thủy đậu)",
         "Khác"
-    ];
-
-    useEffect(() => {
+    ]; useEffect(() => {
         setSchedules(sampleSchedules);
-    }, []);
+    }, [sampleSchedules]);
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -338,8 +335,8 @@ function VaccinationScheduler() {
                                     onClick={() => handleSendNotifications(schedule)}
                                     disabled={schedule.notificationsSent}
                                     className={`px-3 py-1 rounded text-sm font-medium ${schedule.notificationsSent
-                                            ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                            : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                                        ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                                        : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
                                         }`}
                                 >
                                     {schedule.notificationsSent ? '✓ Đã thông báo' : 'Gửi thông báo'}

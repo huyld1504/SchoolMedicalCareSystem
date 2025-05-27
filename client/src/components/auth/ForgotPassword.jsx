@@ -17,11 +17,9 @@ function ForgotPassword() {
     try {
       // In a real application, this would be an API call to your backend
       // For demo purposes, we'll simulate a successful password reset email
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setMessage("Check your email for further instructions");
+      await new Promise((resolve) => setTimeout(resolve, 1500)); setMessage("Kiểm tra email của bạn để biết hướng dẫn tiếp theo");
     } catch (error) {
-      setError("Failed to reset password");
+      setError("Đặt lại mật khẩu thất bại");
       console.error("Password reset error:", error);
     } finally {
       setLoading(false);
@@ -30,14 +28,13 @@ function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/">
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            School Medical System
-          </h2>
-        </Link>
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">        <Link to="/">
+        <h2 className="text-center text-3xl font-extrabold text-gray-900">
+          Hệ thống Y tế Trường học
+        </h2>
+      </Link>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Reset your password
+          Đặt lại mật khẩu
         </h2>
       </div>
 
@@ -62,13 +59,12 @@ function ForgotPassword() {
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
+            <div>              <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Địa chỉ email
+            </label>
               <div className="mt-1">
                 <input
                   id="email"
@@ -89,14 +85,12 @@ function ForgotPassword() {
                 disabled={loading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                {loading ? "Sending..." : "Send Password Reset Email"}
+                {loading ? "Đang gửi..." : "Gửi email đặt lại mật khẩu"}
               </button>
             </div>
-          </form>
-
-          <div className="mt-6 text-center">
+          </form>          <div className="mt-6 text-center">
             <Link to="/login" className="text-blue-600 hover:text-blue-500">
-              Back to login
+              Quay lại đăng nhập
             </Link>
           </div>
         </div>

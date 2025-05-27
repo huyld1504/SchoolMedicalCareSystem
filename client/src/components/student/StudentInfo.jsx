@@ -28,22 +28,21 @@ function StudentInfo() {
         <div className="container mx-auto flex justify-between items-center">
           <Link to="/dashboard" className="text-white text-xl font-bold">
             Magnus Health
-          </Link>
-          <Link to="/dashboard" className="text-white">
-            Back to Dashboard
+          </Link>          <Link to="/dashboard" className="text-white">
+            Trở về Dashboard
           </Link>
         </div>
       </nav>
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold mb-6">Student Information</h2>
+          <h2 className="text-2xl font-bold mb-6">Thông tin học sinh</h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Personal Information */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name</label>
+                <label className="block text-sm font-medium text-gray-700">Tên</label>
                 <input
                   type="text"
                   value={studentData.firstName}
@@ -54,7 +53,7 @@ function StudentInfo() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                <label className="block text-sm font-medium text-gray-700">Họ</label>
                 <input
                   type="text"
                   value={studentData.lastName}
@@ -65,7 +64,7 @@ function StudentInfo() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                <label className="block text-sm font-medium text-gray-700">Ngày sinh</label>
                 <input
                   type="date"
                   value={studentData.dateOfBirth}
@@ -75,24 +74,23 @@ function StudentInfo() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Gender</label>
+              <div>                <label className="block text-sm font-medium text-gray-700">Giới tính</label>
                 <select
                   value={studentData.gender}
                   onChange={(e) => setStudentData({ ...studentData, gender: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="">Chọn giới tính</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                  <option value="other">Khác</option>
                 </select>
               </div>
 
               {/* Academic Information */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Grade</label>
+                <label className="block text-sm font-medium text-gray-700">Khối</label>
                 <input
                   type="text"
                   value={studentData.grade}
@@ -103,7 +101,7 @@ function StudentInfo() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Class</label>
+                <label className="block text-sm font-medium text-gray-700">Lớp</label>
                 <input
                   type="text"
                   value={studentData.class}
@@ -114,7 +112,7 @@ function StudentInfo() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Student ID</label>
+                <label className="block text-sm font-medium text-gray-700">Mã học sinh</label>
                 <input
                   type="text"
                   value={studentData.studentId}
@@ -128,7 +126,7 @@ function StudentInfo() {
             {/* Contact Information */}
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
                 <textarea
                   value={studentData.address}
                   onChange={(e) => setStudentData({ ...studentData, address: e.target.value })}
@@ -140,7 +138,7 @@ function StudentInfo() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                  <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
                   <input
                     type="tel"
                     value={studentData.phone}
@@ -164,13 +162,12 @@ function StudentInfo() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Save Information
-              </button>
+            <div className="flex justify-end">              <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Lưu thông tin
+            </button>
             </div>
           </form>
         </div>

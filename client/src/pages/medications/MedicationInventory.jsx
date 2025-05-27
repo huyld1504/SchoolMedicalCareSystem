@@ -168,10 +168,8 @@ function MedicationInventory() {
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchMedications();
-  }, []);
+    }; fetchMedications();
+  }, [sampleMedications]);
 
   // Handle sort
   const handleSort = (field) => {
@@ -345,16 +343,16 @@ function MedicationInventory() {
   // Get status text
   const getStatusText = (medication) => {
     if (medication.quantity === 0) {
-      return "Out of Stock";
+      return "Hết Hàng";
     } else if (medication.quantity <= medication.minQuantity) {
-      return "Low Stock";
+      return "Sắp Hết";
     } else if (
       new Date(medication.expiryDate) <=
       new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
     ) {
-      return "Expiring Soon";
+      return "Gần Hết Hạn";
     } else {
-      return "In Stock";
+      return "Còn Hàng";
     }
   };
 
@@ -367,9 +365,8 @@ function MedicationInventory() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold mb-1">Medication Inventory</h1>
-          <p className="text-gray-600">Manage and track medication stock levels</p>
+        <div>          <h1 className="text-3xl font-bold mb-1">Kho Thuốc</h1>
+          <p className="text-gray-600">Quản lý và theo dõi mức tồn kho thuốc</p>
         </div>
 
         <div className="flex gap-2">
@@ -391,7 +388,7 @@ function MedicationInventory() {
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               ></path>
             </svg>
-            Add Medication
+            Thêm Thuốc
           </button>
 
           <Link
@@ -412,7 +409,7 @@ function MedicationInventory() {
                 d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               ></path>
             </svg>
-            Generate Report
+            Tạo Báo Cáo
           </Link>
         </div>
       </div>
@@ -424,33 +421,31 @@ function MedicationInventory() {
             <label
               htmlFor="search"
               className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Search Medications
+            >              Search Medications
             </label>
             <input
               type="text"
               id="search"
-              placeholder="Search by name or generic name"
+              placeholder="Tìm kiếm theo tên hoặc tên gốc"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="categoryFilter"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Category
-            </label>
+          <div>            <label
+            htmlFor="categoryFilter"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Danh Mục
+          </label>
             <select
               id="categoryFilter"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="all">All Categories</option>
+              <option value="all">Tất Cả Danh Mục</option>
               {categories.map((category, index) => (
                 <option key={index} value={category}>
                   {category}
@@ -459,23 +454,21 @@ function MedicationInventory() {
             </select>
           </div>
 
-          <div>
-            <label
-              htmlFor="statusFilter"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Status
-            </label>
+          <div>            <label
+            htmlFor="statusFilter"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Trạng Thái
+          </label>
             <select
               id="statusFilter"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="low">Low Stock</option>
-              <option value="out">Out of Stock</option>
-              <option value="expiring">Expiring Soon</option>
+            >              <option value="all">Tất Cả Trạng Thái</option>
+              <option value="low">Sắp Hết</option>
+              <option value="out">Hết Hàng</option>
+              <option value="expiring">Gần Hết Hạn</option>
             </select>
           </div>
         </div>
@@ -500,10 +493,9 @@ function MedicationInventory() {
                   />
                 </svg>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Low Stock Alert</h3>
+              <div className="ml-3">                <h3 className="text-sm font-medium text-red-800">Cảnh Báo Sắp Hết Hàng</h3>
                 <div className="mt-2 text-sm text-red-700">
-                  <p>The following medications require attention:</p>
+                  <p>Các loại thuốc sau cần được chú ý:</p>
                   <ul className="list-disc list-inside mt-1">
                     {medications
                       .filter(
@@ -512,25 +504,23 @@ function MedicationInventory() {
                       .slice(0, 5)
                       .map((med) => (
                         <li key={med.id}>
-                          {med.name} (
-                          {med.quantity === 0
-                            ? "Out of stock"
-                            : `Low stock: ${med.quantity} units`}
+                          {med.name} (                          {med.quantity === 0
+                            ? "Hết hàng"
+                            : `Sắp hết: ${med.quantity} viên`}
                           )
                         </li>
                       ))}
                     {medications.filter(
                       (med) => med.quantity === 0 || med.quantity <= med.minQuantity
-                    ).length > 5 && (
-                        <li>
-                          And{" "}
-                          {
-                            medications.filter(
-                              (med) => med.quantity === 0 || med.quantity <= med.minQuantity
-                            ).length - 5
-                          }{" "}
-                          more...
-                        </li>
+                    ).length > 5 && (<li>
+                      Và{" "}
+                      {
+                        medications.filter(
+                          (med) => med.quantity === 0 || med.quantity <= med.minQuantity
+                        ).length - 5
+                      }{" "}
+                      loại khác...
+                    </li>
                       )}
                   </ul>
                 </div>
@@ -541,10 +531,9 @@ function MedicationInventory() {
 
       {/* Medications List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="p-6 border-b flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Medications</h2>
+        <div className="p-6 border-b flex justify-between items-center">          <h2 className="text-xl font-semibold">Thuốc</h2>
           <div className="text-sm text-gray-500">
-            {filteredMedications.length} items found
+            Tìm thấy {filteredMedications.length} loại thuốc
           </div>
         </div>
 
@@ -552,10 +541,9 @@ function MedicationInventory() {
           <div className="p-12 flex justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
-        ) : filteredMedications.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            No medications found matching your criteria.
-          </div>
+        ) : filteredMedications.length === 0 ? (<div className="p-12 text-center text-gray-500">
+          Không tìm thấy thuốc nào phù hợp với tiêu chí của bạn.
+        </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -566,39 +554,39 @@ function MedicationInventory() {
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("name")}
                   >
-                    Medication {getSortIndicator("name")}
+                    Thuốc {getSortIndicator("name")}
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Details
+                    Chi Tiết
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("quantity")}
                   >
-                    Quantity {getSortIndicator("quantity")}
+                    Số Lượng {getSortIndicator("quantity")}
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Status
+                    Trạng Thái
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     onClick={() => handleSort("expiry")}
                   >
-                    Expiry Date {getSortIndicator("expiry")}
+                    Ngày Hết Hạn {getSortIndicator("expiry")}
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Actions
+                    Hành Động
                   </th>
                 </tr>
               </thead>
@@ -614,21 +602,19 @@ function MedicationInventory() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
-                        <div>Category: {medication.category}</div>
-                        <div>Dose: {medication.dose}</div>
-                        <div>Form: {medication.form}</div>
+                      <div className="text-sm text-gray-900">                        <div>Danh mục: {medication.category}</div>
+                        <div>Liều: {medication.dose}</div>
+                        <div>Dạng: {medication.form}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {medication.quantity} units
+                      <div className="text-sm text-gray-900">                        {medication.quantity} viên
                       </div>
                       <div className="text-xs text-gray-500">
-                        Min: {medication.minQuantity}
+                        Tối thiểu: {medication.minQuantity}
                       </div>
                       <div className="text-xs text-gray-500">
-                        Location: {medication.location}
+                        Vị trí: {medication.location}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -647,14 +633,13 @@ function MedicationInventory() {
                       <button
                         className="text-green-600 hover:text-green-900 mr-4"
                         onClick={() => handleRestockMedication(medication)}
-                      >
-                        Restock
+                      >                        Bổ Sung
                       </button>
                       <button
                         className="text-blue-600 hover:text-blue-900"
                         onClick={() => handleEditMedication(medication)}
                       >
-                        Edit
+                        Chỉnh Sửa
                       </button>
                     </td>
                   </tr>
@@ -672,12 +657,11 @@ function MedicationInventory() {
           <div className="bg-white rounded-lg shadow-lg mx-auto max-w-md w-full max-h-[85vh] flex flex-col">
             {/* Added max-h-[85vh] to limit height to 85% of viewport */}
             <div className="p-5 border-b flex justify-between items-center">
-              <h3 className="text-xl font-semibold">
-                {modalType === "add"
-                  ? "Add New Medication"
-                  : modalType === "edit"
-                    ? "Edit Medication"
-                    : "Restock Medication"}
+              <h3 className="text-xl font-semibold">                {modalType === "add"
+                ? "Thêm Thuốc Mới"
+                : modalType === "edit"
+                  ? "Chỉnh Sửa Thuốc"
+                  : "Bổ Sung Thuốc"}
               </h3>
               <button
                 type="button"
@@ -703,10 +687,9 @@ function MedicationInventory() {
                 {/* Show different forms based on modalType */}
                 {modalType === "restock" ? (
                   <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Medication
-                      </label>
+                    <div>                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Thuốc
+                    </label>
                       <div className="text-gray-900 font-medium">
                         {selectedMedication?.name}
                       </div>
@@ -714,10 +697,10 @@ function MedicationInventory() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Current Quantity
+                        Số Lượng Hiện Tại
                       </label>
                       <div className="text-gray-900">
-                        {selectedMedication?.quantity} units
+                        {selectedMedication?.quantity} viên
                       </div>
                     </div>
 
@@ -726,7 +709,7 @@ function MedicationInventory() {
                         htmlFor="restockQuantity"
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        Quantity to Add<span className="text-red-500">*</span>
+                        Số Lượng Cần Thêm<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
@@ -745,7 +728,7 @@ function MedicationInventory() {
                         htmlFor="expiryDate"
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        New Expiry Date
+                        Ngày Hết Hạn Mới
                       </label>
                       <input
                         type="date"
@@ -754,9 +737,8 @@ function MedicationInventory() {
                         value={formData.expiryDate}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Leave blank to keep current expiry date
+                      />                      <p className="text-sm text-gray-500 mt-1">
+                        Để trống để giữ ngày hết hạn hiện tại
                       </p>
                     </div>
                   </>
@@ -767,7 +749,7 @@ function MedicationInventory() {
                         htmlFor="name"
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        Medication Name<span className="text-red-500">*</span>
+                        Tên Thuốc<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -785,7 +767,7 @@ function MedicationInventory() {
                         htmlFor="genericName"
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        Generic Name
+                        Tên Gốc
                       </label>
                       <input
                         type="text"
@@ -803,7 +785,7 @@ function MedicationInventory() {
                           htmlFor="category"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Category<span className="text-red-500">*</span>
+                          Danh Mục<span className="text-red-500">*</span>
                         </label>
                         <select
                           id="category"
@@ -812,16 +794,15 @@ function MedicationInventory() {
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
                           required
-                        >
-                          <option value="">Select Category</option>
-                          <option value="Pain Relief">Pain Relief</option>
-                          <option value="Allergy">Allergy</option>
-                          <option value="Respiratory">Respiratory</option>
-                          <option value="Emergency">Emergency</option>
-                          <option value="Topical">Topical</option>
-                          <option value="Antibiotic">Antibiotic</option>
-                          <option value="Gastrointestinal">Gastrointestinal</option>
-                          <option value="Other">Other</option>
+                        >                          <option value="">Chọn Danh Mục</option>
+                          <option value="Pain Relief">Giảm Đau</option>
+                          <option value="Allergy">Dị Ứng</option>
+                          <option value="Respiratory">Hô Hấp</option>
+                          <option value="Emergency">Cấp Cứu</option>
+                          <option value="Topical">Bôi Ngoài</option>
+                          <option value="Antibiotic">Kháng Sinh</option>
+                          <option value="Gastrointestinal">Tiêu Hóa</option>
+                          <option value="Other">Khác</option>
                         </select>
                       </div>
 
@@ -830,7 +811,7 @@ function MedicationInventory() {
                           htmlFor="form"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Form<span className="text-red-500">*</span>
+                          Dạng<span className="text-red-500">*</span>
                         </label>
                         <select
                           id="form"
@@ -839,16 +820,15 @@ function MedicationInventory() {
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
                           required
-                        >
-                          <option value="">Select Form</option>
-                          <option value="Tablet">Tablet</option>
-                          <option value="Capsule">Capsule</option>
-                          <option value="Liquid">Liquid</option>
-                          <option value="Inhaler">Inhaler</option>
-                          <option value="Cream">Cream</option>
-                          <option value="Ointment">Ointment</option>
-                          <option value="Auto-Injector">Auto-Injector</option>
-                          <option value="Other">Other</option>
+                        >                          <option value="">Chọn Dạng</option>
+                          <option value="Tablet">Viên</option>
+                          <option value="Capsule">Nang</option>
+                          <option value="Liquid">Dạng Lỏng</option>
+                          <option value="Inhaler">Xịt</option>
+                          <option value="Cream">Kem</option>
+                          <option value="Ointment">Thuốc Mỡ</option>
+                          <option value="Auto-Injector">Tiêm Tự Động</option>
+                          <option value="Other">Khác</option>
                         </select>
                       </div>
                     </div>
@@ -858,7 +838,7 @@ function MedicationInventory() {
                         htmlFor="dose"
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        Dose
+                        Liều Lượng
                       </label>
                       <input
                         type="text"
@@ -876,7 +856,7 @@ function MedicationInventory() {
                           htmlFor="quantity"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Quantity<span className="text-red-500">*</span>
+                          Số Lượng<span className="text-red-500">*</span>
                         </label>
                         <input
                           type="number"
@@ -895,7 +875,7 @@ function MedicationInventory() {
                           htmlFor="minQuantity"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Minimum Stock Level<span className="text-red-500">*</span>
+                          Mức Tồn Kho Tối Thiểu<span className="text-red-500">*</span>
                         </label>
                         <input
                           type="number"
@@ -916,7 +896,7 @@ function MedicationInventory() {
                           htmlFor="expiryDate"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Expiry Date<span className="text-red-500">*</span>
+                          Ngày Hết Hạn<span className="text-red-500">*</span>
                         </label>
                         <input
                           type="date"
@@ -934,7 +914,7 @@ function MedicationInventory() {
                           htmlFor="location"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Storage Location<span className="text-red-500">*</span>
+                          Vị Trí Lưu Trữ<span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -953,7 +933,7 @@ function MedicationInventory() {
                         htmlFor="notes"
                         className="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        Notes
+                        Ghi Chú
                       </label>
                       <textarea
                         id="notes"
@@ -976,8 +956,7 @@ function MedicationInventory() {
                     setShowModal(false);
                     setSelectedMedication(null);
                   }}
-                >
-                  Close
+                >                  Đóng
                 </button>
 
                 <button
@@ -985,10 +964,10 @@ function MedicationInventory() {
                   className="px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-white font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
                   {modalType === "add"
-                    ? "Add Medication"
+                    ? "Thêm Thuốc"
                     : modalType === "edit"
-                      ? "Update Medication"
-                      : "Confirm Restock"}
+                      ? "Cập Nhật Thuốc"
+                      : "Xác Nhận Bổ Sung"}
                 </button>
               </div>
             </form>
@@ -1018,12 +997,11 @@ function MedicationInventory() {
                   />
                 </svg>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
-                  Expiring Soon
-                </h3>
+              <div className="ml-3">                <h3 className="text-sm font-medium text-yellow-800">
+                Gần Hết Hạn
+              </h3>
                 <div className="mt-2 text-sm text-yellow-700">
-                  <p>The following medications are expiring within 90 days:</p>
+                  <p>Các loại thuốc sau sẽ hết hạn trong vòng 90 ngày:</p>
                   <ul className="list-disc list-inside mt-1">
                     {medications
                       .filter(
@@ -1035,7 +1013,7 @@ function MedicationInventory() {
                       .slice(0, 5)
                       .map((med) => (
                         <li key={med.id}>
-                          {med.name} (Expires: {formatDate(med.expiryDate)})
+                          {med.name} (Hết hạn: {formatDate(med.expiryDate)})
                         </li>
                       ))}
                   </ul>

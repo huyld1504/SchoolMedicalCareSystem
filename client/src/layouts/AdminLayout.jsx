@@ -45,108 +45,104 @@ function AdminLayout({ children }) {
         </div>
         <nav className="nav flex-column p-2">
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
-            Main
+            Chính
           </div>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin"
           >
-            <i className="bi bi-speedometer2 me-2"></i> Dashboard
+            <i className="bi bi-speedometer2 me-2"></i> Bảng điều khiển
           </a>          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
-            Administration
+            Quản trị
           </div>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/users"
           >
-            <i className="bi bi-people me-2"></i> User Management
+            <i className="bi bi-people me-2"></i> Quản lý người dùng
           </a>
 
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/pending-approvals"
           >
-            <i className="bi bi-check-circle me-2"></i> Pending Approvals
+            <i className="bi bi-check-circle me-2"></i> Phê duyệt đang chờ
           </a>          <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/activities"
           >
-            <i className="bi bi-activity me-2"></i> System Activities
+            <i className="bi bi-activity me-2"></i> Hoạt động hệ thống
           </a>
 
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/vaccination-scheduler"
           >
-            <i className="bi bi-calendar-check me-2"></i> Vaccination Scheduler
+            <i className="bi bi-calendar-check me-2"></i> Lịch tiêm chủng
           </a>
 
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/settings"
           >
-            <i className="bi bi-gear me-2"></i> System Settings
+            <i className="bi bi-gear me-2"></i> Cài đặt hệ thống
           </a>
 
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
-            Analytics
-          </div>
-          <a
+            Phân tích
+          </div>          <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/reports"
-          >
-            <i className="bi bi-file-earmark-bar-graph me-2"></i> Reports
-            Overview
+          >            <i className="bi bi-file-earmark-bar-graph me-2"></i> Tổng quan
+            Báo cáo
           </a>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/reports/health"
           >
-            <i className="bi bi-heart-pulse me-2"></i> Health Reports
+            <i className="bi bi-heart-pulse me-2"></i> Báo cáo sức khỏe
           </a>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/reports/medication"
           >
-            <i className="bi bi-capsule me-2"></i> Medication Reports
+            <i className="bi bi-capsule me-2"></i> Báo cáo thuốc
           </a>          <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/reports/vaccination"
           >
-            <i className="bi bi-shield me-2"></i> Vaccination Reports
+            <i className="bi bi-shield me-2"></i> Báo cáo tiêm chủng
           </a>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/reports/incidents"
           >
-            <i className="bi bi-exclamation-triangle me-2"></i> Incident Reports
+            <i className="bi bi-exclamation-triangle me-2"></i> Báo cáo sự cố
           </a>
-        </nav>
-        <div className="mt-auto p-3 border-top">
+        </nav>        <div className="mt-auto p-3 border-top">
           <button className="btn btn-light w-100" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i> Logout
+            <i className="bi bi-box-arrow-right me-2"></i> Đăng xuất
           </button>
         </div>
       </div>
-      <div className="main-content">
-        <header className="bg-white shadow-sm p-3">
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <h2 className="mb-0">Admin Panel</h2>
-            </div>
-            <div className="d-flex">
-              <div className="btn-group me-2">
-                <button className="btn btn-outline-secondary">
-                  <i className="bi bi-bell"></i>
-                  <span className="badge bg-danger ms-1">5</span>
-                </button>
-                <button className="btn btn-outline-secondary">
-                  <i className="bi bi-gear"></i>
-                </button>
-              </div>
+      <div className="main-content">        <header className="bg-white shadow-sm p-3">
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 className="mb-0">Bảng điều khiển Quản trị</h2>
+          </div>
+          <div className="d-flex">
+            <div className="btn-group me-2">
+              <button className="btn btn-outline-secondary">
+                <i className="bi bi-bell"></i>
+                <span className="badge bg-danger ms-1">5</span>
+              </button>
+              <button className="btn btn-outline-secondary">
+                <i className="bi bi-gear"></i>
+              </button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
         <main className="p-4">{children}</main>
       </div>
     </div>

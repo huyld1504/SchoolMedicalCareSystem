@@ -1,29 +1,29 @@
-import React from 'react'
+import React from 'react';
 
 function MagnusTestimonials() {
   const testimonials = [
     {
       id: 1,
-      content: "Magnus Health has transformed how our school manages student health records. The transition from paper to digital was seamless, and we've saved countless hours on administrative tasks.",
+      content: "Magnus Health đã chuyển đổi cách thức trường chúng tôi quản lý hồ sơ sức khỏe học sinh. Việc chuyển từ giấy tờ sang số hóa rất mượt mà, và chúng tôi đã tiết kiệm vô số giờ làm việc hành chính.",
       name: "Sarah Johnson",
-      role: "School Nurse, Lakeside Academy",
+      role: "Y tá trường, Học viện Lakeside",
       avatar: "https://randomuser.me/api/portraits/women/32.jpg"
     },
     {
       id: 2,
-      content: "The compliance tracking features alone are worth the investment. We went from 70% to 98% immunization compliance in our first semester using Magnus Health.",
+      content: "Chỉ riêng tính năng theo dõi tuân thủ đã xứng đáng với khoản đầu tư. Chúng tôi đã tăng từ 70% lên 98% tuân thủ tiêm chủng trong học kỳ đầu tiên sử dụng Magnus Health.",
       name: "Michael Chen",
-      role: "Health Services Director, Westfield Prep",
+      role: "Giám đốc Dịch vụ Y tế, Westfield Prep",
       avatar: "https://randomuser.me/api/portraits/men/44.jpg"
     },
     {
       id: 3,
-      content: "Parents love the user-friendly interface, and our staff appreciates having all student health information readily accessible. Customer support has been exceptional.",
+      content: "Phụ huynh yêu thích giao diện thân thiện với người dùng, và nhân viên của chúng tôi đánh giá cao việc có thể truy cập dễ dàng tất cả thông tin sức khỏe học sinh. Hỗ trợ khách hàng rất xuất sắc.",
       name: "Jennifer Patel",
-      role: "Dean of Students, Riverside School",
+      role: "Trưởng phòng Học sinh, Trường Riverside",
       avatar: "https://randomuser.me/api/portraits/women/67.jpg"
     }
-  ]
+  ];
 
   return (
     <section id="testimonials" className="magnus-testimonials" style={{
@@ -43,7 +43,7 @@ function MagnusTestimonials() {
         right: '-250px',
         zIndex: 1
       }}></div>
-      
+
       <div style={{
         position: 'absolute',
         width: '300px',
@@ -54,7 +54,7 @@ function MagnusTestimonials() {
         left: '-150px',
         zIndex: 1
       }}></div>
-      
+
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         <div className="section-header text-center" style={{ marginBottom: '60px' }}>
           <span style={{
@@ -67,13 +67,13 @@ function MagnusTestimonials() {
             backgroundColor: '#e6f0ff',
             marginBottom: '1rem',
             letterSpacing: '0.5px'
-          }}>TESTIMONIALS</span>
+          }}>NHẬN XÉT</span>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 2.75rem)',
             fontWeight: '700',
             color: '#1a202c',
             marginBottom: '1rem'
-          }}>Trusted by Schools Nationwide</h2>
+          }}>Được tin tưởng bởi các trường học toàn quốc</h2>
           <div style={{
             width: '70px',
             height: '4px',
@@ -87,19 +87,19 @@ function MagnusTestimonials() {
             maxWidth: '700px',
             margin: '0 auto',
             lineHeight: '1.7'
-          }}>See what education professionals have to say about Magnus Health</p>
+          }}>Xem các chuyên gia giáo dục nói gì về Magnus Health</p>
         </div>
-        
-        <div className="testimonials-grid" style={{ 
+
+        <div className="testimonials-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '2.5rem'
         }}>
-          {testimonials.map((testimonial, index) => (
-            <div 
-              key={testimonial.id} 
+          {testimonials.map((testimonial) => (
+            <div
+              key={testimonial.id}
               className="testimonial-card"
-              style={{ 
+              style={{
                 backgroundColor: 'white',
                 borderRadius: '16px',
                 padding: '2.5rem',
@@ -125,7 +125,7 @@ function MagnusTestimonials() {
               }}>
                 "
               </div>
-              
+
               <div style={{ position: 'relative', zIndex: 2 }}>
                 {/* Star rating */}
                 <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '2px' }}>
@@ -135,7 +135,7 @@ function MagnusTestimonials() {
                     </svg>
                   ))}
                 </div>
-                
+
                 <p style={{
                   fontSize: '1.05rem',
                   color: '#4a5568',
@@ -144,16 +144,16 @@ function MagnusTestimonials() {
                   fontStyle: 'italic'
                 }}>"{testimonial.content}"</p>
               </div>
-              
+
               <div className="testimonial-card__author" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1rem',
                 marginTop: 'auto'
               }}>
-                <img 
-                  src={testimonial.avatar} 
-                  alt={testimonial.name} 
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.name}
                   style={{
                     width: '48px',
                     height: '48px',
@@ -179,7 +179,7 @@ function MagnusTestimonials() {
             </div>
           ))}
         </div>
-        
+
         {/* CTA button */}
         <div style={{
           textAlign: 'center',
@@ -202,15 +202,15 @@ function MagnusTestimonials() {
             fontSize: '0.9rem',
             letterSpacing: '0.5px'
           }}>
-            <span>Start Free Trial</span>
+            <span>Bắt đầu dùng thử miễn phí</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </a>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default MagnusTestimonials 
+export default MagnusTestimonials; 

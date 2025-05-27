@@ -15,124 +15,120 @@ function NurseDashboard() {
     pendingRequests: 3,
     absentStudents: 12,
   };
-
   const recentIncidents = [
     {
       id: 1,
       studentName: "Mia Chen",
-      grade: "3rd Grade",
-      issue: "Minor injury (scraped knee)",
+      grade: "Lớp 3",
+      issue: "Chấn thương nhẹ (trầy xước đầu gối)",
       time: "10:15 AM",
-      status: "Treated",
+      status: "Đã điều trị",
     },
     {
       id: 2,
       studentName: "James Rodriguez",
-      grade: "7th Grade",
-      issue: "Fever (100.4°F)",
+      grade: "Lớp 7",
+      issue: "Sốt (100.4°F)",
       time: "9:30 AM",
-      status: "Sent Home",
+      status: "Cho về nhà",
     },
     {
       id: 3,
       studentName: "Sarah Kim",
-      grade: "4th Grade",
-      issue: "Headache",
+      grade: "Lớp 4",
+      issue: "Đau đầu",
       time: "11:20 AM",
-      status: "Resting",
+      status: "Đang nghỉ ngơi",
     },
   ];
-
   const upcomingTasks = [
     {
       id: 1,
-      task: "Administer medication to Lucas White",
+      task: "Cấp thuốc cho Lucas White",
       time: "12:30 PM",
-      priority: "High",
+      priority: "Cao",
     },
     {
       id: 2,
-      task: "Vision screening for 5th grade",
+      task: "Khám thị lực cho lớp 5",
       time: "1:00 PM",
-      priority: "Medium",
+      priority: "Trung bình",
     },
     {
       id: 3,
-      task: "Review new medication forms",
+      task: "Xem xét các mẫu đơn thuốc mới",
       time: "3:00 PM",
-      priority: "Medium",
+      priority: "Trung bình",
     },
     {
       id: 4,
-      task: "Prepare vaccination clinic supplies",
+      task: "Chuẩn bị vật tư phòng tiêm chủng",
       time: "4:00 PM",
-      priority: "High",
+      priority: "Cao",
     },
   ];
-
   const stockAlerts = [
-    { id: 1, item: "Band-aids", status: "Low Stock", level: "15%" },
-    { id: 2, item: "Ibuprofen", status: "Low Stock", level: "20%" },
-    { id: 3, item: "Ice packs", status: "Adequate", level: "60%" },
+    { id: 1, item: "Băng dán", status: "Sắp hết", level: "15%" },
+    { id: 2, item: "Ibuprofen", status: "Sắp hết", level: "20%" },
+    { id: 3, item: "Túi chườm lạnh", status: "Đủ", level: "60%" },
   ];
-
   // Full schedule data
   const fullSchedule = [
     {
       id: 1,
-      task: "Administer medication to Lucas White",
+      task: "Cấp thuốc cho Lucas White",
       time: "12:30 PM",
-      priority: "High",
-      date: "Today",
+      priority: "Cao",
+      date: "Hôm nay",
     },
     {
       id: 2,
-      task: "Vision screening for 5th grade",
+      task: "Khám thị lực cho lớp 5",
       time: "1:00 PM",
-      priority: "Medium",
-      date: "Today",
+      priority: "Trung bình",
+      date: "Hôm nay",
     },
     {
       id: 3,
-      task: "Review new medication forms",
+      task: "Xem xét các mẫu đơn thuốc mới",
       time: "3:00 PM",
-      priority: "Medium",
-      date: "Today",
+      priority: "Trung bình",
+      date: "Hôm nay",
     },
     {
       id: 4,
-      task: "Prepare vaccination clinic supplies",
+      task: "Chuẩn bị vật tư phòng tiêm chủng",
       time: "4:00 PM",
-      priority: "High",
-      date: "Today",
+      priority: "Cao",
+      date: "Hôm nay",
     },
     {
       id: 5,
-      task: "Weekly health meeting with principal",
+      task: "Họp y tế hàng tuần với hiệu trưởng",
       time: "9:00 AM",
-      priority: "Medium",
-      date: "Tomorrow",
+      priority: "Trung bình",
+      date: "Ngày mai",
     },
     {
       id: 6,
-      task: "Dental screening for 3rd grade",
+      task: "Khám răng cho lớp 3",
       time: "10:30 AM",
-      priority: "Medium",
-      date: "Tomorrow",
+      priority: "Trung bình",
+      date: "Ngày mai",
     },
     {
       id: 7,
-      task: "Update student health records",
+      task: "Cập nhật hồ sơ sức khỏe học sinh",
       time: "1:00 PM",
-      priority: "High",
-      date: "May 23, 2025",
+      priority: "Cao",
+      date: "23 tháng 5, 2025",
     },
     {
       id: 8,
-      task: "Annual CPR certification renewal",
+      task: "Gia hạn chứng chỉ CPR hàng năm",
       time: "9:00 AM",
-      priority: "High",
-      date: "May 24, 2025",
+      priority: "Cao",
+      date: "24 tháng 5, 2025",
     },
   ];
 
@@ -157,9 +153,8 @@ function NurseDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Nurse Dashboard</h1>
-        <p className="text-gray-600">Welcome back, {currentUser?.name}</p>
+      <div className="mb-8">        <h1 className="text-3xl font-bold mb-2">Bảng điều khiển Y tá</h1>
+        <p className="text-gray-600">Chào mừng trở lại, {currentUser?.name}</p>
       </div>      {/* Statistics Cards */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-50 rounded-lg shadow p-6">
@@ -220,11 +215,11 @@ function NurseDashboard() {
         </div>
       </div> */}
 
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Recent Incidents */}
         <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Recent Incidents</h2>
-          </div>
+          <h2 className="text-xl font-semibold">Sự cố gần đây</h2>
+        </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -233,25 +228,25 @@ function NurseDashboard() {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Student
+                    Học sinh
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Issue
+                    Vấn đề
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Time
+                    Thời gian
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Status
+                    Trạng thái
                   </th>
                 </tr>
               </thead>
@@ -272,19 +267,17 @@ function NurseDashboard() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {incident.time}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${
-                          incident.status === "Treated"
-                            ? "bg-green-100 text-green-800"
-                            : incident.status === "Sent Home"
+                    <td className="px-6 py-4 whitespace-nowrap">                      <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${incident.status === "Đã điều trị"
+                          ? "bg-green-100 text-green-800"
+                          : incident.status === "Cho về nhà"
                             ? "bg-red-100 text-red-800"
                             : "bg-blue-100 text-blue-800"
                         }`}
-                      >
-                        {incident.status}
-                      </span>
+                    >
+                      {incident.status}
+                    </span>
                     </td>
                   </tr>
                 ))}
@@ -295,20 +288,20 @@ function NurseDashboard() {
               to="/nurse/events/new"
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out mr-2"
             >
-              Record New Incident
+              Ghi lại sự cố mới
             </Link>
             <Link
               to="/nurse/events"
               className="inline-block bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
             >
-              View Events List
+              Xem danh sách sự kiện
             </Link>
           </div>
         </div>
 
         {/* Upcoming Tasks */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Upcoming Tasks</h2>
+          <h2 className="text-xl font-semibold mb-4">Nhiệm vụ sắp tới</h2>
           <ul className="divide-y divide-gray-200">
             {upcomingTasks.map((task) => (
               <li key={task.id} className="py-3">
@@ -318,12 +311,11 @@ function NurseDashboard() {
                 <p className="mt-1">{task.task}</p>
               </li>
             ))}
-          </ul>
-          <button
+          </ul>          <button
             onClick={() => setShowFullSchedule(true)}
             className="block w-full mt-4 text-center text-blue-600 hover:text-blue-800"
           >
-            View full schedule →
+            Xem lịch trình đầy đủ →
           </button>
         </div>
       </div>
@@ -332,29 +324,28 @@ function NurseDashboard() {
       {showFullSchedule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Full Schedule</h2>
-                <button
-                  onClick={closeFullSchedule}
-                  className="text-gray-500 hover:text-gray-700"
+            <div className="p-6">              <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Lịch trình đầy đủ</h2>
+              <button
+                onClick={closeFullSchedule}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
 
               <div className="divide-y divide-gray-200">
                 {Object.entries(
@@ -372,9 +363,8 @@ function NurseDashboard() {
                       {tasks.map((task) => (
                         <li
                           key={task.id}
-                          className={`bg-gray-50 p-3 rounded-lg ${
-                            completedTasks.includes(task.id) ? "bg-green-50" : ""
-                          }`}
+                          className={`bg-gray-50 p-3 rounded-lg ${completedTasks.includes(task.id) ? "bg-green-50" : ""
+                            }`}
                         >
                           <div className="flex justify-between items-center">
                             <div className="flex items-center">
@@ -385,11 +375,10 @@ function NurseDashboard() {
                                 className="h-4 w-4 text-blue-600 rounded border-gray-300 mr-3"
                               />
                               <span
-                                className={`font-medium ${
-                                  completedTasks.includes(task.id)
+                                className={`font-medium ${completedTasks.includes(task.id)
                                     ? "line-through text-gray-500"
                                     : ""
-                                }`}
+                                  }`}
                               >
                                 {task.time}
                               </span>
@@ -415,11 +404,10 @@ function NurseDashboard() {
                             </button>
                           </div>
                           <p
-                            className={`mt-1 pl-7 ${
-                              completedTasks.includes(task.id)
+                            className={`mt-1 pl-7 ${completedTasks.includes(task.id)
                                 ? "line-through text-gray-500"
                                 : ""
-                            }`}
+                              }`}
                           >
                             {task.task}
                           </p>
@@ -428,14 +416,12 @@ function NurseDashboard() {
                     </ul>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-6 flex justify-end">
+              </div>              <div className="mt-6 flex justify-end">
                 <button
                   onClick={closeFullSchedule}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
                 >
-                  Close
+                  Đóng
                 </button>
               </div>
             </div>
@@ -443,73 +429,61 @@ function NurseDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">        {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold mb-4">Hành động nhanh</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Convert anchor tags to Link components */}
-            <Link
+            {/* Convert anchor tags to Link components */}            <Link
               to="/nurse/medications/dashboard"
               className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
             >
-              <h3 className="font-medium">Medication Dashboard</h3>
+              <h3 className="font-medium">Bảng điều khiển thuốc</h3>
               <p className="text-sm text-gray-600 mt-1">
-                View and manage all medications
+                Xem và quản lý tất cả thuốc
               </p>
-            </Link>
-
-            <Link
+            </Link>            <Link
               to="/nurse/medications/admin"
               className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition"
             >
-              <h3 className="font-medium">Administer Medication</h3>
+              <h3 className="font-medium">Cấp thuốc</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Record medication given to student
+                Ghi lại thuốc đã cấp cho học sinh
               </p>
-            </Link>
-
-            <Link
+            </Link>            <Link
               to="/nurse/medications/approval"
               className="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition"
             >
-              <h3 className="font-medium">Review Medication Requests</h3>
+              <h3 className="font-medium">Xem xét yêu cầu thuốc</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Approve pending medication requests
+                Phê duyệt các yêu cầu thuốc đang chờ
               </p>
-            </Link>
-
-            <Link
+            </Link>            <Link
               to="/nurse/health-checks"
               className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
             >
-              <h3 className="font-medium">Health Checkups</h3>
+              <h3 className="font-medium">Khám sức khỏe</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Manage scheduled health screenings
+                Quản lý các cuộc khám sàng lọc sức khỏe đã lên lịch
               </p>
-            </Link>
-
-            <Link
+            </Link>            <Link
               to="/nurse/vaccinations"
               className="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition"
             >
-              <h3 className="font-medium">Vaccination Programs</h3>
+              <h3 className="font-medium">Chương trình tiêm chủng</h3>
               <p className="text-sm text-gray-600 mt-1">
-                View and manage vaccination campaigns
+                Xem và quản lý các chiến dịch tiêm chủng
               </p>
             </Link>
           </div>
-        </div>
-
-        {/* Inventory Status */}
+        </div>        {/* Inventory Status */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Inventory Status</h2>
+            <h2 className="text-xl font-semibold">Tình trạng kho</h2>
             <Link
               to="/nurse/medications/inventory"
               className="text-blue-600 hover:text-blue-800 text-sm"
             >
-              Manage inventory
+              Quản lý kho
             </Link>
           </div>
 
@@ -521,27 +495,23 @@ function NurseDashboard() {
               >
                 <div>
                   <h3 className="font-medium">{item.item}</h3>
-                  <span
-                    className={`inline-block mt-1 px-2 py-1 text-xs rounded-full
-                    ${
-                      item.status === "Low Stock"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-green-100 text-green-800"
+                  <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full
+                    ${item.status === "Sắp hết"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-green-100 text-green-800"
                     }`}
                   >
                     {item.status}
                   </span>
                 </div>
                 <div className="w-24">
-                  <div className="bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className={`h-2.5 rounded-full ${
-                        item.status === "Low Stock"
-                          ? "bg-red-600"
-                          : "bg-green-600"
+                  <div className="bg-gray-200 rounded-full h-2.5">                    <div
+                    className={`h-2.5 rounded-full ${item.status === "Sắp hết"
+                        ? "bg-red-600"
+                        : "bg-green-600"
                       }`}
-                      style={{ width: item.level }}
-                    ></div>
+                    style={{ width: item.level }}
+                  ></div>
                   </div>
                   <div className="text-right text-xs text-gray-500 mt-1">
                     {item.level}
@@ -549,12 +519,11 @@ function NurseDashboard() {
                 </div>
               </li>
             ))}
-          </ul>
-          <Link
+          </ul>          <Link
             to="/nurse/medications/inventory/order"
             className="block mt-4 text-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
           >
-            Place Supply Order
+            Đặt hàng vật tư
           </Link>
         </div>
       </div>

@@ -9,7 +9,7 @@ function HealthRecordView() {
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(1);
-  
+
   // State for student basic information
   const [studentInfo, setStudentInfo] = useState({
     firstName: "",
@@ -20,7 +20,7 @@ function HealthRecordView() {
     studentId: "",
     photo: null,
   });
-  
+
   // State for multiple health records
   const [healthRecords, setHealthRecords] = useState([]);
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(0);
@@ -40,132 +40,128 @@ function HealthRecordView() {
         class: "10A",
         studentId: "ST2024001",
       });
-      
+
       // Set multiple health records
-      setHealthRecords([
-        {
-          id: "rec1",
-          recordDate: "2025-05-15",
-          recordType: "Annual Check-up",
-          provider: "Dr. Sarah Johnson",
-          bloodType: "A+",
-          height: "170",
-          weight: "65",
-          allergies: ["Peanuts", "Dust"],
-          chronicConditions: ["Asthma"],
-          visionLeft: "20/20",
-          visionRight: "20/20",
-          wearGlasses: true,
-          hearingLeft: "normal",
-          hearingRight: "normal",
-          hearingAid: false,
-          emergencyContacts: [
-            {
-              name: "Mary Doe",
-              relationship: "mother",
-              phone: "555-0123",
-              email: "mary.doe@email.com",
-            },
-          ],
-          consentEmergencyTreatment: true,
-          consentMedicationAdmin: true,
-          consentInformationSharing: true,
-          notes: "Regular annual check-up. Student is in good health overall.",
-        },
-        {
-          id: "rec2",
-          recordDate: "2024-11-10",
-          recordType: "Immunization",
-          provider: "Dr. Michael Chen",
-          bloodType: "A+",
-          height: "168",
-          weight: "63",
-          allergies: ["Peanuts", "Dust"],
-          chronicConditions: ["Asthma"],
-          visionLeft: "20/20",
-          visionRight: "20/20",
-          wearGlasses: true,
-          hearingLeft: "normal",
-          hearingRight: "normal",
-          hearingAid: false,
-          emergencyContacts: [
-            {
-              name: "Mary Doe",
-              relationship: "mother",
-              phone: "555-0123",
-              email: "mary.doe@email.com",
-            },
-          ],
-          consentEmergencyTreatment: true,
-          consentMedicationAdmin: true,
-          consentInformationSharing: true,
-          vaccinations: ["Flu vaccine", "Tdap booster"],
-          notes: "All vaccinations administered successfully with no adverse reactions.",
-        },
-        {
-          id: "rec3",
-          recordDate: "2024-07-22",
-          recordType: "Sports Physical",
-          provider: "Dr. Lisa Patel",
-          bloodType: "A+",
-          height: "165",
-          weight: "60",
-          allergies: ["Peanuts", "Dust"],
-          chronicConditions: ["Asthma"],
-          visionLeft: "20/20",
-          visionRight: "20/20",
-          wearGlasses: true,
-          hearingLeft: "normal",
-          hearingRight: "normal",
-          hearingAid: false,
-          emergencyContacts: [
-            {
-              name: "Mary Doe",
-              relationship: "mother",
-              phone: "555-0123",
-              email: "mary.doe@email.com",
-            },
-          ],
-          consentEmergencyTreatment: true,
-          consentMedicationAdmin: true,
-          consentInformationSharing: true,
-          sportsFitness: {
-            cardioEndurance: "Good",
-            strength: "Average",
-            flexibility: "Good",
+      setHealthRecords([{
+        id: "rec1",
+        recordDate: "2025-05-15",
+        recordType: "Khám sức khỏe hàng năm",
+        provider: "Bác sĩ Sarah Johnson",
+        bloodType: "A+",
+        height: "170",
+        weight: "65",
+        allergies: ["Đậu phộng", "Bụi"],
+        chronicConditions: ["Hen suyễn"],
+        visionLeft: "20/20",
+        visionRight: "20/20",
+        wearGlasses: true,
+        hearingLeft: "bình thường",
+        hearingRight: "bình thường",
+        hearingAid: false,
+        emergencyContacts: [
+          {
+            name: "Mary Doe",
+            relationship: "mẹ",
+            phone: "555-0123",
+            email: "mary.doe@email.com",
           },
-          notes: "Cleared for all sports activities. Advised to use inhaler before exercise.",
+        ],
+        consentEmergencyTreatment: true,
+        consentMedicationAdmin: true,
+        consentInformationSharing: true,
+        notes: "Khám sức khỏe hàng năm thường kỳ. Học sinh có sức khỏe tốt nói chung.",
+      },
+      {
+        id: "rec2",
+        recordDate: "2024-11-10",
+        recordType: "Tiêm chủng",
+        provider: "Bác sĩ Michael Chen",
+        bloodType: "A+",
+        height: "168",
+        weight: "63",
+        allergies: ["Đậu phộng", "Bụi"],
+        chronicConditions: ["Hen suyễn"],
+        visionLeft: "20/20",
+        visionRight: "20/20",
+        wearGlasses: true,
+        hearingLeft: "bình thường",
+        hearingRight: "bình thường",
+        hearingAid: false,
+        emergencyContacts: [
+          {
+            name: "Mary Doe",
+            relationship: "mẹ",
+            phone: "555-0123",
+            email: "mary.doe@email.com",
+          },
+        ],
+        consentEmergencyTreatment: true,
+        consentMedicationAdmin: true,
+        consentInformationSharing: true, vaccinations: ["Vắc xin cúm", "Vắc xin Tdap"],
+        notes: "Tất cả vắc xin đã được tiêm thành công, không có phản ứng phụ.",
+      },
+      {
+        id: "rec3",
+        recordDate: "2024-07-22",
+        recordType: "Khám sức khỏe thể thao",
+        provider: "Bác sĩ Lisa Patel",
+        bloodType: "A+",
+        height: "165",
+        weight: "60",
+        allergies: ["Đậu phộng", "Bụi"],
+        chronicConditions: ["Hen suyễn"],
+        visionLeft: "20/20",
+        visionRight: "20/20",
+        wearGlasses: true,
+        hearingLeft: "bình thường",
+        hearingRight: "bình thường",
+        hearingAid: false,
+        emergencyContacts: [
+          {
+            name: "Mary Doe",
+            relationship: "mẹ",
+            phone: "555-0123",
+            email: "mary.doe@email.com",
+          },
+        ],
+        consentEmergencyTreatment: true,
+        consentMedicationAdmin: true,
+        consentInformationSharing: true, sportsFitness: {
+          cardioEndurance: "Tốt",
+          strength: "Trung bình",
+          flexibility: "Tốt",
         },
+        notes: "Được phép tham gia tất cả hoạt động thể thao. Khuyến nghị sử dụng ống hít trước khi tập thể dục.",
+      },
       ]);
-      
+
       setLoading(false);
     }, 1000);
-  }, [id]);
-  const renderPersonalInfo = () => (
+  }, [id]); const renderPersonalInfo = () => (
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Personal Information
+          Thông tin cá nhân
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Full Name</p>
+            <p className="text-sm font-medium text-gray-500">Tên đầy đủ</p>
             <p className="mt-1">{studentInfo.firstName}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Student ID</p>
+            <p className="text-sm font-medium text-gray-500">Mã học sinh</p>
             <p className="mt-1">{studentInfo.studentId}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Class</p>
+            <p className="text-sm font-medium text-gray-500">Lớp</p>
             <p className="mt-1">{studentInfo.class}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Date of Birth</p>
+            <p className="text-sm font-medium text-gray-500">Ngày sinh</p>
             <p className="mt-1">{studentInfo.dateOfBirth}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Gender</p>
+            <p className="text-sm font-medium text-gray-500">Giới tính</p>
             <p className="mt-1 capitalize">{studentInfo.gender}</p>
           </div>
         </div>
@@ -176,26 +172,25 @@ function HealthRecordView() {
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Medical Information
+          Thông tin y tế
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Blood Type</p>
+            <p className="text-sm font-medium text-gray-500">Nhóm máu</p>
             <p className="mt-1">{currentRecord.bloodType}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Height</p>
+          </div>          <div>
+            <p className="text-sm font-medium text-gray-500">Chiều cao</p>
             <p className="mt-1">{currentRecord.height} cm</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Weight</p>
+            <p className="text-sm font-medium text-gray-500">Cân nặng</p>
             <p className="mt-1">{currentRecord.weight} kg</p>
           </div>
         </div>
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Allergies</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Dị ứng</h3>
         <div className="flex flex-wrap gap-2">
           {currentRecord.allergies?.length > 0 ? (
             currentRecord.allergies.map((allergy, index) => (
@@ -207,14 +202,14 @@ function HealthRecordView() {
               </span>
             ))
           ) : (
-            <p className="text-gray-500">No known allergies</p>
+            <p className="text-gray-500">Không có dị ứng đã biết</p>
           )}
         </div>
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Chronic Conditions
+          Bệnh mạn tính
         </h3>
         <div className="flex flex-wrap gap-2">
           {currentRecord.chronicConditions?.length > 0 ? (
@@ -225,86 +220,83 @@ function HealthRecordView() {
               >
                 {condition}
               </span>
-            ))
-          ) : (
-            <p className="text-gray-500">No chronic conditions</p>
+            ))) : (
+            <p className="text-gray-500">Không có bệnh mạn tính</p>
           )}
         </div>
       </div>
-      
+
       {currentRecord.notes && (
         <div className="bg-gray-50 p-6 rounded-lg">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Notes
+            Ghi chú
           </h3>
           <p className="text-gray-700">{currentRecord.notes}</p>
         </div>
       )}
     </div>
-  );
-  const renderVisionHearing = () => (
+  ); const renderVisionHearing = () => (
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Vision Information
+          Thông tin thị lực
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Vision (Left Eye)</p>
+            <p className="text-sm font-medium text-gray-500">Thị lực (Mắt trái)</p>
             <p className="mt-1">{currentRecord.visionLeft}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Vision (Right Eye)</p>
+            <p className="text-sm font-medium text-gray-500">Thị lực (Mắt phải)</p>
             <p className="mt-1">{currentRecord.visionRight}</p>
           </div>
         </div>
         <p className="mt-4">
           {currentRecord.wearGlasses
-            ? "Wears glasses or contacts"
-            : "Does not wear glasses or contacts"}
+            ? "Đeo kính hoặc kính áp tròng"
+            : "Không đeo kính hoặc kính áp tròng"}
         </p>
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Hearing Information
+          Thông tin thính giác
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Hearing (Left Ear)</p>
+            <p className="text-sm font-medium text-gray-500">Thính giác (Tai trái)</p>
             <p className="mt-1 capitalize">{currentRecord.hearingLeft?.replace("_", " ")}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Hearing (Right Ear)</p>
+            <p className="text-sm font-medium text-gray-500">Thính giác (Tai phải)</p>
             <p className="mt-1 capitalize">{currentRecord.hearingRight?.replace("_", " ")}</p>
           </div>
         </div>
         <p className="mt-4">
-          {currentRecord.hearingAid ? "Uses hearing aid" : "Does not use hearing aid"}
+          {currentRecord.hearingAid ? "Sử dụng máy trợ thính" : "Không sử dụng máy trợ thính"}
         </p>
       </div>
     </div>
-  );
-  const renderEmergencyContacts = () => (
+  ); const renderEmergencyContacts = () => (
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Emergency Contacts
+          Liên hệ khẩn cấp
         </h3>
         {currentRecord.emergencyContacts?.map((contact, index) => (
           <div key={index} className="mb-6 last:mb-0">
-            <h4 className="font-medium text-gray-900 mb-2">Contact {index + 1}</h4>
+            <h4 className="font-medium text-gray-900 mb-2">Liên hệ {index + 1}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-500">Name</p>
+                <p className="text-sm font-medium text-gray-500">Tên</p>
                 <p className="mt-1">{contact.name}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Relationship</p>
+                <p className="text-sm font-medium text-gray-500">Mối quan hệ</p>
                 <p className="mt-1 capitalize">{contact.relationship}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Phone</p>
+                <p className="text-sm font-medium text-gray-500">Điện thoại</p>
                 <p className="mt-1">{contact.phone}</p>
               </div>
               <div>
@@ -320,66 +312,61 @@ function HealthRecordView() {
   const renderConsents = () => (
     <div className="space-y-6">
       <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Consent Status</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Trạng thái đồng ý</h3>
         <div className="space-y-4">
           <div className="flex items-center">
             <div
-              className={`w-4 h-4 rounded mr-2 ${
-                currentRecord.consentEmergencyTreatment ? "bg-green-500" : "bg-red-500"
-              }`}
-            ></div>
-            <span className="font-medium">Emergency Medical Treatment</span>
+              className={`w-4 h-4 rounded mr-2 ${currentRecord.consentEmergencyTreatment ? "bg-green-500" : "bg-red-500"
+                }`}
+            ></div>            <span className="font-medium">Điều trị y tế khẩn cấp</span>
           </div>
           <div className="flex items-center">
             <div
-              className={`w-4 h-4 rounded mr-2 ${
-                currentRecord.consentMedicationAdmin ? "bg-green-500" : "bg-red-500"
-              }`}
+              className={`w-4 h-4 rounded mr-2 ${currentRecord.consentMedicationAdmin ? "bg-green-500" : "bg-red-500"
+                }`}
             ></div>
-            <span className="font-medium">Medication Administration</span>
+            <span className="font-medium">Quản lý thuốc</span>
           </div>
           <div className="flex items-center">
             <div
-              className={`w-4 h-4 rounded mr-2 ${
-                currentRecord.consentInformationSharing ? "bg-green-500" : "bg-red-500"
-              }`}
+              className={`w-4 h-4 rounded mr-2 ${currentRecord.consentInformationSharing ? "bg-green-500" : "bg-red-500"
+                }`}
             ></div>
-            <span className="font-medium">Health Information Sharing</span>
+            <span className="font-medium">Chia sẻ thông tin sức khỏe</span>
           </div>
         </div>
       </div>
     </div>
-  );  const tabs = [
-    { id: 1, name: "Personal Info" },
-    { id: 2, name: "Medical Background" },
-    { id: 3, name: "Vision & Hearing" },
-    { id: 4, name: "Emergency Contacts" },
-    { id: 5, name: "Consents" },
+  ); const tabs = [
+    { id: 1, name: "Thông tin cá nhân" },
+    { id: 2, name: "Thông tin y tế" },
+    { id: 3, name: "Thị lực & Thính giác" },
+    { id: 4, name: "Liên hệ khẩn cấp" },
+    { id: 5, name: "Đồng ý" },
   ];
 
   const handlePrint = () => {
     window.print();
   };
-  
   // Render a comprehensive view of the health record
   const renderComprehensiveRecord = (record) => (
     <div className="space-y-6">
       {/* Medical Information */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Medical Information
+          Thông tin y tế
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Blood Type</p>
+            <p className="text-sm font-medium text-gray-500">Nhóm máu</p>
             <p className="mt-1">{record.bloodType}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Height</p>
+            <p className="text-sm font-medium text-gray-500">Chiều cao</p>
             <p className="mt-1">{record.height} cm</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Weight</p>
+            <p className="text-sm font-medium text-gray-500">Cân nặng</p>
             <p className="mt-1">{record.weight} kg</p>
           </div>
         </div>
@@ -387,7 +374,7 @@ function HealthRecordView() {
 
       {/* Allergies */}
       <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Allergies</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Dị ứng</h3>
         <div className="flex flex-wrap gap-2">
           {record.allergies?.length > 0 ? (
             record.allergies.map((allergy, index) => (
@@ -399,7 +386,7 @@ function HealthRecordView() {
               </span>
             ))
           ) : (
-            <p className="text-gray-500">No known allergies</p>
+            <p className="text-gray-500">Không có dị ứng đã biết</p>
           )}
         </div>
       </div>
@@ -407,7 +394,7 @@ function HealthRecordView() {
       {/* Chronic Conditions */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Chronic Conditions
+          Bệnh mạn tính
         </h3>
         <div className="flex flex-wrap gap-2">
           {record.chronicConditions?.length > 0 ? (
@@ -420,72 +407,70 @@ function HealthRecordView() {
               </span>
             ))
           ) : (
-            <p className="text-gray-500">No chronic conditions</p>
+            <p className="text-gray-500">Không có bệnh mạn tính</p>
           )}
         </div>
       </div>
-      
       {/* Vision Information */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Vision Information
+          Thông tin thị lực
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Vision (Left Eye)</p>
+            <p className="text-sm font-medium text-gray-500">Thị lực (Mắt trái)</p>
             <p className="mt-1">{record.visionLeft}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Vision (Right Eye)</p>
+            <p className="text-sm font-medium text-gray-500">Thị lực (Mắt phải)</p>
             <p className="mt-1">{record.visionRight}</p>
           </div>
         </div>
         <p className="mt-4">
           {record.wearGlasses
-            ? "Wears glasses or contacts"
-            : "Does not wear glasses or contacts"}
+            ? "Đeo kính hoặc kính áp tròng"
+            : "Không đeo kính hoặc kính áp tròng"}
         </p>
       </div>
 
       {/* Hearing Information */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Hearing Information
+          Thông tin thính giác
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Hearing (Left Ear)</p>
+            <p className="text-sm font-medium text-gray-500">Thính giác (Tai trái)</p>
             <p className="mt-1 capitalize">{record.hearingLeft?.replace("_", " ")}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Hearing (Right Ear)</p>
+            <p className="text-sm font-medium text-gray-500">Thính giác (Tai phải)</p>
             <p className="mt-1 capitalize">{record.hearingRight?.replace("_", " ")}</p>
           </div>
         </div>
         <p className="mt-4">
-          {record.hearingAid ? "Uses hearing aid" : "Does not use hearing aid"}
+          {record.hearingAid ? "Sử dụng máy trợ thính" : "Không sử dụng máy trợ thính"}
         </p>
       </div>
-      
       {/* Emergency Contacts */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Emergency Contacts
+          Liên hệ khẩn cấp
         </h3>
         {record.emergencyContacts?.map((contact, index) => (
           <div key={index} className="mb-6 last:mb-0">
-            <h4 className="font-medium text-gray-900 mb-2">Contact {index + 1}</h4>
+            <h4 className="font-medium text-gray-900 mb-2">Liên hệ {index + 1}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-500">Name</p>
+                <p className="text-sm font-medium text-gray-500">Tên</p>
                 <p className="mt-1">{contact.name}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Relationship</p>
+                <p className="text-sm font-medium text-gray-500">Mối quan hệ</p>
                 <p className="mt-1 capitalize">{contact.relationship}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Phone</p>
+                <p className="text-sm font-medium text-gray-500">Điện thoại</p>
                 <p className="mt-1">{contact.phone}</p>
               </div>
               <div>
@@ -499,50 +484,46 @@ function HealthRecordView() {
 
       {/* Consent Status */}
       <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Consent Status</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Trạng thái đồng ý</h3>
         <div className="space-y-4">
           <div className="flex items-center">
             <div
-              className={`w-4 h-4 rounded mr-2 ${
-                record.consentEmergencyTreatment ? "bg-green-500" : "bg-red-500"
-              }`}
+              className={`w-4 h-4 rounded mr-2 ${record.consentEmergencyTreatment ? "bg-green-500" : "bg-red-500"
+                }`}
             ></div>
-            <span className="font-medium">Emergency Medical Treatment</span>
+            <span className="font-medium">Điều trị y tế khẩn cấp</span>
           </div>
           <div className="flex items-center">
             <div
-              className={`w-4 h-4 rounded mr-2 ${
-                record.consentMedicationAdmin ? "bg-green-500" : "bg-red-500"
-              }`}
+              className={`w-4 h-4 rounded mr-2 ${record.consentMedicationAdmin ? "bg-green-500" : "bg-red-500"
+                }`}
             ></div>
-            <span className="font-medium">Medication Administration</span>
+            <span className="font-medium">Quản lý thuốc</span>
           </div>
           <div className="flex items-center">
             <div
-              className={`w-4 h-4 rounded mr-2 ${
-                record.consentInformationSharing ? "bg-green-500" : "bg-red-500"
-              }`}
+              className={`w-4 h-4 rounded mr-2 ${record.consentInformationSharing ? "bg-green-500" : "bg-red-500"
+                }`}
             ></div>
-            <span className="font-medium">Health Information Sharing</span>
+            <span className="font-medium">Chia sẻ thông tin sức khỏe</span>
           </div>
         </div>
       </div>
-      
       {/* Record Notes */}
       {record.notes && (
         <div className="bg-gray-50 p-6 rounded-lg">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Notes
+            Ghi chú
           </h3>
           <p className="text-gray-700">{record.notes}</p>
         </div>
       )}
-      
+
       {/* Vaccinations (if available) */}
       {record.vaccinations && record.vaccinations.length > 0 && (
         <div className="bg-gray-50 p-6 rounded-lg">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Vaccinations
+            Tiêm chủng
           </h3>
           <div className="flex flex-wrap gap-2">
             {record.vaccinations.map((vaccination, index) => (
@@ -556,17 +537,22 @@ function HealthRecordView() {
           </div>
         </div>
       )}
-      
+
       {/* Sports Fitness (if available) */}
       {record.sportsFitness && (
         <div className="bg-gray-50 p-6 rounded-lg">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Sports Fitness Assessment
+            Đánh giá thể lực thể thao
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {Object.entries(record.sportsFitness).map(([key, value]) => (
               <div key={key}>
-                <p className="text-sm font-medium text-gray-500">{key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  {key === 'cardioEndurance' ? 'Sức bền tim mạch' :
+                    key === 'strength' ? 'Sức mạnh' :
+                      key === 'flexibility' ? 'Tính linh hoạt' :
+                        key.charAt(0).toUpperCase() + key.slice(1)}
+                </p>
                 <p className="mt-1">{value}</p>
               </div>
             ))}
@@ -574,23 +560,21 @@ function HealthRecordView() {
         </div>
       )}
     </div>
-  );
-  // Simple record selector to switch between records
+  );  // Simple record selector to switch between records
   const renderRecordSelector = () => (
     <div className="mb-6">
       <div className="bg-white shadow rounded-lg">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Health Records</h3>
+          <h3 className="text-lg font-medium text-gray-900">Hồ sơ sức khỏe</h3>
           <div className="flex space-x-2">
             {healthRecords.map((record, index) => (
               <button
                 key={record.id}
                 onClick={() => setSelectedRecordIndex(index)}
-                className={`px-4 py-2 rounded-md ${
-                  selectedRecordIndex === index
+                className={`px-4 py-2 rounded-md ${selectedRecordIndex === index
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                }`}
+                  }`}
               >
                 {new Date(record.recordDate).toLocaleDateString()}
               </button>
@@ -608,163 +592,158 @@ function HealthRecordView() {
     );
   }
 
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4 print:p-0">
-      <div className="flex justify-between items-center mb-6 print:mb-8">
-        <h1 className="text-3xl font-bold">Health Record</h1>
-        <div className="space-x-4 print:hidden">
-          {currentUser?.role === 'parent' && (
-            <button
-              onClick={() => navigate(`/parent/health-records/${id}/edit`)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Edit Record
-            </button>
-          )}
-          {currentUser?.role === 'parent' && (
-            <button
-              onClick={() => navigate(`/parent/health-records/new?studentId=${id}`)}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              <span className="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Add Record
-              </span>
-            </button>
-          )}
+  return (<div className="max-w-4xl mx-auto py-8 px-4 print:p-0">
+    <div className="flex justify-between items-center mb-6 print:mb-8">
+      <h1 className="text-3xl font-bold">Hồ sơ sức khỏe</h1>
+      <div className="space-x-4 print:hidden">
+        {currentUser?.role === 'parent' && (
           <button
-            onClick={handlePrint}
-            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+            onClick={() => navigate(`/parent/health-records/${id}/edit`)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Chỉnh sửa hồ sơ
+          </button>
+        )}
+        {currentUser?.role === 'parent' && (
+          <button
+            onClick={() => navigate(`/parent/health-records/new?studentId=${id}`)}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
           >
             <span className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
-              Print Record
+              Thêm hồ sơ
             </span>
           </button>
-          <button
-            onClick={() => navigate(-1)}
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
-          >
-            Back
-          </button>
+        )}
+        <button
+          onClick={handlePrint}
+          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+        >
+          <span className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+              />
+            </svg>
+            In hồ sơ
+          </span>
+        </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+        >
+          Quay lại
+        </button>
+      </div>
+    </div>
+
+    {/* Student Info Card */}
+    <div className="bg-white shadow rounded-lg p-4 mb-6">
+      <div className="flex items-center">
+        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-4">
+          {studentInfo.firstName.charAt(0)}
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">{studentInfo.firstName}</h2>
+          <div className="flex text-sm text-gray-500 mt-1">
+            <p className="mr-4">ID: {studentInfo.studentId}</p>
+            <p className="mr-4">Class: {studentInfo.class}</p>
+            <p>DOB: {new Date(studentInfo.dateOfBirth).toLocaleDateString()}</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      {/* Student Info Card */}
-      <div className="bg-white shadow rounded-lg p-4 mb-6">
-        <div className="flex items-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-4">
-            {studentInfo.firstName.charAt(0)}
-          </div>
+    {/* Record Selector */}
+    {renderRecordSelector()}
+
+    {/* Selected Record Details */}
+    {currentRecord && (
+      <div className="bg-white shadow rounded-lg mb-6">
+        {/* Record Header */}
+        <div className="bg-blue-50 p-4 border-b border-blue-100 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{studentInfo.firstName}</h2>
-            <div className="flex text-sm text-gray-500 mt-1">
-              <p className="mr-4">ID: {studentInfo.studentId}</p>
-              <p className="mr-4">Class: {studentInfo.class}</p>
-              <p>DOB: {new Date(studentInfo.dateOfBirth).toLocaleDateString()}</p>
-            </div>
+            <h3 className="text-lg font-medium text-blue-800">
+              {currentRecord.recordType}
+            </h3>              <p className="text-sm text-gray-600 mt-1">
+              Ngày: {new Date(currentRecord.recordDate).toLocaleDateString()} | Nhà cung cấp: {currentRecord.provider}
+            </p>
+          </div>
+          <div className="flex items-center">
+            <button
+              onClick={() => setSelectedRecordIndex(Math.max(0, selectedRecordIndex - 1))}
+              disabled={selectedRecordIndex === 0}
+              className={`p-2 rounded-full mr-2 ${selectedRecordIndex === 0
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:bg-blue-100"
+                }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setSelectedRecordIndex(Math.min(healthRecords.length - 1, selectedRecordIndex + 1))}
+              disabled={selectedRecordIndex === healthRecords.length - 1}
+              className={`p-2 rounded-full ${selectedRecordIndex === healthRecords.length - 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:bg-blue-100"
+                }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Record Selector */}
-      {renderRecordSelector()}
-      
-      {/* Selected Record Details */}
-      {currentRecord && (
-        <div className="bg-white shadow rounded-lg mb-6">
-          {/* Record Header */}
-          <div className="bg-blue-50 p-4 border-b border-blue-100 flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-medium text-blue-800">
-                {currentRecord.recordType}
-              </h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Date: {new Date(currentRecord.recordDate).toLocaleDateString()} | Provider: {currentRecord.provider}
-              </p>
-            </div>
-            <div className="flex items-center">
-              <button
-                onClick={() => setSelectedRecordIndex(Math.max(0, selectedRecordIndex - 1))}
-                disabled={selectedRecordIndex === 0}
-                className={`p-2 rounded-full mr-2 ${
-                  selectedRecordIndex === 0
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:bg-blue-100"
-                }`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setSelectedRecordIndex(Math.min(healthRecords.length - 1, selectedRecordIndex + 1))}
-                disabled={selectedRecordIndex === healthRecords.length - 1}
-                className={`p-2 rounded-full ${
-                  selectedRecordIndex === healthRecords.length - 1
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:bg-blue-100"
-                }`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div className="p-6">
-            {/* Personal Information Card */}
-            <div className="bg-gray-50 p-5 rounded-lg mb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Personal Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Full Name</p>
-                  <p className="mt-1">{studentInfo.firstName}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Student ID</p>
-                  <p className="mt-1">{studentInfo.studentId}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Class</p>
-                  <p className="mt-1">{studentInfo.class}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Date of Birth</p>
-                  <p className="mt-1">{studentInfo.dateOfBirth}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Gender</p>
-                  <p className="mt-1 capitalize">{studentInfo.gender}</p>
-                </div>
+        <div className="p-6">            {/* Personal Information Card */}
+          <div className="bg-gray-50 p-5 rounded-lg mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Thông tin cá nhân
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Tên đầy đủ</p>
+                <p className="mt-1">{studentInfo.firstName}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Mã học sinh</p>
+                <p className="mt-1">{studentInfo.studentId}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Lớp</p>
+                <p className="mt-1">{studentInfo.class}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Ngày sinh</p>
+                <p className="mt-1">{studentInfo.dateOfBirth}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Giới tính</p>
+                <p className="mt-1 capitalize">{studentInfo.gender}</p>
               </div>
             </div>
-            
-            {/* Display the comprehensive record view */}
-            {renderComprehensiveRecord(currentRecord)}
           </div>
-        </div>
-      )}
 
-      <style type="text/css" media="print">{`
+          {/* Display the comprehensive record view */}
+          {renderComprehensiveRecord(currentRecord)}
+        </div>
+      </div>
+    )}
+
+    <style type="text/css" media="print">{`
         @page { size: auto; margin: 20mm; }
         body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
         .print\\:hidden { display: none !important; }
@@ -772,7 +751,7 @@ function HealthRecordView() {
         .print\\:p-0 { padding: 0 !important; }
         .print\\:mb-8 { margin-bottom: 2rem !important; }
       `}</style>
-    </div>
+  </div>
   );
 }
 

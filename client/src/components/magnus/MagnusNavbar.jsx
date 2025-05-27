@@ -75,9 +75,8 @@ function MagnusNavbar() {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-lg" : "bg-transparent"
-      }`}
+      className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-lg" : "bg-transparent"
+        }`}
     >
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
@@ -92,58 +91,52 @@ function MagnusNavbar() {
             </Link>
           </div>
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#home"
-              className={`nav-link ${activeSection === "home" ? "active" : ""}`}
-            >
-              Home
-            </a>
+          <div className="hidden md:flex items-center space-x-8">            <a
+            href="#home"
+            className={`nav-link ${activeSection === "home" ? "active" : ""}`}
+          >
+            Trang chủ
+          </a>
             <a
               href="#about"
-              className={`nav-link ${
-                activeSection === "about" ? "active" : ""
-              }`}
+              className={`nav-link ${activeSection === "about" ? "active" : ""
+                }`}
             >
-              About
+              Về chúng tôi
             </a>
             <a
               href="#services"
-              className={`nav-link ${
-                activeSection === "services" ? "active" : ""
-              }`}
+              className={`nav-link ${activeSection === "services" ? "active" : ""
+                }`}
             >
-              Services
+              Dịch vụ
             </a>
             <a
               href="#doctors"
-              className={`nav-link ${
-                activeSection === "doctors" ? "active" : ""
-              }`}
+              className={`nav-link ${activeSection === "doctors" ? "active" : ""
+                }`}
             >
-              Doctors
+              Bác sĩ
             </a>
             <a
               href="#testimonials"
-              className={`nav-link ${
-                activeSection === "testimonials" ? "active" : ""
-              }`}
+              className={`nav-link ${activeSection === "testimonials" ? "active" : ""
+                }`}
             >
-              Testimonials
+              Nhận xét
             </a>
             <a
               href="#contact"
-              className={`nav-link ${
-                activeSection === "contact" ? "active" : ""
-              }`}
+              className={`nav-link ${activeSection === "contact" ? "active" : ""
+                }`}
             >
-              Contact
+              Liên hệ
             </a>
             <Link
               to="/login"
               className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
             >
-              Login
+              Đăng nhập
             </Link>
           </div>
           {/* Mobile Menu Button */}
@@ -177,36 +170,35 @@ function MagnusNavbar() {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4">
-            <a href="#home" className="block py-2 px-4 hover:bg-gray-100">
-              Home
-            </a>
-            <a href="#about" className="block py-2 px-4 hover:bg-gray-100">
-              About
-            </a>
-            <a href="#services" className="block py-2 px-4 hover:bg-gray-100">
-              Services
-            </a>
-            <a href="#doctors" className="block py-2 px-4 hover:bg-gray-100">
-              Doctors
-            </a>
-            <a
-              href="#testimonials"
-              className="block py-2 px-4 hover:bg-gray-100"
-            >
-              Testimonials
-            </a>
-            <a href="#contact" className="block py-2 px-4 hover:bg-gray-100">
-              Contact
-            </a>
-            <Link
-              to="/login"
-              className="block py-2 px-4 text-blue-600 hover:bg-gray-100"
-            >
-              Login
-            </Link>
-          </div>
+        {mobileMenuOpen && (<div className="md:hidden mt-4 pb-4">
+          <a href="#home" className="block py-2 px-4 hover:bg-gray-100">
+            Trang chủ
+          </a>
+          <a href="#about" className="block py-2 px-4 hover:bg-gray-100">
+            Về chúng tôi
+          </a>
+          <a href="#services" className="block py-2 px-4 hover:bg-gray-100">
+            Dịch vụ
+          </a>
+          <a href="#doctors" className="block py-2 px-4 hover:bg-gray-100">
+            Bác sĩ
+          </a>
+          <a
+            href="#testimonials"
+            className="block py-2 px-4 hover:bg-gray-100"
+          >
+            Nhận xét
+          </a>
+          <a href="#contact" className="block py-2 px-4 hover:bg-gray-100">
+            Liên hệ
+          </a>
+          <Link
+            to="/login"
+            className="block py-2 px-4 text-blue-600 hover:bg-gray-100"
+          >
+            Đăng nhập
+          </Link>
+        </div>
         )}
       </div>
     </nav>

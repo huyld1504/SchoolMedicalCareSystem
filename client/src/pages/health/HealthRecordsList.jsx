@@ -3,62 +3,61 @@ import { Link, useNavigate } from "react-router-dom";
 
 function HealthRecordsList() {
   const navigate = useNavigate();
-
-  // Demo data for health records list
+  // Dữ liệu mẫu cho danh sách hồ sơ sức khỏe
   const [students, setStudents] = useState([
     {
       id: 1,
       name: "Emma Johnson",
-      grade: "5th Grade",
+      grade: "Lớp 5",
       age: 10,
-      healthStatus: "Complete",
+      healthStatus: "Hoàn thành",
       lastUpdated: "2025-05-20",
       alerts: 0,
       records: [
         {
           id: 101,
-          type: "Annual Comprehensive Health Exam",
+          type: "Khám sức khỏe toàn diện hàng năm",
           date: "2025-05-20",
-          status: "Complete",
-          summary: "Comprehensive health assessment - Good results, normal development",
-          provider: "Dr. James Wilson",
+          status: "Hoàn thành",
+          summary: "Đánh giá sức khỏe toàn diện - Kết quả tốt, phát triển bình thường",
+          provider: "Bác sĩ James Wilson",
           details: {
             height: "142 cm",
             weight: "35 kg",
             bmi: "17.3",
             bloodPressure: "110/70",
-            generalHealth: "Good",
-            vaccinations: "Up to date",
-            nutrition: "Balanced"
+            generalHealth: "Tốt",
+            vaccinations: "Đã cập nhật",
+            nutrition: "Cân bằng"
           }
         },
         {
           id: 102,
-          type: "School Health Exam",
+          type: "Khám sức khỏe học đường",
           date: "2024-10-15",
-          status: "Complete",
-          summary: "First semester health check - Good condition",
-          provider: "School Nurse Barbara Thompson",
+          status: "Hoàn thành",
+          summary: "Kiểm tra sức khỏe học kỳ đầu - Tình trạng tốt",
+          provider: "Y tá trường Barbara Thompson",
           details: {
             height: "140 cm",
             weight: "34 kg",
             vision: "20/20",
-            hearing: "Normal",
-            recommendations: "Continue current nutrition plan"
+            hearing: "Bình thường",
+            recommendations: "Tiếp tục kế hoạch dinh dưỡng hiện tại"
           }
         },
         {
           id: 103,
-          type: "Dental Checkup",
+          type: "Khám răng miệng",
           date: "2024-03-10",
-          status: "Complete",
-          summary: "Annual dental examination - No cavities",
-          provider: "Dr. Sarah Chen, Dentist",
+          status: "Hoàn thành",
+          summary: "Khám răng miệng hàng năm - Không có sâu răng",
+          provider: "Bác sĩ Sarah Chen, Nha sĩ",
           details: {
-            teethCondition: "Excellent",
-            oralHygiene: "Good",
-            treatment: "Routine cleaning",
-            nextVisit: "March 2026"
+            teethCondition: "Tuyệt vời",
+            oralHygiene: "Tốt",
+            treatment: "Làm sạch răng định kỳ",
+            nextVisit: "Tháng 3 năm 2026"
           }
         }
       ]
@@ -66,59 +65,59 @@ function HealthRecordsList() {
     {
       id: 2,
       name: "Thomas Johnson",
-      grade: "8th Grade",
+      grade: "Lớp 8",
       age: 13,
-      healthStatus: "Incomplete",
+      healthStatus: "Chưa hoàn thành",
       lastUpdated: "2025-05-03",
       alerts: 2,
       records: [
         {
           id: 201,
-          type: "Sports Physical Exam",
+          type: "Khám sức khỏe thể thao",
           date: "2025-05-03",
-          status: "Incomplete",
-          summary: "Comprehensive assessment for athletic activities",
-          provider: "Dr. Michael Anderson, Sports Medicine",
+          status: "Chưa hoàn thành",
+          summary: "Đánh giá toàn diện cho hoạt động thể thao",
+          provider: "Bác sĩ Michael Anderson, Y học thể thao",
           details: {
             height: "165 cm",
             weight: "55 kg",
             bloodPressure: "115/75",
-            heartRate: "72 bpm",
-            cardioHealth: "Good",
-            muscularStrength: "Fair",
-            flexibility: "Needs improvement",
-            notes: "Recommend additional stretching exercises to improve flexibility",
-            pendingTests: "Cardiac stress test"
+            heartRate: "72 nhịp/phút",
+            cardioHealth: "Tốt",
+            muscularStrength: "Trung bình",
+            flexibility: "Cần cải thiện",
+            notes: "Khuyến nghị thêm bài tập kéo giãn để cải thiện độ dẻo dai",
+            pendingTests: "Thử nghiệm căng thẳng tim"
           }
         },
         {
           id: 202,
-          type: "Allergy Assessment",
+          type: "Đánh giá dị ứng",
           date: "2024-11-15",
-          status: "Complete",
-          summary: "Seasonal allergy evaluation and treatment plan",
-          provider: "Dr. Lisa Wong, Allergist",
+          status: "Hoàn thành",
+          summary: "Đánh giá và kế hoạch điều trị dị ứng theo mùa",
+          provider: "Bác sĩ Lisa Wong, Chuyên khoa dị ứng",
           details: {
-            allergens: "Pollen, dust mites",
-            symptoms: "Sneezing, itchy eyes, congestion",
-            severity: "Moderate",
-            treatment: "Daily antihistamine during spring and fall",
-            followUp: "Schedule visit if symptoms worsen"
+            allergens: "Phấn hoa, ve bụi",
+            symptoms: "Hắt hơi, mắt ngứa, nghẹt mũi",
+            severity: "Vừa phải",
+            treatment: "Thuốc kháng histamine hàng ngày vào mùa xuân và thu",
+            followUp: "Lên lịch khám nếu triệu chứng trầm trọng hơn"
           }
         },
         {
           id: 203,
-          type: "Vision Screening",
+          type: "Sàng lọc thị lực",
           date: "2024-06-22",
-          status: "Complete",
-          summary: "Annual vision check - Minor astigmatism detected",
-          provider: "Dr. Robert Miller, Optometrist",
+          status: "Hoàn thành",
+          summary: "Kiểm tra thị lực hàng năm - Phát hiện loạn thị nhẹ",
+          provider: "Bác sĩ Robert Miller, Nhãn khoa",
           details: {
             visionRight: "20/30",
             visionLeft: "20/25",
-            colorPerception: "Normal",
-            prescription: "Light correction for astigmatism",
-            recommendations: "Use glasses for reading and screens"
+            colorPerception: "Bình thường",
+            prescription: "Kính chỉnh nhẹ cho loạn thị",
+            recommendations: "Đeo kính khi đọc và nhìn màn hình"
           }
         }
       ]
@@ -126,58 +125,58 @@ function HealthRecordsList() {
     {
       id: 3,
       name: "Olivia Smith",
-      grade: "3rd Grade",
+      grade: "Lớp 3",
       age: 8,
-      healthStatus: "Complete",
+      healthStatus: "Hoàn thành",
       lastUpdated: "2025-05-10",
       alerts: 1,
       records: [
         {
           id: 301,
-          type: "Annual Health Exam",
+          type: "Khám sức khỏe hàng năm",
           date: "2025-05-10",
-          status: "Complete",
-          summary: "Comprehensive health assessment - Need to monitor allergy condition",
-          provider: "Dr. James Wilson",
+          status: "Hoàn thành",
+          summary: "Đánh giá sức khỏe toàn diện - Cần theo dõi tình trạng dị ứng",
+          provider: "Bác sĩ James Wilson",
           details: {
             height: "128 cm",
             weight: "27 kg",
             bmi: "16.5",
             bloodPressure: "100/65",
-            generalHealth: "Good",
-            allergies: "Dust and pollen allergies",
-            immunization: "Complete",
-            notes: "Keep living environment clean, minimize exposure to allergens"
+            generalHealth: "Tốt",
+            allergies: "Dị ứng bụi và phấn hoa",
+            immunization: "Hoàn thành",
+            notes: "Giữ môi trường sống sạch sẽ, giảm thiểu tiếp xúc với chất gây dị ứng"
           }
         },
         {
           id: 302,
-          type: "Allergy Assessment",
+          type: "Đánh giá dị ứng",
           date: "2025-03-01",
-          status: "Complete",
-          summary: "Evaluation and management of seasonal allergies",
-          provider: "Dr. Emily Chen, Allergy Specialist",
+          status: "Hoàn thành",
+          summary: "Đánh giá và quản lý dị ứng theo mùa",
+          provider: "Bác sĩ Emily Chen, Chuyên khoa dị ứng",
           details: {
-            allergens: "Household dust, pollen, pet dander",
-            severity: "Mild to moderate",
-            symptoms: "Sneezing, runny nose, itchy eyes",
-            treatment: "Antihistamines, avoid allergen exposure",
-            progress: "Improved condition compared to previous check"
+            allergens: "Bụi nhà, phấn hoa, lông thú cưng",
+            severity: "Nhẹ đến vừa phải",
+            symptoms: "Hắt hơi, sổ mũi, mắt ngứa",
+            treatment: "Thuốc kháng histamine, tránh tiếp xúc với chất gây dị ứng",
+            progress: "Tình trạng cải thiện so với lần khám trước"
           }
         },
         {
           id: 303,
-          type: "Nutrition Consultation",
+          type: "Tư vấn dinh dưỡng",
           date: "2024-09-15",
-          status: "Complete",
-          summary: "Dietary assessment and recommendations",
-          provider: "Ms. Jennifer Lopez, Nutritionist",
+          status: "Hoàn thành",
+          summary: "Đánh giá chế độ ăn uống và khuyến nghị",
+          provider: "Chị Jennifer Lopez, Chuyên viên dinh dưỡng",
           details: {
-            currentDiet: "Somewhat selective, avoids vegetables",
-            nutritionalStatus: "Adequate but needs improvement",
-            recommendations: "Increase vegetable intake, ensure adequate protein",
-            vitamins: "Daily multivitamin recommended",
-            followUp: "3 months"
+            currentDiet: "Hơi kén ăn, tránh rau xanh",
+            nutritionalStatus: "Đủ nhưng cần cải thiện",
+            recommendations: "Tăng lượng rau xanh, đảm bảo đủ protein",
+            vitamins: "Khuyến nghị vitamin tổng hợp hàng ngày",
+            followUp: "3 tháng"
           }
         }
       ]
@@ -186,50 +185,46 @@ function HealthRecordsList() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-
-  // Filter students based on search term and status
+  // Lọc học sinh dựa trên từ khóa tìm kiếm và trạng thái
   const filteredStudents = students.filter((student) => {
     const matchesSearch = student.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesStatus =
       filterStatus === "all" ||
-      (filterStatus === "complete" && student.healthStatus === "Complete") ||
+      (filterStatus === "complete" && student.healthStatus === "Hoàn thành") ||
       (filterStatus === "incomplete" &&
-        student.healthStatus === "Incomplete") ||
+        student.healthStatus === "Chưa hoàn thành") ||
       (filterStatus === "alerts" && student.alerts > 0);
 
     return matchesSearch && matchesStatus;
   });
-  
-  // Navigate to student health record detail page
+
+  // Điều hướng đến trang chi tiết hồ sơ sức khỏe học sinh
   const navigateToStudentRecord = (studentId) => {
     navigate(`/parent/health-records/${studentId}`);
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Health Records</h1>
-          <p className="text-gray-600">
-            Manage your children's health information
-          </p>
-        </div>
+      <div className="mb-8 flex justify-between items-center">        <div>
+        <h1 className="text-3xl font-bold mb-2">Hồ sơ sức khỏe</h1>
+        <p className="text-gray-600">
+          Quản lý thông tin sức khỏe của con em bạn
+        </p>
+      </div>
         <Link
           to="/parent/health-records/new"
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
         >
-          Add New Record
+          Thêm hồ sơ mới
         </Link>
-      </div>
-
-      {/* Filters and Search */}
+      </div>      {/* Bộ lọc và tìm kiếm */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="col-span-2">
             <label htmlFor="search" className="sr-only">
-              Search
+              Tìm kiếm
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -251,7 +246,7 @@ function HealthRecordsList() {
                 id="search"
                 name="search"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Search by student name"
+                placeholder="Tìm kiếm theo tên học sinh"
                 type="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -260,7 +255,7 @@ function HealthRecordsList() {
           </div>
           <div>
             <label htmlFor="status" className="sr-only">
-              Filter by Status
+              Lọc theo trạng thái
             </label>
             <select
               id="status"
@@ -269,19 +264,19 @@ function HealthRecordsList() {
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
-              <option value="all">All Records</option>
-              <option value="complete">Complete</option>
-              <option value="incomplete">Incomplete</option>
-              <option value="alerts">Has Alerts</option>
+              <option value="all">Tất cả hồ sơ</option>
+              <option value="complete">Hoàn thành</option>
+              <option value="incomplete">Chưa hoàn thành</option>
+              <option value="alerts">Có cảnh báo</option>
             </select>
           </div>
         </div>
-      </div>      {/* Records List - Card Based Design */}
+      </div>      {/* Danh sách hồ sơ - Thiết kế dạng thẻ */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredStudents.length > 0 ? (
           <>
             {filteredStudents.map((student) => (
-              <div 
+              <div
                 key={student.id}
                 onClick={() => navigateToStudentRecord(student.id)}
                 className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
@@ -292,54 +287,49 @@ function HealthRecordsList() {
                       <span className="text-blue-600 font-medium text-lg">
                         {student.name.charAt(0)}
                       </span>
-                    </div>
-                    <div>
+                    </div>                    <div>
                       <h3 className="text-lg font-semibold text-gray-900">{student.name}</h3>
-                      <p className="text-sm text-gray-500">{student.grade} · {student.age} years old</p>
+                      <p className="text-sm text-gray-500">{student.grade} · {student.age} tuổi</p>
                     </div>
                   </div>
-                  
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center">
-                      <span className="text-sm font-medium text-gray-600 mr-2">Status:</span>
+                      <span className="text-sm font-medium text-gray-600 mr-2">Trạng thái:</span>
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          student.healthStatus === "Complete"
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${student.healthStatus === "Hoàn thành"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
-                        }`}
+                          }`}
                       >
                         {student.healthStatus}
                       </span>
                     </div>
                     <div className="text-sm text-gray-500">
-                      Updated: {student.lastUpdated}
+                      Cập nhật: {new Date(student.lastUpdated).toLocaleDateString('vi-VN')}
                     </div>
                   </div>
-                  
+
                   {student.alerts > 0 && (
                     <div className="mt-3 bg-red-50 rounded-md p-2 flex items-center">
                       <svg className="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-sm text-red-600 font-medium">
-                        {student.alerts} alert{student.alerts > 1 ? "s" : ""} requiring attention
+                      </svg>                      <span className="text-sm text-red-600 font-medium">
+                        {student.alerts} cảnh báo cần chú ý
                       </span>
                     </div>
                   )}
-                  
                   <div className="mt-4 border-t pt-4">
                     <p className="text-sm text-gray-700">
-                      <span className="font-medium">Latest record:</span> {student.records[0].type}
+                      <span className="font-medium">Hồ sơ mới nhất:</span> {student.records[0].type}
                     </p>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                       {student.records[0].summary}
                     </p>
                   </div>
-                  
+
                   <div className="mt-4 text-right">
                     <span className="inline-flex items-center text-blue-600 text-sm font-medium">
-                      View all records
+                      Xem tất cả hồ sơ
                       <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                       </svg>
@@ -364,21 +354,20 @@ function HealthRecordsList() {
                 strokeWidth={1.5}
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
-              No health records found
+            </svg>            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              Không tìm thấy hồ sơ sức khỏe
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || filterStatus !== "all"
-                ? "Try adjusting your search or filter criteria."
-                : "Get started by creating a new health record."}
+                ? "Thử điều chỉnh từ khóa tìm kiếm hoặc bộ lọc của bạn."
+                : "Bắt đầu bằng cách tạo hồ sơ sức khỏe mới."}
             </p>
             <div className="mt-6">
               <Link
                 to="/parent/health-records/new"
                 className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
-                Add New Record
+                Thêm hồ sơ mới
               </Link>
             </div>
           </div>
@@ -401,11 +390,10 @@ function HealthRecordsList() {
                 clipRule="evenodd"
               />
             </svg>
-          </div>
-          <div className="ml-3">
+          </div>          <div className="ml-3">
             <p className="text-sm text-blue-700">
-              Complete health records help the school nurse provide appropriate
-              care for your child. Please keep these records up to date.
+              Hồ sơ sức khỏe đầy đủ giúp y tá trường có thể chăm sóc phù hợp
+              cho con em bạn. Vui lòng cập nhật thông tin này thường xuyên.
             </p>
           </div>
         </div>

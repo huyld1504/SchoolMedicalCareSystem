@@ -9,12 +9,12 @@ import {
 function MedicalEventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
-  
+
   useEffect(() => {
     // Fetch the medical event details
     setLoading(true);
@@ -32,17 +32,17 @@ function MedicalEventDetails() {
       setLoading(false);
     }
   }, [id]);
-  
+
   const handleStatusChange = (newStatus) => {
     if (!event) return;
-    
+
     try {
       // Update only the status field
-      const updatedEvent = updateMedicalEvent(event.id, { 
-        ...event, 
-        status: newStatus 
+      const updatedEvent = updateMedicalEvent(event.id, {
+        ...event,
+        status: newStatus
       });
-      
+
       if (updatedEvent) {
         setEvent(updatedEvent);
       }
@@ -51,22 +51,22 @@ function MedicalEventDetails() {
       setError("Failed to update status");
     }
   };
-  
+
   const handleDeleteConfirm = () => {
     setConfirmDelete(true);
   };
-  
+
   const handleDeleteCancel = () => {
     setConfirmDelete(false);
   };
-  
+
   const handleDelete = () => {
     try {
       const result = deleteMedicalEvent(event.id);
       if (result) {
         // Navigate back to the list after successful deletion
-        navigate("/nurse/medical-events", { 
-          state: { message: "Medical event deleted successfully" } 
+        navigate("/nurse/medical-events", {
+          state: { message: "Medical event deleted successfully" }
         });
       } else {
         setError("Failed to delete medical event");
@@ -78,7 +78,7 @@ function MedicalEventDetails() {
       setConfirmDelete(false);
     }
   };
-  
+
   if (loading) {
     return (
       <div className="container mx-auto p-4 text-center">
@@ -89,7 +89,7 @@ function MedicalEventDetails() {
       </div>
     );
   }
-  
+
   if (error || !event) {
     return (
       <div className="container mx-auto p-4">
@@ -105,7 +105,7 @@ function MedicalEventDetails() {
       </div>
     );
   }
-  
+
   const getSeverityClass = (severity) => {
     switch (severity) {
       case 'Minor':
@@ -120,7 +120,7 @@ function MedicalEventDetails() {
         return 'bg-gray-100 text-gray-800';
     }
   };
-  
+
   const getStatusClass = (status) => {
     switch (status) {
       case 'Open':
@@ -135,7 +135,7 @@ function MedicalEventDetails() {
         return 'bg-gray-100 text-gray-800';
     }
   };
-  
+
   return (
     <div className="container mx-auto p-4">
       {/* Header with actions */}
@@ -144,7 +144,7 @@ function MedicalEventDetails() {
           <h1 className="text-2xl font-bold">Medical Event Details</h1>
           <p className="text-gray-600">Viewing details for medical event #{event.id}</p>
         </div>
-        
+
         <div className="mt-4 md:mt-0 flex space-x-2">
           <Link
             to={`/nurse/medical-events/${event.id}/edit`}
@@ -160,14 +160,14 @@ function MedicalEventDetails() {
           </button>
         </div>
       </div>
-      
+
       {/* Delete confirmation modal */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
             <p className="mb-6">
-              Are you sure you want to delete this medical event for {event.studentName}? 
+              Are you sure you want to delete this medical event for {event.studentName}?
               This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-4">
@@ -187,7 +187,7 @@ function MedicalEventDetails() {
           </div>
         </div>
       )}
-      
+
       {/* Status and Severity Badges */}
       <div className="bg-white p-6 rounded shadow mb-6">
         <div className="flex flex-col md:flex-row justify-between">
@@ -197,15 +197,15 @@ function MedicalEventDetails() {
               <span className={`px-3 py-1 inline-flex text-sm font-semibold rounded-full ${getStatusClass(event.status)}`}>
                 {event.status}
               </span>
-              
+
               {/* Status update buttons */}
               <div className="ml-4">
                 <div className="dropdown">
-                  <button 
-                    className="btn btn-sm btn-outline-secondary dropdown-toggle" 
-                    type="button" 
-                    id="statusDropdown" 
-                    data-bs-toggle="dropdown" 
+                  <button
+                    className="btn btn-sm btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    id="statusDropdown"
+                    data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
                     Update Status
@@ -220,7 +220,7 @@ function MedicalEventDetails() {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-4 md:mt-0">
             <h2 className="text-xl font-semibold mb-2">Severity</h2>
             <span className={`px-3 py-1 inline-flex text-sm font-semibold rounded-full ${getSeverityClass(event.severity)}`}>
@@ -229,11 +229,11 @@ function MedicalEventDetails() {
           </div>
         </div>
       </div>
-      
+
       {/* Event Details */}
       <div className="bg-white p-6 rounded shadow mb-6">
         <h2 className="text-xl font-semibold mb-4 border-b pb-2">Event Information</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 className="font-semibold mb-2">Student Information</h3>
@@ -241,63 +241,62 @@ function MedicalEventDetails() {
             <p><strong>ID:</strong> {event.studentId}</p>
             <p><strong>Grade:</strong> {event.grade}</p>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-2">Event Details</h3>
             <p><strong>Type:</strong> {event.eventType} - {event.eventSubtype}</p>
             <p><strong>Date & Time:</strong> {event.date} at {event.time}</p>
             <p><strong>Location:</strong> {event.location}</p>
           </div>
-          
+
           <div className="md:col-span-2">
             <h3 className="font-semibold mb-2">Description</h3>
             <p className="p-3 bg-gray-50 rounded">{event.description}</p>
           </div>
         </div>
       </div>
-      
       {/* Treatment Information */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Treatment</h2>
-        
+        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Điều trị</h2>
+
         {event.treatment ? (
           <div>
             <p className="p-3 bg-gray-50 rounded mb-4">{event.treatment}</p>
-            <p><strong>Treated By:</strong> {event.treatmentBy || "Not specified"}</p>
+            <p><strong>Điều trị bởi:</strong> {event.treatmentBy || "Chưa xác định"}</p>
           </div>
         ) : (
-          <p className="text-gray-500">No treatment information recorded.</p>
+          <p className="text-gray-500">Chưa có thông tin điều trị được ghi nhận.</p>
         )}
       </div>
-      
+
       {/* Follow-up Information */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Follow-up Information</h2>
-        
+        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Thông tin theo dõi</h2>
+
         {event.followUpRequired ? (
           <div>
-            <p><strong>Follow-up Required:</strong> Yes</p>
-            {event.followUpDate && <p><strong>Follow-up Date:</strong> {event.followUpDate}</p>}
+            <p><strong>Cần theo dõi:</strong> Có</p>
+            {event.followUpDate && <p><strong>Ngày theo dõi:</strong> {event.followUpDate}</p>}
           </div>
         ) : (
-          <p>No follow-up required.</p>
+          <p>Không cần theo dõi.</p>
         )}
       </div>
-      
+
       {/* Parent Notification */}
       <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Parent Notification</h2>
-        
+        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Thông báo phụ huynh</h2>
+
         {event.parentNotified ? (
           <div>
-            <p><strong>Parent Notified:</strong> Yes</p>
-            {event.notifiedAt && <p><strong>Notified At:</strong> {event.notifiedAt}</p>}
-            {event.notifiedBy && <p><strong>Notified By:</strong> {event.notifiedBy}</p>}
+            <p><strong>Đã thông báo phụ huynh:</strong> Có</p>
+            {event.notifiedAt && <p><strong>Thời gian thông báo:</strong> {event.notifiedAt}</p>}
+            {event.notifiedBy && <p><strong>Thông báo bởi:</strong> {event.notifiedBy}</p>}
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <p>Parent has not been notified.</p>
-            <button 
+            <p>Chưa thông báo phụ huynh.</p>
+            <button
               className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
               onClick={() => {
                 const updatedEvent = updateMedicalEvent(event.id, {
@@ -306,40 +305,40 @@ function MedicalEventDetails() {
                   notifiedAt: new Date().toLocaleString(),
                   notifiedBy: "Current User" // In a real app, this would be the current user's name
                 });
-                
+
                 if (updatedEvent) {
                   setEvent(updatedEvent);
                 }
               }}
             >
-              Mark as Notified
+              Đánh dấu đã thông báo
             </button>
           </div>
         )}
       </div>
-      
+
       {/* Notes */}
       {event.notes && (
         <div className="bg-white p-6 rounded shadow mb-6">
-          <h2 className="text-xl font-semibold mb-4 border-b pb-2">Additional Notes</h2>
+          <h2 className="text-xl font-semibold mb-4 border-b pb-2">Ghi chú bổ sung</h2>
           <p className="p-3 bg-gray-50 rounded">{event.notes}</p>
         </div>
       )}
-      
+
       {/* Actions */}
       <div className="flex justify-between mt-8">
         <button
           onClick={() => navigate("/nurse/medical-events")}
           className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
         >
-          Back to List
+          Trở về danh sách
         </button>
-        
+
         <Link
           to={`/nurse/medical-events/${event.id}/edit`}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Edit Event
+          Chỉnh sửa sự kiện
         </Link>
       </div>
     </div>

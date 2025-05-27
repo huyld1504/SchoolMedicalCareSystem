@@ -14,20 +14,20 @@ function MedicalEventForm() {
   const { id } = useParams();
   const isEditMode = !!id;
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(isEditMode);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
+
   // Current date and time for defaults
   const currentDate = new Date().toISOString().split('T')[0];
-  const currentTime = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
+  const currentTime = new Date().toLocaleTimeString('en-US', {
+    hour: '2-digit',
     minute: '2-digit',
-    hour12: true 
+    hour12: true
   });
-  
+
   // Form state
   const [formData, setFormData] = useState({
     studentName: "",
@@ -50,10 +50,10 @@ function MedicalEventForm() {
     notes: "",
     status: "Open"
   });
-  
+
   // Available subtypes based on selected event type
   const [availableSubtypes, setAvailableSubtypes] = useState([]);
-  
+
   useEffect(() => {
     // If in edit mode, fetch the medical event data
     if (isEditMode) {
@@ -78,7 +78,7 @@ function MedicalEventForm() {
       }
     }
   }, [id, isEditMode, navigate]);
-  
+
   // Update available subtypes when event type changes
   useEffect(() => {
     if (formData.eventType) {
@@ -91,17 +91,17 @@ function MedicalEventForm() {
       setAvailableSubtypes([]);
     }
   }, [formData.eventType]);
-  
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     // Handle checkbox inputs
     if (type === "checkbox") {
       setFormData(prev => ({
         ...prev,
         [name]: checked
       }));
-      
+
       // If parent notification checkbox is checked, set the notification time
       if (name === "parentNotified" && checked) {
         setFormData(prev => ({
@@ -109,28 +109,28 @@ function MedicalEventForm() {
           notifiedAt: `${currentDate} ${currentTime}`
         }));
       }
-      
+
       return;
     }
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setSubmitting(true);
-    
+
     try {
       // Validation
       if (!formData.studentName || !formData.eventType || !formData.severity || !formData.description) {
         throw new Error("Please fill all required fields");
       }
-      
+
       // Process the form data
       if (isEditMode) {
         // Update existing event
@@ -160,7 +160,7 @@ function MedicalEventForm() {
       setSubmitting(false);
     }
   };
-  
+
   if (loading) {
     return (
       <div className="container mx-auto p-4 text-center">
@@ -171,7 +171,7 @@ function MedicalEventForm() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6">
@@ -179,24 +179,24 @@ function MedicalEventForm() {
           {isEditMode ? "Edit Medical Event" : "Record New Medical Event"}
         </h1>
         <p className="text-gray-600">
-          {isEditMode 
-            ? "Update the details of this medical event" 
+          {isEditMode
+            ? "Update the details of this medical event"
             : "Record a new medical incident or health event that occurred in the school"}
         </p>
       </div>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <strong className="font-bold">Error!</strong> {error}
         </div>
       )}
-      
+
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           <strong className="font-bold">Success!</strong> {success}
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Student Information */}
@@ -243,7 +243,7 @@ function MedicalEventForm() {
               </div>
             </div>
           </div>
-          
+
           {/* Event Details */}
           <div className="md:col-span-2">
             <h2 className="text-lg font-semibold mb-4 border-b pb-2">Event Details</h2>
@@ -265,7 +265,7 @@ function MedicalEventForm() {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Event Subtype
@@ -283,7 +283,7 @@ function MedicalEventForm() {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Date <span className="text-red-500">*</span>
@@ -297,41 +297,38 @@ function MedicalEventForm() {
                   required
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Time <span className="text-red-500">*</span>
-                </label>
+
+              <div>                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Thời gian <span className="text-red-500">*</span>
+              </label>
                 <input
                   type="text"
                   name="time"
                   value={formData.time}
                   onChange={handleChange}
-                  placeholder="e.g., 9:30 AM"
+                  placeholder="VD: 9:30 AM"
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location <span className="text-red-500">*</span>
-                </label>
+
+              <div>                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Địa điểm <span className="text-red-500">*</span>
+              </label>
                 <input
                   type="text"
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  placeholder="e.g., Playground, Classroom, Cafeteria"
+                  placeholder="VD: Sân chơi, Lớp học, Canteen"
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Severity <span className="text-red-500">*</span>
-                </label>
+
+              <div>                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mức độ nghiêm trọng <span className="text-red-500">*</span>
+              </label>
                 <select
                   name="severity"
                   value={formData.severity}
@@ -344,11 +341,10 @@ function MedicalEventForm() {
                   ))}
                 </select>
               </div>
-              
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description <span className="text-red-500">*</span>
-                </label>
+
+              <div className="md:col-span-2">                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mô tả <span className="text-red-500">*</span>
+              </label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -360,7 +356,7 @@ function MedicalEventForm() {
               </div>
             </div>
           </div>
-          
+
           {/* Treatment Information */}
           <div className="md:col-span-2">
             <h2 className="text-lg font-semibold mb-4 border-b pb-2">Treatment Information</h2>
@@ -377,7 +373,7 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                 ></textarea>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Treated By
@@ -390,7 +386,7 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Status
@@ -408,7 +404,7 @@ function MedicalEventForm() {
               </div>
             </div>
           </div>
-          
+
           {/* Follow-up Information */}
           <div className="md:col-span-2">
             <h2 className="text-lg font-semibold mb-4 border-b pb-2">Follow-up Information</h2>
@@ -426,7 +422,7 @@ function MedicalEventForm() {
                   Follow-up Required
                 </label>
               </div>
-              
+
               {formData.followUpRequired && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -443,7 +439,7 @@ function MedicalEventForm() {
               )}
             </div>
           </div>
-          
+
           {/* Parent Notification */}
           <div className="md:col-span-2">
             <h2 className="text-lg font-semibold mb-4 border-b pb-2">Parent Notification</h2>
@@ -461,27 +457,25 @@ function MedicalEventForm() {
                   Parent Notified
                 </label>
               </div>
-              
+
               {formData.parentNotified && (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Notified At
-                    </label>
+                  <div>                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Thời gian thông báo
+                  </label>
                     <input
                       type="text"
                       name="notifiedAt"
                       value={formData.notifiedAt}
                       onChange={handleChange}
-                      placeholder="e.g., 2025-05-21 10:30 AM"
+                      placeholder="VD: 2025-05-21 10:30 AM"
                       className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Notified By
-                    </label>
+
+                  <div>                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Người thông báo
+                  </label>
                     <input
                       type="text"
                       name="notifiedBy"
@@ -494,10 +488,10 @@ function MedicalEventForm() {
               )}
             </div>
           </div>
-          
+
           {/* Additional Notes */}
           <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Additional Notes</h2>
+            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Ghi chú thêm</h2>
             <div>
               <textarea
                 name="notes"
@@ -510,7 +504,7 @@ function MedicalEventForm() {
             </div>
           </div>
         </div>
-        
+
         {/* Form Actions */}
         <div className="mt-8 flex justify-end space-x-4">
           <button

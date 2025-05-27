@@ -58,23 +58,23 @@ function ParentDashboard() {
       if (!value.completed) {
         switch (key) {
           case 'studentInfo':
-            return 'Complete Student Information';
+            return 'Hoàn thành thông tin học sinh';
           case 'healthDeclaration':
-            return 'Complete Health Declaration';
+            return 'Hoàn thành tờ khai sức khỏe';
           case 'immunizationRecords':
-            return 'Upload Immunization Records';
+            return 'Tải lên hồ sơ tiêm chủng';
           case 'emergencyContacts':
-            return 'Add Emergency Contacts';
+            return 'Thêm liên hệ khẩn cấp';
           case 'consentForms':
-            return 'Sign Consent Forms';
+            return 'Ký đơn đồng ý';
           case 'medication':
-            return 'Add Medication Information';
+            return 'Thêm thông tin thuốc';
           default:
-            return 'Update Profile';
+            return 'Cập nhật hồ sơ';
         }
       }
     }
-    return 'All sections completed';
+    return 'Tất cả các phần đã hoàn thành';
   };
 
   const statusToColor = (status) => {
@@ -82,7 +82,7 @@ function ParentDashboard() {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Not completed';
+    if (!dateString) return 'Chưa hoàn thành';
 
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
@@ -92,9 +92,8 @@ function ParentDashboard() {
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <nav className="bg-blue-600 p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-white text-xl font-bold">Magnus Health</Link>
-          <button className="text-white">Logout</button>
+        <div className="container mx-auto flex justify-between items-center">          <Link to="/" className="text-white text-xl font-bold">Hệ thống Y tế Magnus</Link>
+          <button className="text-white">Đăng xuất</button>
         </div>
       </nav>
 

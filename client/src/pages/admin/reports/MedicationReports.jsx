@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { generateComplianceReport, generateStudentMedicationReport } from '../../../services/medicationReportService';
+import { generateComplianceReport } from '../../../services/medicationReportService';
 
 function MedicationReports() {
     const [loading, setLoading] = useState(true);
@@ -22,70 +22,69 @@ function MedicationReports() {
         // In a real app, this would call an API to get medication reports
         const fetchMedicationReports = async () => {
             try {
-                // Use the medication service to get compliance data
+                // Use the medication service to get compliance data                // Use the medication service to get compliance data
                 const complianceData = await generateComplianceReport();
-                const studentMedData = await generateStudentMedicationReport();
 
                 // Create sample medication reports
                 const medReports = [
                     {
                         id: 'MR-2025-05-15',
-                        title: 'Monthly Medication Administration Report',
+                        title: 'Báo cáo cấp phát thuốc hàng tháng',
                         date: '2025-05-15',
-                        type: 'Administration',
-                        author: 'System',
-                        summary: 'Monthly report of all medication administered across the school',
+                        type: 'Cấp phát',
+                        author: 'Hệ thống',
+                        summary: 'Báo cáo hàng tháng về việc cấp phát thuốc trong toàn trường',
                         compliance: '96%',
-                        grade: 'All',
-                        tags: ['Monthly', 'Automated'],
+                        grade: 'Tất cả',
+                        tags: ['Hàng tháng', 'Tự động'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'MR-2025-05-01',
-                        title: 'Medication Inventory Status',
+                        title: 'Báo cáo tình trạng kho thuốc',
                         date: '2025-05-01',
-                        type: 'Inventory',
-                        author: 'Nurse Sarah Wilson',
-                        summary: 'Current inventory status and restocking needs',
+                        type: 'Kho',
+                        author: 'Y tá Sarah Wilson',
+                        summary: 'Tình trạng kho hiện tại và nhu cầu bổ sung thuốc',
                         compliance: 'N/A',
-                        grade: 'All',
-                        tags: ['Inventory', 'Monthly'],
+                        grade: 'Tất cả',
+                        tags: ['Kho', 'Hàng tháng'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'MR-2025-04-20',
-                        title: 'Chronic Medication Compliance Report',
+                        title: 'Báo cáo tuân thủ thuốc mạn tính',
                         date: '2025-04-20',
-                        type: 'Compliance',
-                        author: 'Dr. Emily Carter',
-                        summary: 'Tracking report for students with daily medication requirements',
+                        type: 'Tuân thủ',
+                        author: 'BS Emily Carter',
+                        summary: 'Báo cáo theo dõi học sinh cần uống thuốc hàng ngày',
                         compliance: '92%',
-                        grade: 'Multiple',
-                        tags: ['Compliance', 'Chronic'],
+                        grade: 'Nhiều khối',
+                        tags: ['Tuân thủ', 'Mạn tính'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'MR-2025-04-10',
-                        title: 'Medication Administration Errors Analysis',
+                        title: 'Phân tích lỗi cấp phát thuốc',
                         date: '2025-04-10',
-                        type: 'Error Analysis',
-                        author: 'Quality Assurance Team',
-                        summary: 'Analysis of medication errors and corrective actions taken',
+                        type: 'Phân tích lỗi',
+                        author: 'Nhóm đảm bảo chất lượng',
+                        summary: 'Phân tích các lỗi cấp phát thuốc và biện pháp khắc phục',
                         compliance: 'N/A',
-                        grade: 'All',
-                        tags: ['Error', 'Analysis'],
+                        grade: 'Tất cả',
+                        tags: ['Lỗi', 'Phân tích'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'MR-2025-03-31',
-                        title: 'Q1 2025 Medication Trends Report',
+                        title: 'Báo cáo xu hướng thuốc Q1 2025',
                         date: '2025-03-31',
-                        type: 'Trend Analysis',
-                        author: 'Health Department',
-                        summary: 'Quarterly analysis of medication administration patterns',
+                        type: 'Phân tích xu hướng',
+                        author: 'Phòng Y tế',
+                        summary: 'Phân tích quý về xu hướng cấp phát thuốc',
                         compliance: '95%',
-                        grade: 'All',
-                        tags: ['Quarterly', 'Trends'],
+                        grade: 'Tất cả',
+                        tags: ['Theo quý', 'Xu hướng'],
                         downloadUrl: '#'
                     }
                 ];
@@ -111,7 +110,7 @@ function MedicationReports() {
 
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching medication reports:", error);
+                console.error("Lỗi khi tải báo cáo thuốc:", error);
                 setLoading(false);
             }
         };
@@ -153,125 +152,116 @@ function MedicationReports() {
     }
 
     return (
-        <div className="p-6">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">Medication Reports</h1>
-                <p className="text-gray-600">Access and manage all medication administration reports and analytics</p>
-            </div>
-
-            {/* Medication Report Stats */}
+        <div className="p-6">            <div className="mb-6">
+            <h1 className="text-3xl font-bold mb-2">Báo cáo thuốc</h1>
+            <p className="text-gray-600">Truy cập và quản lý tất cả báo cáo cấp phát thuốc và phân tích</p>
+        </div>            {/* Medication Report Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Total Reports</p>
+                        <p className="text-gray-500 text-sm">Tổng số báo cáo</p>
                         <p className="text-3xl font-bold text-green-600">{stats.totalReports}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Overall Compliance</p>
+                        <p className="text-gray-500 text-sm">Tỷ lệ tuân thủ chung</p>
                         <p className="text-3xl font-bold text-green-600">{stats.complianceRate}%</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Medications Administered</p>
+                        <p className="text-gray-500 text-sm">Đã cấp phát thuốc</p>
                         <p className="text-3xl font-bold text-green-600">{stats.administeredCount}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Medications Skipped</p>
+                        <p className="text-gray-500 text-sm">Bỏ qua thuốc</p>
                         <p className="text-3xl font-bold text-red-600">{stats.skippedCount}</p>
                     </div>
                 </div>
-            </div>
-
-            {/* Filters */}
+            </div>            {/* Filters */}
             <div className="bg-white rounded-lg shadow mb-6">
                 <div className="p-5 border-b">
-                    <h2 className="text-lg font-medium">Report Filters</h2>
+                    <h2 className="text-lg font-medium">Bộ lọc báo cáo</h2>
                 </div>
                 <div className="p-5 grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Loại báo cáo</label>
                         <select
                             name="reportType"
                             value={filters.reportType}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Types</option>
-                            <option value="administration">Administration</option>
-                            <option value="inventory">Inventory</option>
-                            <option value="compliance">Compliance</option>
-                            <option value="error">Error Analysis</option>
-                            <option value="trend">Trend Analysis</option>
+                            <option value="all">Tất cả loại</option>
+                            <option value="administration">Cấp phát</option>
+                            <option value="inventory">Kho</option>
+                            <option value="compliance">Tuân thủ</option>
+                            <option value="error">Phân tích lỗi</option>
+                            <option value="trend">Phân tích xu hướng</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Khoảng thời gian</label>
                         <select
                             name="timePeriod"
                             value={filters.timePeriod}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Time</option>
-                            <option value="month">This Month</option>
-                            <option value="quarter">This Quarter</option>
-                            <option value="year">This Year</option>
+                            <option value="all">Tất cả thời gian</option>
+                            <option value="month">Tháng này</option>
+                            <option value="quarter">Quý này</option>
+                            <option value="year">Năm này</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Grade Level</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Khối lớp</label>
                         <select
                             name="grade"
                             value={filters.grade}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Grades</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="middle">Middle School</option>
-                            <option value="high">High School</option>
+                            <option value="all">Tất cả khối</option>
+                            <option value="elementary">Tiểu học</option>
+                            <option value="middle">Trung học cơ sở</option>
+                            <option value="high">Trung học phổ thông</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Search Reports</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm báo cáo</label>
                         <input
                             type="text"
                             name="searchQuery"
                             value={filters.searchQuery}
                             onChange={handleFilterChange}
-                            placeholder="Search by title or content..."
+                            placeholder="Tìm theo tiêu đề hoặc nội dung..."
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500 focus:ring-opacity-50"
                         />
                     </div>
                 </div>
-            </div>
-
-            {/* Report Generation Button */}
+            </div>            {/* Report Generation Button */}
             <div className="mb-6 flex justify-end">
                 <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    Generate New Medication Report
+                    Tạo báo cáo thuốc mới
                 </button>
-            </div>
-
-            {/* Reports Table */}
+            </div>            {/* Reports Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Report</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compliance</th>
-                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Báo cáo</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tác giả</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tuân thủ</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -326,11 +316,10 @@ function MedicationReports() {
                                         </div>
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
+                            ))) : (
                             <tr>
                                 <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                                    No reports found matching your criteria.
+                                    Không tìm thấy báo cáo nào phù hợp với tiêu chí của bạn.
                                 </td>
                             </tr>
                         )}

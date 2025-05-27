@@ -59,28 +59,26 @@ function MedicationsList() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Medications</h1>
-          <p className="text-gray-600">
-            Manage your children's medication schedules
-          </p>
-        </div>
+      <div className="mb-8 flex justify-between items-center">        <div>
+        <h1 className="text-3xl font-bold mb-2">Thuốc</h1>
+        <p className="text-gray-600">
+          Quản lý lịch uống thuốc của con em bạn
+        </p>
+      </div>
         <Link
           to="/parent/medications/request"
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
         >
-          Request Medication
+          Yêu cầu thuốc
         </Link>
       </div>
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="col-span-2">
-            <label htmlFor="search" className="sr-only">
-              Search
-            </label>
+          <div className="col-span-2">            <label htmlFor="search" className="sr-only">
+            Tìm kiếm
+          </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
@@ -101,28 +99,26 @@ function MedicationsList() {
                 id="search"
                 name="search"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Search by student name or medication"
+                placeholder="Tìm kiếm theo tên học sinh hoặc thuốc"
                 type="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
-          <div>
-            <label htmlFor="status" className="sr-only">
-              Filter by Status
-            </label>
+          <div>            <label htmlFor="status" className="sr-only">
+            Lọc theo trạng thái
+          </label>
             <select
               id="status"
               name="status"
               className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">All Medications</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending Approval</option>
+            >              <option value="all">Tất cả thuốc</option>
+              <option value="active">Đang sử dụng</option>
+              <option value="completed">Đã hoàn thành</option>
+              <option value="pending">Chờ phê duyệt</option>
             </select>
           </div>
         </div>
@@ -134,42 +130,41 @@ function MedicationsList() {
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
-                <tr>
+                <tr>                  <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Học sinh
+                </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Student
+                    Thuốc
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Medication
+                    Liều lượng & Tần suất
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Dosage & Frequency
+                    Thời gian
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Date Range
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Status
+                    Trạng thái
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
@@ -210,35 +205,33 @@ function MedicationsList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          med.status === "Active"
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${med.status === "Active"
                             ? "bg-green-100 text-green-800"
                             : med.status === "Completed"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
+                              ? "bg-gray-100 text-gray-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
                       >
                         {med.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                        onClick={() =>
-                          alert(
-                            `View details for ${med.medication} for ${med.studentName}`
-                          )
-                        }
-                      >
-                        View
-                      </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">                      <button
+                      className="text-blue-600 hover:text-blue-900 mr-3"
+                      onClick={() =>
+                        alert(
+                          `View details for ${med.medication} for ${med.studentName}`
+                        )
+                      }
+                    >
+                      Xem
+                    </button>
                       <button
                         className="text-green-600 hover:text-green-900"
                         onClick={() =>
                           alert(`Edit ${med.medication} for ${med.studentName}`)
                         }
                       >
-                        Edit
+                        Sửa
                       </button>
                     </td>
                   </tr>
@@ -261,21 +254,20 @@ function MedicationsList() {
                 strokeWidth={1.5}
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
-              No medications found
+            </svg>            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              Không tìm thấy thuốc nào
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || filterStatus !== "all"
-                ? "Try adjusting your search or filter criteria."
-                : "Get started by requesting a new medication."}
+                ? "Hãy thử điều chỉnh tiêu chí tìm kiếm hoặc bộ lọc của bạn."
+                : "Bắt đầu bằng cách yêu cầu thuốc mới."}
             </p>
             <div className="mt-6">
               <Link
                 to="/parent/medications/request"
                 className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
-                Request Medication
+                Yêu cầu thuốc
               </Link>
             </div>
           </div>
@@ -299,12 +291,10 @@ function MedicationsList() {
               />
             </svg>
           </div>
-          <div className="ml-3">
-            <p className="text-sm text-blue-700">
-              All medication requests must be approved by the school nurse.
-              Please ensure to provide accurate dosage information and
-              instructions.
-            </p>
+          <div className="ml-3">            <p className="text-sm text-blue-700">
+            Tất cả yêu cầu thuốc phải được y tá trường phê duyệt.
+            Vui lòng đảm bảo cung cấp thông tin liều lượng và hướng dẫn chính xác.
+          </p>
           </div>
         </div>
       </div>

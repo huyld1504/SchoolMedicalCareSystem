@@ -25,19 +25,18 @@ function VaccinationCampaigns() {
     description: "",
     status: "planning"
   });
-
   // Sample campaign data
   const sampleCampaigns = [
     {
       id: 1,
-      title: "Annual Flu Vaccination",
-      vaccineType: "Influenza",
-      targetGroup: "All Students",
+      title: "Chiến dịch tiêm vắc xin cúm hàng năm",
+      vaccineType: "Vắc xin cúm",
+      targetGroup: "Tất cả học sinh",
       startDate: "2023-10-15",
       endDate: "2023-10-20",
-      description: "Annual influenza vaccination campaign for all students to prevent seasonal flu.",
+      description: "Chiến dịch tiêm vắc xin cúm hàng năm cho tất cả học sinh để phòng ngừa cúm mùa.",
       status: "upcoming",
-      createdBy: "Emily Wilson",
+      createdBy: "Y tá Emily Wilson",
       createdAt: "2023-05-20",
       stats: {
         eligible: 854,
@@ -49,14 +48,14 @@ function VaccinationCampaigns() {
     },
     {
       id: 2,
-      title: "COVID-19 Booster",
+      title: "Mũi tiêm nhắc lại COVID-19",
       vaccineType: "COVID-19 mRNA",
-      targetGroup: "Grades 7-12",
+      targetGroup: "Lớp 7-12",
       startDate: "2023-09-05",
       endDate: "2023-09-10",
-      description: "Booster vaccination for eligible students aged 12 and above.",
+      description: "Tiêm nhắc lại vắc xin COVID-19 cho học sinh đủ điều kiện từ 12 tuổi trở lên.",
       status: "upcoming",
-      createdBy: "Robert Taylor",
+      createdBy: "Bác sĩ Robert Taylor",
       createdAt: "2023-05-18",
       stats: {
         eligible: 425,
@@ -68,14 +67,14 @@ function VaccinationCampaigns() {
     },
     {
       id: 3,
-      title: "MMR Catch-up",
-      vaccineType: "Measles, Mumps, Rubella",
-      targetGroup: "Grades K-5",
+      title: "Tiêm bù vắc xin MMR",
+      vaccineType: "Sởi, Quai bị, Rubella (MMR)",
+      targetGroup: "Lớp Mẫu giáo-5",
       startDate: "2023-08-10",
       endDate: "2023-08-12",
-      description: "Catch-up MMR vaccination campaign for elementary students.",
+      description: "Chiến dịch tiêm bù vắc xin MMR cho học sinh tiểu học.",
       status: "planning",
-      createdBy: "Sarah Johnson",
+      createdBy: "Y tá Sarah Johnson",
       createdAt: "2023-05-15",
       stats: {
         eligible: 410,
@@ -87,14 +86,14 @@ function VaccinationCampaigns() {
     },
     {
       id: 4,
-      title: "HPV Vaccination",
-      vaccineType: "Human Papillomavirus",
-      targetGroup: "7th Grade",
+      title: "Tiêm vắc xin HPV",
+      vaccineType: "Vi rút u nhú người (HPV)",
+      targetGroup: "Lớp 7",
       startDate: "2023-11-15",
       endDate: "2023-11-17",
-      description: "First dose of HPV vaccine for 7th grade students.",
+      description: "Mũi tiêm đầu tiên vắc xin HPV cho học sinh lớp 7.",
       status: "planning",
-      createdBy: "Michael Chen",
+      createdBy: "Bác sĩ Michael Chen",
       createdAt: "2023-05-10",
       stats: {
         eligible: 120,
@@ -106,14 +105,14 @@ function VaccinationCampaigns() {
     },
     {
       id: 5,
-      title: "Spring Tdap Booster",
-      vaccineType: "Tetanus, Diphtheria, Pertussis",
-      targetGroup: "6th Grade",
+      title: "Tiêm nhắc lại Tdap mùa xuân",
+      vaccineType: "Uốn ván, Bạch hầu, Ho gà (Tdap)",
+      targetGroup: "Lớp 6",
       startDate: "2023-04-10",
       endDate: "2023-04-12",
-      description: "Required Tdap booster for all 6th grade students.",
+      description: "Tiêm nhắc lại Tdap bắt buộc cho tất cả học sinh lớp 6.",
       status: "completed",
-      createdBy: "Sarah Johnson",
+      createdBy: "Y tá Sarah Johnson",
       createdAt: "2023-03-01",
       stats: {
         eligible: 115,
@@ -125,14 +124,14 @@ function VaccinationCampaigns() {
     },
     {
       id: 6,
-      title: "Hepatitis B Vaccination",
-      vaccineType: "Hepatitis B",
-      targetGroup: "Kindergarten",
+      title: "Tiêm vắc xin viêm gan B",
+      vaccineType: "Viêm gan B",
+      targetGroup: "Mẫu giáo",
       startDate: "2023-03-15",
       endDate: "2023-03-17",
-      description: "Hepatitis B vaccination series for kindergarten students.",
+      description: "Chuỗi tiêm vắc xin viêm gan B cho học sinh mẫu giáo.",
       status: "completed",
-      createdBy: "Emily Wilson",
+      createdBy: "Y tá Emily Wilson",
       createdAt: "2023-02-05",
       stats: {
         eligible: 95,
@@ -143,25 +142,24 @@ function VaccinationCampaigns() {
       }
     }
   ];
-
   // Sample schedule data
   const sampleSchedules = {
     1: [ // Schedule for Campaign ID 1
       {
         date: "2023-10-15",
         timeSlots: [
-          { 
-            time: "9:00 AM - 11:00 AM",
-            location: "School Gymnasium",
-            group: "1st & 2nd Grade",
-            vaccinator: "Dr. Johnson",
+          {
+            time: "9:00 SA - 11:00 SA",
+            location: "Nhà thi đấu trường học",
+            group: "Lớp 1 & 2",
+            vaccinator: "Bác sĩ Johnson",
             progress: { scheduled: 95, completed: 0 }
           },
-          { 
-            time: "1:00 PM - 3:00 PM",
-            location: "School Gymnasium",
-            group: "3rd & 4th Grade",
-            vaccinator: "Dr. Williams",
+          {
+            time: "1:00 CH - 3:00 CH",
+            location: "Nhà thi đấu trường học",
+            group: "Lớp 3 & 4",
+            vaccinator: "Bác sĩ Williams",
             progress: { scheduled: 102, completed: 0 }
           }
         ]
@@ -169,18 +167,18 @@ function VaccinationCampaigns() {
       {
         date: "2023-10-16",
         timeSlots: [
-          { 
-            time: "9:00 AM - 11:00 AM",
-            location: "School Gymnasium",
-            group: "5th & 6th Grade",
-            vaccinator: "Dr. Johnson",
+          {
+            time: "9:00 SA - 11:00 SA",
+            location: "Nhà thi đấu trường học",
+            group: "Lớp 5 & 6",
+            vaccinator: "Bác sĩ Johnson",
             progress: { scheduled: 110, completed: 0 }
           },
-          { 
-            time: "1:00 PM - 3:00 PM",
-            location: "School Gymnasium",
-            group: "7th & 8th Grade",
-            vaccinator: "Dr. Williams",
+          {
+            time: "1:00 CH - 3:00 CH",
+            location: "Nhà thi đấu trường học",
+            group: "Lớp 7 & 8",
+            vaccinator: "Bác sĩ Williams",
             progress: { scheduled: 108, completed: 0 }
           }
         ]
@@ -188,11 +186,11 @@ function VaccinationCampaigns() {
       {
         date: "2023-10-17",
         timeSlots: [
-          { 
-            time: "9:00 AM - 12:00 PM",
-            location: "School Gymnasium",
-            group: "Make-up Session",
-            vaccinator: "Dr. Johnson & Dr. Williams",
+          {
+            time: "9:00 SA - 12:00 CH",
+            location: "Nhà thi đấu trường học",
+            group: "Buổi tiêm bù",
+            vaccinator: "Bác sĩ Johnson & Bác sĩ Williams",
             progress: { scheduled: 45, completed: 0 }
           }
         ]
@@ -202,18 +200,18 @@ function VaccinationCampaigns() {
       {
         date: "2023-09-05",
         timeSlots: [
-          { 
-            time: "8:30 AM - 11:30 AM",
-            location: "School Auditorium",
-            group: "7th Grade",
-            vaccinator: "Dr. Martin",
+          {
+            time: "8:30 SA - 11:30 SA",
+            location: "Hội trường trường học",
+            group: "Lớp 7",
+            vaccinator: "Bác sĩ Martin",
             progress: { scheduled: 110, completed: 0 }
           },
-          { 
-            time: "12:30 PM - 3:30 PM",
-            location: "School Auditorium",
-            group: "8th Grade",
-            vaccinator: "Dr. Brown",
+          {
+            time: "12:30 CH - 3:30 CH",
+            location: "Hội trường trường học",
+            group: "Lớp 8",
+            vaccinator: "Bác sĩ Brown",
             progress: { scheduled: 105, completed: 0 }
           }
         ]
@@ -221,18 +219,18 @@ function VaccinationCampaigns() {
       {
         date: "2023-09-06",
         timeSlots: [
-          { 
-            time: "8:30 AM - 11:30 AM",
-            location: "School Auditorium",
-            group: "9th Grade",
-            vaccinator: "Dr. Martin",
+          {
+            time: "8:30 SA - 11:30 SA",
+            location: "Hội trường trường học",
+            group: "Lớp 9",
+            vaccinator: "Bác sĩ Martin",
             progress: { scheduled: 115, completed: 0 }
           },
-          { 
-            time: "12:30 PM - 3:30 PM",
-            location: "School Auditorium",
-            group: "10th Grade",
-            vaccinator: "Dr. Brown",
+          {
+            time: "12:30 CH - 3:30 CH",
+            location: "Hội trường trường học",
+            group: "Lớp 10",
+            vaccinator: "Bác sĩ Brown",
             progress: { scheduled: 95, completed: 0 }
           }
         ]
@@ -240,19 +238,17 @@ function VaccinationCampaigns() {
       {
         date: "2023-09-07",
         timeSlots: [
-          { 
-            time: "8:30 AM - 11:30 AM",
-            location: "School Auditorium",
-            group: "11th & 12th Grade",
-            vaccinator: "Dr. Martin",
+          {
+            time: "8:30 SA - 11:30 SA",
+            location: "Hội trường trường học",
+            group: "Lớp 11 & 12",
+            vaccinator: "Bác sĩ Martin",
             progress: { scheduled: 100, completed: 0 }
           }
         ]
       }
     ]
-  };
-
-  // Load campaigns data
+  };  // Load campaigns data
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
@@ -264,14 +260,14 @@ function VaccinationCampaigns() {
 
         setCampaigns(sampleCampaigns);
       } catch (error) {
-        console.error('Error fetching vaccination campaigns:', error);
+        console.error('Lỗi khi tải dữ liệu chiến dịch tiêm chủng:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCampaigns();
-  }, []);
+  }, [sampleCampaigns]);
 
   // Filter campaigns based on search term and status filter
   const filteredCampaigns = campaigns.filter(campaign => {
@@ -356,7 +352,6 @@ function VaccinationCampaigns() {
     setShowModal(false);
     setSelectedCampaign(null);
   };
-
   // Get status badge color
   const getStatusColor = (status) => {
     switch (status) {
@@ -375,10 +370,27 @@ function VaccinationCampaigns() {
     }
   };
 
+  // Get status text in Vietnamese
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'planning':
+        return 'Đang lập kế hoạch';
+      case 'upcoming':
+        return 'Sắp diễn ra';
+      case 'active':
+        return 'Đang thực hiện';
+      case 'completed':
+        return 'Đã hoàn thành';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return 'Không xác định';
+    }
+  };
   // Format date for display
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    return new Date(dateString).toLocaleDateString('vi-VN', options);
   };
 
   // Check if a campaign is recent (created in the last 7 days)
@@ -397,37 +409,34 @@ function VaccinationCampaigns() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold mb-1">Vaccination Campaigns</h1>
-          <p className="text-gray-600">Manage and monitor vaccination programs</p>
-        </div>
-
-        {isNurseOrManager && (
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center transition duration-150"
-            onClick={handleCreateCampaign}
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Create Campaign
-          </button>
-        )}
+    <div className="container mx-auto px-4 py-8">      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+      <div>
+        <h1 className="text-3xl font-bold mb-1">Chiến dịch tiêm chủng</h1>
+        <p className="text-gray-600">Quản lý và giám sát các chương trình tiêm chủng</p>
       </div>
 
-      {/* Filters */}
+      {isNurseOrManager && (
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center transition duration-150"
+          onClick={handleCreateCampaign}
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Tạo chiến dịch
+        </button>
+      )}
+    </div>      {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
-              Search Campaigns
+              Tìm kiếm chiến dịch
             </label>
             <input
               type="text"
               id="search"
-              placeholder="Search by title, vaccine type, or target group"
+              placeholder="Tìm kiếm theo tên, loại vắc xin hoặc nhóm đối tượng"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -436,7 +445,7 @@ function VaccinationCampaigns() {
 
           <div>
             <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700 mb-1">
-              Status
+              Trạng thái
             </label>
             <select
               id="statusFilter"
@@ -444,12 +453,12 @@ function VaccinationCampaigns() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="all">All Statuses</option>
-              <option value="planning">Planning</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="all">Tất cả trạng thái</option>
+              <option value="planning">Đang lập kế hoạch</option>
+              <option value="upcoming">Sắp diễn ra</option>
+              <option value="active">Đang thực hiện</option>
+              <option value="completed">Đã hoàn thành</option>
+              <option value="cancelled">Đã hủy</option>
             </select>
           </div>
         </div>
@@ -460,46 +469,43 @@ function VaccinationCampaigns() {
         <div className="bg-white rounded-lg shadow p-12 flex justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      ) : filteredCampaigns.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-          </svg>
-          <p className="mt-4 text-gray-500">No vaccination campaigns found matching your criteria.</p>
-          {isNurseOrManager && (
-            <button
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              onClick={handleCreateCampaign}
-            >
-              Create New Campaign
-            </button>
-          )}
-        </div>
+      ) : filteredCampaigns.length === 0 ? (<div className="bg-white rounded-lg shadow p-12 text-center">
+        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+        </svg>
+        <p className="mt-4 text-gray-500">Không tìm thấy chiến dịch tiêm chủng nào phù hợp với tiêu chí của bạn.</p>
+        {isNurseOrManager && (
+          <button
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={handleCreateCampaign}
+          >
+            Tạo chiến dịch mới
+          </button>
+        )}
+      </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCampaigns.map((campaign) => (
-            <div key={campaign.id} className="bg-white rounded-lg shadow overflow-hidden">
-              {isRecentCampaign(campaign.createdAt) && (
-                <div className="absolute top-0 right-0 mt-4 mr-4">
-                  <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">NEW</span>
-                </div>
-              )}
+            <div key={campaign.id} className="bg-white rounded-lg shadow overflow-hidden">              {isRecentCampaign(campaign.createdAt) && (
+              <div className="absolute top-0 right-0 mt-4 mr-4">
+                <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">MỚI</span>
+              </div>
+            )}
 
               <div className="p-6">
                 <div className="flex justify-between items-start">
                   <h3 className="text-lg font-semibold text-gray-900">{campaign.title}</h3>
                   <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(campaign.status)}`}>
-                    {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+                    {getStatusText(campaign.status)}
                   </span>
                 </div>
 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-start">
                     <svg className="h-5 w-5 text-gray-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                    </svg>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>                    </svg>
                     <div>
-                      <p className="text-sm text-gray-500">Vaccine Type</p>
+                      <p className="text-sm text-gray-500">Loại vắc xin</p>
                       <p className="text-sm font-medium">{campaign.vaccineType}</p>
                     </div>
                   </div>
@@ -509,7 +515,7 @@ function VaccinationCampaigns() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                     </svg>
                     <div>
-                      <p className="text-sm text-gray-500">Target Group</p>
+                      <p className="text-sm text-gray-500">Nhóm đối tượng</p>
                       <p className="text-sm font-medium">{campaign.targetGroup}</p>
                     </div>
                   </div>
@@ -519,18 +525,16 @@ function VaccinationCampaigns() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <div>
-                      <p className="text-sm text-gray-500">Campaign Dates</p>
+                      <p className="text-sm text-gray-500">Thời gian chiến dịch</p>
                       <p className="text-sm font-medium">{formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}</p>
                     </div>
                   </div>
                 </div>
 
-                <p className="mt-4 text-sm text-gray-600 line-clamp-2">{campaign.description}</p>
-
-                {/* Campaign Stats */}
+                <p className="mt-4 text-sm text-gray-600 line-clamp-2">{campaign.description}</p>                {/* Campaign Stats */}
                 {campaign.stats && (
                   <div className="mt-6">
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Campaign Status</h4>
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tình trạng chiến dịch</h4>
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                       <div
                         className="bg-blue-600 h-2.5 rounded-full"
@@ -541,25 +545,23 @@ function VaccinationCampaigns() {
                     </div>
                     <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
                       <div>
-                        <p className="text-gray-500">Eligible</p>
+                        <p className="text-gray-500">Đủ điều kiện</p>
                         <p className="font-medium">{campaign.stats.eligible}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Consented</p>
+                        <p className="text-gray-500">Đã đồng ý</p>
                         <p className="font-medium">{campaign.stats.consented}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Vaccinated</p>
+                        <p className="text-gray-500">Đã tiêm</p>
                         <p className="font-medium">{campaign.stats.vaccinated}</p>
                       </div>
                     </div>
                   </div>
                 )}
-              </div>
-
-              <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+              </div>              <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
                 <div className="text-xs text-gray-500">
-                  Created by {campaign.createdBy}
+                  Tạo bởi {campaign.createdBy}
                 </div>
 
                 <div className="flex space-x-2">
@@ -568,7 +570,7 @@ function VaccinationCampaigns() {
                       className="px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm font-medium hover:bg-blue-200"
                       onClick={() => handleEditCampaign(campaign)}
                     >
-                      Edit
+                      Chỉnh sửa
                     </button>
                   )}
 
@@ -577,7 +579,7 @@ function VaccinationCampaigns() {
                       className="px-3 py-1 bg-green-100 text-green-600 rounded text-sm font-medium hover:bg-green-200"
                       onClick={() => handleViewSchedule(campaign)}
                     >
-                      Schedule
+                      Lịch trình
                     </button>
                   )}
 
@@ -585,7 +587,7 @@ function VaccinationCampaigns() {
                     className="px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm font-medium hover:bg-gray-200"
                     onClick={() => navigate(`/nurse/vaccinations/${campaign.id}/records`)}
                   >
-                    Records
+                    Hồ sơ
                   </button>
                 </div>
               </div>
@@ -597,18 +599,17 @@ function VaccinationCampaigns() {
       {/* Create/Edit Campaign Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
-            <div className="p-6 border-b">
-              <h3 className="text-xl font-semibold">
-                {selectedCampaign ? 'Edit Vaccination Campaign' : 'Create New Vaccination Campaign'}
-              </h3>
-            </div>
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">            <div className="p-6 border-b">
+            <h3 className="text-xl font-semibold">
+              {selectedCampaign ? 'Chỉnh sửa chiến dịch tiêm chủng' : 'Tạo chiến dịch tiêm chủng mới'}
+            </h3>
+          </div>
 
             <form onSubmit={handleSubmit}>
               <div className="p-6 space-y-4">
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                    Campaign Title<span className="text-red-500">*</span>
+                    Tên chiến dịch<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -623,7 +624,7 @@ function VaccinationCampaigns() {
 
                 <div>
                   <label htmlFor="vaccineType" className="block text-sm font-medium text-gray-700 mb-1">
-                    Vaccine Type<span className="text-red-500">*</span>
+                    Loại vắc xin<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -638,7 +639,7 @@ function VaccinationCampaigns() {
 
                 <div>
                   <label htmlFor="targetGroup" className="block text-sm font-medium text-gray-700 mb-1">
-                    Target Group<span className="text-red-500">*</span>
+                    Nhóm đối tượng<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -654,7 +655,7 @@ function VaccinationCampaigns() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                      Start Date<span className="text-red-500">*</span>
+                      Ngày bắt đầu<span className="text-red-500">*</span>
                     </label>
                     <input
                       type="date"
@@ -669,7 +670,7 @@ function VaccinationCampaigns() {
 
                   <div>
                     <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                      End Date<span className="text-red-500">*</span>
+                      Ngày kết thúc<span className="text-red-500">*</span>
                     </label>
                     <input
                       type="date"
@@ -685,7 +686,7 @@ function VaccinationCampaigns() {
 
                 <div>
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
+                    Mô tả
                   </label>
                   <textarea
                     id="description"
@@ -699,7 +700,7 @@ function VaccinationCampaigns() {
 
                 <div>
                   <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
+                    Trạng thái
                   </label>
                   <select
                     id="status"
@@ -708,11 +709,11 @@ function VaccinationCampaigns() {
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="planning">Planning</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="active">Active</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="planning">Đang lập kế hoạch</option>
+                    <option value="upcoming">Sắp diễn ra</option>
+                    <option value="active">Đang thực hiện</option>
+                    <option value="completed">Đã hoàn thành</option>
+                    <option value="cancelled">Đã hủy</option>
                   </select>
                 </div>
               </div>
@@ -726,14 +727,14 @@ function VaccinationCampaigns() {
                     setSelectedCampaign(null);
                   }}
                 >
-                  Cancel
+                  Hủy
                 </button>
 
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  {selectedCampaign ? 'Update Campaign' : 'Create Campaign'}
+                  {selectedCampaign ? 'Cập nhật chiến dịch' : 'Tạo chiến dịch'}
                 </button>
               </div>
             </form>
@@ -744,13 +745,12 @@ function VaccinationCampaigns() {
       {/* Schedule Modal - Điều chỉnh vị trí nằm giữa */}
       {showScheduleModal && scheduleCampaign && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div 
+          <div
             className="w-full max-w-3xl bg-white shadow-xl rounded-lg overflow-hidden flex flex-col max-h-[90vh]"
             style={{ marginLeft: "130px" }} // Điều chỉnh để cân đối với sidebar
-          >
-            <div className="bg-green-50 p-6 border-b border-green-100 flex justify-between items-center sticky top-0 z-10">
+          >            <div className="bg-green-50 p-6 border-b border-green-100 flex justify-between items-center sticky top-0 z-10">
               <h3 className="text-xl font-semibold text-green-800">
-                {scheduleCampaign.title} - Vaccination Schedule
+                {scheduleCampaign.title} - Lịch trình tiêm chủng
               </h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
@@ -761,26 +761,25 @@ function VaccinationCampaigns() {
                 </svg>
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="mb-5">
-                <div className="flex flex-wrap gap-4 mb-3">
-                  <div className="bg-blue-50 p-3 rounded-lg flex-grow">
-                    <h4 className="text-sm font-medium text-gray-500">Target Group</h4>
-                    <p className="font-medium">{scheduleCampaign.targetGroup}</p>
-                  </div>
-                  <div className="bg-blue-50 p-3 rounded-lg flex-grow">
-                    <h4 className="text-sm font-medium text-gray-500">Vaccine Type</h4>
-                    <p className="font-medium">{scheduleCampaign.vaccineType}</p>
-                  </div>
-                  <div className="bg-blue-50 p-3 rounded-lg flex-grow">
-                    <h4 className="text-sm font-medium text-gray-500">Campaign Period</h4>
-                    <p className="font-medium">
-                      {formatDate(scheduleCampaign.startDate)} - {formatDate(scheduleCampaign.endDate)}
-                    </p>
-                  </div>
+              <div className="mb-5">                <div className="flex flex-wrap gap-4 mb-3">
+                <div className="bg-blue-50 p-3 rounded-lg flex-grow">
+                  <h4 className="text-sm font-medium text-gray-500">Nhóm đối tượng</h4>
+                  <p className="font-medium">{scheduleCampaign.targetGroup}</p>
                 </div>
-                
+                <div className="bg-blue-50 p-3 rounded-lg flex-grow">
+                  <h4 className="text-sm font-medium text-gray-500">Loại vắc xin</h4>
+                  <p className="font-medium">{scheduleCampaign.vaccineType}</p>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg flex-grow">
+                  <h4 className="text-sm font-medium text-gray-500">Thời gian chiến dịch</h4>
+                  <p className="font-medium">
+                    {formatDate(scheduleCampaign.startDate)} - {formatDate(scheduleCampaign.endDate)}
+                  </p>
+                </div>
+              </div>
+
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
                   <div className="flex">
                     <div className="flex-shrink-0">
@@ -790,103 +789,98 @@ function VaccinationCampaigns() {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-yellow-700">
-                        All schedules are subject to change. Parents and students will be notified of any updates.
+                        Tất cả lịch trình có thể thay đổi. Phụ huynh và học sinh sẽ được thông báo về bất kỳ cập nhật nào.
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {sampleSchedules[scheduleCampaign.id] ? (
                 <div className="space-y-8">
                   {sampleSchedules[scheduleCampaign.id].map((day, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm">
                       <h4 className="font-medium text-lg mb-4 text-gray-800">{formatDate(day.date)}</h4>
-                      
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-100">
-                            <tr>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vaccinator</th>
-                              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {day.timeSlots.map((slot, slotIndex) => (
-                              <tr key={slotIndex} className={slotIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.time}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.group}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.location}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.vaccinator}</td>
-                                <td className="px-4 py-3 text-sm text-gray-900">
-                                  <div className="flex items-center">
-                                    <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
-                                      <div 
-                                        className="bg-green-600 h-2 rounded-full" 
-                                        style={{ 
-                                          width: `${(slot.progress.completed / slot.progress.scheduled) * 100}%`
-                                        }}
-                                      ></div>
-                                    </div>
-                                    <span className="text-xs whitespace-nowrap">
-                                      {slot.progress.completed} / {slot.progress.scheduled}
-                                    </span>
+
+                      <div className="overflow-x-auto">                        <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nhóm</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Địa điểm</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Người tiêm</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiến độ</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {day.timeSlots.map((slot, slotIndex) => (
+                            <tr key={slotIndex} className={slotIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.time}</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.group}</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.location}</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.vaccinator}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900">
+                                <div className="flex items-center">
+                                  <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
+                                    <div
+                                      className="bg-green-600 h-2 rounded-full"
+                                      style={{
+                                        width: `${(slot.progress.completed / slot.progress.scheduled) * 100}%`
+                                      }}
+                                    ></div>
                                   </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                                  <span className="text-xs whitespace-nowrap">
+                                    {slot.progress.completed} / {slot.progress.scheduled}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <svg 
-                    className="mx-auto h-12 w-12 text-gray-400" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
-                    aria-hidden="true"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                    />
-                  </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No schedule available</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    The schedule for this campaign is still being prepared.
-                  </p>
-                </div>
+              ) : (<div className="text-center py-12">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">Không có lịch trình</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Lịch trình cho chiến dịch này vẫn đang được chuẩn bị.
+                </p>
+              </div>
               )}
             </div>
-            
             <div className="bg-gray-50 px-6 py-4 flex justify-between border-t">
               <button
                 className="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 onClick={() => window.print()}
               >
-                Print Schedule
+                In lịch trình
               </button>
               <button
                 className="px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 onClick={() => setShowScheduleModal(false)}
               >
-                Close
+                Đóng
               </button>
             </div>
           </div>
         </div>
-      )}
-
-      {/* Info Section */}
+      )}      {/* Info Section */}
       <div className="mt-8 bg-blue-50 border-l-4 border-blue-500 p-5 rounded-lg">
         <div className="flex">
           <div className="flex-shrink-0">
@@ -895,10 +889,10 @@ function VaccinationCampaigns() {
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800">About Vaccination Campaigns</h3>
+            <h3 className="text-sm font-medium text-blue-800">Về các chiến dịch tiêm chủng</h3>
             <div className="mt-2 text-sm text-blue-700">
-              <p>Vaccination campaigns help protect students from preventable diseases. Each campaign is designed for specific age groups and follows health department guidelines.</p>
-              <p className="mt-1">For parents: Please review and submit consent forms for upcoming campaigns.</p>
+              <p>Các chiến dịch tiêm chủng giúp bảo vệ học sinh khỏi các bệnh có thể phòng ngừa được. Mỗi chiến dịch được thiết kế cho các nhóm tuổi cụ thể và tuân theo hướng dẫn của sở y tế.</p>
+              <p className="mt-1">Dành cho phụ huynh: Vui lòng xem xét và nộp phiếu đồng ý cho các chiến dịch sắp tới.</p>
             </div>
           </div>
         </div>

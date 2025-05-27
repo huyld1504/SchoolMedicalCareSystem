@@ -20,67 +20,65 @@ function VaccinationReports() {
     useEffect(() => {
         // In a real app, this would call an API to get vaccination reports
         const fetchVaccinationReports = async () => {
-            try {
-                // Create sample vaccination reports
+            try {                // Create sample vaccination reports
                 const vacReports = [
                     {
                         id: 'VR-2025-05-01',
-                        title: 'Spring 2025 Vaccination Campaign Results',
+                        title: 'Kết quả chiến dịch tiêm chủng xuân 2025',
                         date: '2025-05-01',
-                        type: 'Campaign',
-                        author: 'Health Department',
-                        summary: 'Results from the Spring 2025 vaccination drive',
+                        type: 'Chiến dịch',
+                        author: 'Sở Y tế',
+                        summary: 'Kết quả từ chiến dịch tiêm chủng xuân 2025',
                         compliance: '94%',
-                        grade: 'All',
-                        tags: ['Campaign', 'Seasonal'],
+                        grade: 'Tất cả',
+                        tags: ['Chiến dịch', 'Theo mùa'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'VR-2025-04-15',
-                        title: 'Required Vaccinations Compliance Report',
+                        title: 'Báo cáo tuân thủ tiêm chủng bắt buộc',
                         date: '2025-04-15',
-                        type: 'Compliance',
-                        author: 'Dr. Emily Carter',
-                        summary: 'Status report on required vaccination compliance across all grades',
+                        type: 'Tuân thủ',
+                        author: 'Bác sĩ Emily Carter',
+                        summary: 'Báo cáo tình trạng tuân thủ tiêm chủng bắt buộc trên tất cả các lớp',
                         compliance: '98%',
-                        grade: 'All',
-                        tags: ['Required', 'Compliance'],
+                        grade: 'Tất cả',
+                        tags: ['Bắt buộc', 'Tuân thủ'],
                         downloadUrl: '#'
-                    },
-                    {
+                    }, {
                         id: 'VR-2025-04-01',
-                        title: 'Influenza Vaccination Coverage',
+                        title: 'Phạm vi tiêm chủng cúm',
                         date: '2025-04-01',
-                        type: 'Specific Vaccination',
-                        author: 'Nurse Sarah Wilson',
-                        summary: 'Analysis of influenza vaccination coverage for the 2024-2025 season',
+                        type: 'Tiêm chủng cụ thể',
+                        author: 'Y tá Sarah Wilson',
+                        summary: 'Phân tích phạm vi tiêm chủng cúm cho mùa 2024-2025',
                         compliance: '89%',
-                        grade: 'All',
-                        tags: ['Influenza', 'Seasonal'],
+                        grade: 'Tất cả',
+                        tags: ['Cúm', 'Theo mùa'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'VR-2025-03-20',
-                        title: 'Vaccination Exemption Analysis',
+                        title: 'Phân tích miễn trừ tiêm chủng',
                         date: '2025-03-20',
-                        type: 'Exemption',
-                        author: 'School Administration',
-                        summary: 'Review of vaccination exemptions and mitigation strategies',
-                        compliance: 'N/A',
-                        grade: 'All',
-                        tags: ['Exemption', 'Analysis'],
+                        type: 'Miễn trừ',
+                        author: 'Ban quản lý trường',
+                        summary: 'Xem xét các trường hợp miễn trừ tiêm chủng và chiến lược giảm thiểu',
+                        compliance: 'Không áp dụng',
+                        grade: 'Tất cả',
+                        tags: ['Miễn trừ', 'Phân tích'],
                         downloadUrl: '#'
                     },
                     {
                         id: 'VR-2025-03-01',
-                        title: 'Kindergarten Vaccination Status Report',
+                        title: 'Báo cáo tình trạng tiêm chủng mẫu giáo',
                         date: '2025-03-01',
-                        type: 'Grade-Specific',
-                        author: 'Elementary Health Team',
-                        summary: 'Detailed report on vaccination status of kindergarten students',
+                        type: 'Theo lớp',
+                        author: 'Nhóm y tế tiểu học',
+                        summary: 'Báo cáo chi tiết về tình trạng tiêm chủng của học sinh mẫu giáo',
                         compliance: '96%',
-                        grade: 'Kindergarten',
-                        tags: ['Grade-Specific', 'Entry Requirements'],
+                        grade: 'Mẫu giáo',
+                        tags: ['Theo lớp', 'Yêu cầu nhập học'],
                         downloadUrl: '#'
                     }
                 ];
@@ -127,11 +125,9 @@ function VaccinationReports() {
         // More filters could be applied here based on grade, date, etc.
 
         return true;
-    });
-
-    const formatDate = (dateString) => {
+    }); const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
+        return new Date(dateString).toLocaleDateString('vi-VN', options);
     };
 
     if (loading) {
@@ -139,126 +135,117 @@ function VaccinationReports() {
     }
 
     return (
-        <div className="p-6">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">Vaccination Reports</h1>
-                <p className="text-gray-600">Access and manage all vaccination records and compliance reports</p>
-            </div>
-
-            {/* Vaccination Report Stats */}
+        <div className="p-6">            <div className="mb-6">
+            <h1 className="text-3xl font-bold mb-2">Báo cáo tiêm chủng</h1>
+            <p className="text-gray-600">Truy cập và quản lý tất cả hồ sơ tiêm chủng và báo cáo tuân thủ</p>
+        </div>            {/* Vaccination Report Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Total Reports</p>
+                        <p className="text-gray-500 text-sm">Tổng số báo cáo</p>
                         <p className="text-3xl font-bold text-purple-600">{stats.totalReports}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Overall Compliance</p>
+                        <p className="text-gray-500 text-sm">Tuân thủ tổng thể</p>
                         <p className="text-3xl font-bold text-purple-600">{stats.complianceRate}%</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Vaccinated Students</p>
+                        <p className="text-gray-500 text-sm">Học sinh đã tiêm</p>
                         <p className="text-3xl font-bold text-purple-600">{stats.vaccinatedStudents}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Pending Consent Forms</p>
+                        <p className="text-gray-500 text-sm">Đơn đồng ý chờ xử lý</p>
                         <p className="text-3xl font-bold text-amber-600">{stats.pendingConsent}</p>
                     </div>
                 </div>
-            </div>
-
-            {/* Filters */}
+            </div>            {/* Filters */}
             <div className="bg-white rounded-lg shadow mb-6">
                 <div className="p-5 border-b">
-                    <h2 className="text-lg font-medium">Report Filters</h2>
+                    <h2 className="text-lg font-medium">Bộ lọc báo cáo</h2>
                 </div>
                 <div className="p-5 grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Loại báo cáo</label>
                         <select
                             name="reportType"
                             value={filters.reportType}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Types</option>
-                            <option value="campaign">Campaign</option>
-                            <option value="compliance">Compliance</option>
-                            <option value="specific">Specific Vaccination</option>
-                            <option value="exemption">Exemption</option>
-                            <option value="grade">Grade-Specific</option>
+                            <option value="all">Tất cả loại</option>
+                            <option value="campaign">Chiến dịch</option>
+                            <option value="compliance">Tuân thủ</option>
+                            <option value="specific">Tiêm chủng cụ thể</option>
+                            <option value="exemption">Miễn trừ</option>
+                            <option value="grade">Theo lớp</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Thời gian</label>
                         <select
                             name="timePeriod"
                             value={filters.timePeriod}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Time</option>
-                            <option value="month">This Month</option>
-                            <option value="quarter">This Quarter</option>
-                            <option value="year">This Year</option>
+                            <option value="all">Tất cả thời gian</option>
+                            <option value="month">Tháng này</option>
+                            <option value="quarter">Quý này</option>
+                            <option value="year">Năm này</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Grade Level</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Cấp lớp</label>
                         <select
                             name="grade"
                             value={filters.grade}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Grades</option>
-                            <option value="kindergarten">Kindergarten</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="middle">Middle School</option>
-                            <option value="high">High School</option>
+                            <option value="all">Tất cả lớp</option>
+                            <option value="kindergarten">Mẫu giáo</option>
+                            <option value="elementary">Tiểu học</option>
+                            <option value="middle">Trung học cơ sở</option>
+                            <option value="high">Trung học phổ thông</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Search Reports</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm báo cáo</label>
                         <input
                             type="text"
                             name="searchQuery"
                             value={filters.searchQuery}
                             onChange={handleFilterChange}
-                            placeholder="Search by title or content..."
+                            placeholder="Tìm theo tiêu đề hoặc nội dung..."
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
                         />
                     </div>
                 </div>
-            </div>
-
-            {/* Report Generation Button */}
+            </div>            {/* Report Generation Button */}
             <div className="mb-6 flex justify-end">
                 <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    Generate New Vaccination Report
+                    Tạo báo cáo tiêm chủng mới
                 </button>
-            </div>
-
-            {/* Reports Table */}
+            </div>            {/* Reports Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Report</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compliance</th>
-                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Báo cáo</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tác giả</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tuân thủ</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -314,12 +301,11 @@ function VaccinationReports() {
                                     </td>
                                 </tr>
                             ))
-                        ) : (
-                            <tr>
-                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                                    No reports found matching your criteria.
-                                </td>
-                            </tr>
+                        ) : (<tr>
+                            <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                                Không tìm thấy báo cáo nào phù hợp với tiêu chí của bạn.
+                            </td>
+                        </tr>
                         )}
                     </tbody>
                 </table>

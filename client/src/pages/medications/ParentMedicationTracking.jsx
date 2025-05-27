@@ -225,13 +225,12 @@ function ParentMedicationTracking() {
   return (
     <div className="container mx-auto px-4 py-8">
       {" "}
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">My Children's Medications</h1>
-          <p className="text-gray-600">
-            Track and manage medications administered at school
-          </p>
-        </div>
+      <div className="mb-6 flex justify-between items-center">        <div>
+        <h1 className="text-3xl font-bold mb-2">Thuốc của con em</h1>
+        <p className="text-gray-600">
+          Theo dõi và quản lý thuốc được uống tại trường
+        </p>
+      </div>
         <div className="flex items-center gap-3">
           {/* Notifications bell */}
           <div className="relative">
@@ -266,8 +265,7 @@ function ParentMedicationTracking() {
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10 max-h-96 overflow-y-auto">
                 <div className="p-4 border-b border-gray-200">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-medium text-gray-900">Notifications</h3>
+                  <div className="flex justify-between items-center">                    <h3 className="font-medium text-gray-900">Thông báo</h3>
                     {notifications.filter((n) => !n.read).length > 0 && (
                       <button
                         onClick={() => {
@@ -277,7 +275,7 @@ function ParentMedicationTracking() {
                         }}
                         className="text-sm text-blue-600 hover:text-blue-800"
                       >
-                        Mark all as read
+                        Đánh dấu tất cả đã đọc
                       </button>
                     )}
                   </div>
@@ -288,24 +286,21 @@ function ParentMedicationTracking() {
                     notifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 ${
-                          !notification.read ? "bg-blue-50" : ""
-                        }`}
+                        className={`p-4 ${!notification.read ? "bg-blue-50" : ""
+                          }`}
                       >
                         <div className="flex items-start">
                           <div
-                            className={`flex-shrink-0 rounded-full p-1 ${
-                              notification.type === "warning"
+                            className={`flex-shrink-0 rounded-full p-1 ${notification.type === "warning"
                                 ? "bg-yellow-100"
                                 : "bg-blue-100"
-                            }`}
+                              }`}
                           >
                             <svg
-                              className={`h-5 w-5 ${
-                                notification.type === "warning"
+                              className={`h-5 w-5 ${notification.type === "warning"
                                   ? "text-yellow-600"
                                   : "text-blue-600"
-                              }`}
+                                }`}
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 20 20"
                               fill="currentColor"
@@ -346,25 +341,22 @@ function ParentMedicationTracking() {
                                     notification.medicationId
                                   )
                                 }
-                                className={`px-3 py-1 text-xs font-medium rounded-md ${
-                                  notification.action === "refill"
+                                className={`px-3 py-1 text-xs font-medium rounded-md ${notification.action === "refill"
                                     ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
                                     : "bg-green-100 text-green-800 hover:bg-green-200"
-                                }`}
-                              >
-                                {notification.action === "refill"
-                                  ? "Request Refill"
-                                  : "Renew"}
+                                  }`}
+                              >                                {notification.action === "refill"
+                                ? "Yêu cầu bổ sung"
+                                : "Gia hạn"}
                               </button>
                             </div>
                           </div>
                         </div>
                       </div>
                     ))
-                  ) : (
-                    <div className="p-4 text-center text-gray-500">
-                      No notifications at this time
-                    </div>
+                  ) : (<div className="p-4 text-center text-gray-500">
+                    Không có thông báo nào vào lúc này
+                  </div>
                   )}
                 </div>
               </div>
@@ -387,7 +379,7 @@ function ParentMedicationTracking() {
                 clipRule="evenodd"
               />
             </svg>
-            Request New Medication
+            Yêu cầu thuốc mới
           </Link>
         </div>
       </div>
@@ -398,7 +390,7 @@ function ParentMedicationTracking() {
             htmlFor="filterStudent"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Filter by Child:
+            Lọc theo trẻ:
           </label>
           <select
             id="filterStudent"
@@ -406,7 +398,7 @@ function ParentMedicationTracking() {
             value={filterStudent}
             onChange={(e) => setFilterStudent(e.target.value)}
           >
-            <option value="all">All Children</option>
+            <option value="all">Tất cả trẻ em</option>
             {students.map((student, index) => (
               <option key={index} value={student}>
                 {student}
@@ -420,20 +412,19 @@ function ParentMedicationTracking() {
             htmlFor="filterStatus"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Filter by Status:
+            Lọc theo trạng thái:
           </label>
           <select
             id="filterStatus"
             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="all">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Low Supply">Low Supply</option>
-            <option value="Expired">Expired</option>
-            <option value="Pending Approval">Pending Approval</option>
-            <option value="Cancelled">Cancelled</option>
+          >            <option value="all">Tất cả trạng thái</option>
+            <option value="Active">Đang hoạt động</option>
+            <option value="Low Supply">Sắp hết</option>
+            <option value="Expired">Đã hết hạn</option>
+            <option value="Pending Approval">Chờ phê duyệt</option>
+            <option value="Cancelled">Đã hủy</option>
           </select>
         </div>
       </div>
@@ -446,12 +437,11 @@ function ParentMedicationTracking() {
                 filteredMedications.map((medication) => (
                   <li
                     key={medication.id}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer ${
-                      selectedMedication &&
-                      selectedMedication.id === medication.id
+                    className={`p-4 hover:bg-gray-50 cursor-pointer ${selectedMedication &&
+                        selectedMedication.id === medication.id
                         ? "bg-blue-50"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => handleViewMedication(medication.id)}
                   >
                     <div className="flex justify-between">
@@ -464,51 +454,47 @@ function ParentMedicationTracking() {
                         </p>
                       </div>
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          medication.status === "Active"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${medication.status === "Active"
                             ? "bg-green-100 text-green-800"
                             : medication.status === "Low Supply"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : medication.status === "Expired"
-                            ? "bg-red-100 text-red-800"
-                            : medication.status === "Cancelled"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
+                              ? "bg-yellow-100 text-yellow-800"
+                              : medication.status === "Expired"
+                                ? "bg-red-100 text-red-800"
+                                : medication.status === "Cancelled"
+                                  ? "bg-gray-100 text-gray-800"
+                                  : "bg-blue-100 text-blue-800"
+                          }`}
                       >
                         {medication.status}
                       </span>
                     </div>
 
                     <div className="mt-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">
-                          Frequency: {medication.frequency}
-                        </span>
+                      <div className="flex justify-between">                        <span className="text-gray-500">
+                        Tần suất: {medication.frequency}
+                      </span>
                         {medication.remainingDoses !== null && (
                           <span
-                            className={`font-medium ${
-                              medication.remainingDoses <= 3
+                            className={`font-medium ${medication.remainingDoses <= 3
                                 ? "text-red-600"
                                 : "text-gray-600"
-                            }`}
+                              }`}
                           >
-                            {medication.remainingDoses} doses left
+                            {medication.remainingDoses} liều còn lại
                           </span>
                         )}
                       </div>
                       {medication.lastAdministered && (
                         <p className="text-gray-500 mt-1">
-                          Last given: {medication.lastAdministered}
+                          Uống lần cuối: {medication.lastAdministered}
                         </p>
                       )}
                     </div>
                   </li>
                 ))
-              ) : (
-                <li className="p-4 text-center text-gray-500">
-                  No medications found with the selected filters.
-                </li>
+              ) : (<li className="p-4 text-center text-gray-500">
+                Không tìm thấy thuốc nào với bộ lọc đã chọn.
+              </li>
               )}
             </ul>
           </div>
@@ -521,41 +507,38 @@ function ParentMedicationTracking() {
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-800">
                   {selectedMedication.medication}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  For: {selectedMedication.studentName}
+                </h2>                <p className="text-sm text-gray-600">
+                  Cho: {selectedMedication.studentName}
                 </p>
               </div>
 
               <div className="px-6 py-4">
                 {/* Current Status Banner */}
                 <div
-                  className={`rounded-md p-3 mb-4 ${
-                    selectedMedication.status === "Active"
+                  className={`rounded-md p-3 mb-4 ${selectedMedication.status === "Active"
                       ? "bg-green-50 border border-green-200"
                       : selectedMedication.status === "Low Supply"
-                      ? "bg-yellow-50 border border-yellow-200"
-                      : selectedMedication.status === "Expired"
-                      ? "bg-red-50 border border-red-200"
-                      : selectedMedication.status === "Cancelled"
-                      ? "bg-gray-50 border border-gray-200"
-                      : "bg-blue-50 border border-blue-200"
-                  }`}
+                        ? "bg-yellow-50 border border-yellow-200"
+                        : selectedMedication.status === "Expired"
+                          ? "bg-red-50 border border-red-200"
+                          : selectedMedication.status === "Cancelled"
+                            ? "bg-gray-50 border border-gray-200"
+                            : "bg-blue-50 border border-blue-200"
+                    }`}
                 >
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg
-                        className={`h-5 w-5 ${
-                          selectedMedication.status === "Active"
+                        className={`h-5 w-5 ${selectedMedication.status === "Active"
                             ? "text-green-400"
                             : selectedMedication.status === "Low Supply"
-                            ? "text-yellow-400"
-                            : selectedMedication.status === "Expired"
-                            ? "text-red-400"
-                            : selectedMedication.status === "Cancelled"
-                            ? "text-gray-400"
-                            : "text-blue-400"
-                        }`}
+                              ? "text-yellow-400"
+                              : selectedMedication.status === "Expired"
+                                ? "text-red-400"
+                                : selectedMedication.status === "Cancelled"
+                                  ? "text-gray-400"
+                                  : "text-blue-400"
+                          }`}
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
@@ -583,54 +566,55 @@ function ParentMedicationTracking() {
                     </div>
                     <div className="ml-3">
                       <h3
-                        className={`text-sm font-medium ${
-                          selectedMedication.status === "Active"
+                        className={`text-sm font-medium ${selectedMedication.status === "Active"
                             ? "text-green-800"
                             : selectedMedication.status === "Low Supply"
-                            ? "text-yellow-800"
-                            : selectedMedication.status === "Expired"
-                            ? "text-red-800"
-                            : selectedMedication.status === "Cancelled"
-                            ? "text-gray-800"
-                            : "text-blue-800"
-                        }`}
+                              ? "text-yellow-800"
+                              : selectedMedication.status === "Expired"
+                                ? "text-red-800"
+                                : selectedMedication.status === "Cancelled"
+                                  ? "text-gray-800"
+                                  : "text-blue-800"
+                          }`}
                       >
-                        Status: {selectedMedication.status}
+                        Status: {selectedMedication.status === "Active" ? "Đang hoạt động" :
+                          selectedMedication.status === "Low Supply" ? "Sắp hết" :
+                            selectedMedication.status === "Expired" ? "Đã hết hạn" :
+                              selectedMedication.status === "Cancelled" ? "Đã hủy" :
+                                selectedMedication.status === "Pending Approval" ? "Chờ phê duyệt" : selectedMedication.status}
                       </h3>
                       <div
-                        className={`mt-2 text-sm ${
-                          selectedMedication.status === "Active"
+                        className={`mt-2 text-sm ${selectedMedication.status === "Active"
                             ? "text-green-700"
                             : selectedMedication.status === "Low Supply"
-                            ? "text-yellow-700"
-                            : selectedMedication.status === "Expired"
-                            ? "text-red-700"
-                            : selectedMedication.status === "Cancelled"
-                            ? "text-gray-700"
-                            : "text-blue-700"
-                        }`}
-                      >
-                        {selectedMedication.status === "Low Supply" && (
-                          <p>
-                            Your child's medication is running low. Please send
-                            a refill to the school nurse soon.
-                          </p>
-                        )}
+                              ? "text-yellow-700"
+                              : selectedMedication.status === "Expired"
+                                ? "text-red-700"
+                                : selectedMedication.status === "Cancelled"
+                                  ? "text-gray-700"
+                                  : "text-blue-700"
+                          }`}
+                      >                        {selectedMedication.status === "Low Supply" && (
+                        <p>
+                          Thuốc của con bạn sắp hết. Vui lòng gửi thuốc bổ sung
+                          cho y tá trường sớm.
+                        </p>
+                      )}
                         {selectedMedication.status === "Pending Approval" && (
                           <p>
-                            This medication request is awaiting approval from
-                            the school nurse.
+                            Yêu cầu thuốc này đang chờ phê duyệt từ
+                            y tá trường.
                           </p>
                         )}
                         {selectedMedication.status === "Expired" && (
                           <p>
-                            This medication has expired. Please submit a new
-                            medication request with a current prescription.
+                            Thuốc này đã hết hạn. Vui lòng gửi yêu cầu thuốc mới
+                            với đơn thuốc hiện tại.
                           </p>
                         )}
                         {selectedMedication.status === "Cancelled" && (
                           <p>
-                            This medication administration has been cancelled.
+                            Việc sử dụng thuốc này đã bị hủy.
                           </p>
                         )}
                       </div>
@@ -667,11 +651,10 @@ function ParentMedicationTracking() {
                       Remaining Supply
                     </p>
                     <p
-                      className={`mt-1 ${
-                        selectedMedication.remainingDoses <= 3
+                      className={`mt-1 ${selectedMedication.remainingDoses <= 3
                           ? "text-red-600 font-medium"
                           : ""
-                      }`}
+                        }`}
                     >
                       {selectedMedication.remainingDoses !== null
                         ? `${selectedMedication.remainingDoses} doses`

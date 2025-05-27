@@ -179,10 +179,9 @@ function MedicationAdministration() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Medication Administration</h1>
+      <div className="mb-8">        <h1 className="text-3xl font-bold mb-2">Cấp Thuốc</h1>
         <p className="text-gray-600">
-          Administer and track student medications
+          Cấp phát và theo dõi thuốc cho học sinh
         </p>
       </div>
 
@@ -207,39 +206,38 @@ function MedicationAdministration() {
             <input
               type="search"
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Search by student name, ID, or medication"
+              placeholder="Tìm kiếm theo tên học sinh, ID hoặc thuốc"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
-        <div className="flex border-b">
-          <button
-            className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "pending"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-              }`}
-            onClick={() => setSelectedTab("pending")}
-          >
-            Pending Today
-          </button>
+        <div className="flex border-b">          <button
+          className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "pending"
+            ? "border-b-2 border-blue-500 text-blue-600"
+            : "text-gray-500 hover:text-gray-700"
+            }`}
+          onClick={() => setSelectedTab("pending")}
+        >
+          Chờ Cấp Hôm Nay
+        </button>
           <button
             className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "administered"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
               }`}
             onClick={() => setSelectedTab("administered")}
           >
-            Administered Today
+            Đã Cấp Hôm Nay
           </button>
           <button
             className={`py-3 px-6 font-medium text-sm focus:outline-none ${selectedTab === "all"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
               }`}
             onClick={() => setSelectedTab("all")}
           >
-            All Medications
+            Tất Cả Thuốc
           </button>
         </div>
       </div>
@@ -248,18 +246,17 @@ function MedicationAdministration() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Medications List */}
         <div className="md:col-span-1 bg-white rounded-lg shadow">
-          <div className="p-4 border-b">
-            <h2 className="font-bold text-lg">
-              Medications{" "}
-              {selectedTab === "pending"
-                ? "to Administer"
-                : selectedTab === "administered"
-                  ? "Administered"
-                  : ""}
-            </h2>
+          <div className="p-4 border-b">            <h2 className="font-bold text-lg">
+            Thuốc{" "}
+            {selectedTab === "pending"
+              ? "Cần Cấp"
+              : selectedTab === "administered"
+                ? "Đã Cấp"
+                : ""}
+          </h2>
             <p className="text-sm text-gray-500">
               {formatDate(currentDate)} ({filteredMedications.length}{" "}
-              {filteredMedications.length === 1 ? "medication" : "medications"})
+              {filteredMedications.length === 1 ? "thuốc" : "thuốc"})
             </p>
           </div>
           <div className="divide-y divide-gray-200">
@@ -274,10 +271,10 @@ function MedicationAdministration() {
                   <div className="flex items-center">
                     <span
                       className={`w-3 h-3 rounded-full mr-3 ${med.status === "Administered"
-                          ? "bg-green-500"
-                          : med.status === "Skipped"
-                            ? "bg-yellow-500"
-                            : "bg-blue-500"
+                        ? "bg-green-500"
+                        : med.status === "Skipped"
+                          ? "bg-yellow-500"
+                          : "bg-blue-500"
                         }`}
                     ></span>
                     <div>
@@ -289,10 +286,9 @@ function MedicationAdministration() {
                   </div>
                 </button>
               ))
-            ) : (
-              <div className="p-6 text-center">
-                <p className="text-gray-500">No medications found</p>
-              </div>
+            ) : (<div className="p-6 text-center">
+              <p className="text-gray-500">Không tìm thấy thuốc nào</p>
+            </div>
             )}
           </div>
         </div>
@@ -314,10 +310,10 @@ function MedicationAdministration() {
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${getSelectedMedication().status === "Administered"
-                        ? "bg-green-100 text-green-800"
-                        : getSelectedMedication().status === "Skipped"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-blue-100 text-blue-800"
+                      ? "bg-green-100 text-green-800"
+                      : getSelectedMedication().status === "Skipped"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-blue-100 text-blue-800"
                       }`}
                   >
                     {getSelectedMedication().status}
@@ -326,22 +322,20 @@ function MedicationAdministration() {
               </div>
 
               <div className="p-6">
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-4">
-                    Medication Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mb-6">                  <h3 className="text-lg font-medium mb-4">
+                  Chi Tiết Thuốc
+                </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">                    <div>
+                    <p className="text-sm font-medium text-gray-500">
+                      Thuốc
+                    </p>
+                    <p className="font-medium">
+                      {getSelectedMedication().medication}
+                    </p>
+                  </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Medication
-                      </p>
-                      <p className="font-medium">
-                        {getSelectedMedication().medication}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Dosage
+                        Liều Lượng
                       </p>
                       <p className="font-medium">
                         {getSelectedMedication().dosage}
@@ -349,7 +343,7 @@ function MedicationAdministration() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Scheduled Time
+                        Giờ Định Sẵn
                       </p>
                       <p className="font-medium">
                         {getSelectedMedication().time}
@@ -357,31 +351,32 @@ function MedicationAdministration() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Instructions
+                        Hướng Dẫn
                       </p>
-                      <p className="font-medium">                        {getSelectedMedication().instructions}
+                      <p className="font-medium">
+                        {getSelectedMedication().instructions}
                       </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Consent to Administer
+                        Đồng Ý Cấp Thuốc
                       </p>
                       <p className="font-medium">
                         <span
                           className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getSelectedMedication().consentToAdminister
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
                             }`}
                         >
                           {getSelectedMedication().consentToAdminister
-                            ? "Consent Provided"
-                            : "No Consent"}
+                            ? "Đã Đồng Ý"
+                            : "Chưa Đồng Ý"}
                         </span>
                       </p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        Start Date
+                        Ngày Bắt Đầu
                       </p>
                       <p className="font-medium">
                         {getSelectedMedication().startDate}
@@ -389,7 +384,7 @@ function MedicationAdministration() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">
-                        End Date
+                        Ngày Kết Thúc
                       </p>
                       <p className="font-medium">
                         {getSelectedMedication().endDate}
@@ -399,26 +394,24 @@ function MedicationAdministration() {
                 </div>
 
                 {getSelectedMedication().status === "Pending" && (
-                  <div className="mb-6 p-4 border rounded bg-gray-50">
-                    <h3 className="text-md font-medium mb-3">
-                      Administration Notes
-                    </h3>
+                  <div className="mb-6 p-4 border rounded bg-gray-50">                    <h3 className="text-md font-medium mb-3">
+                    Ghi Chú Cấp Thuốc
+                  </h3>
                     <textarea
                       className="w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       rows="2"
-                      placeholder="Enter any notes about this administration (optional)"
+                      placeholder="Nhập ghi chú về việc cấp thuốc này (tùy chọn)"
                       value={administrationNotes}
                       onChange={(e) => setAdministrationNotes(e.target.value)}
                     ></textarea>
-                    <div className="mt-4 flex space-x-2">
-                      <button
-                        className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded"
-                        onClick={() =>
-                          handleAdministerMedication(selectedMedicationId, true)
-                        }
-                      >
-                        Mark as Administered
-                      </button>
+                    <div className="mt-4 flex space-x-2">                      <button
+                      className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded"
+                      onClick={() =>
+                        handleAdministerMedication(selectedMedicationId, true)
+                      }
+                    >
+                      Đánh Dấu Đã Cấp
+                    </button>
                       <button
                         className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded"
                         onClick={() =>
@@ -428,43 +421,41 @@ function MedicationAdministration() {
                           )
                         }
                       >
-                        Mark as Skipped
+                        Đánh Dấu Bỏ Qua
                       </button>
                     </div>
                   </div>
                 )}
 
-                <div>
-                  <h3 className="text-lg font-medium mb-4">
-                    Administration History
-                  </h3>
+                <div>                  <h3 className="text-lg font-medium mb-4">
+                  Lịch Sử Cấp Thuốc
+                </h3>
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-300">
                       <thead className="bg-gray-50">
-                        <tr>
+                        <tr>                          <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-500"
+                        >
+                          Ngày
+                        </th>
                           <th
                             scope="col"
-                            className="py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-500"
+                            className="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
                           >
-                            Date
+                            Giờ
                           </th>
                           <th
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
                           >
-                            Time
+                            Trạng Thái
                           </th>
                           <th
                             scope="col"
                             className="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
                           >
-                            Status
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-3 py-3.5 text-left text-sm font-medium text-gray-500"
-                          >
-                            Notes
+                            Ghi Chú
                           </th>
                         </tr>
                       </thead>
@@ -478,17 +469,16 @@ function MedicationAdministration() {
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {record.time}
                               </td>
-                              <td className="whitespace-nowrap px-3 py-4 text-sm">
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${record.administered
-                                      ? "bg-green-100 text-green-800"
-                                      : "bg-yellow-100 text-yellow-800"
-                                    }`}
-                                >
-                                  {record.administered
-                                    ? "Administered"
-                                    : "Skipped"}
-                                </span>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm">                                <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${record.administered
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                                  }`}
+                              >
+                                {record.administered
+                                  ? "Đã Cấp"
+                                  : "Bỏ Qua"}
+                              </span>
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {record.notes || "—"}
@@ -518,13 +508,12 @@ function MedicationAdministration() {
                     strokeWidth={1.5}
                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                   />
-                </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">
-                  Select a medication
+                </svg>                <h3 className="mt-2 text-sm font-medium text-gray-900">
+                  Chọn một thuốc
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Choose a medication from the list to view details and
-                  administer
+                  Chọn một thuốc từ danh sách để xem chi tiết và
+                  cấp phát
                 </p>
               </div>
             </div>

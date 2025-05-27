@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-function HealthCheckCampaigns() {
-  // Demo data for health check campaigns
+function HealthCheckCampaigns() {  // Dữ liệu demo cho các chiến dịch khám sức khỏe
   const [campaigns, setCampaigns] = useState([
     {
       id: 1,
-      name: "Annual Vision & Hearing Screening",
-      description: "Routine vision and hearing tests for all students",
-      targetGroup: "All Students",
+      name: "Khám sàng lọc thị lực và thính lực hàng năm",
+      description: "Kiểm tra thị lực và thính lực định kỳ cho tất cả học sinh",
+      targetGroup: "Tất cả học sinh",
       status: "Active",
       startDate: "2023-10-15",
       endDate: "2023-11-15",
-      location: "School Gymnasium",
-      organizer: "School Health Department",
-      screeningTypes: ["Vision Test", "Hearing Test"],
+      location: "Nhà thi đấu trường học",
+      organizer: "Phòng Y tế Trường học",
+      screeningTypes: ["Kiểm tra thị lực", "Kiểm tra thính lực"],
       consentRequired: true,
       consentDeadline: "2023-10-10",
       totalStudents: 250,
@@ -24,92 +23,87 @@ function HealthCheckCampaigns() {
       schedule: [
         {
           date: "2023-10-15",
-          timeSlots: [
-            {
-              time: "9:00 AM - 11:00 AM",
-              location: "Gymnasium Section A",
-              group: "1st Grade",
-              staffAssigned: "Dr. Johnson",
-            },
-            {
-              time: "1:00 PM - 3:00 PM",
-              location: "Gymnasium Section A",
-              group: "2nd Grade",
-              staffAssigned: "Dr. Smith",
-            },
+          timeSlots: [{
+            time: "9:00 SA - 11:00 SA",
+            location: "Khu A nhà thi đấu",
+            group: "Lớp 1",
+            staffAssigned: "Bác sĩ Johnson",
+          },
+          {
+            time: "1:00 CH - 3:00 CH",
+            location: "Khu A nhà thi đấu",
+            group: "Lớp 2",
+            staffAssigned: "Bác sĩ Smith",
+          },
           ],
         },
         {
           date: "2023-10-16",
-          timeSlots: [
-            {
-              time: "9:00 AM - 11:00 AM",
-              location: "Gymnasium Section B",
-              group: "3rd Grade",
-              staffAssigned: "Dr. Johnson",
-            },
-            {
-              time: "1:00 PM - 3:00 PM",
-              location: "Gymnasium Section B",
-              group: "4th Grade",
-              staffAssigned: "Dr. Smith",
-            },
+          timeSlots: [{
+            time: "9:00 SA - 11:00 SA",
+            location: "Khu B nhà thi đấu",
+            group: "Lớp 3",
+            staffAssigned: "Bác sĩ Johnson",
+          },
+          {
+            time: "1:00 CH - 3:00 CH",
+            location: "Khu B nhà thi đấu",
+            group: "Lớp 4",
+            staffAssigned: "Bác sĩ Smith",
+          },
           ],
         },
         {
           date: "2023-10-17",
-          timeSlots: [
-            {
-              time: "9:00 AM - 11:00 AM",
-              location: "Gymnasium Section A",
-              group: "5th Grade",
-              staffAssigned: "Dr. Johnson",
-            },
-            {
-              time: "1:00 PM - 3:00 PM",
-              location: "Gymnasium Section A",
-              group: "6th Grade",
-              staffAssigned: "Dr. Wilson",
-            },
+          timeSlots: [{
+            time: "9:00 SA - 11:00 SA",
+            location: "Khu A nhà thi đấu",
+            group: "Lớp 5",
+            staffAssigned: "Bác sĩ Johnson",
+          },
+          {
+            time: "1:00 CH - 3:00 CH",
+            location: "Khu A nhà thi đấu",
+            group: "Lớp 6",
+            staffAssigned: "Bác sĩ Wilson",
+          },
           ],
         },
-      ],
-      // Thêm dữ liệu kết quả theo ngày
+      ],      // Thêm dữ liệu kết quả theo ngày
       dailyResults: [
         {
           date: "2023-10-15",
           completed: 60,
           scheduled: 65,
           issuesDetected: 5,
-          notes: "5 students referred for further vision testing",
+          notes: "5 học sinh được giới thiệu đi kiểm tra thị lực thêm",
         },
         {
           date: "2023-10-16",
           completed: 55,
           scheduled: 60,
           issuesDetected: 3,
-          notes: "2 students referred for audiology, 1 for vision follow-up",
+          notes: "2 học sinh được giới thiệu đi khám thính học, 1 học sinh kiểm tra thị lực bổ sung",
         },
         {
           date: "2023-10-17",
           completed: 35,
           scheduled: 60,
           issuesDetected: 2,
-          notes: "2 students referred for vision follow-up",
+          notes: "2 học sinh được giới thiệu kiểm tra thị lực bổ sung",
         },
       ],
-    },
-    {
+    }, {
       id: 2,
-      name: "Dental Health Screening",
-      description: "Basic dental checkup and dental hygiene education",
-      targetGroup: "Elementary Students",
+      name: "Khám sàng lọc răng miệng",
+      description: "Khám răng miệng cơ bản và giáo dục vệ sinh răng miệng",
+      targetGroup: "Học sinh tiểu học",
       status: "Upcoming",
       startDate: "2023-12-01",
       endDate: "2023-12-10",
-      location: "School Nurse Office",
-      organizer: "City Dental Association",
-      screeningTypes: ["Dental Checkup", "Dental Education"],
+      location: "Phòng y tế trường học",
+      organizer: "Hiệp hội Nha khoa Thành phố",
+      screeningTypes: ["Khám răng miệng", "Giáo dục răng miệng"],
       consentRequired: true,
       consentDeadline: "2023-11-25",
       totalStudents: 120,
@@ -118,15 +112,15 @@ function HealthCheckCampaigns() {
     },
     {
       id: 3,
-      name: "Growth & BMI Assessment",
-      description: "Height, weight, and BMI evaluation",
-      targetGroup: "All Students",
+      name: "Đánh giá tăng trưởng và chỉ số BMI",
+      description: "Đo chiều cao, cân nặng và tính chỉ số BMI",
+      targetGroup: "Tất cả học sinh",
       status: "Completed",
       startDate: "2023-02-05",
       endDate: "2023-02-20",
-      location: "Physical Education Department",
-      organizer: "School Health Department",
-      screeningTypes: ["Height & Weight", "BMI Calculation"],
+      location: "Phòng Giáo dục Thể chất",
+      organizer: "Phòng Y tế Trường học",
+      screeningTypes: ["Đo chiều cao & cân nặng", "Tính chỉ số BMI"],
       consentRequired: false,
       consentDeadline: null,
       totalStudents: 250,
@@ -156,12 +150,23 @@ function HealthCheckCampaigns() {
       (filterStatus === "completed" && campaign.status === "Completed");
 
     return matchesSearch && matchesStatus;
-  });
-
-  // Format date function
+  });  // Format date function
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString("vi-VN", options);
+  };
+  // Translate status to Vietnamese
+  const _translateStatus = (status) => {
+    switch (status) {
+      case "Active":
+        return "Đang hoạt động";
+      case "Upcoming":
+        return "Sắp diễn ra";
+      case "Completed":
+        return "Đã hoàn thành";
+      default:
+        return status;
+    }
   };
 
   // Xử lý hiển thị lịch trình
@@ -186,29 +191,28 @@ function HealthCheckCampaigns() {
       campaigns.map((campaign) =>
         campaign.id === campaignId
           ? {
-              ...campaign,
-              consentsReceived: campaign.consentsReceived + 1,
-            }
+            ...campaign,
+            consentsReceived: campaign.consentsReceived + 1,
+          }
           : campaign
       )
     );
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Health Check Campaigns</h1>
-        <p className="text-gray-600">
-          View and respond to school health screenings
-        </p>
-      </div>
+    <div className="container mx-auto px-4 py-8">      <div className="mb-8">
+      <h1 className="text-3xl font-bold mb-2">Các chiến dịch khám sức khỏe</h1>
+      <p className="text-gray-600">
+        Xem và phản hồi các đợt khám sàng lọc sức khỏe tại trường
+      </p>
+    </div>
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="col-span-2">
             <label htmlFor="search" className="sr-only">
-              Search
+              Tìm kiếm
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -230,7 +234,7 @@ function HealthCheckCampaigns() {
                 id="search"
                 name="search"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Search health check campaigns"
+                placeholder="Tìm kiếm chiến dịch khám sức khỏe"
                 type="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -239,7 +243,7 @@ function HealthCheckCampaigns() {
           </div>
           <div>
             <label htmlFor="status" className="sr-only">
-              Filter by Status
+              Lọc theo trạng thái
             </label>
             <select
               id="status"
@@ -248,10 +252,10 @@ function HealthCheckCampaigns() {
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
-              <option value="all">All Campaigns</option>
-              <option value="active">Active</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="completed">Completed</option>
+              <option value="all">Tất cả chiến dịch</option>
+              <option value="active">Đang hoạt động</option>
+              <option value="upcoming">Sắp diễn ra</option>
+              <option value="completed">Đã hoàn thành</option>
             </select>
           </div>
         </div>
@@ -267,49 +271,45 @@ function HealthCheckCampaigns() {
             >
               {/* Campaign Header */}
               <div
-                className={`px-6 py-4 border-l-4 ${
-                  campaign.status === "Active"
+                className={`px-6 py-4 border-l-4 ${campaign.status === "Active"
                     ? "border-green-500 bg-green-50"
                     : campaign.status === "Upcoming"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-500 bg-gray-50"
-                }`}
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-500 bg-gray-50"
+                  }`}
               >
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                   <div>
                     <h2 className="text-xl font-bold">{campaign.name}</h2>
                     <p className="text-gray-600">{campaign.description}</p>
                   </div>
-                  <div className="mt-2 md:mt-0">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        campaign.status === "Active"
-                          ? "bg-green-100 text-green-800"
-                          : campaign.status === "Upcoming"
+                  <div className="mt-2 md:mt-0">                    <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${campaign.status === "Active"
+                        ? "bg-green-100 text-green-800"
+                        : campaign.status === "Upcoming"
                           ? "bg-blue-100 text-blue-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
-                    >
-                      {campaign.status}
-                    </span>
+                  >
+                    {_translateStatus(campaign.status)}
+                  </span>
                   </div>
                 </div>
               </div>
 
               {/* Campaign Details */}
               <div className="px-6 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">                  <div>
+                  <h3 className="text-sm font-medium text-gray-500">
+                    Nhóm đối tượng
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {campaign.targetGroup}
+                  </p>
+                </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Target Group
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {campaign.targetGroup}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Health Checks
+                      Loại khám sức khỏe
                     </h3>
                     <p className="mt-1 text-sm text-gray-900">
                       {campaign.screeningTypes.join(", ")}
@@ -317,7 +317,7 @@ function HealthCheckCampaigns() {
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Campaign Period
+                      Thời gian chiến dịch
                     </h3>
                     <p className="mt-1 text-sm text-gray-900">
                       {formatDate(campaign.startDate)} -{" "}
@@ -326,7 +326,7 @@ function HealthCheckCampaigns() {
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Location
+                      Địa điểm
                     </h3>
                     <p className="mt-1 text-sm text-gray-900">
                       {campaign.location}
@@ -334,7 +334,7 @@ function HealthCheckCampaigns() {
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Organized By
+                      Đơn vị tổ chức
                     </h3>
                     <p className="mt-1 text-sm text-gray-900">
                       {campaign.organizer}
@@ -342,15 +342,15 @@ function HealthCheckCampaigns() {
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">
-                      Consent Required
+                      Cần đồng ý
                     </h3>
                     <p className="mt-1 text-sm text-gray-900">
                       {campaign.consentRequired ? (
                         <span>
-                          Yes (Deadline: {formatDate(campaign.consentDeadline)})
+                          Có (Hạn cuối: {formatDate(campaign.consentDeadline)})
                         </span>
                       ) : (
-                        "No"
+                        "Không"
                       )}
                     </p>
                   </div>
@@ -358,19 +358,18 @@ function HealthCheckCampaigns() {
 
                 {/* Progress Bar (if Active or Completed) */}
                 {(campaign.status === "Active" ||
-                  campaign.status === "Completed") && (
-                  <div className="mt-6">
+                  campaign.status === "Completed") && (<div className="mt-6">
                     <div className="flex justify-between items-center mb-1">
                       <h3 className="text-sm font-medium text-gray-700">
-                        Health Checks Completed
+                        Số lượt khám hoàn thành
                       </h3>
                       <span className="text-sm font-medium text-gray-700">
-                        {campaign.checkupsCompleted} of {campaign.totalStudents}{" "}
+                        {campaign.checkupsCompleted} / {campaign.totalStudents}{" "}
                         (
                         {Math.round(
                           (campaign.checkupsCompleted /
                             campaign.totalStudents) *
-                            100
+                          100
                         )}
                         %)
                       </span>
@@ -382,22 +381,20 @@ function HealthCheckCampaigns() {
                           width: `${Math.round(
                             (campaign.checkupsCompleted /
                               campaign.totalStudents) *
-                              100
+                            100
                           )}%`,
                         }}
                       ></div>
-                    </div>
-
-                    <div className="flex justify-between items-center mt-4 mb-1">
+                    </div>                    <div className="flex justify-between items-center mt-4 mb-1">
                       <h3 className="text-sm font-medium text-gray-700">
-                        Consents Received
+                        Giấy đồng ý đã nhận
                       </h3>
                       <span className="text-sm font-medium text-gray-700">
-                        {campaign.consentsReceived} of {campaign.totalStudents}{" "}
+                        {campaign.consentsReceived} / {campaign.totalStudents}{" "}
                         (
                         {Math.round(
                           (campaign.consentsReceived / campaign.totalStudents) *
-                            100
+                          100
                         )}
                         %)
                       </span>
@@ -409,13 +406,13 @@ function HealthCheckCampaigns() {
                           width: `${Math.round(
                             (campaign.consentsReceived /
                               campaign.totalStudents) *
-                              100
+                            100
                           )}%`,
                         }}
                       ></div>
                     </div>
                   </div>
-                )}
+                  )}
 
                 {/* Campaign Actions - Cải thiện layout */}
                 <div className="mt-6 flex flex-wrap justify-end gap-2">
@@ -437,14 +434,14 @@ function HealthCheckCampaigns() {
                             clipRule="evenodd"
                           />
                         </svg>
-                        Have Submitted
+                        Đã nộp đơn
                       </button>
                     ) : (
                       <button
                         onClick={() => handleSubmitConsent(campaign.id)}
                         className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
-                        Submit Consent Form
+                        Nộp giấy đồng ý
                       </button>
                     )
                   )}
@@ -468,7 +465,7 @@ function HealthCheckCampaigns() {
                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2z"
                         />
                       </svg>
-                      View Schedule
+                      Xem lịch trình
                     </button>
                   )}
 
@@ -493,7 +490,7 @@ function HealthCheckCampaigns() {
                             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                           />
                         </svg>
-                        View Results
+                        Xem kết quả
                       </button>
                     )}
                 </div>
@@ -516,14 +513,13 @@ function HealthCheckCampaigns() {
               strokeWidth={1.5}
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No health check campaigns found
+          </svg>          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            Không tìm thấy chiến dịch khám sức khỏe nào
           </h3>
           <p className="mt-1 text-sm text-gray-500">
             {searchTerm || filterStatus !== "all"
-              ? "Try adjusting your search or filter criteria."
-              : "There are currently no health check campaigns planned."}
+              ? "Hãy thử điều chỉnh từ khóa tìm kiếm hoặc bộ lọc."
+              : "Hiện tại không có chiến dịch khám sức khỏe nào được lên kế hoạch."}
           </p>
         </div>
       )}
@@ -545,12 +541,11 @@ function HealthCheckCampaigns() {
               />
             </svg>
           </div>
-          <div className="ml-3">
-            <p className="text-sm text-blue-700">
-              Regular health screenings help identify potential health issues
-              early and ensure students' well-being. Please submit consent forms
-              by the deadline to ensure your child can participate.
-            </p>
+          <div className="ml-3">            <p className="text-sm text-blue-700">
+            Khám sàng lọc sức khỏe định kỳ giúp phát hiện sớm các vấn đề sức khỏe tiềm ẩn
+            và đảm bảo sức khỏe của học sinh. Vui lòng nộp giấy đồng ý trước hạn cuối
+            để đảm bảo con em bạn có thể tham gia.
+          </p>
           </div>
         </div>
       </div>
@@ -559,10 +554,9 @@ function HealthCheckCampaigns() {
       {showScheduleModal && selectedCampaign && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-end p-4 overflow-y-auto">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col relative mr-0 ml-auto my-8">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
-              <h3 className="text-lg font-medium text-gray-900">
-                {selectedCampaign.name} - Schedule
-              </h3>
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">              <h3 className="text-lg font-medium text-gray-900">
+              {selectedCampaign.name} - Lịch trình
+            </h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
                 className="text-gray-400 hover:text-gray-500 focus:outline-none"
@@ -594,30 +588,29 @@ function HealthCheckCampaigns() {
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-100">
-                          <tr>
+                          <tr>                            <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Thời gian
+                          </th>
                             <th
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                              Time
+                              Nhóm
                             </th>
                             <th
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                              Group
+                              Địa điểm
                             </th>
                             <th
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                              Location
-                            </th>
-                            <th
-                              scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                              Staff
+                              Nhân viên
                             </th>
                           </tr>
                         </thead>
@@ -651,13 +644,12 @@ function HealthCheckCampaigns() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
-              <button
-                onClick={() => setShowScheduleModal(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Close
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">              <button
+              onClick={() => setShowScheduleModal(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Đóng
+            </button>
             </div>
           </div>
         </div>
@@ -667,10 +659,9 @@ function HealthCheckCampaigns() {
       {showResultsModal && selectedCampaign && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-end p-4 overflow-y-auto">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col relative mr-0 ml-auto my-8">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
-              <h3 className="text-lg font-medium text-gray-900">
-                {selectedCampaign.name} - Daily Results
-              </h3>
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">              <h3 className="text-lg font-medium text-gray-900">
+              {selectedCampaign.name} - Kết quả hàng ngày
+            </h3>
               <button
                 onClick={() => setShowResultsModal(false)}
                 className="text-gray-400 hover:text-gray-500 focus:outline-none"
@@ -700,12 +691,11 @@ function HealthCheckCampaigns() {
                     </h4>
 
                     <div className="mb-4">
-                      <div className="flex justify-between items-center mb-1">
+                      <div className="flex justify-between items-center mb-1">                        <span className="text-sm font-medium text-gray-700">
+                        Tiến độ
+                      </span>
                         <span className="text-sm font-medium text-gray-700">
-                          Progress
-                        </span>
-                        <span className="text-sm font-medium text-gray-700">
-                          {result.completed} of {result.scheduled} students (
+                          {result.completed} / {result.scheduled} học sinh (
                           {Math.round((result.completed / result.scheduled) * 100)}%)
                         </span>
                       </div>
@@ -715,24 +705,22 @@ function HealthCheckCampaigns() {
                           style={{
                             width: `${Math.round(
                               (result.completed / result.scheduled) *
-                                100
+                              100
                             )}%`,
                           }}
                         ></div>
                       </div>
                     </div>
 
-                    <div className="mt-4">
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">
-                        Summary
-                      </h5>
+                    <div className="mt-4">                      <h5 className="text-sm font-medium text-gray-700 mb-2">
+                      Tóm tắt
+                    </h5>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-3 rounded border border-gray-200">
                           <div className="text-2xl font-bold text-blue-600">
                             {result.completed}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            Checkups Completed
+                          </div>                          <div className="text-xs text-gray-500">
+                            Lượt khám hoàn thành
                           </div>
                         </div>
                         <div className="bg-white p-3 rounded border border-gray-200">
@@ -740,16 +728,15 @@ function HealthCheckCampaigns() {
                             {result.issuesDetected}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Issues Detected
+                            Vấn đề phát hiện
                           </div>
                         </div>
                       </div>
 
                       {result.notes && (
-                        <div className="mt-4">
-                          <h5 className="text-sm font-medium text-gray-700 mb-1">
-                            Notes
-                          </h5>
+                        <div className="mt-4">                          <h5 className="text-sm font-medium text-gray-700 mb-1">
+                          Ghi chú
+                        </h5>
                           <p className="text-sm text-gray-600 bg-white p-3 rounded border border-gray-200">
                             {result.notes}
                           </p>
@@ -761,13 +748,12 @@ function HealthCheckCampaigns() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
-              <button
-                onClick={() => setShowResultsModal(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Close
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">              <button
+              onClick={() => setShowResultsModal(false)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Đóng
+            </button>
             </div>
           </div>
         </div>

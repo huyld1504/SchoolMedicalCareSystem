@@ -3,101 +3,92 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 function StudentDashboard() {
-    const { currentUser } = useAuth();
-
-    // Sample student data
+    const { currentUser } = useAuth();    // Sample student data
     const [studentData, setStudentData] = useState({
         name: currentUser?.name || "Alex Johnson",
-        grade: "10th Grade",
+        grade: "Lớp 10",
         class: "10-A",
         studentId: "S2023045",
-        healthStatus: "Good",
-        allergies: ["Peanuts", "Penicillin"],
+        healthStatus: "Tốt",
+        allergies: ["Đậu phộng", "Penicillin"],
         medications: [
-            { name: "Albuterol Inhaler", schedule: "As needed", lastTaken: "2023-06-01" }
+            { name: "Ống hít Albuterol", schedule: "Khi cần thiết", lastTaken: "2023-06-01" }
         ]
-    });
-
-    // Sample upcoming appointments
+    });    // Sample upcoming appointments
     const [appointments, setAppointments] = useState([
         {
             id: 1,
-            type: "Nurse Visit",
+            type: "Thăm khám y tế",
             date: "2023-06-15",
             time: "10:30 AM",
-            location: "School Health Office",
-            reason: "Asthma check-up"
+            location: "Văn phòng Y tế Trường",
+            reason: "Kiểm tra bệnh hen suyễn"
         },
         {
             id: 2,
-            type: "Vaccination",
+            type: "Tiêm chủng",
             date: "2023-07-10",
             time: "9:00 AM",
-            location: "School Gymnasium",
-            reason: "Annual flu shot"
+            location: "Nhà thi đấu trường",
+            reason: "Tiêm cúm hàng năm"
         }
-    ]);
-
-    // Sample recent health events
+    ]);    // Sample recent health events
     const [healthEvents, setHealthEvents] = useState([
         {
             id: 1,
             date: "2023-06-01",
-            event: "Medication administered",
-            notes: "Albuterol inhaler used after PE class"
+            event: "Đã cấp thuốc",
+            notes: "Sử dụng ống hít Albuterol sau giờ thể dục"
         },
         {
             id: 2,
             date: "2023-05-20",
-            event: "Nurse visit",
-            notes: "Headache complaint, rested for 30 minutes"
+            event: "Thăm khám y tế",
+            notes: "Phàn nàn đau đầu, nghỉ ngơi trong 30 phút"
         },
         {
             id: 3,
             date: "2023-05-05",
-            event: "Health screening",
-            notes: "Vision and hearing check - all normal"
+            event: "Khám sàng lọc sức khỏe",
+            notes: "Kiểm tra thị lực và thính lực - tất cả bình thường"
         }
-    ]);
-
-    // Sample health metrics
+    ]);    // Sample health metrics
     const [healthMetrics, setHealthMetrics] = useState([
         {
             id: 1,
-            name: "Height",
+            name: "Chiều cao",
             value: "5'8\"",
             date: "2023-05-05",
-            change: "+1 inch from last measurement"
+            change: "+1 inch so với lần đo trước"
         },
         {
             id: 2,
-            name: "Weight",
+            name: "Cân nặng",
             value: "145 lbs",
             date: "2023-05-05",
-            change: "+3 lbs from last measurement"
+            change: "+3 lbs so với lần đo trước"
         },
         {
             id: 3,
-            name: "Vision",
+            name: "Thị lực",
             value: "20/20",
             date: "2023-05-05",
-            change: "No change"
+            change: "Không thay đổi"
         },
         {
             id: 4,
-            name: "Blood Pressure",
+            name: "Huyết áp",
             value: "110/70",
             date: "2023-05-05",
-            change: "Normal range"
+            change: "Trong phạm vi bình thường"
         }
     ]);
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">My Health Dashboard</h1>
+            <div className="mb-8">                <h1 className="text-3xl font-bold mb-2">Bảng điều khiển Sức khỏe của tôi</h1>
                 <p className="text-gray-600">
-                    Welcome, {studentData.name}. Here's your health information.
+                    Chào mừng, {studentData.name}. Đây là thông tin sức khỏe của bạn.
                 </p>
             </div>
 
@@ -115,24 +106,22 @@ function StudentDashboard() {
                             <p className="text-gray-600">{studentData.grade} | {studentData.class} | ID: {studentData.studentId}</p>
                         </div>
                     </div>
-                    <div className="flex flex-col">
-                        <div className="mb-2">
-                            <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Health Status: {studentData.healthStatus}
-                            </span>
-                        </div>
+                    <div className="flex flex-col">                        <div className="mb-2">
+                        <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Tình trạng sức khỏe: {studentData.healthStatus}
+                        </span>
+                    </div>
                         <Link to="/student/profile" className="text-blue-600 hover:text-blue-800 text-sm">
-                            View full profile
+                            Xem hồ sơ đầy đủ
                         </Link>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                {/* Health Alerts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">                {/* Health Alerts */}
                 <div className="lg:col-span-1 bg-white rounded-lg shadow">
                     <div className="p-6 border-b">
-                        <h2 className="text-xl font-semibold">Health Alerts</h2>
+                        <h2 className="text-xl font-semibold">Cảnh báo sức khỏe</h2>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
@@ -143,9 +132,8 @@ function StudentDashboard() {
                                             <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                             </svg>
-                                        </div>
-                                        <div className="ml-3">
-                                            <h3 className="text-sm font-medium text-red-800">Allergies</h3>
+                                        </div>                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-red-800">Dị ứng</h3>
                                             <div className="mt-1 text-sm text-red-700">
                                                 <ul className="list-disc list-inside">
                                                     {studentData.allergies.map((allergy, index) => (
@@ -165,9 +153,8 @@ function StudentDashboard() {
                                             <svg className="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
-                                        </div>
-                                        <div className="ml-3">
-                                            <h3 className="text-sm font-medium text-yellow-800">Current Medications</h3>
+                                        </div>                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-yellow-800">Thuốc hiện tại</h3>
                                             <div className="mt-1 text-sm text-yellow-700">
                                                 <ul className="list-disc list-inside">
                                                     {studentData.medications.map((medication, index) => (
@@ -186,23 +173,20 @@ function StudentDashboard() {
                                         <svg className="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                    </div>
-                                    <div className="ml-3">
-                                        <h3 className="text-sm font-medium text-blue-800">Health Reminders</h3>
+                                    </div>                                    <div className="ml-3">
+                                        <h3 className="text-sm font-medium text-blue-800">Nhắc nhở sức khỏe</h3>
                                         <div className="mt-1 text-sm text-blue-700">
-                                            <p>Remember to bring your inhaler to PE class</p>
+                                            <p>Nhớ mang theo ống hít trong giờ thể dục</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Upcoming Appointments */}
+                </div>                {/* Upcoming Appointments */}
                 <div className="lg:col-span-1 bg-white rounded-lg shadow">
                     <div className="p-6 border-b">
-                        <h2 className="text-xl font-semibold">Upcoming Appointments</h2>
+                        <h2 className="text-xl font-semibold">Lịch hẹn sắp tới</h2>
                     </div>
                     <div className="p-6">
                         {appointments.length > 0 ? (
@@ -235,25 +219,22 @@ function StudentDashboard() {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
-                        ) : (
-                            <p className="text-gray-500 text-center">No upcoming appointments</p>
+                            </div>) : (
+                            <p className="text-gray-500 text-center">Không có lịch hẹn sắp tới</p>
                         )}
                         <div className="mt-4">
                             <Link to="/student/calendar" className="text-blue-600 hover:text-blue-800 inline-flex items-center">
-                                View calendar
+                                Xem lịch
                                 <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
                                 </svg>
                             </Link>
                         </div>
                     </div>
-                </div>
-
-                {/* Recent Health Events */}
+                </div>                {/* Recent Health Events */}
                 <div className="lg:col-span-1 bg-white rounded-lg shadow">
                     <div className="p-6 border-b">
-                        <h2 className="text-xl font-semibold">Recent Health Events</h2>
+                        <h2 className="text-xl font-semibold">Sự kiện sức khỏe gần đây</h2>
                     </div>
                     <div className="p-6">
                         {healthEvents.length > 0 ? (
@@ -267,13 +248,12 @@ function StudentDashboard() {
                                         <p className="mt-1 text-sm text-gray-600">{event.notes}</p>
                                     </div>
                                 ))}
-                            </div>
-                        ) : (
-                            <p className="text-gray-500 text-center">No recent health events</p>
+                            </div>) : (
+                            <p className="text-gray-500 text-center">Không có sự kiện sức khỏe gần đây</p>
                         )}
                         <div className="mt-4">
                             <Link to="/student/activities" className="text-blue-600 hover:text-blue-800 inline-flex items-center">
-                                View all activities
+                                Xem tất cả hoạt động
                                 <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
                                 </svg>
@@ -281,12 +261,10 @@ function StudentDashboard() {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Health Metrics */}
+            </div>            {/* Health Metrics */}
             <div className="bg-white rounded-lg shadow mb-8">
                 <div className="p-6 border-b">
-                    <h2 className="text-xl font-semibold">My Health Metrics</h2>
+                    <h2 className="text-xl font-semibold">Chỉ số sức khỏe của tôi</h2>
                 </div>
                 <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -300,37 +278,31 @@ function StudentDashboard() {
                                 <p className="text-xs text-gray-500 mt-1">{metric.change}</p>
                             </div>
                         ))}
-                    </div>
-                    <div className="mt-4 text-center">
+                    </div>                    <div className="mt-4 text-center">
                         <Link to="/student/health-records" className="text-blue-600 hover:text-blue-800 inline-flex items-center">
-                            View complete health records
+                            Xem hồ sơ sức khỏe đầy đủ
                             <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
                             </svg>
                         </Link>
                     </div>
                 </div>
-            </div>
-
-            {/* Quick Actions */}
+            </div>            {/* Quick Actions */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Link to="/student/medications" className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center">
-                            <div className="mr-4 p-2 bg-blue-100 rounded-full">
-                                <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-medium">View Medications</h3>
-                                <p className="text-sm text-gray-600">See your medication schedule</p>
-                            </div>
+                <h2 className="text-xl font-semibold mb-4">Hành động nhanh</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">                    <Link to="/student/medications" className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center">
+                        <div className="mr-4 p-2 bg-blue-100 rounded-full">
+                            <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
                         </div>
-                    </Link>
-
-                    <Link to="/student/vaccinations" className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div>
+                            <h3 className="font-medium">Xem thuốc</h3>
+                            <p className="text-sm text-gray-600">Xem lịch trình dùng thuốc của bạn</p>
+                        </div>
+                    </div>
+                </Link>                    <Link to="/student/vaccinations" className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                         <div className="flex items-center">
                             <div className="mr-4 p-2 bg-green-100 rounded-full">
                                 <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -338,8 +310,8 @@ function StudentDashboard() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="font-medium">Vaccination Records</h3>
-                                <p className="text-sm text-gray-600">Check your immunization history</p>
+                                <h3 className="font-medium">Hồ sơ tiêm chủng</h3>
+                                <p className="text-sm text-gray-600">Kiểm tra lịch sử tiêm chủng của bạn</p>
                             </div>
                         </div>
                     </Link>
@@ -350,10 +322,9 @@ function StudentDashboard() {
                                 <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                                 </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-medium">Health Check Results</h3>
-                                <p className="text-sm text-gray-600">View your screening results</p>
+                            </div>                            <div>
+                                <h3 className="font-medium">Kết quả khám sức khỏe</h3>
+                                <p className="text-sm text-gray-600">Xem kết quả khám sàng lọc của bạn</p>
                             </div>
                         </div>
                     </Link>

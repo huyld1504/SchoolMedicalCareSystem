@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
 function MagnusContact() {
   const [formData, setFormData] = useState({
@@ -7,59 +7,59 @@ function MagnusContact() {
     school: '',
     role: '',
     message: ''
-  })
-  
-  const [formSuccess, setFormSuccess] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formFocus, setFormFocus] = useState(null)
+  });
+
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formFocus, setFormFocus] = useState(null);
 
   useEffect(() => {
     // Make visible immediately instead of waiting for scroll
-    const contactSection = document.getElementById('contact')
+    const contactSection = document.getElementById('contact');
     if (contactSection) {
-      contactSection.classList.add('visible')
+      contactSection.classList.add('visible');
     }
-  }, [])
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
-    }))
-  }
+    }));
+  };
 
   const handleFocus = (field) => {
-    setFormFocus(field)
-  }
+    setFormFocus(field);
+  };
 
   const handleBlur = () => {
-    setFormFocus(null)
-  }
+    setFormFocus(null);
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
+    e.preventDefault();
+    setIsSubmitting(true);
+
     // Simulate API call
     setTimeout(() => {
-      console.log('Form submitted:', formData)
-      setIsSubmitting(false)
-      setFormSuccess(true)
-      
+      console.log('Form submitted:', formData);
+      setIsSubmitting(false);
+      setFormSuccess(true);
+
       // Reset form after success
       setTimeout(() => {
-        setFormSuccess(false)
+        setFormSuccess(false);
         setFormData({
           name: '',
           email: '',
           school: '',
           role: '',
           message: ''
-        })
-      }, 5000)
-    }, 1500)
-  }
+        });
+      }, 5000);
+    }, 1500);
+  };
 
   return (
     <section id="contact" className="contact-section" style={{
@@ -83,7 +83,7 @@ function MagnusContact() {
         transform: 'translate(20%, -30%)',
         zIndex: 1
       }}></div>
-      
+
       <div style={{
         position: 'absolute',
         bottom: 0,
@@ -95,7 +95,7 @@ function MagnusContact() {
         transform: 'translate(-30%, 30%)',
         zIndex: 1
       }}></div>
-      
+
       {/* Background pattern */}
       <div style={{
         position: 'absolute',
@@ -107,15 +107,15 @@ function MagnusContact() {
         backgroundSize: '30px 30px',
         zIndex: 1
       }}></div>
-      
-      <div className="container" style={{ 
-        position: 'relative', 
+
+      <div className="container" style={{
+        position: 'relative',
         zIndex: 2,
         maxWidth: '1200px',
         margin: '0 auto',
         padding: '0 2rem'
       }}>
-        <div className="section-header text-center" style={{ 
+        <div className="section-header text-center" style={{
           marginBottom: '60px',
           textAlign: 'center',
           position: 'relative'
@@ -125,18 +125,17 @@ function MagnusContact() {
             position: 'relative',
             marginBottom: '1.5rem',
             zIndex: 3
-          }}>
-            <span style={{
-              display: 'inline-block',
-              padding: '0.35rem 1rem',
-              borderRadius: '50px',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#0052cc',
-              backgroundColor: '#e6f0ff',
-              letterSpacing: '0.5px',
-              boxShadow: '0 2px 10px rgba(0, 82, 204, 0.08)'
-            }}>CONTACT US</span>
+          }}>            <span style={{
+            display: 'inline-block',
+            padding: '0.35rem 1rem',
+            borderRadius: '50px',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            color: '#0052cc',
+            backgroundColor: '#e6f0ff',
+            letterSpacing: '0.5px',
+            boxShadow: '0 2px 10px rgba(0, 82, 204, 0.08)'
+          }}>LIÊN HỆ CHÚNG TÔI</span>
             <div style={{
               position: 'absolute',
               width: '105%',
@@ -149,7 +148,6 @@ function MagnusContact() {
               zIndex: -1
             }}></div>
           </div>
-          
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 2.75rem)',
             fontWeight: '700',
@@ -158,7 +156,7 @@ function MagnusContact() {
             position: 'relative',
             display: 'inline-block'
           }}>
-            Ready to Transform Your School's Health Management?
+            Sẵn sàng chuyển đổi hệ thống quản lý sức khỏe trường học?
             <div style={{
               position: 'absolute',
               bottom: '-8px',
@@ -170,16 +168,15 @@ function MagnusContact() {
               borderRadius: '4px'
             }}></div>
           </h2>
-          
           <p style={{
             fontSize: '1.1rem',
             color: '#4a5568',
             maxWidth: '700px',
             margin: '1.5rem auto 0',
             lineHeight: '1.7'
-          }}>Request a demo today and see how Magnus Health can benefit your school</p>
+          }}>Yêu cầu demo ngay hôm nay và xem Magnus Health có thể mang lại lợi ích gì cho trường học của bạn</p>
         </div>
-        
+
         <div style={{
           maxWidth: '800px',
           margin: '0 auto',
@@ -212,7 +209,7 @@ function MagnusContact() {
                 borderRadius: '50%',
                 zIndex: -1
               }}></div>
-              
+
               <div style={{
                 width: '90px',
                 height: '90px',
@@ -227,8 +224,8 @@ function MagnusContact() {
                 animation: 'pulse 2s infinite'
               }}>
                 <svg width="45" height="45" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22 11.0799V11.9999C21.9988 14.1563 21.3005 16.2545 20.0093 17.9817C18.7182 19.7088 16.9033 20.9723 14.8354 21.5838C12.7674 22.1952 10.5573 22.1218 8.53447 21.3746C6.51168 20.6274 4.78465 19.246 3.61096 17.4369C2.43727 15.6279 1.87979 13.4879 2.02168 11.3362C2.16356 9.18443 2.99721 7.13619 4.39828 5.49694C5.79935 3.85768 7.69279 2.71525 9.79619 2.24001C11.8996 1.76477 14.1003 1.9822 16.07 2.85986" stroke="#0052cc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M22 4L12 14.01L9 11.01" stroke="#0052cc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M22 11.0799V11.9999C21.9988 14.1563 21.3005 16.2545 20.0093 17.9817C18.7182 19.7088 16.9033 20.9723 14.8354 21.5838C12.7674 22.1952 10.5573 22.1218 8.53447 21.3746C6.51168 20.6274 4.78465 19.246 3.61096 17.4369C2.43727 15.6279 1.87979 13.4879 2.02168 11.3362C2.16356 9.18443 2.99721 7.13619 4.39828 5.49694C5.79935 3.85768 7.69279 2.71525 9.79619 2.24001C11.8996 1.76477 14.1003 1.9822 16.07 2.85986" stroke="#0052cc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M22 4L12 14.01L9 11.01" stroke="#0052cc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <div style={{
                   position: 'absolute',
@@ -241,22 +238,21 @@ function MagnusContact() {
                   animation: 'ripple 2s infinite ease-in-out'
                 }}></div>
               </div>
-              
               <h3 style={{
                 fontSize: '2rem',
                 fontWeight: '700',
                 color: '#1a202c',
                 marginBottom: '1rem'
-              }}>Thank You!</h3>
-              
+              }}>Cảm ơn bạn!</h3>
+
               <p style={{
                 fontSize: '1.1rem',
                 color: '#4a5568',
                 maxWidth: '500px',
                 margin: '0 auto 2rem',
                 lineHeight: '1.7'
-              }}>Your request has been received. A representative will contact you shortly.</p>
-              
+              }}>Yêu cầu của bạn đã được nhận. Đại diện sẽ liên hệ với bạn trong thời gian sớm nhất.</p>
+
               <div style={{
                 display: 'flex',
                 gap: '12px',
@@ -277,7 +273,7 @@ function MagnusContact() {
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} style={{ 
+            <form onSubmit={handleSubmit} style={{
               padding: '3.5rem 3rem',
               position: 'relative'
             }}>
@@ -291,7 +287,7 @@ function MagnusContact() {
                 background: 'linear-gradient(90deg, rgba(0, 82, 204, 0) 0%, rgba(0, 82, 204, 0.3) 50%, rgba(0, 82, 204, 0) 100%)',
                 borderRadius: '4px'
               }}></div>
-              
+
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
@@ -301,15 +297,14 @@ function MagnusContact() {
                 <div style={{
                   transition: 'transform 0.3s ease',
                   transform: formFocus === 'name' ? 'translateY(-5px)' : 'none'
+                }}>                  <label htmlFor="name" style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  color: '#1a202c'
                 }}>
-                  <label htmlFor="name" style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontWeight: '600',
-                    fontSize: '0.95rem',
-                    color: '#1a202c'
-                  }}>
-                    <span>Full Name</span>
+                    <span>Họ và tên</span>
                     <span style={{ color: '#e53e3e', marginLeft: '3px' }}>*</span>
                   </label>
                   <div style={{
@@ -324,8 +319,8 @@ function MagnusContact() {
                       transition: 'color 0.3s ease'
                     }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <input
@@ -336,7 +331,7 @@ function MagnusContact() {
                       onChange={handleChange}
                       onFocus={() => handleFocus('name')}
                       onBlur={handleBlur}
-                      placeholder="Enter your full name"
+                      placeholder="Nhập họ và tên của bạn"
                       required
                       style={{
                         width: '100%',
@@ -351,19 +346,18 @@ function MagnusContact() {
                     />
                   </div>
                 </div>
-                
+
                 <div style={{
                   transition: 'transform 0.3s ease',
                   transform: formFocus === 'email' ? 'translateY(-5px)' : 'none'
+                }}>                  <label htmlFor="email" style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  color: '#1a202c'
                 }}>
-                  <label htmlFor="email" style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontWeight: '600',
-                    fontSize: '0.95rem',
-                    color: '#1a202c'
-                  }}>
-                    <span>Email Address</span>
+                    <span>Địa chỉ email</span>
                     <span style={{ color: '#e53e3e', marginLeft: '3px' }}>*</span>
                   </label>
                   <div style={{
@@ -378,8 +372,8 @@ function MagnusContact() {
                       transition: 'color 0.3s ease'
                     }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <input
@@ -390,7 +384,7 @@ function MagnusContact() {
                       onChange={handleChange}
                       onFocus={() => handleFocus('email')}
                       onBlur={handleBlur}
-                      placeholder="Enter your email address"
+                      placeholder="Nhập địa chỉ email của bạn"
                       required
                       style={{
                         width: '100%',
@@ -406,7 +400,7 @@ function MagnusContact() {
                   </div>
                 </div>
               </div>
-              
+
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
@@ -416,15 +410,14 @@ function MagnusContact() {
                 <div style={{
                   transition: 'transform 0.3s ease',
                   transform: formFocus === 'school' ? 'translateY(-5px)' : 'none'
+                }}>                  <label htmlFor="school" style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  color: '#1a202c'
                 }}>
-                  <label htmlFor="school" style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontWeight: '600',
-                    fontSize: '0.95rem',
-                    color: '#1a202c'
-                  }}>
-                    <span>School Name</span>
+                    <span>Tên trường học</span>
                     <span style={{ color: '#e53e3e', marginLeft: '3px' }}>*</span>
                   </label>
                   <div style={{
@@ -439,8 +432,8 @@ function MagnusContact() {
                       transition: 'color 0.3s ease'
                     }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 10H22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 2L2 10V22H22V10L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2 10H22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M12 2L2 10V22H22V10L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <input
@@ -451,7 +444,7 @@ function MagnusContact() {
                       onChange={handleChange}
                       onFocus={() => handleFocus('school')}
                       onBlur={handleBlur}
-                      placeholder="Enter your school's name"
+                      placeholder="Nhập tên trường học của bạn"
                       required
                       style={{
                         width: '100%',
@@ -466,19 +459,18 @@ function MagnusContact() {
                     />
                   </div>
                 </div>
-                
+
                 <div style={{
                   transition: 'transform 0.3s ease',
                   transform: formFocus === 'role' ? 'translateY(-5px)' : 'none'
+                }}>                  <label htmlFor="role" style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600',
+                  fontSize: '0.95rem',
+                  color: '#1a202c'
                 }}>
-                  <label htmlFor="role" style={{
-                    display: 'block',
-                    marginBottom: '0.5rem',
-                    fontWeight: '600',
-                    fontSize: '0.95rem',
-                    color: '#1a202c'
-                  }}>
-                    <span>Your Role</span>
+                    <span>Vai trò của bạn</span>
                     <span style={{ color: '#e53e3e', marginLeft: '3px' }}>*</span>
                   </label>
                   <div style={{
@@ -494,9 +486,9 @@ function MagnusContact() {
                       zIndex: 5
                     }}>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 17H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M9.09 9.00008C9.3251 8.33175 9.78915 7.76819 10.4 7.40921C11.0108 7.05024 11.7289 6.91902 12.4272 7.03879C13.1255 7.15857 13.7588 7.52161 14.2151 8.06361C14.6713 8.60561 14.9211 9.2916 14.92 10.0001C14.92 12.0001 11.92 13.0001 11.92 13.0001" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M12 17H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M9.09 9.00008C9.3251 8.33175 9.78915 7.76819 10.4 7.40921C11.0108 7.05024 11.7289 6.91902 12.4272 7.03879C13.1255 7.15857 13.7588 7.52161 14.2151 8.06361C14.6713 8.60561 14.9211 9.2916 14.92 10.0001C14.92 12.0001 11.92 13.0001 11.92 13.0001" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div style={{
@@ -523,13 +515,12 @@ function MagnusContact() {
                           backgroundColor: 'white',
                           cursor: 'pointer'
                         }}
-                      >
-                        <option value="" disabled>Select your role</option>
-                        <option value="Administrator">School Administrator</option>
-                        <option value="Nurse">School Nurse</option>
-                        <option value="Athletic Director">Athletic Director</option>
-                        <option value="IT Staff">IT Staff</option>
-                        <option value="Other">Other</option>
+                      >                        <option value="" disabled>Chọn vai trò của bạn</option>
+                        <option value="Administrator">Quản trị viên trường học</option>
+                        <option value="Nurse">Y tá trường học</option>
+                        <option value="Athletic Director">Giám đốc thể thao</option>
+                        <option value="IT Staff">Nhân viên IT</option>
+                        <option value="Other">Khác</option>
                       </select>
                       <div style={{
                         position: 'absolute',
@@ -540,28 +531,27 @@ function MagnusContact() {
                         color: '#a0aec0'
                       }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <div style={{ 
+
+              <div style={{
                 marginBottom: '2.2rem',
                 transition: 'transform 0.3s ease',
                 transform: formFocus === 'message' ? 'translateY(-5px)' : 'none'
+              }}>                <label htmlFor="message" style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '600',
+                fontSize: '0.95rem',
+                color: '#1a202c'
               }}>
-                <label htmlFor="message" style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600',
-                  fontSize: '0.95rem',
-                  color: '#1a202c'
-                }}>
-                  <span>Message</span>
-                  <span style={{ color: '#a0aec0', marginLeft: '3px', fontWeight: 'normal' }}>(Optional)</span>
+                  <span>Tin nhắn</span>
+                  <span style={{ color: '#a0aec0', marginLeft: '3px', fontWeight: 'normal' }}>(Tùy chọn)</span>
                 </label>
                 <div style={{
                   position: 'relative'
@@ -574,7 +564,7 @@ function MagnusContact() {
                     transition: 'color 0.3s ease'
                   }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <textarea
@@ -585,7 +575,7 @@ function MagnusContact() {
                     onChange={handleChange}
                     onFocus={() => handleFocus('message')}
                     onBlur={handleBlur}
-                    placeholder="Tell us about your needs and requirements"
+                    placeholder="Cho chúng tôi biết về nhu cầu và yêu cầu của bạn"
                     style={{
                       width: '100%',
                       padding: '0.9rem 1rem 0.9rem 2.5rem',
@@ -601,7 +591,7 @@ function MagnusContact() {
                   ></textarea>
                 </div>
               </div>
-              
+
               <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -618,15 +608,15 @@ function MagnusContact() {
                   gap: '0.5rem'
                 }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  Your information will be handled according to our <a href="#" style={{ color: '#0052cc', textDecoration: 'none', fontWeight: '500' }}>Privacy Policy</a>
+                  Thông tin của bạn sẽ được xử lý theo <a href="#" style={{ color: '#0052cc', textDecoration: 'none', fontWeight: '500' }}>Chính sách Bảo mật</a> của chúng tôi
                 </p>
-                
-                <button 
-                  type="submit" 
+
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   style={{
                     padding: '0.95rem 2.2rem',
@@ -656,7 +646,7 @@ function MagnusContact() {
                     transform: 'translateX(-100%)',
                     animation: isSubmitting ? 'none' : 'shimmer 1.5s infinite'
                   }}></div>
-                  
+
                   {isSubmitting ? (
                     <>
                       <div style={{
@@ -667,13 +657,13 @@ function MagnusContact() {
                         borderRadius: '50%',
                         animation: 'spin 1s linear infinite'
                       }}></div>
-                      <span>Processing...</span>
+                      <span>Đang xử lý...</span>
                     </>
                   ) : (
                     <>
-                      <span>Request Demo</span>
+                      <span>Yêu cầu Demo</span>
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </>
                   )}
@@ -683,7 +673,7 @@ function MagnusContact() {
           )}
         </div>
       </div>
-      
+
       {/* Add CSS animations */}
       <style jsx>{`
         @keyframes pulse {
@@ -719,7 +709,7 @@ function MagnusContact() {
         }
       `}</style>
     </section>
-  )
+  );
 }
 
-export default MagnusContact 
+export default MagnusContact; 

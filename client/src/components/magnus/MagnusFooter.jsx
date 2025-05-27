@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 function MagnusFooter() {
   return (
@@ -7,68 +7,65 @@ function MagnusFooter() {
         <div className="magnus-footer__logo">
           <h2 style={{ color: 'white' }}>MAGNUS HEALTH</h2>
         </div>
-        
-        <div className="magnus-footer__links">
+
+        <div className="magnus-footer__links">          <div className="magnus-footer__column">
+          <h4>Giải pháp</h4>
+          <ul>
+            <li><a href="#">Hồ sơ Sức khỏe Học sinh</a></li>
+            <li><a href="#">Quản lý Thể thao</a></li>
+            <li><a href="#">Sàng lọc COVID-19</a></li>
+            <li><a href="#">Theo dõi Tiêm chủng</a></li>
+            <li><a href="#">Magnus Mobile</a></li>
+          </ul>
+        </div>
           <div className="magnus-footer__column">
-            <h4>Solutions</h4>
+            <h4>Công ty</h4>
             <ul>
-              <li><a href="#">Student Health Records</a></li>
-              <li><a href="#">Athletic Management</a></li>
-              <li><a href="#">COVID-19 Screening</a></li>
-              <li><a href="#">Immunization Tracking</a></li>
-              <li><a href="#">Magnus Mobile</a></li>
+              <li><a href="#">Về chúng tôi</a></li>
+              <li><a href="#">Ban lãnh đạo</a></li>
+              <li><a href="#">Tuyển dụng</a></li>
+              <li><a href="#">Tin tức & Báo chí</a></li>
+              <li><a href="#">Đối tác</a></li>
             </ul>
           </div>
-          
           <div className="magnus-footer__column">
-            <h4>Company</h4>
+            <h4>Tài nguyên</h4>
             <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Leadership</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">News & Press</a></li>
-              <li><a href="#">Partners</a></li>
-            </ul>
-          </div>
-          
-          <div className="magnus-footer__column">
-            <h4>Resources</h4>
-            <ul>
-              <li><a href="#">Support Center</a></li>
-              <li><a href="#">Training Videos</a></li>
-              <li><a href="#">Webinars</a></li>
+              <li><a href="#">Trung tâm Hỗ trợ</a></li>
+              <li><a href="#">Video Đào tạo</a></li>
+              <li><a href="#">Hội thảo Web</a></li>
               <li><a href="#">Blog</a></li>
-              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Tài liệu</a></li>
             </ul>
           </div>
-          
+
           <div className="magnus-footer__column">
-            <h4>Legal</h4>
+            <h4>Pháp lý</h4>
             <ul>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">HIPAA Compliance</a></li>
-              <li><a href="#">Security</a></li>
-              <li><a href="#">Accessibility</a></li>
+              <li><a href="#">Chính sách Bảo mật</a></li>
+              <li><a href="#">Điều khoản Dịch vụ</a></li>
+              <li><a href="#">Tuân thủ HIPAA</a></li>
+              <li><a href="#">Bảo mật</a></li>
+              <li><a href="#">Khả năng Tiếp cận</a></li>
             </ul>
           </div>
-          
+
           <div className="magnus-footer__column">
-            <h4>Contact</h4>
+            <h4>Liên hệ</h4>
             <ul>
               <li><a href="#">sales@magnushealth.com</a></li>
               <li><a href="#">(800) 123-4567</a></li>
-              <li><a href="#">Support Ticket</a></li>
+              <li><a href="#">Phiếu Hỗ trợ</a></li>
             </ul>
           </div>
         </div>
-        
+
         <div className="magnus-footer__bottom">
           <p>&copy; {new Date().getFullYear()} Magnus Health. All rights reserved.</p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
-export default MagnusFooter 
+export default MagnusFooter; 

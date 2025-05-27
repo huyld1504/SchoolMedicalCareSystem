@@ -22,7 +22,7 @@ function Login() {
       // Redirect based on user role
       navigate(`/${user.role}`);
     } catch (error) {
-      setError("Failed to sign in. Please check your credentials.");
+      setError("Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập của bạn.");
       console.error("Login error:", error);
     } finally {
       setLoading(false);
@@ -31,14 +31,13 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/">
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            School Medical System
-          </h2>
-        </Link>
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">        <Link to="/">
+        <h2 className="text-center text-3xl font-extrabold text-gray-900">
+          Hệ thống Y tế Trường học
+        </h2>
+      </Link>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+          Đăng nhập vào tài khoản của bạn
         </h2>
       </div>
 
@@ -53,13 +52,12 @@ function Login() {
             </div>
           )}
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
+            <div>              <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Địa chỉ email
+            </label>
               <div className="mt-1">
                 <input
                   id="email"
@@ -76,13 +74,12 @@ function Login() {
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
+            <div>              <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Mật khẩu
+            </label>
               <div className="mt-1">
                 <input
                   id="password"
@@ -106,22 +103,20 @@ function Login() {
                   name="remember-me"
                   type="checkbox"
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
+                />                <label
                   htmlFor="remember-me"
                   className="ml-2 block text-sm text-gray-900"
                 >
-                  Remember me
+                  Ghi nhớ đăng nhập
                 </label>
               </div>
 
-              <div className="text-sm">
-                <Link
-                  to="/forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                >
-                  Forgot your password?
-                </Link>
+              <div className="text-sm">                <Link
+                to="/forgot-password"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Quên mật khẩu?
+              </Link>
               </div>
             </div>
 
@@ -131,7 +126,7 @@ function Login() {
                 disabled={loading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? "Đang đăng nhập..." : "Đăng nhập"}
               </button>
             </div>
           </form>

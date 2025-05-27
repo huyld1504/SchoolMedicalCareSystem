@@ -4,21 +4,20 @@ import { Link } from "react-router-dom";
 
 function ParentDashboard() {
   const { currentUser } = useAuth();
-
   // Sample data for dashboard
   const children = [
     {
       id: 1,
       name: "Emma Johnson",
-      grade: "5th Grade",
-      healthStatus: "Good",
+      grade: "Lớp 5",
+      healthStatus: "Tốt",
       alerts: 1,
     },
     {
       id: 2,
       name: "Thomas Johnson",
-      grade: "8th Grade",
-      healthStatus: "Attention Needed",
+      grade: "Lớp 8",
+      healthStatus: "Cần chú ý",
       alerts: 2,
     },
   ];
@@ -26,108 +25,101 @@ function ParentDashboard() {
   const recentActivities = [
     {
       id: 1,
-      type: "Medication",
-      description: "Daily asthma medication administered",
+      type: "Thuốc",
+      description: "Thuốc hen suyễn hàng ngày đã được cấp",
       date: "2023-05-16",
-      status: "Completed",
+      status: "Hoàn thành",
     },
     {
       id: 2,
-      type: "Health Check",
-      description: "Vision screening",
+      type: "Khám sức khỏe",
+      description: "Khám sàng lọc thị lực",
       date: "2023-05-10",
-      status: "Attention Required",
+      status: "Cần chú ý",
     },
     {
       id: 3,
-      type: "Vaccination",
-      description: "Flu shot consent form",
+      type: "Tiêm chủng",
+      description: "Mẫu đồng ý tiêm phòng cúm",
       date: "2023-05-05",
-      status: "Action Needed",
+      status: "Cần hành động",
     },
   ];
 
   const upcomingEvents = [
     {
       id: 1,
-      title: "Annual Health Check",
+      title: "Khám sức khỏe định kỳ",
       date: "2023-05-25",
-      description: "Complete physical examination",
+      description: "Khám sức khỏe tổng quát",
     },
     {
       id: 2,
-      title: "Dental Screening",
+      title: "Khám sàng lọc nha khoa",
       date: "2023-06-10",
-      description: "Preventive dental check",
+      description: "Khám nha khoa phòng ngừa",
     },
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          Welcome, {currentUser?.name}
-        </h1>
-        <p className="text-gray-600">
-          Manage your children's health records and activities
-        </p>
-      </div>
+    <div className="container mx-auto px-4 py-8">      <div className="mb-8">
+      <h1 className="text-3xl font-bold mb-2">
+        Chào mừng, {currentUser?.name}
+      </h1>
+      <p className="text-gray-600">
+        Quản lý hồ sơ sức khỏe và hoạt động của con bạn
+      </p>
+    </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-blue-50 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">My Children</h2>
-          <div className="space-y-4">
-            {children.map((child) => (
-              <div key={child.id} className="bg-white p-4 rounded-md shadow-sm">                <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">{child.name}</h3>
-                  <p className="text-sm text-gray-600">{child.grade}</p>
-                </div>
-                <div
-                  className={`px-3 py-1 rounded-full text-xs ${child.healthStatus === "Good"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
-                    }`}
-                >
-                  {child.healthStatus}
-                </div>
-              </div>                <div className="mt-3 flex items-center">
-                  <Link
-                    to={{
-                      pathname: "/parent/medications/request",
-                      state: { selectedStudentId: child.id }
-                    }}
-                    className="text-sm bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-md shadow-sm hover:shadow-md flex items-center transition-all duration-200 font-medium"
-                    onClick={(e) => {
-                      // Store the selected student in localStorage for cross-page state
-                      localStorage.setItem('selectedStudentId', child.id);
-                      localStorage.setItem('selectedStudentName', child.name);
-                      localStorage.setItem('selectedStudentGrade', child.grade);
-                    }}
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Add Medication
-                  </Link>
-                  {child.alerts > 0 && (
-                    <div className="flex items-center text-red-600 text-sm ml-4">
-                    </div>
-                  )}
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">        <div className="bg-blue-50 rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4">Con em</h2>
+        <div className="space-y-4">
+          {children.map((child) => (
+            <div key={child.id} className="bg-white p-4 rounded-md shadow-sm">                <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-medium">{child.name}</h3>
+                <p className="text-sm text-gray-600">{child.grade}</p>
+              </div>              <div
+                className={`px-3 py-1 rounded-full text-xs ${child.healthStatus === "Tốt"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
+                  }`}
+              >
+                {child.healthStatus}
               </div>
-            ))}
-            <a
-              href="/parent/health-records/new"
-              className="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
-            >
-              Add Child
-            </a>
-          </div>
+            </div>                <div className="mt-3 flex items-center">
+                <Link
+                  to={{
+                    pathname: "/parent/medications/request",
+                    state: { selectedStudentId: child.id }
+                  }}
+                  className="text-sm bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-4 py-2 rounded-md shadow-sm hover:shadow-md flex items-center transition-all duration-200 font-medium"
+                  onClick={(e) => {
+                    // Store the selected student in localStorage for cross-page state
+                    localStorage.setItem('selectedStudentId', child.id);
+                    localStorage.setItem('selectedStudentName', child.name);
+                    localStorage.setItem('selectedStudentGrade', child.grade);
+                  }}
+                >                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Thêm thuốc
+                </Link>
+                {child.alerts > 0 && (
+                  <div className="flex items-center text-red-600 text-sm ml-4">
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}            <a
+            href="/parent/health-records/new"
+            className="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
+          >
+            Thêm con
+          </a>
         </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+      </div>        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Hoạt động gần đây</h2>
           <div className="space-y-4">
             {recentActivities.map((activity) => (
               <div key={activity.id} className="border-b pb-3 last:border-b-0">
@@ -137,11 +129,10 @@ function ParentDashboard() {
                   </span>
                   <span className="text-sm text-gray-500">{activity.date}</span>
                 </div>
-                <p className="mt-1">{activity.description}</p>
-                <span
-                  className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${activity.status === "Completed"
+                <p className="mt-1">{activity.description}</p>                <span
+                  className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${activity.status === "Hoàn thành"
                     ? "bg-green-100 text-green-800"
-                    : activity.status === "Action Needed"
+                    : activity.status === "Cần hành động"
                       ? "bg-red-100 text-red-800"
                       : "bg-yellow-100 text-yellow-800"
                     }`}
@@ -150,17 +141,14 @@ function ParentDashboard() {
                 </span>
               </div>
             ))}
-          </div>
-          <a
+          </div>          <a
             href="/parent/activities"
             className="block mt-4 text-blue-600 hover:text-blue-800 text-center"
           >
-            View all activity →
+            Xem tất cả hoạt động →
           </a>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Upcoming Events</h2>
+        </div>        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Sự kiện sắp tới</h2>
           <div className="space-y-4">
             {upcomingEvents.map((event) => (
               <div key={event.id} className="border-b pb-3 last:border-b-0">
@@ -178,63 +166,60 @@ function ParentDashboard() {
             href="/parent/calendar"
             className="block mt-4 text-blue-600 hover:text-blue-800 text-center"
           >
-            View calendar →
+            Xem lịch →
           </a>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a
-              href="/parent/health-records"
-              className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
-            >
-              <h3 className="font-medium">Health Records</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                View & update health information
-              </p>
-            </a>
-            <a
-              href="/parent/medications/request"
-              className="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition"
-            >
-              <h3 className="font-medium">Medication Request</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Submit medication for school nurse
-              </p>
-            </a>
-            <a
-              href="/parent/vaccinations"
-              className="block p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition"
-            >
-              <h3 className="font-medium">Vaccination Consent</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Manage vaccination permissions
-              </p>
-            </a>
-            <a
-              href="/parent/health-checks"
-              className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition"
-            >
-              <h3 className="font-medium">Health Check Results</h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Review health check findings
-              </p>
-            </a>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">        <div className="md:col-span-2 bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4">Hành động nhanh</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <a
+            href="/parent/health-records"
+            className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
+          >
+            <h3 className="font-medium">Hồ sơ sức khỏe</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Xem & cập nhật thông tin sức khỏe
+            </p>
+          </a>
+          <a
+            href="/parent/medications/request"
+            className="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition"
+          >
+            <h3 className="font-medium">Yêu cầu thuốc</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Gửi yêu cầu thuốc cho y tá trường
+            </p>
+          </a>
+          <a
+            href="/parent/vaccinations"
+            className="block p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition"
+          >
+            <h3 className="font-medium">Đồng ý tiêm chủng</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Quản lý quyền tiêm chủng
+            </p>
+          </a>
+          <a
+            href="/parent/health-checks"
+            className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition"
+          >
+            <h3 className="font-medium">Kết quả khám sức khỏe</h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Xem kết quả khám sức khỏe
+            </p>
+          </a>
         </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Resources</h2>
+      </div>        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Tài nguyên</h2>
           <ul className="space-y-3">
             <li>
               <a
                 href="/resources/flu-season"
                 className="text-blue-600 hover:text-blue-800"
               >
-                Preparing for Flu Season
+                Chuẩn bị cho mùa cúm
               </a>
             </li>
             <li>
@@ -242,7 +227,7 @@ function ParentDashboard() {
                 href="/resources/vision-care"
                 className="text-blue-600 hover:text-blue-800"
               >
-                Children's Vision Care Tips
+                Mẹo chăm sóc thị lực trẻ em
               </a>
             </li>
             <li>
@@ -250,7 +235,7 @@ function ParentDashboard() {
                 href="/resources/vaccination-guide"
                 className="text-blue-600 hover:text-blue-800"
               >
-                School Vaccination Guide
+                Hướng dẫn tiêm chủng trường học
               </a>
             </li>
             <li>
@@ -258,7 +243,7 @@ function ParentDashboard() {
                 href="/resources/mental-health"
                 className="text-blue-600 hover:text-blue-800"
               >
-                Supporting Student Mental Health
+                Hỗ trợ sức khỏe tâm thần học sinh
               </a>
             </li>
             <li>
@@ -266,7 +251,7 @@ function ParentDashboard() {
                 href="/resources/nutrition"
                 className="text-blue-600 hover:text-blue-800"
               >
-                Healthy School Lunches
+                Bữa trưa học đường lành mạnh
               </a>
             </li>
           </ul>
@@ -274,7 +259,7 @@ function ParentDashboard() {
             href="/resources"
             className="block mt-4 text-blue-600 hover:text-blue-800 text-center"
           >
-            View all resources →
+            Xem tất cả tài nguyên →
           </a>
         </div>
       </div>

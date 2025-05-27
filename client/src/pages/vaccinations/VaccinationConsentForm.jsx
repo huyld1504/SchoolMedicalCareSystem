@@ -3,19 +3,18 @@ import { Link, useParams } from "react-router-dom";
 
 function VaccinationConsentForm() {
   const { id } = useParams();
-
   // Demo campaign data
   const campaign = {
     id: parseInt(id),
-    name: "Annual Flu Vaccination",
-    description: "Annual influenza vaccination for all students and staff",
-    vaccine: "Influenza Vaccine (Seasonal)",
+    name: "Tiêm chủng cúm hàng năm",
+    description: "Tiêm chủng cúm hàng năm cho tất cả học sinh và nhân viên",
+    vaccine: "Vaccine cúm (theo mùa)",
     vaccineDetails: {
       manufacturer: "Influenza Biologics Inc.",
       formulation: "Quadrivalent",
       lotNumber: "FL2023-456",
       dosage: "0.5ml",
-      administrationRoute: "Intramuscular injection",
+      administrationRoute: "Tiêm bắp",
     },
     consentDeadline: "2023-08-25",
   };
@@ -103,15 +102,13 @@ function VaccinationConsentForm() {
 
   // Form submit handler
   const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (consentForm.consent === null) {
-      alert("Please indicate whether you consent or decline the vaccination");
+    e.preventDefault(); if (consentForm.consent === null) {
+      alert("Vui lòng cho biết bạn đồng ý hay từ chối việc tiêm chủng");
       return;
     }
 
     if (consentForm.consent && !consentForm.agreeToTerms) {
-      alert("Please agree to the terms to provide consent");
+      alert("Vui lòng đồng ý với các điều khoản để cung cấp sự đồng ý");
       return;
     }
 
@@ -126,10 +123,8 @@ function VaccinationConsentForm() {
       return student;
     });
 
-    setStudents(updatedStudents);
-    alert(
-      `Consent form ${consentForm.consent ? "approved" : "declined"} for ${
-        activeStudent.name
+    setStudents(updatedStudents); alert(
+      `Đơn đồng ý ${consentForm.consent ? "đã được chấp thuận" : "đã bị từ chối"} cho ${activeStudent.name
       }`
     );
 
@@ -169,32 +164,31 @@ function VaccinationConsentForm() {
               strokeWidth="2"
               d="M10 19l-7-7m0 0l7-7m-7 7h18"
             ></path>
-          </svg>
-          Back to Campaigns
+          </svg>          Quay lại Chiến dịch
         </Link>
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Vaccination Consent Form</h1>
+        <h1 className="text-3xl font-bold mb-2">Đơn đồng ý tiêm chủng</h1>
         <p className="text-gray-600">{campaign.name}</p>
       </div>
 
       {/* Campaign Information */}
       <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-100">
-        <h2 className="text-xl font-bold mb-2">Campaign Information</h2>
+        <h2 className="text-xl font-bold mb-2">Thông tin chiến dịch</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-500">Vaccination</p>
+            <p className="text-sm font-medium text-gray-500">Tiêm chủng</p>
             <p className="font-medium">{campaign.vaccine}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">
-              Consent Deadline
+              Hạn chót đồng ý
             </p>
             <p className="font-medium">
               {formatDate(campaign.consentDeadline)}
               {isDeadlinePassed() && (
-                <span className="text-red-600 ml-2">(Passed)</span>
+                <span className="text-red-600 ml-2">(Đã quá hạn)</span>
               )}
             </p>
           </div>
@@ -203,29 +197,25 @@ function VaccinationConsentForm() {
           <p className="text-sm font-medium text-gray-500">Description</p>
           <p>{campaign.description}</p>
         </div>
-      </div>
-
-      {/* Student Selection */}
+      </div>      {/* Student Selection */}
       {students.length > 1 && (
         <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-lg font-bold mb-4">Select Student</h2>
+          <h2 className="text-lg font-bold mb-4">Chọn học sinh</h2>
           <div className="flex flex-wrap gap-4">
             {students.map((student) => (
               <button
                 key={student.id}
-                className={`px-4 py-2 rounded-full ${
-                  activeStudent.id === student.id
+                className={`px-4 py-2 rounded-full ${activeStudent.id === student.id
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                }`}
+                  }`}
                 onClick={() => handleStudentChange(student)}
               >
                 {student.name}
                 {student.hasConsent !== null && (
                   <span
-                    className={`ml-2 inline-block w-3 h-3 rounded-full ${
-                      student.hasConsent ? "bg-green-500" : "bg-red-500"
-                    }`}
+                    className={`ml-2 inline-block w-3 h-3 rounded-full ${student.hasConsent ? "bg-green-500" : "bg-red-500"
+                      }`}
                   ></span>
                 )}
               </button>
@@ -251,14 +241,13 @@ function VaccinationConsentForm() {
                 strokeWidth={2}
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
-            </svg>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">
-              Consent Deadline Has Passed
+            </svg>            <h3 className="mt-2 text-lg font-medium text-gray-900">
+              Hạn chót đồng ý đã qua
             </h3>
             <p className="mt-1 text-gray-500">
-              The deadline for submitting the consent form was{" "}
-              {formatDate(campaign.consentDeadline)}. Please contact the school
-              nurse if you still wish to give consent.
+              Hạn chót nộp đơn đồng ý là{" "}
+              {formatDate(campaign.consentDeadline)}. Vui lòng liên hệ với
+              y tá trường học nếu bạn vẫn muốn đưa ra sự đồng ý.
             </p>
           </div>
         ) : (
@@ -266,59 +255,56 @@ function VaccinationConsentForm() {
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold">{activeStudent.name}</h2>
-                  <p className="text-sm text-gray-600">
-                    {activeStudent.grade} | {activeStudent.age} years old
+                  <h2 className="text-xl font-bold">{activeStudent.name}</h2>                  <p className="text-sm text-gray-600">
+                    {activeStudent.grade} | {activeStudent.age} tuổi
                   </p>
                 </div>
                 {activeStudent.hasConsent !== null && (
                   <div
-                    className={`px-4 py-1 rounded-full text-sm font-medium ${
-                      activeStudent.hasConsent
+                    className={`px-4 py-1 rounded-full text-sm font-medium ${activeStudent.hasConsent
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
-                    }`}
+                      }`}
                   >
                     {activeStudent.hasConsent
-                      ? "Consent Given"
-                      : "Consent Declined"}
+                      ? "Đã đồng ý"
+                      : "Đã từ chối"}
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="p-6">
-              {/* Vaccine Information */}
+            <div className="p-6">              {/* Vaccine Information */}
               <div className="mb-8">
                 <h3 className="text-lg font-medium mb-4 border-b pb-2">
-                  Vaccine Information
+                  Thông tin vaccine
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Manufacturer
+                      Nhà sản xuất
                     </p>
                     <p>{campaign.vaccineDetails.manufacturer}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Formulation
+                      Thành phần
                     </p>
                     <p>{campaign.vaccineDetails.formulation}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Lot Number
+                      Số lô
                     </p>
                     <p>{campaign.vaccineDetails.lotNumber}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Dosage</p>
+                    <p className="text-sm font-medium text-gray-500">Liều lượng</p>
                     <p>{campaign.vaccineDetails.dosage}</p>
                   </div>
                   <div className="col-span-2">
                     <p className="text-sm font-medium text-gray-500">
-                      Administration Route
+                      Cách tiêm
                     </p>
                     <p>{campaign.vaccineDetails.administrationRoute}</p>
                   </div>
@@ -328,18 +314,18 @@ function VaccinationConsentForm() {
               {/* Medical History */}
               <div className="mb-8">
                 <h3 className="text-lg font-medium mb-4 border-b pb-2">
-                  Medical History
+                  Tiền sử bệnh
                 </h3>
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Does the student have any known allergies?
+                    Học sinh có dị ứng gì đã biết không?
                   </label>
                   <textarea
                     name="allergies"
                     rows="2"
                     className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    placeholder="List allergies or write 'None'"
+                    placeholder="Liệt kê các dị ứng hoặc viết 'Không'"
                     value={consentForm.allergies}
                     onChange={handleChange}
                   ></textarea>
@@ -362,8 +348,8 @@ function VaccinationConsentForm() {
                         htmlFor="previousReactions"
                         className="font-medium text-gray-700"
                       >
-                        Has the student had a previous adverse reaction to any
-                        vaccination?
+                        Học sinh đã từng có phản ứng phụ với bất kỳ
+                        vaccine nào trước đây không?
                       </label>
                     </div>
                   </div>
@@ -386,7 +372,7 @@ function VaccinationConsentForm() {
                         htmlFor="hadVaccineBefore"
                         className="font-medium text-gray-700"
                       >
-                        Has the student received this vaccine before?
+                        Học sinh đã được tiêm vaccine này trước đây chưa?
                       </label>
                     </div>
                   </div>
@@ -404,13 +390,12 @@ function VaccinationConsentForm() {
                         onChange={handleChange}
                       />
                     </div>
-                    <div className="ml-3 text-sm">
-                      <label
-                        htmlFor="recentIllness"
-                        className="font-medium text-gray-700"
-                      >
-                        Has the student been sick in the past 14 days?
-                      </label>
+                    <div className="ml-3 text-sm">                      <label
+                      htmlFor="recentIllness"
+                      className="font-medium text-gray-700"
+                    >
+                      Học sinh có bị ốm trong 14 ngày qua không?
+                    </label>
                     </div>
                   </div>
 
@@ -419,22 +404,20 @@ function VaccinationConsentForm() {
                       name="recentIllnessDescription"
                       rows="2"
                       className="mt-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      placeholder="Please describe the recent illness"
+                      placeholder="Vui lòng mô tả tình trạng bệnh gần đây"
                       value={consentForm.recentIllnessDescription}
                       onChange={handleChange}
                     ></textarea>
                   )}
-                </div>
-
-                <div className="mb-4">
+                </div>                <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Medications
+                    Thuốc đang sử dụng
                   </label>
                   <textarea
                     name="currentMedications"
                     rows="2"
                     className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    placeholder="List any medications the student is currently taking or write 'None'"
+                    placeholder="Liệt kê các loại thuốc học sinh đang dùng hoặc viết 'Không'"
                     value={consentForm.currentMedications}
                     onChange={handleChange}
                   ></textarea>
@@ -442,13 +425,13 @@ function VaccinationConsentForm() {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Medical Conditions
+                    Tình trạng sức khỏe
                   </label>
                   <textarea
                     name="medicalConditions"
                     rows="2"
                     className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    placeholder="List any relevant medical conditions or write 'None'"
+                    placeholder="Liệt kê các tình trạng sức khỏe liên quan hoặc viết 'Không'"
                     value={consentForm.medicalConditions}
                     onChange={handleChange}
                   ></textarea>
@@ -456,23 +439,21 @@ function VaccinationConsentForm() {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Additional Notes or Concerns
+                    Ghi chú hoặc mối quan tâm bổ sung
                   </label>
                   <textarea
                     name="additionalNotes"
                     rows="3"
                     className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    placeholder="Any additional information the school nurse should know"
+                    placeholder="Bất kỳ thông tin bổ sung nào mà y tá trường học nên biết"
                     value={consentForm.additionalNotes}
                     onChange={handleChange}
                   ></textarea>
                 </div>
-              </div>
-
-              {/* Consent Decision */}
+              </div>              {/* Consent Decision */}
               <div className="mb-8">
                 <h3 className="text-lg font-medium mb-4 border-b pb-2">
-                  Consent Decision
+                  Quyết định đồng ý
                 </h3>
 
                 <div className="space-y-4">
@@ -491,7 +472,7 @@ function VaccinationConsentForm() {
                       htmlFor="consent-yes"
                       className="ml-3 block text-sm font-medium text-gray-700"
                     >
-                      I CONSENT for my child to receive this vaccination
+                      TÔI ĐỒNG Ý cho con tôi được tiêm vaccine này
                     </label>
                   </div>
 
@@ -510,16 +491,14 @@ function VaccinationConsentForm() {
                       htmlFor="consent-no"
                       className="ml-3 block text-sm font-medium text-gray-700"
                     >
-                      I DO NOT CONSENT for my child to receive this vaccination
+                      TÔI KHÔNG ĐỒNG Ý cho con tôi được tiêm vaccine này
                     </label>
                   </div>
                 </div>
-              </div>
-
-              {/* Parent/Guardian Information */}
+              </div>              {/* Parent/Guardian Information */}
               <div className="mb-8">
                 <h3 className="text-lg font-medium mb-4 border-b pb-2">
-                  Parent/Guardian Information
+                  Thông tin phụ huynh/người giám hộ
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -528,14 +507,14 @@ function VaccinationConsentForm() {
                       className="block text-sm font-medium text-gray-700 mb-1"
                       htmlFor="parentName"
                     >
-                      Full Name <span className="text-red-500">*</span>
+                      Họ và tên <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="parentName"
                       id="parentName"
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      placeholder="Parent/Guardian Full Name"
+                      placeholder="Họ và tên phụ huynh/người giám hộ"
                       value={consentForm.parentName}
                       onChange={handleChange}
                       required={consentForm.consent}
@@ -547,7 +526,7 @@ function VaccinationConsentForm() {
                       className="block text-sm font-medium text-gray-700 mb-1"
                       htmlFor="relationshipToStudent"
                     >
-                      Relationship to Student{" "}
+                      Mối quan hệ với học sinh{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -555,7 +534,7 @@ function VaccinationConsentForm() {
                       name="relationshipToStudent"
                       id="relationshipToStudent"
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      placeholder="e.g., Parent, Legal Guardian"
+                      placeholder="vd: Bố/Mẹ, Người giám hộ"
                       value={consentForm.relationshipToStudent}
                       onChange={handleChange}
                       required={consentForm.consent}
@@ -567,14 +546,14 @@ function VaccinationConsentForm() {
                       className="block text-sm font-medium text-gray-700 mb-1"
                       htmlFor="phoneNumber"
                     >
-                      Phone Number <span className="text-red-500">*</span>
+                      Số điện thoại <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
                       name="phoneNumber"
                       id="phoneNumber"
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      placeholder="Contact Phone Number"
+                      placeholder="Số điện thoại liên hệ"
                       value={consentForm.phoneNumber}
                       onChange={handleChange}
                       required={consentForm.consent}
@@ -586,14 +565,14 @@ function VaccinationConsentForm() {
                       className="block text-sm font-medium text-gray-700 mb-1"
                       htmlFor="email"
                     >
-                      Email Address
+                      Địa chỉ email
                     </label>
                     <input
                       type="email"
                       name="email"
                       id="email"
                       className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      placeholder="Email Address"
+                      placeholder="Địa chỉ email"
                       value={consentForm.email}
                       onChange={handleChange}
                     />
@@ -615,39 +594,35 @@ function VaccinationConsentForm() {
                         onChange={handleChange}
                         required={consentForm.consent}
                       />
-                    </div>
-                    <div className="ml-3 text-sm">
+                    </div>                    <div className="ml-3 text-sm">
                       <label
                         htmlFor="agreeToTerms"
                         className="font-medium text-gray-700"
                       >
-                        I affirm that I am the parent/legal guardian of the
-                        above-named student. I have read or had explained to me
-                        the information provided about the vaccine. I have had a
-                        chance to ask questions which were answered to my
-                        satisfaction. I understand the benefits and risks of the
-                        vaccination and I request that the vaccine be given to
-                        the student named above for whom I am authorized to make
-                        this request.
+                        Tôi xác nhận rằng tôi là phụ huynh/người giám hộ hợp pháp của
+                        học sinh được nêu tên ở trên. Tôi đã đọc hoặc được giải thích
+                        thông tin được cung cấp về vaccine này. Tôi đã có cơ hội đặt
+                        câu hỏi và đã được trả lời một cách thỏa đáng. Tôi hiểu những
+                        lợi ích và rủi ro của việc tiêm chủng và tôi yêu cầu vaccine
+                        được tiêm cho học sinh nêu tên ở trên mà tôi được ủy quyền
+                        đưa ra yêu cầu này.
                       </label>
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Submit Buttons */}
+              )}              {/* Submit Buttons */}
               <div className="flex items-center justify-between pt-4 border-t">
                 <Link
                   to="/parent/vaccinations"
                   className="bg-gray-200 hover:bg-gray-300 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                 >
-                  Cancel
+                  Hủy
                 </Link>
                 <button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Submit Form
+                  Gửi đơn
                 </button>
               </div>
             </div>
@@ -671,12 +646,11 @@ function VaccinationConsentForm() {
                 clipRule="evenodd"
               />
             </svg>
-          </div>
-          <div className="ml-3">
+          </div>          <div className="ml-3">
             <p className="text-sm text-yellow-700">
-              Your consent decision is important. Please complete this form by{" "}
-              {formatDate(campaign.consentDeadline)}. If you have questions
-              about this vaccine, please contact the school nurse.
+              Quyết định đồng ý của bạn rất quan trọng. Vui lòng hoàn thành đơn này trước{" "}
+              {formatDate(campaign.consentDeadline)}. Nếu bạn có câu hỏi
+              về vaccine này, vui lòng liên hệ với y tá trường học.
             </p>
           </div>
         </div>

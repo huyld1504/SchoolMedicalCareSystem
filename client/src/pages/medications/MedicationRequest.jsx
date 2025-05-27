@@ -250,12 +250,11 @@ function MedicationRequest() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">
-          Request Medication Administration
-        </h1>
+      <div className="mb-6">        <h1 className="text-3xl font-bold mb-2">
+        Yêu cầu cấp thuốc tại trường
+      </h1>
         <p className="text-gray-600">
-          Complete this form to request medication administration at school
+          Hoàn thành biểu mẫu này để yêu cầu cấp thuốc tại trường
         </p>
       </div>      <div className="bg-white rounded-lg shadow p-6">
         {/* Important Notice */}
@@ -266,11 +265,10 @@ function MedicationRequest() {
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
             </div>
-            <div className="ml-3">
-              <p className="text-sm text-amber-700">
-                <strong>Important:</strong> Parent/Guardian consent is required to submit this medication request.
-                Please ensure you complete all required fields and provide consent at the bottom of this form.
-              </p>
+            <div className="ml-3">              <p className="text-sm text-amber-700">
+              <strong>Quan trọng:</strong> Cần có sự đồng ý của phụ huynh/người giám hộ để gửi yêu cầu thuốc này.
+              Vui lòng đảm bảo hoàn thành tất cả các trường bắt buộc và đồng ý ở cuối biểu mẫu này.
+            </p>
             </div>
           </div>
         </div>
@@ -292,7 +290,7 @@ function MedicationRequest() {
               onChange={handleChange}
               required
             >
-              <option value="">Select a student</option>
+              <option value="">Chọn học sinh</option>
               {students.map((student) => (
                 <option key={student.id} value={student.id}>
                   {student.name} ({student.grade})
@@ -300,8 +298,7 @@ function MedicationRequest() {
               ))}
             </select>
           </div>          {/* Medication Information */}
-          <div className="flex justify-between items-center border-b pb-2 mb-4">
-            <h2 className="text-xl font-bold">Medication Information</h2>
+          <div className="flex justify-between items-center border-b pb-2 mb-4">            <h2 className="text-xl font-bold">Thông tin thuốc</h2>
             <button
               type="button"
               onClick={handleAddMedication}
@@ -310,7 +307,7 @@ function MedicationRequest() {
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
-              Add Medication
+              Thêm thuốc
             </button>
           </div>
 
@@ -329,41 +326,39 @@ function MedicationRequest() {
                 </button>
               )}
 
-              <div className="text-lg font-semibold mb-3 text-blue-700">Medication #{index + 1}</div>
+              <div className="text-lg font-semibold mb-3 text-blue-700">Thuốc #{index + 1}</div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor={`medications[${index}].medicationName`}
-                  >
-                    Medication Name <span className="text-red-500">*</span>
-                  </label>
+                <div>                  <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor={`medications[${index}].medicationName`}
+                >
+                  Tên thuốc <span className="text-red-500">*</span>
+                </label>
                   <input
                     id={`medications[${index}].medicationName`}
                     name={`medications[${index}].medicationName`}
                     type="text"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="e.g., Ibuprofen, Albuterol"
+                    placeholder="VD: Ibuprofen, Albuterol"
                     value={medication.medicationName}
                     onChange={handleChange}
                     required
                   />
                 </div>
 
-                <div>
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor={`medications[${index}].dosage`}
-                  >
-                    Dosage <span className="text-red-500">*</span>
-                  </label>
+                <div>                  <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor={`medications[${index}].dosage`}
+                >
+                  Liều lượng <span className="text-red-500">*</span>
+                </label>
                   <input
                     id={`medications[${index}].dosage`}
                     name={`medications[${index}].dosage`}
                     type="text"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="e.g., 200mg, 2 puffs"
+                    placeholder="VD: 200mg, 2 nhát"
                     value={medication.dosage}
                     onChange={handleChange}
                     required
@@ -371,10 +366,9 @@ function MedicationRequest() {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Medication Type <span className="text-red-500">*</span>
-                </label>
+              <div className="mb-6">                <label className="block text-gray-700 text-sm font-bold mb-2">
+                Loại thuốc <span className="text-red-500">*</span>
+              </label>
                 <div className="flex space-x-6">
                   <div className="flex items-center">
                     <input
@@ -385,12 +379,11 @@ function MedicationRequest() {
                       checked={medication.medicationType === "prescription"}
                       onChange={handleChange}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label
+                    />                    <label
                       htmlFor={`medications[${index}].medicationType-prescription`}
                       className="ml-2 block text-gray-700"
                     >
-                      Prescription Medication
+                      Thuốc kê đơn
                     </label>
                   </div>
                   <div className="flex items-center">
@@ -402,9 +395,8 @@ function MedicationRequest() {
                       checked={medication.medicationType === "otc"}
                       onChange={handleChange}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label htmlFor={`medications[${index}].medicationType-otc`} className="ml-2 block text-gray-700">
-                      Over-the-Counter (OTC)
+                    />                    <label htmlFor={`medications[${index}].medicationType-otc`} className="ml-2 block text-gray-700">
+                      Thuốc không kê đơn (OTC)
                     </label>
                   </div>
                 </div>
@@ -412,10 +404,9 @@ function MedicationRequest() {
 
 
 
-              <div className="mb-6">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Time of Day for Administration <span className="text-red-500">*</span>
-                </label>
+              <div className="mb-6">                <label className="block text-gray-700 text-sm font-bold mb-2">
+                Thời gian uống thuốc trong ngày <span className="text-red-500">*</span>
+              </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="flex items-center">
                     <input
@@ -426,9 +417,8 @@ function MedicationRequest() {
                       checked={medication.timeOfDay?.includes("morning")}
                       onChange={handleChange}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor={`medications[${index}].timeOfDay-morning`} className="ml-2 block text-gray-700">
-                      Morning
+                    />                    <label htmlFor={`medications[${index}].timeOfDay-morning`} className="ml-2 block text-gray-700">
+                      Sáng
                     </label>
                   </div>
                   <div className="flex items-center">
@@ -442,7 +432,7 @@ function MedicationRequest() {
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`medications[${index}].timeOfDay-midday`} className="ml-2 block text-gray-700">
-                      Midday
+                      Trưa
                     </label>
                   </div>
                   <div className="flex items-center">
@@ -456,7 +446,7 @@ function MedicationRequest() {
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`medications[${index}].timeOfDay-afternoon`} className="ml-2 block text-gray-700">
-                      Afternoon
+                      Chiều
                     </label>
                   </div>
                   <div className="flex items-center">
@@ -470,7 +460,7 @@ function MedicationRequest() {
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor={`medications[${index}].timeOfDay-asNeeded`} className="ml-2 block text-gray-700">
-                      As Needed
+                      Khi cần thiết
                     </label>
                   </div>
                 </div>
@@ -478,30 +468,28 @@ function MedicationRequest() {
 
               <div className="mb-6">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor={`medications[${index}].instructions`}
+                  className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`medications[${index}].instructions`}
                 >
-                  Special Instructions
+                  Hướng dẫn đặc biệt
                 </label>
                 <textarea
                   id={`medications[${index}].instructions`}
                   name={`medications[${index}].instructions`}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   rows="2"
-                  placeholder="e.g., Take with food, Follow with water"
+                  placeholder="VD: Uống sau bữa ăn, uống kèm nước"
                   value={medication.instructions}
                   onChange={handleChange}
                 ></textarea>
               </div>
             </div>
           ))}          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="startDate"
-              >
-                Start Date <span className="text-red-500">*</span>
-              </label>
+            <div>              <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="startDate"
+            >
+              Ngày bắt đầu <span className="text-red-500">*</span>
+            </label>
               <input
                 id="startDate"
                 name="startDate"
@@ -513,13 +501,12 @@ function MedicationRequest() {
               />
             </div>
 
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="endDate"
-              >
-                End Date <span className="text-red-500">*</span>
-              </label>
+            <div>              <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="endDate"
+            >
+              Ngày kết thúc <span className="text-red-500">*</span>
+            </label>
               <input
                 id="endDate"
                 name="endDate"
@@ -731,8 +718,8 @@ function MedicationRequest() {
                 type="submit"
                 disabled={!formData.consentToAdminister}
                 className={`font-medium py-2 px-6 rounded transition duration-150 ease-in-out ${formData.consentToAdminister
-                    ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
                 title={!formData.consentToAdminister ? "Please provide consent before submitting" : "Submit medication request"}
               >
