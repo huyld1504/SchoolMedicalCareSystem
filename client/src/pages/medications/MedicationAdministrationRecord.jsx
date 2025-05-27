@@ -9,9 +9,8 @@ import {
 function MedicationAdministrationRecord() {
   const { medicationId } = useParams();
   const navigate = useNavigate();
-  const [currentDate] = useState(new Date().toISOString().split("T")[0]);
-  const [currentTime] = useState(
-    new Date().toLocaleTimeString("en-US", {
+  const [currentDate] = useState(new Date().toISOString().split("T")[0]);  const [currentTime] = useState(
+    new Date().toLocaleTimeString("vi-VN", {
       hour: "2-digit",
       minute: "2-digit",
     })
@@ -109,23 +108,19 @@ function MedicationAdministrationRecord() {
       );
 
       // Update local state for immediate UI feedback
-      setMedication(updatedMedication);
-
-      // Show success message (in a real app this would be a toast notification)
-      alert("Medication administered successfully!");
+      setMedication(updatedMedication);      // Show success message (in a real app this would be a toast notification)
+      alert("Ghi nhận cấp phát thuốc thành công!");
 
       // Redirect to dashboard
-      navigate("/nurse/medications/dashboard");
-    } catch (err) {
+      navigate("/nurse/medications/dashboard");    } catch (err) {
       console.error("Failed to record administration:", err);
-      setError("Failed to record administration: " + err.message);
+      setError("Không thể ghi nhận việc cấp phát: " + err.message);
       setLoading(false);
     }
   };
-
   const handleSkip = async () => {
     // Record medication as skipped
-    const skipReason = prompt("Enter reason for skipping medication:");
+    const skipReason = prompt("Nhập lý do bỏ qua việc cấp phát thuốc:");
     if (!skipReason) return; // Cancel if no reason provided
 
     try {
@@ -145,16 +140,13 @@ function MedicationAdministrationRecord() {
       );
 
       // Update local state for immediate UI feedback
-      setMedication(updatedMedication);
-
-      // Show success message
-      alert("Medication skipped successfully!");
+      setMedication(updatedMedication);      // Show success message
+      alert("Bỏ qua cấp phát thuốc thành công!");
 
       // Redirect to dashboard
       navigate("/nurse/medications/dashboard");
     } catch (err) {
-      console.error("Failed to record skipped medication:", err);
-      setError("Failed to record skipped medication: " + err.message);
+      console.error("Failed to record skipped medication:", err);      setError("Không thể ghi nhận việc bỏ qua thuốc: " + err.message);
       setLoading(false);
     }
   };
@@ -165,12 +157,11 @@ function MedicationAdministrationRecord() {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
-  }
-  if (error) {
+  }  if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
-          <p>Error: {error}</p>
+          <p>Lỗi: {error}</p>
         </div>
       </div>
     );
@@ -180,20 +171,19 @@ function MedicationAdministrationRecord() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
-          <p>Medication not found. Please check the ID and try again.</p>
+          <p>Không tìm thấy thuốc. Vui lòng kiểm tra ID và thử lại.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+    <div className="container mx-auto px-4 py-8">      <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">
-          Record Medication Administration
+          Ghi nhận việc Cấp phát Thuốc
         </h1>
         <p className="text-gray-600">
-          Complete the form to document medication administration
+          Hoàn thành biểu mẫu để ghi lại việc cấp phát thuốc
         </p>
       </div>
 
@@ -213,35 +203,34 @@ function MedicationAdministrationRecord() {
           </div>
         </div>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-medium mb-4">Medication Details</h3>
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">          <div>
+            <h3 className="text-lg font-medium mb-4">Chi tiết Thuốc</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-500">Medication</p>
+                <p className="text-sm font-medium text-gray-500">Thuốc</p>
                 <p className="font-medium">{medication.medication}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Prescribed Dosage
+                  Liều lượng theo Toa
                 </p>
                 <p className="font-medium">{medication.dosage}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Scheduled Time
+                  Thời gian Dự kiến
                 </p>
                 <p className="font-medium">{medication.time}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Instructions
+                  Hướng dẫn
                 </p>
                 <p className="font-medium">{medication.instructions}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Remaining Doses
+                  Số liều còn lại
                 </p>
                 <p
                   className={`font-medium ${
@@ -249,24 +238,24 @@ function MedicationAdministrationRecord() {
                   }`}
                 >
                   {medication.remainingDoses}{" "}
-                  {medication.remainingDoses === 1 ? "dose" : "doses"}
+                  {medication.remainingDoses === 1 ? "liều" : "liều"}
                 </p>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-medium mb-4">Prescriber Information</h3>
+            <h3 className="text-lg font-medium mb-4">Thông tin Bác sĩ Kê toa</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Prescribed By
+                  Được kê toa bởi
                 </p>
                 <p className="font-medium">{medication.prescribedBy}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Contact Info
+                  Thông tin Liên hệ
                 </p>
                 <p className="font-medium">{medication.contactInfo}</p>
               </div>
@@ -276,11 +265,10 @@ function MedicationAdministrationRecord() {
       </div>
 
       {/* Administration Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow mb-6">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-bold">Administration Details</h2>
+      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow mb-6">          <div className="p-6 border-b">
+          <h2 className="text-xl font-bold">Chi tiết Cấp phát</h2>
           <p className="text-gray-500">
-            Record details of the medication administration
+            Ghi lại chi tiết việc cấp phát thuốc
           </p>
         </div>
 
@@ -292,7 +280,7 @@ function MedicationAdministrationRecord() {
                 className="block text-sm font-medium text-gray-700 mb-1"
                 htmlFor="administeredBy"
               >
-                Administered By
+                Được cấp phát bởi
               </label>
               <input
                 type="text"
@@ -310,7 +298,7 @@ function MedicationAdministrationRecord() {
                 className="block text-sm font-medium text-gray-700 mb-1"
                 htmlFor="administrationTime"
               >
-                Time of Administration
+                Thời gian Cấp phát
               </label>
               <input
                 type="time"
@@ -328,7 +316,7 @@ function MedicationAdministrationRecord() {
                 className="block text-sm font-medium text-gray-700 mb-1"
                 htmlFor="actualDosage"
               >
-                Actual Dosage Administered
+                Liều lượng Thực tế Cấp phát
               </label>
               <input
                 type="text"
@@ -346,7 +334,7 @@ function MedicationAdministrationRecord() {
                 className="block text-sm font-medium text-gray-700 mb-1"
                 htmlFor="medicationLot"
               >
-                Medication Lot Number (Optional)
+                Số lô Thuốc (Tùy chọn)
               </label>
               <input
                 type="text"
@@ -363,7 +351,7 @@ function MedicationAdministrationRecord() {
                 className="block text-sm font-medium text-gray-700 mb-1"
                 htmlFor="medicationExpiry"
               >
-                Medication Expiry Date (Optional)
+                Ngày hết hạn Thuốc (Tùy chọn)
               </label>
               <input
                 type="date"
@@ -374,9 +362,7 @@ function MedicationAdministrationRecord() {
                 onChange={handleChange}
               />
             </div>
-          </div>
-
-          {/* Witness Information */}
+          </div>          {/* Witness Information */}
           <div className="bg-gray-50 p-4 rounded-md">
             <div className="flex items-center mb-4">
               <input
@@ -391,7 +377,7 @@ function MedicationAdministrationRecord() {
                 htmlFor="witnessed"
                 className="ml-2 block text-sm text-gray-900"
               >
-                Witnessed by another staff member
+                Có nhân viên khác làm chứng
               </label>
             </div>
 
@@ -401,7 +387,7 @@ function MedicationAdministrationRecord() {
                   className="block text-sm font-medium text-gray-700 mb-1"
                   htmlFor="witnessName"
                 >
-                  Witness Name
+                  Tên người làm chứng
                 </label>
                 <input
                   type="text"
@@ -414,15 +400,13 @@ function MedicationAdministrationRecord() {
                 />
               </div>
             )}
-          </div>
-
-          {/* Student Reaction and Follow-up */}
+          </div>          {/* Student Reaction and Follow-up */}
           <div>
             <label
               className="block text-sm font-medium text-gray-700 mb-1"
               htmlFor="studentReaction"
             >
-              Student's Reaction
+              Phản ứng của Học sinh
             </label>
             <select
               id="studentReaction"
@@ -431,11 +415,11 @@ function MedicationAdministrationRecord() {
               value={formData.studentReaction}
               onChange={handleChange}
             >
-              <option value="None">None - No reaction</option>
-              <option value="Mild">Mild - Minor discomfort</option>
-              <option value="Moderate">Moderate - Noticeable reaction</option>
+              <option value="None">Không có - Không có phản ứng</option>
+              <option value="Mild">Nhẹ - Khó chịu nhẹ</option>
+              <option value="Moderate">Vừa - Phản ứng đáng chú ý</option>
               <option value="Severe">
-                Severe - Requires immediate attention
+                Nặng - Cần chú ý ngay lập tức
               </option>
             </select>
           </div>
@@ -455,7 +439,7 @@ function MedicationAdministrationRecord() {
                   htmlFor="followupRequired"
                   className="ml-2 block text-sm text-gray-900"
                 >
-                  Follow-up required
+                  Cần theo dõi thêm
                 </label>
               </div>
 
@@ -465,7 +449,7 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="followupNotes"
                   >
-                    Follow-up Notes
+                    Ghi chú Theo dõi
                   </label>
                   <textarea
                     id="followupNotes"
@@ -479,13 +463,11 @@ function MedicationAdministrationRecord() {
                 </div>
               )}
             </div>
-          )}
-
-          {/* Vitals (expandable section) */}
+          )}          {/* Vitals (expandable section) */}
           <div className="border rounded-md overflow-hidden">
             <details>
               <summary className="bg-gray-50 px-4 py-3 cursor-pointer font-medium">
-                Record Vitals (optional)
+                Ghi nhận Chỉ số Sức khỏe (tùy chọn)
               </summary>
               <div className="p-4 grid grid-cols-2 gap-4">
                 <div>
@@ -493,7 +475,7 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="vitals.temperature"
                   >
-                    Temperature (°F)
+                    Nhiệt độ (°F)
                   </label>
                   <input
                     type="text"
@@ -510,13 +492,13 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="vitals.bloodPressure"
                   >
-                    Blood Pressure
+                    Huyết áp
                   </label>
                   <input
                     type="text"
                     id="vitals.bloodPressure"
                     name="vitals.bloodPressure"
-                    placeholder="e.g., 120/80"
+                    placeholder="ví dụ: 120/80"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={formData.vitals.bloodPressure}
                     onChange={handleChange}
@@ -528,7 +510,7 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="vitals.heartRate"
                   >
-                    Heart Rate (bpm)
+                    Nhịp tim (lần/phút)
                   </label>
                   <input
                     type="text"
@@ -545,7 +527,7 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="vitals.respiratoryRate"
                   >
-                    Respiratory Rate (breaths/min)
+                    Nhịp thở (lần thở/phút)
                   </label>
                   <input
                     type="text"
@@ -562,7 +544,7 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="vitals.oxygenSaturation"
                   >
-                    Oxygen Saturation (%)
+                    Độ bão hòa Oxy (%)
                   </label>
                   <input
                     type="text"
@@ -579,7 +561,7 @@ function MedicationAdministrationRecord() {
                     className="block text-sm font-medium text-gray-700 mb-1"
                     htmlFor="vitals.painLevel"
                   >
-                    Pain Level (0-10)
+                    Mức độ Đau (0-10)
                   </label>
                   <input
                     type="number"
@@ -594,57 +576,51 @@ function MedicationAdministrationRecord() {
                 </div>
               </div>
             </details>
-          </div>
-
-          {/* Notes */}
+          </div>          {/* Notes */}
           <div>
             <label
               className="block text-sm font-medium text-gray-700 mb-1"
               htmlFor="notes"
             >
-              Administration Notes
+              Ghi chú Cấp phát
             </label>
             <textarea
               id="notes"
               name="notes"
               rows="4"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Enter any notes about this administration"
+              placeholder="Nhập bất kỳ ghi chú nào về việc cấp phát này"
               value={formData.notes}
               onChange={handleChange}
             ></textarea>
           </div>
-        </div>
-
-        {/* Form Actions */}
+        </div>        {/* Form Actions */}
         <div className="px-6 py-4 bg-gray-50 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
           <button
             type="button"
             className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             onClick={() => navigate(-1)}
           >
-            Cancel
+            Hủy bỏ
           </button>
           <button
             type="button"
             className="inline-flex justify-center py-2 px-4 border border-yellow-300 shadow-sm text-sm font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200"
             onClick={handleSkip}
           >
-            Skip Administration
+            Bỏ qua Cấp phát
           </button>
           <button
             type="submit"
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
-            Record Administration
+            Ghi nhận Cấp phát
           </button>
         </div>
-      </form>
-
-      {/* Previous Administration History */}
+      </form>      {/* Previous Administration History */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b">
-          <h2 className="text-xl font-bold">Administration History</h2>
+          <h2 className="text-xl font-bold">Lịch sử Cấp phát</h2>
         </div>
         <div className="overflow-hidden overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -654,25 +630,25 @@ function MedicationAdministrationRecord() {
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Date
+                  Ngày
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Time
+                  Thời gian
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Status
+                  Trạng thái
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Notes
+                  Ghi chú
                 </th>
               </tr>
             </thead>
@@ -693,7 +669,7 @@ function MedicationAdministrationRecord() {
                           : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
-                      {record.administered ? "Administered" : "Skipped"}
+                      {record.administered ? "Đã cấp phát" : "Đã bỏ qua"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

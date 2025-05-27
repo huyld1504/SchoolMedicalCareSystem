@@ -186,12 +186,10 @@ function MedicationRequest() {
     e.preventDefault();
 
     // Clear previous validation errors
-    setValidationErrors({});
-
-    // Check consent first (most important validation)
+    setValidationErrors({});      // Check consent first (most important validation)
     if (!formData.consentToAdminister) {
-      setValidationErrors({ consent: "Consent is required to submit medication request" });
-      alert("⚠️ CONSENT REQUIRED\n\nYou must provide consent for the school to administer medication to your child. Please check the consent checkbox at the bottom of the form before submitting your request.");
+      setValidationErrors({ consent: "Cần có sự đồng ý để gửi yêu cầu thuốc" });
+      alert("⚠️ CẦN SỰ ĐỒNG Ý\n\nBạn phải đồng ý cho nhà trường cấp thuốc cho con của bạn. Vui lòng đánh dấu vào ô đồng ý ở cuối biểu mẫu trước khi gửi yêu cầu của bạn.");
       // Scroll to consent section
       const consentElement = document.getElementById('consentToAdminister');
       if (consentElement) {
@@ -199,35 +197,27 @@ function MedicationRequest() {
         consentElement.focus();
       }
       return;
-    }
-
-    // Validate other required fields
+    }    // Validate other required fields
     if (
       !formData.studentId ||
       !formData.startDate ||
       !formData.endDate
     ) {
-      alert("Please fill in all required fields (Student, Start Date, End Date).");
+      alert("Vui lòng điền vào tất cả các trường bắt buộc (Học sinh, Ngày bắt đầu, Ngày kết thúc).");
       return;
-    }
-
-    // Validate medications
+    }    // Validate medications
     if (formData.medications.length === 0) {
-      alert("Please add at least one medication.");
+      alert("Vui lòng thêm ít nhất một loại thuốc.");
       return;
-    }
-
-    // Check each medication
+    }    // Check each medication
     const invalidMedications = formData.medications.filter(
       med => !med.medicationName || !med.dosage || med.timeOfDay.length === 0
     );
 
     if (invalidMedications.length > 0) {
-      alert("Please complete all required fields for each medication.");
+      alert("Vui lòng hoàn thành tất cả các trường bắt buộc cho mỗi loại thuốc.");
       return;
-    }
-
-    // For prescription medications, require prescription documentation
+    }    // For prescription medications, require prescription documentation
     const hasPrescriptionMeds = formData.medications.some(med => med.medicationType === "prescription");
     if (
       hasPrescriptionMeds &&
@@ -235,13 +225,11 @@ function MedicationRequest() {
       formData.prescriptionDocuments.length === 0
     ) {
       alert(
-        "Please upload a prescription document for prescription medications."
+        "Vui lòng tải lên tài liệu đơn thuốc cho các thuốc kê đơn."
       );
       return;
-    }
-
-    // In a real app, this would submit to an API
-    alert("Medication request submitted successfully!");
+    }    // In a real app, this would submit to an API
+    alert("Yêu cầu thuốc đã được gửi thành công!");
 
     // Reset form or redirect
     // setFormData({ ... }); // Reset form
@@ -275,12 +263,11 @@ function MedicationRequest() {
 
         <form onSubmit={handleSubmit}>
           {/* Student Selection */}
-          <div className="mb-6">
-            <label
+          <div className="mb-6">            <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="studentId"
             >
-              Student <span className="text-red-500">*</span>
+              Học sinh <span className="text-red-500">*</span>
             </label>
             <select
               id="studentId"
@@ -518,9 +505,8 @@ function MedicationRequest() {
               />
             </div>
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Upload Prescription Documents{" "}
+          <div className="mb-6">            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Tải lên Tài liệu Đơn thuốc{" "}
               {formData.medicationType === "prescription" && (
                 <span className="text-red-500">*</span>
               )}
@@ -546,7 +532,7 @@ function MedicationRequest() {
                     htmlFor="prescriptionDocuments"
                     className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                   >
-                    <span>Upload files</span>
+                    <span>Tải lên tệp</span>
                     <input
                       id="prescriptionDocuments"
                       name="prescriptionDocuments"
@@ -557,19 +543,17 @@ function MedicationRequest() {
                       accept="image/*,.pdf,.doc,.docx"
                     />
                   </label>
-                  <p className="pl-1">or drag and drop</p>
-                </div>
-                <p className="text-xs text-gray-500">
-                  PDF, PNG, JPG, DOC up to 10MB
+                  <p className="pl-1">hoặc kéo và thả</p>
+                </div>                <p className="text-xs text-gray-500">
+                  PDF, PNG, JPG, DOC tối đa 10MB
                 </p>
               </div>
             </div>
 
             {/* Display uploaded documents */}
             {formData.prescriptionDocuments.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Uploaded Documents
+              <div className="mt-4">                <h3 className="text-sm font-medium text-gray-700 mb-2">
+                  Tài liệu đã tải lên
                 </h3>
                 <ul className="border rounded-md divide-y divide-gray-200">
                   {formData.prescriptionDocuments.map((file, index) => (
@@ -594,25 +578,22 @@ function MedicationRequest() {
                           {file.name} ({formatFileSize(file.size)})
                         </span>
                       </div>
-                      <div className="ml-4 flex-shrink-0">
-                        <button
+                      <div className="ml-4 flex-shrink-0">                        <button
                           type="button"
                           className="font-medium text-red-600 hover:text-red-500"
                           onClick={() => handleRemoveDocument(index)}
                         >
-                          Remove
+                          Xóa
                         </button>
                       </div>
                     </li>
                   ))}
                 </ul>
               </div>
-            )}
-
-            <p className="text-sm text-gray-500 mt-2">
+            )}            <p className="text-sm text-gray-500 mt-2">
               {formData.medicationType === "prescription"
-                ? "Please upload a clear image of the prescription or doctor's note. Required for all prescription medications."
-                : "For over-the-counter medications, a prescription is not required but any relevant documentation can be uploaded."}
+                ? "Vui lòng tải lên hình ảnh rõ ràng của đơn thuốc hoặc giấy chỉ định của bác sĩ. Bắt buộc đối với tất cả thuốc kê đơn."
+                : "Đối với thuốc không kê đơn, đơn thuốc không bắt buộc nhưng có thể tải lên bất kỳ tài liệu liên quan nào."}
             </p>
           </div>
           {/* Health Information Section */}
@@ -620,19 +601,18 @@ function MedicationRequest() {
 
 
 
-          <div className="mb-6">
-            <label
+          <div className="mb-6">            <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="sideEffects"
             >
-              Possible Side Effects to Watch For
+              Tác dụng phụ có thể xảy ra cần theo dõi
             </label>
             <textarea
               id="sideEffects"
               name="sideEffects"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               rows="2"
-              placeholder="List any side effects that the school nurse should monitor for"
+              placeholder="Liệt kê bất kỳ tác dụng phụ nào mà y tá trường cần theo dõi"
               value={formData.sideEffects}
               onChange={handleChange}
             ></textarea>          </div>
@@ -643,19 +623,18 @@ function MedicationRequest() {
 
 
 
-          <div className="mb-6">
-            <label
+          <div className="mb-6">            <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="additionalNotes"
             >
-              Additional Notes
+              Ghi chú bổ sung
             </label>
             <textarea
               id="additionalNotes"
               name="additionalNotes"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               rows="3"
-              placeholder="Any additional information the school nurse should know"
+              placeholder="Bất kỳ thông tin bổ sung nào mà y tá trường cần biết"
               value={formData.additionalNotes}
               onChange={handleChange}
             ></textarea>
@@ -667,9 +646,8 @@ function MedicationRequest() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
                 </svg>
               </div>
-              <div className="ml-3 flex-1">
-                <h3 className="text-lg font-bold text-red-800 mb-3">
-                  REQUIRED: Parent/Guardian Consent
+              <div className="ml-3 flex-1">                <h3 className="text-lg font-bold text-red-800 mb-3">
+                  BẮT BUỘC: Sự Đồng Ý của Phụ huynh/Người Giám hộ
                 </h3>
                 <div className="flex items-start">
                   <input
@@ -684,22 +662,20 @@ function MedicationRequest() {
                   <label
                     className="ml-3 block text-gray-800 leading-relaxed"
                     htmlFor="consentToAdminister"
-                  >
-                    <span className="font-bold text-red-800">I hereby give my consent</span> for the school
-                    nurse or designated personnel to administer the medication(s) listed above to my child as
-                    directed. I understand that:
+                  >                    <span className="font-bold text-red-800">Tôi đồng ý</span> cho y tá trường
+                    hoặc nhân viên được chỉ định cấp thuốc được liệt kê ở trên cho con tôi theo
+                    chỉ dẫn. Tôi hiểu rằng:
                     <ul className="list-disc list-inside mt-2 ml-4 space-y-1 text-sm text-gray-700">
-                      <li>The school administrator may designate other qualified personnel to administer medication</li>
-                      <li>All medication must be provided in original, labeled containers</li>
-                      <li>I am responsible for ensuring adequate medication supply</li>
-                      <li>This consent is valid for the dates specified above</li>
+                      <li>Quản trị viên trường có thể chỉ định nhân viên có trình độ khác để cấp thuốc</li>
+                      <li>Tất cả thuốc phải được cung cấp trong hộp đựng gốc có nhãn</li>
+                      <li>Tôi có trách nhiệm đảm bảo cung cấp đủ thuốc</li>
+                      <li>Sự đồng ý này có hiệu lực cho các ngày được chỉ định ở trên</li>
                     </ul>
                   </label>
                 </div>
                 {!formData.consentToAdminister && (
-                  <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">
-                    <p className="text-sm font-medium text-red-800">
-                      ⚠️ Consent is required to submit this medication request. Please check the box above to provide your consent.
+                  <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">                    <p className="text-sm font-medium text-red-800">
+                      ⚠️ Cần có sự đồng ý để gửi yêu cầu thuốc này. Vui lòng đánh dấu vào ô trên để đồng ý.
                     </p>
                   </div>
                 )}
@@ -711,7 +687,7 @@ function MedicationRequest() {
               to="/parent/medications"
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
             >
-              Cancel
+              Hủy
             </Link>
             <div className="flex flex-col items-end">
               <button
@@ -720,14 +696,12 @@ function MedicationRequest() {
                 className={`font-medium py-2 px-6 rounded transition duration-150 ease-in-out ${formData.consentToAdminister
                   ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                title={!formData.consentToAdminister ? "Please provide consent before submitting" : "Submit medication request"}
+                  }`}                title={!formData.consentToAdminister ? "Vui lòng đồng ý trước khi gửi" : "Gửi yêu cầu thuốc"}
               >
-                Submit Request
+                Gửi Yêu Cầu
               </button>
-              {!formData.consentToAdminister && (
-                <p className="text-xs text-red-600 mt-1 font-medium">
-                  Consent required to submit
+              {!formData.consentToAdminister && (                <p className="text-xs text-red-600 mt-1 font-medium">
+                  Cần có sự đồng ý để gửi
                 </p>
               )}
             </div>
@@ -735,8 +709,7 @@ function MedicationRequest() {
         </form>
       </div>
 
-      {/* Help Info */}
-      <div className="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4">
+      {/* Help Info */}      <div className="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
@@ -754,10 +727,9 @@ function MedicationRequest() {
           </div>
           <div className="ml-3">
             <p className="text-sm text-blue-700">
-              All medication must be provided in the original labeled container.
-              Over-the-counter medication must be in an unopened container. All
-              medication requests will be reviewed by the school nurse before
-              approval.
+              Tất cả thuốc phải được cung cấp trong hộp đựng có nhãn gốc.
+              Thuốc không kê đơn phải ở trong hộp chưa mở.
+              Tất cả các yêu cầu thuốc sẽ được y tá trường xem xét trước khi phê duyệt.
             </p>
           </div>
         </div>

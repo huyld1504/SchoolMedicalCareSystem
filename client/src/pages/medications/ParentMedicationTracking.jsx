@@ -118,14 +118,14 @@ function ParentMedicationTracking() {
   // Request medication refill
   const handleRefillRequest = (id) => {
     // In a real app, this would send a request to the server
-    alert("Refill request sent to the school nurse.");
+    alert("Yêu cầu bổ sung thuốc đã được gửi tới y tá trường.");
   };
 
   // Cancel medication
   const handleCancelMedication = (id) => {
     if (
       window.confirm(
-        "Are you sure you want to cancel this medication administration request?"
+        "Bạn có chắc chắn muốn hủy yêu cầu cấp thuốc này không?"
       )
     ) {
       // In a real app, this would send a request to the server
@@ -140,7 +140,7 @@ function ParentMedicationTracking() {
         setSelectedMedication({ ...selectedMedication, status: "Cancelled" });
       }
 
-      alert("Medication administration has been cancelled.");
+      alert("Việc cấp thuốc đã được hủy.");
     }
   };
 
@@ -154,8 +154,8 @@ function ParentMedicationTracking() {
         notificationsList.push({
           id: `${med.id}-supply`,
           type: "warning",
-          title: "Low Medication Supply",
-          message: `${med.studentName}'s ${med.medication} is running low (${med.remainingDoses} doses left). Please send a refill.`,
+          title: "Thiếu thuốc",
+          message: `${med.studentName} đang sắp hết thuốc ${med.medication} (còn ${med.remainingDoses} liều). Vui lòng gửi thuốc bổ sung.`,
           date: new Date().toLocaleDateString(),
           read: false,
           action: "refill",
@@ -175,8 +175,8 @@ function ParentMedicationTracking() {
           notificationsList.push({
             id: `${med.id}-expiry`,
             type: "info",
-            title: "Medication Expiring Soon",
-            message: `${med.studentName}'s ${med.medication} will expire in ${daysUntilExpiry} days. Consider renewing if needed.`,
+            title: "Thuốc sắp hết hạn",
+            message: `Thuốc ${med.medication} của ${med.studentName} sẽ hết hạn trong ${daysUntilExpiry} ngày. Cân nhắc gia hạn nếu cần thiết.`,
             date: new Date().toLocaleDateString(),
             read: false,
             action: "renew",
@@ -564,8 +564,7 @@ function ParentMedicationTracking() {
                         )}
                       </svg>
                     </div>
-                    <div className="ml-3">
-                      <h3
+                    <div className="ml-3">                      <h3
                         className={`text-sm font-medium ${selectedMedication.status === "Active"
                             ? "text-green-800"
                             : selectedMedication.status === "Low Supply"
@@ -577,7 +576,7 @@ function ParentMedicationTracking() {
                                   : "text-blue-800"
                           }`}
                       >
-                        Status: {selectedMedication.status === "Active" ? "Đang hoạt động" :
+                        Trạng thái: {selectedMedication.status === "Active" ? "Đang hoạt động" :
                           selectedMedication.status === "Low Supply" ? "Sắp hết" :
                             selectedMedication.status === "Expired" ? "Đã hết hạn" :
                               selectedMedication.status === "Cancelled" ? "Đã hủy" :
@@ -625,56 +624,48 @@ function ParentMedicationTracking() {
                 {/* Medication Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Dosage</p>
+                    <p className="text-sm font-medium text-gray-500">Liều lượng</p>
                     <p className="mt-1">{selectedMedication.dosage}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Frequency
+                  <div>                    <p className="text-sm font-medium text-gray-500">
+                      Tần suất
                     </p>
                     <p className="mt-1">{selectedMedication.frequency}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Start Date
+                  <div>                    <p className="text-sm font-medium text-gray-500">
+                      Ngày bắt đầu
                     </p>
                     <p className="mt-1">{selectedMedication.startDate}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      End Date
+                  <div>                    <p className="text-sm font-medium text-gray-500">
+                      Ngày kết thúc
                     </p>
                     <p className="mt-1">{selectedMedication.endDate}</p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Remaining Supply
+                  <div>                    <p className="text-sm font-medium text-gray-500">
+                      Số lượng còn lại
                     </p>
                     <p
                       className={`mt-1 ${selectedMedication.remainingDoses <= 3
                           ? "text-red-600 font-medium"
                           : ""
                         }`}
-                    >
-                      {selectedMedication.remainingDoses !== null
-                        ? `${selectedMedication.remainingDoses} doses`
-                        : "N/A"}
+                    >                      {selectedMedication.remainingDoses !== null
+                        ? `${selectedMedication.remainingDoses} liều`
+                        : "Không có"}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">
-                      Last Administered
+                  <div>                    <p className="text-sm font-medium text-gray-500">
+                      Uống lần cuối
                     </p>
-                    <p className="mt-1">
-                      {selectedMedication.lastAdministered ||
-                        "Not yet administered"}
+                    <p className="mt-1">                      {selectedMedication.lastAdministered ||
+                        "Chưa được uống"}
                     </p>
                   </div>
                 </div>
 
-                <div className="mb-6">
-                  <p className="text-sm font-medium text-gray-500">
-                    Instructions
+                <div className="mb-6">                  <p className="text-sm font-medium text-gray-500">
+                    Hướng dẫn sử dụng
                   </p>
                   <p className="mt-1 text-gray-900">
                     {selectedMedication.instructions}
@@ -683,9 +674,8 @@ function ParentMedicationTracking() {
 
                 {/* Administration History */}
                 {selectedMedication.administrationHistory.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-md font-semibold mb-3">
-                      Recent Administration History
+                  <div className="mb-6">                    <h3 className="text-md font-semibold mb-3">
+                      Lịch sử uống thuốc gần đây
                     </h3>
                     <div className="bg-gray-50 rounded-md overflow-hidden">
                       <ul className="divide-y divide-gray-200">
@@ -715,23 +705,20 @@ function ParentMedicationTracking() {
 
                 {/* Renewal form appears conditionally */}
                 {showRenew && selectedMedication.status !== "Cancelled" && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-                    <h3 className="text-md font-semibold mb-3">
-                      Renew Medication
+                  <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">                    <h3 className="text-md font-semibold mb-3">
+                      Gia hạn thuốc
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          New Start Date
+                      <div>                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Ngày bắt đầu mới
                         </label>
                         <input
                           type="date"
                           className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          New End Date
+                      <div>                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Ngày kết thúc mới
                         </label>
                         <input
                           type="date"
@@ -739,9 +726,8 @@ function ParentMedicationTracking() {
                         />
                       </div>
                     </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Upload New Prescription
+                    <div className="mb-4">                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Tải lên đơn thuốc mới
                       </label>
                       <input
                         type="file"
@@ -753,10 +739,9 @@ function ParentMedicationTracking() {
                         onClick={() => setShowRenew(false)}
                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                       >
-                        Cancel
-                      </button>
-                      <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
-                        Submit Renewal
+                        Hủy
+                      </button>                      <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                        Gửi yêu cầu gia hạn
                       </button>
                     </div>
                   </div>
@@ -783,7 +768,7 @@ function ParentMedicationTracking() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      Request Refill
+                      Yêu cầu bổ sung
                     </button>
                   )}
 
@@ -805,7 +790,7 @@ function ParentMedicationTracking() {
                             clipRule="evenodd"
                           />
                         </svg>
-                        {showRenew ? "Hide Renewal Form" : "Renew Medication"}
+                        {showRenew ? "Ẩn form gia hạn" : "Gia hạn thuốc"}
                       </button>
                     )}
 
@@ -826,7 +811,7 @@ function ParentMedicationTracking() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      View Schedule
+                      Xem lịch trình
                     </Link>
                   )}
 
@@ -849,7 +834,7 @@ function ParentMedicationTracking() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      Cancel Medication
+                      Hủy thuốc
                     </button>
                   )}
                 </div>
@@ -869,13 +854,12 @@ function ParentMedicationTracking() {
                   strokeWidth={2}
                   d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                 />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No medication selected
+              </svg>              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                Chưa chọn thuốc nào
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Select a medication from the list to view details, or request a
-                new medication.
+                Chọn một loại thuốc từ danh sách để xem chi tiết, hoặc yêu cầu
+                thuốc mới.
               </p>
             </div>
           )}
@@ -897,12 +881,11 @@ function ParentMedicationTracking() {
                 clipRule="evenodd"
               />
             </svg>
-          </div>
-          <div className="ml-3">
+          </div>          <div className="ml-3">
             <p className="text-sm text-blue-700">
-              Please send medication refills to the school at least one week
-              before your child runs out. All medications must be in their
-              original containers with valid prescription labels.
+              Vui lòng gửi thuốc bổ sung đến trường ít nhất một tuần 
+              trước khi con bạn hết thuốc. Tất cả các loại thuốc phải được đựng trong 
+              hộp gốc với nhãn thuốc hợp lệ.
             </p>
           </div>
         </div>

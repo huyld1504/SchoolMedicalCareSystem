@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 
 function ManagerDashboard() {
-    const { currentUser } = useAuth();    // Health-related statistics data
+    const { currentUser } = useAuth();    // Thống kê liên quan đến sức khỏe
     const [stats, setStats] = useState({
         totalStudents: 854,
         studentsWithHealthIssues: 67,
@@ -22,43 +22,41 @@ function ManagerDashboard() {
         allergiesTracked: 124
     });
 
-    // Upcoming health events
+    // Upcoming health events    
     const [events, setEvents] = useState([
-        { id: 1, title: "Dental Screening - Grade 3", date: "May 22, 2025", location: "Health Center", status: "scheduled" },
-        { id: 2, title: "Vision Screening - Grade 5", date: "May 24, 2025", location: "Room 105", status: "scheduled" },
-        { id: 3, title: "Influenza Vaccination Drive", date: "May 28, 2025", location: "School Gymnasium", status: "preparation" },
-        { id: 4, title: "Staff Health & Safety Training", date: "June 2, 2025", location: "Conference Room", status: "scheduled" }
+        { id: 1, title: "Khám răng - Lớp 3", date: "22/05/2025", location: "Trung tâm Y tế", status: "đã lên lịch" },
+        { id: 2, title: "Khám mắt - Lớp 5", date: "24/05/2025", location: "Phòng 105", status: "đã lên lịch" },
+        { id: 3, title: "Chiến dịch tiêm phòng cúm", date: "28/05/2025", location: "Phòng tập thể dục", status: "đang chuẩn bị" },
+        { id: 4, title: "Đào tạo An toàn & Sức khỏe cho nhân viên", date: "02/06/2025", location: "Phòng họp", status: "đã lên lịch" }
     ]);
 
-    // Medical supplies inventory
+    // Medical supplies inventory    
     const [resources, setResources] = useState([
-        { id: 1, name: "First Aid Kits", available: 24, alert: false },
-        { id: 2, name: "Epinephrine Auto-injectors", available: 15, alert: false },
-        { id: 3, name: "Asthma Inhalers", available: 8, alert: true },
-        { id: 4, name: "Thermometers", available: 35, alert: false },
-        { id: 5, name: "Bandages & Dressings", available: 120, alert: false }
+        { id: 1, name: "Bộ sơ cứu", available: 24, alert: false },
+        { id: 2, name: "Ống tiêm Epinephrine tự động", available: 15, alert: false },
+        { id: 3, name: "Ống hít cho bệnh hen suyễn", available: 8, alert: true },
+        { id: 4, name: "Nhiệt kế", available: 35, alert: false },
+        { id: 5, name: "Băng gạc & Dụng cụ băng bó", available: 120, alert: false }
     ]);
 
-    // Recent health-related staff activities
+    // Recent health-related staff activities    
     const [staffActivities, setStaffActivities] = useState([
-        { id: 1, name: "Dr. Sarah Chen", role: "School Physician", action: "Conducted health check-up for 12 students", time: "1 hour ago" },
-        { id: 2, name: "Nurse Michael Rodriguez", role: "Head School Nurse", action: "Updated vaccination records for Grade 2", time: "3 hours ago" },
-        { id: 3, name: "Nurse Emily Clark", role: "School Nurse", action: "Administered medications to 8 students", time: "5 hours ago" },
-        { id: 4, name: "David Wilson", role: "Health Coordinator", action: "Created new health awareness campaign", time: "Yesterday" }
-    ]);    // Health alerts and notices
-    const [healthAlerts, setHealthAlerts] = useState([
-        { id: 1, title: "Seasonal Allergies Alert", level: "moderate", description: "Increased cases of seasonal allergies reported. Ensure medication is available for affected students." },
-        { id: 2, title: "Medical Supplies Restock", level: "low", description: "Asthma inhalers running low. Please order more supplies." },
-        { id: 3, title: "Influenza Cases Detected", level: "high", description: "3 confirmed cases of Influenza A in Grade 4. Monitor students for symptoms." },
-        { id: 4, title: "Health Screening Reminder", level: "info", description: "Annual vision screening for Grades 1-3 due next week. Prepare documentation." }
+        { id: 1, name: "Bác sĩ Sarah Chen", role: "Bác sĩ trường học", action: "Đã khám sức khỏe cho 12 học sinh", time: "1 giờ trước" },
+        { id: 2, name: "Y tá Michael Rodriguez", role: "Y tá trưởng", action: "Cập nhật hồ sơ tiêm chủng cho Lớp 2", time: "3 giờ trước" },
+        { id: 3, name: "Y tá Emily Clark", role: "Y tá trường học", action: "Đã cấp thuốc cho 8 học sinh", time: "5 giờ trước" },
+        { id: 4, name: "David Wilson", role: "Điều phối viên Y tế", action: "Tạo chiến dịch nâng cao nhận thức sức khỏe mới", time: "Hôm qua" }
+    ]);// Health alerts and notices
+    const [healthAlerts, setHealthAlerts] = useState([        { id: 1, title: "Cảnh báo dị ứng theo mùa", level: "moderate", description: "Tăng số ca dị ứng theo mùa. Đảm bảo có sẵn thuốc cho học sinh bị ảnh hưởng." },
+        { id: 2, title: "Bổ sung vật tư y tế", level: "low", description: "Ống hít hen suyễn sắp hết. Vui lòng đặt thêm vật tư." },
+        { id: 3, title: "Phát hiện các ca cúm", level: "high", description: "3 ca xác nhận cúm A ở Lớp 4. Theo dõi các học sinh có triệu chứng." },
+        { id: 4, title: "Nhắc nhở khám sức khỏe", level: "info", description: "Khám sàng lọc thị lực hàng năm cho Lớp 1-3 vào tuần tới. Chuẩn bị hồ sơ." }
     ]);
 
     // Recent medical incidents
-    const [incidents, setIncidents] = useState([
-        { id: 1, student: "Oliver Thompson", grade: "4th", type: "Minor Injury", description: "Scraped knee during recess", status: "treated", time: "Today, 10:45 AM" },
-        { id: 2, student: "Emma Rodriguez", grade: "6th", type: "Asthma", description: "Mild asthma attack after PE", status: "monitored", time: "Today, 9:15 AM" },
-        { id: 3, student: "Noah Chen", grade: "2nd", type: "Allergic Reaction", description: "Mild skin rash, possible food allergy", status: "treated", time: "Yesterday, 1:30 PM" },
-        { id: 4, student: "Sophia Williams", grade: "5th", type: "Fever", description: "Temperature of 100.4°F, sent home", status: "referred", time: "Yesterday, 11:20 AM" }
+    const [incidents, setIncidents] = useState([        { id: 1, student: "Oliver Thompson", grade: "Lớp 4", type: "Chấn thương nhẹ", description: "Trầy đầu gối trong giờ ra chơi", status: "đã điều trị", time: "Hôm nay, 10:45" },
+        { id: 2, student: "Emma Rodriguez", grade: "Lớp 6", type: "Hen suyễn", description: "Cơn hen nhẹ sau giờ thể dục", status: "đang theo dõi", time: "Hôm nay, 9:15" },
+        { id: 3, student: "Noah Chen", grade: "Lớp 2", type: "Phản ứng dị ứng", description: "Phát ban nhẹ trên da, có thể do dị ứng thức ăn", status: "đã điều trị", time: "Hôm qua, 13:30" },
+        { id: 4, student: "Sophia Williams", grade: "Lớp 5", type: "Sốt", description: "Nhiệt độ 38°C, đã cho về nhà", status: "đã chuyển tuyến", time: "Hôm qua, 11:20" }
     ]);
 
     return (
@@ -150,6 +148,7 @@ function ManagerDashboard() {
                         </div>
                         <div className="mt-2 text-xs text-green-600">
                             Bao gồm hen suyễn, bệnh theo mùa
+                            Bao gồm hen suyễn, bệnh theo mùa
                         </div>
                     </div>
 
@@ -164,6 +163,7 @@ function ManagerDashboard() {
                         </div>
                         <div className="mt-2 text-xs text-purple-600">
                             Tiểu đường, động kinh, bệnh tim
+                            Tiểu đường, động kinh, bệnh tim
                         </div>
                     </div>
 
@@ -177,6 +177,7 @@ function ManagerDashboard() {
                             <span className="text-xs text-amber-600 font-medium">Tỷ lệ nghỉ học</span>
                         </div>
                         <div className="mt-2 text-xs text-amber-600">
+                            <span className="text-amber-700">↑1.1%</span> so với tuần trước
                             <span className="text-amber-700">↑1.1%</span> so với tuần trước
                         </div>
                     </div>
@@ -295,6 +296,7 @@ function ManagerDashboard() {
                 <div className="bg-white rounded-lg shadow">
                     <div className="p-4 border-b border-gray-200">
                         <h2 className="text-lg font-semibold text-gray-800">Hoạt động của nhân viên y tế</h2>
+                        <h2 className="text-lg font-semibold text-gray-800">Hoạt động của nhân viên y tế</h2>
                     </div>
                     <div className="p-4">
                         <ul className="divide-y divide-gray-200">
@@ -312,6 +314,7 @@ function ManagerDashboard() {
                             ))}
                         </ul>                        <div className="mt-3">
                             <Link to="/manager/staff" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center">
+                                Xem tất cả nhân viên y tế
                                 Xem tất cả nhân viên y tế
                                 <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>

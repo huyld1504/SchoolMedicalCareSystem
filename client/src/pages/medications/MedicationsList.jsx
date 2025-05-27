@@ -197,14 +197,12 @@ function MedicationsList() {
                       <div className="text-sm text-gray-500">
                         {med.frequency}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </td>                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {med.startDate} to {med.endDate}
+                        {med.startDate} đến {med.endDate}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
+                    <td className="px-6 py-4 whitespace-nowrap">                      <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${med.status === "Active"
                             ? "bg-green-100 text-green-800"
                             : med.status === "Completed"
@@ -212,7 +210,9 @@ function MedicationsList() {
                               : "bg-yellow-100 text-yellow-800"
                           }`}
                       >
-                        {med.status}
+                        {med.status === "Active" ? "Đang sử dụng" : 
+                         med.status === "Completed" ? "Đã hoàn thành" : 
+                         med.status === "Pending" ? "Chờ phê duyệt" : med.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">                      <button

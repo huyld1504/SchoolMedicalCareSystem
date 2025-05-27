@@ -117,10 +117,9 @@ function MedicalEventReports() {
   
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Medical Event Reports</h1>
+      <div className="mb-6">        <h1 className="text-2xl font-bold">Báo cáo Sự kiện Y tế</h1>
         <p className="text-gray-600">
-          Analyze medical events and identify trends
+          Phân tích sự kiện y tế và xác định xu hướng
         </p>
       </div>
       
@@ -129,7 +128,7 @@ function MedicalEventReports() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
+              Ngày bắt đầu
             </label>
             <input
               type="date"
@@ -142,7 +141,7 @@ function MedicalEventReports() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
+              Ngày kết thúc
             </label>
             <input
               type="date"
@@ -154,11 +153,10 @@ function MedicalEventReports() {
           </div>
           
           <div className="flex items-end">
-            <button
-              onClick={updateReport}
+            <button              onClick={updateReport}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Update Report
+              Cập nhật Báo cáo
             </button>
           </div>
         </div>
@@ -168,10 +166,10 @@ function MedicalEventReports() {
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <div className="bg-white p-6 rounded shadow">
-            <h3 className="text-lg font-semibold mb-2">Total Events</h3>
+            <h3 className="text-lg font-semibold mb-2">Tổng số Sự kiện</h3>
             <p className="text-3xl font-bold">{stats.totalEvents}</p>
             <p className="text-sm text-gray-500 mt-2">
-              {dateRange.startDate} to {dateRange.endDate}
+            {dateRange.startDate} to {dateRange.endDate}
             </p>
           </div>
           

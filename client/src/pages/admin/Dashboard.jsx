@@ -120,8 +120,7 @@ function AdminDashboard() {
             </p>
         </div>{/* Quick Access Top Bar */}
             <div className="bg-white rounded-lg shadow p-4 mb-8">
-                <div className="flex flex-wrap justify-between items-center">
-                    <Link to="/admin/users" className="flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-150">
+                <div className="flex flex-wrap justify-between items-center">                    <Link to="/admin/users" className="flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition duration-150">
                         <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z"></path>
                         </svg>
@@ -140,9 +139,7 @@ function AdminDashboard() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065z"></path>
                         </svg>
                         <span className="text-gray-900 font-medium">Cài đặt</span>
-                    </Link>
-
-                    <Link to="/admin/reports" className="flex items-center px-4 py-2 bg-purple-50 hover:bg-purple-100 rounded-lg transition duration-150">
+                    </Link>                    <Link to="/admin/reports" className="flex items-center px-4 py-2 bg-purple-50 hover:bg-purple-100 rounded-lg transition duration-150">
                         <svg className="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -160,8 +157,7 @@ function AdminDashboard() {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white rounded-lg shadow p-6">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="bg-white rounded-lg shadow p-6">                    <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold">Tổng số người dùng</h3>
                         <div className="p-2 bg-blue-100 rounded-full">
                             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -170,9 +166,7 @@ function AdminDashboard() {
                         </div>
                     </div>
                     <p className="text-3xl font-bold">{stats.totalUsers}</p>                    <p className="text-sm text-gray-500 mt-2">Trên tất cả loại người dùng</p>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-6">
+                </div>                <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold">Người dùng đang hoạt động</h3>
                         <div className="p-2 bg-green-100 rounded-full">
@@ -181,7 +175,8 @@ function AdminDashboard() {
                             </svg>
                         </div>
                     </div>
-                    <p className="text-3xl font-bold">{stats.activeUsers}</p>                    <p className="text-sm text-gray-500 mt-2">Tài khoản đang hoạt động hiện tại</p>
+                    <p className="text-3xl font-bold">{stats.activeUsers}</p>
+                    <p className="text-sm text-gray-500 mt-2">Tài khoản đang hoạt động hiện tại</p>
                 </div>
 
                 <div className="bg-white rounded-lg shadow p-6">
@@ -214,8 +209,7 @@ function AdminDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* System Health */}
-                <div className="lg:col-span-1 bg-white rounded-lg shadow">
-                    <div className="p-6 border-b">
+                <div className="lg:col-span-1 bg-white rounded-lg shadow">                    <div className="p-6 border-b">
                         <h2 className="text-xl font-semibold">Tình trạng hệ thống</h2>
                     </div>
                     <div className="p-6">
@@ -225,12 +219,10 @@ function AdminDashboard() {
                                 <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
                                     {systemHealth.status}
                                 </span>
-                            </div>
-                            <div className="flex justify-between items-center">
+                            </div>                            <div className="flex justify-between items-center">
                                 <span className="text-gray-600">Thời gian hoạt động</span>
                                 <span className="text-gray-800 font-medium">{systemHealth.uptime}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
+                            </div>                            <div className="flex justify-between items-center">
                                 <span className="text-gray-600">Sao lưu gần nhất</span>
                                 <span className="text-gray-800 font-medium">{systemHealth.lastBackup}</span>
                             </div>
@@ -274,10 +266,9 @@ function AdminDashboard() {
                 </div>
 
                 {/* Recent Activities */}
-                <div className="lg:col-span-2 bg-white rounded-lg shadow">
-                    <div className="p-6 border-b">
+                <div className="lg:col-span-2 bg-white rounded-lg shadow">                    <div className="p-6 border-b">
                         <h2 className="text-xl font-semibold">Hoạt động gần đây</h2>
-                    </div>                    <div className="p-6">
+                    </div><div className="p-6">
                         <div className="space-y-4">
                             {recentActivities.map(activity => (
                                 <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
@@ -322,8 +313,7 @@ function AdminDashboard() {
                 <h2 className="text-xl font-semibold mb-4">Bảng điều khiển Báo cáo</h2>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="col-span-1 md:col-span-2">
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 h-full">
-                            <h3 className="font-medium mb-4 flex items-center text-gray-900">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 h-full">                            <h3 className="font-medium mb-4 flex items-center text-gray-900">
                                 <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                 </svg>
@@ -337,12 +327,10 @@ function AdminDashboard() {
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Báo cáo thuốc</span>
                                     <span className="font-medium">42</span>
-                                </div>
-                                <div className="flex justify-between">
+                                </div>                                <div className="flex justify-between">
                                     <span className="text-gray-600">Báo cáo tiêm chủng</span>
                                     <span className="font-medium">18</span>
-                                </div>
-                                <div className="flex justify-between">
+                                </div>                                <div className="flex justify-between">
                                     <span className="text-gray-600">Báo cáo sự cố</span>
                                     <span className="font-medium">7</span>
                                 </div>
@@ -356,8 +344,7 @@ function AdminDashboard() {
                     </div>
 
                     <div className="col-span-1 md:col-span-2">
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 h-full">
-                            <h3 className="font-medium mb-4 flex items-center text-gray-900">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 h-full">                            <h3 className="font-medium mb-4 flex items-center text-gray-900">
                                 <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
                                 </svg>
@@ -393,8 +380,7 @@ function AdminDashboard() {
                 </div>
             </div>
             {/* Report Generation Features */}
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-                <h2 className="text-xl font-semibold mb-4">Tạo báo cáo</h2>
+            <div className="bg-white rounded-lg shadow p-6 mb-8">                <h2 className="text-xl font-semibold mb-4">Tạo báo cáo</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="border border-gray-200 rounded-lg p-5">
                         <h3 className="font-medium mb-4">Tạo báo cáo mới</h3>

@@ -236,13 +236,12 @@ function HealthCheckConsentForm() {
         </div>
 
         {/* Medical Information */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-bold mb-4">
-            Relevant Medical Information
+        <div className="bg-white rounded-lg shadow p-6 mb-6">          <h2 className="text-lg font-bold mb-4">
+            Thông tin Y tế Liên quan
           </h2>
           <p className="mb-4 text-gray-600">
-            Please provide any relevant medical information that may be
-            important for the health check.
+            Vui lòng cung cấp bất kỳ thông tin y tế liên quan nào có thể
+            quan trọng cho việc khám sức khỏe.
           </p>
 
           <div className="space-y-4">
@@ -251,68 +250,65 @@ function HealthCheckConsentForm() {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="allergies"
               >
-                Allergies
+                Dị ứng
               </label>
               <textarea
                 id="allergies"
                 name="allergies"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 rows="2"
-                placeholder="List any allergies your child(ren) may have"
+                placeholder="Liệt kê bất kỳ dị ứng nào mà con bạn có thể có"
                 value={formData.allergies}
                 onChange={handleChange}
               ></textarea>
             </div>
 
             <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
+              <label                className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="medicalConditions"
               >
-                Medical Conditions
+                Tình trạng Bệnh lý
               </label>
               <textarea
                 id="medicalConditions"
                 name="medicalConditions"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 rows="2"
-                placeholder="List any medical conditions your child(ren) may have"
+                placeholder="Liệt kê bất kỳ tình trạng bệnh lý nào mà con bạn có thể có"
                 value={formData.medicalConditions}
                 onChange={handleChange}
               ></textarea>
             </div>
 
             <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
+              <label                className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="currentMedications"
               >
-                Current Medications
+                Thuốc Đang Sử dụng
               </label>
               <textarea
                 id="currentMedications"
                 name="currentMedications"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 rows="2"
-                placeholder="List any medications your child(ren) are currently taking"
+                placeholder="Liệt kê bất kỳ loại thuốc nào con bạn đang sử dụng"
                 value={formData.currentMedications}
                 onChange={handleChange}
               ></textarea>
             </div>
 
             <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
+              <label                className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="previousScreeningIssues"
               >
-                Previous Screening Issues
+                Vấn đề Khám sàng lọc Trước đây
               </label>
               <textarea
                 id="previousScreeningIssues"
                 name="previousScreeningIssues"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 rows="2"
-                placeholder="List any relevant previous health screening issues or follow-ups"
+                placeholder="Liệt kê bất kỳ vấn đề sức khỏe từ các lần khám sàng lọc trước đây hoặc theo dõi"
                 value={formData.previousScreeningIssues}
                 onChange={handleChange}
               ></textarea>
@@ -343,9 +339,8 @@ function HealthCheckConsentForm() {
           <h2 className="text-lg font-bold mb-4">
             Upload Medical Documents (Optional)
           </h2>
-          <p className="mb-4 text-gray-600">
-            You can upload any relevant medical documents for your child(ren)
-            that may assist in the health check.
+          <p className="mb-4 text-gray-600">            Bạn có thể tải lên bất kỳ tài liệu y tế liên quan nào cho con của bạn 
+            có thể hỗ trợ trong việc khám sức khỏe.
           </p>
 
           <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
@@ -477,15 +472,14 @@ function HealthCheckConsentForm() {
                 />
               </div>
               <div className="ml-3 text-sm">
-                <label
-                  htmlFor="consentToTreatment"
+                <label                  htmlFor="consentToTreatment"
                   className="font-medium text-gray-700"
                 >
-                  I consent for first aid or emergency treatment if needed
+                  Tôi đồng ý cho phép sơ cứu hoặc điều trị cấp cứu nếu cần thiết
                 </label>
                 <p className="text-gray-500">
-                  I authorize the school nurse to provide first aid or emergency
-                  treatment if necessary during the screening.
+                  Tôi ủy quyền cho y tá trường học cung cấp sơ cứu hoặc điều trị 
+                  cấp cứu nếu cần thiết trong quá trình khám sức khỏe.
                 </p>
               </div>
             </div>
