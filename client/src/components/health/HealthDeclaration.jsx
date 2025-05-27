@@ -40,14 +40,13 @@ function HealthDeclaration() {
       </nav>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold mb-6">Health Declaration Form</h2>
+        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-6">          <h2 className="text-2xl font-bold mb-6">Tờ khai Y tế</h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Temperature */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Current Temperature (°F)
+                Nhiệt độ hiện tại (°C)
               </label>
               <input
                 type="number"
@@ -62,7 +61,7 @@ function HealthDeclaration() {
             {/* Symptoms Checklist */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Current Symptoms (if any)
+                Các triệu chứng hiện tại (nếu có)
               </label>
               <div className="grid grid-cols-2 gap-4">
                 {symptoms.map((symptom) => (
@@ -95,9 +94,8 @@ function HealthDeclaration() {
                   checked={formData.contact}
                   onChange={(e) => setFormData({ ...formData, contact: e.target.checked })}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span className="ml-2 text-sm text-gray-600">
-                  Had contact with someone with COVID-19 in the past 14 days
+                />                <span className="ml-2 text-sm text-gray-600">
+                  Đã tiếp xúc với người mắc COVID-19 trong 14 ngày qua
                 </span>
               </label>
             </div>
@@ -112,7 +110,7 @@ function HealthDeclaration() {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <span className="ml-2 text-sm text-gray-600">
-                  Traveled internationally in the past 14 days
+                  Đã đi nước ngoài trong 14 ngày qua
                 </span>
               </label>
             </div>

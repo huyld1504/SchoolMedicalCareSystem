@@ -84,11 +84,9 @@ function MedicationApproval() {
   // Approve medication request
   const handleApproveRequest = (id) => {
     // Find the request to approve
-    const requestToApprove = medicationRequests.find(req => req.id === id);
-
-    // Check if consent was provided
+    const requestToApprove = medicationRequests.find(req => req.id === id);    // Check if consent was provided
     if (requestToApprove && !requestToApprove.consentToAdminister) {
-      alert("Error: Cannot approve medication request without parent consent. Please request consent from parent first.");
+      alert("Lỗi: Không thể phê duyệt yêu cầu thuốc mà không có sự đồng ý của phụ huynh. Vui lòng yêu cầu sự đồng ý từ phụ huynh trước.");
       return;
     }
 
@@ -103,7 +101,7 @@ function MedicationApproval() {
       setSelectedRequest({ ...selectedRequest, status: "approved" });
     }
 
-    alert("Medication request approved successfully.");
+    alert("Yêu cầu thuốc đã được phê duyệt thành công.");
   };
 
   // Deny medication request
@@ -125,7 +123,7 @@ function MedicationApproval() {
       });
     }
 
-    alert("Medication request denied.");
+    alert("Yêu cầu thuốc đã bị từ chối.");
   };
 
   // Request additional information
@@ -147,7 +145,7 @@ function MedicationApproval() {
       });
     }
 
-    alert("Additional information has been requested from the parent.");
+    alert("Thông tin bổ sung đã được yêu cầu từ phụ huynh.");
   };
 
   // Open prescription modal
@@ -169,22 +167,20 @@ function MedicationApproval() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Medication Request Approval</h1>
+    <div className="container mx-auto px-4 py-8">      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Phê duyệt Yêu cầu Thuốc</h1>
         <p className="text-gray-600">
-          Review and approve medication administration requests from parents
+          Xem xét và phê duyệt các yêu cầu cấp phát thuốc từ phụ huynh
         </p>
       </div>
 
       {/* Filter controls */}
-      <div className="flex flex-wrap items-center gap-4 mb-6">
-        <div>
+      <div className="flex flex-wrap items-center gap-4 mb-6">        <div>
           <label
             htmlFor="filterStatus"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Filter by Status:
+            Lọc theo Trạng thái:
           </label>
           <select
             id="filterStatus"
@@ -192,11 +188,11 @@ function MedicationApproval() {
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
-            <option value="all">All Requests</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="denied">Denied</option>
-            <option value="info-requested">Information Requested</option>
+            <option value="all">Tất cả Yêu cầu</option>
+            <option value="pending">Chờ xử lý</option>
+            <option value="approved">Đã phê duyệt</option>
+            <option value="denied">Đã từ chối</option>
+            <option value="info-requested">Yêu cầu Thông tin</option>
           </select>
         </div>
 
@@ -213,7 +209,7 @@ function MedicationApproval() {
             >
               <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
             </svg>
-            Medication Administration
+            Cấp phát Thuốc
           </Link>
         </div>
       </div>
@@ -245,9 +241,14 @@ function MedicationApproval() {
                                 ? "bg-yellow-100 text-yellow-800"
                                 : "bg-blue-100 text-blue-800"
                           }`}
-                      >
-                        {request.status === "info-requested"
-                          ? "Info Requested"
+                      >                        {request.status === "info-requested"
+                          ? "Yêu cầu Thông tin"
+                          : request.status === "pending"
+                          ? "Chờ xử lý"
+                          : request.status === "approved"
+                          ? "Đã phê duyệt"
+                          : request.status === "denied"
+                          ? "Đã từ chối"
                           : request.status.charAt(0).toUpperCase() +
                           request.status.slice(1)}
                       </span>
@@ -257,28 +258,25 @@ function MedicationApproval() {
                         {request.medication}, {request.dosage}
                       </p>
                       {request.consentToAdminister !== undefined && (
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${request.consentToAdminister
+                        <span                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${request.consentToAdminister
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
                             }`}
-                          title={request.consentToAdminister ? "Parent consent provided" : "No parent consent"}
+                          title={request.consentToAdminister ? "Phụ huynh đã đồng ý" : "Không có sự đồng ý của phụ huynh"}
                         >
-                          {request.consentToAdminister ? "Consent ✓" : "No Consent ✗"}
+                          {request.consentToAdminister ? "Đồng ý ✓" : "Không đồng ý ✗"}
                         </span>
                       )}
-                    </div>
-                    <div className="mt-2 flex justify-between text-sm">
+                    </div>                    <div className="mt-2 flex justify-between text-sm">
                       <p className="text-gray-500">
-                        Requested: {request.requestDate}
+                        Yêu cầu: {request.requestDate}
                       </p>
-                      <p className="text-gray-500">Grade: {request.grade}</p>
+                      <p className="text-gray-500">Lớp: {request.grade}</p>
                     </div>
                   </li>
                 ))
-              ) : (
-                <li className="p-4 text-center text-gray-500">
-                  No medication requests found with the selected filter.
+              ) : (                <li className="p-4 text-center text-gray-500">
+                  Không tìm thấy yêu cầu thuốc nào với bộ lọc đã chọn.
                 </li>
               )}
             </ul>
@@ -292,43 +290,41 @@ function MedicationApproval() {
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-xl font-semibold text-gray-800">
                   {selectedRequest.studentName}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  {selectedRequest.grade} | Student ID:{" "}
+                </h2>                <p className="text-sm text-gray-600">
+                  {selectedRequest.grade} | ID Học sinh:{" "}
                   {selectedRequest.studentId}
                 </p>
               </div>
 
-              <div className="px-6 py-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div className="px-6 py-4">                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Medication
+                      Thuốc
                     </p>
                     <p className="mt-1">{selectedRequest.medication}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Dosage</p>
+                    <p className="text-sm font-medium text-gray-500">Liều lượng</p>
                     <p className="mt-1">{selectedRequest.dosage}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Frequency
+                      Tần suất
                     </p>
                     <p className="mt-1">{selectedRequest.frequency}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Time of Day
+                      Thời gian trong Ngày
                     </p>
                     <p className="mt-1">
                       {selectedRequest.timeOfDay
                         .map((time) => {
                           const times = {
-                            morning: "Morning",
-                            midday: "Midday",
-                            afternoon: "Afternoon",
-                            asNeeded: "As Needed",
+                            morning: "Sáng",
+                            midday: "Trưa",
+                            afternoon: "Chiều",
+                            asNeeded: "Khi cần thiết",
                           };
                           return times[time] || time;
                         })
@@ -337,30 +333,26 @@ function MedicationApproval() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Start Date
+                      Ngày bắt đầu
                     </p>
                     <p className="mt-1">{selectedRequest.startDate}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      End Date
+                      Ngày kết thúc
                     </p>
                     <p className="mt-1">{selectedRequest.endDate}</p>
                   </div>
-                </div>
-
-                <div className="mb-4">
+                </div>                <div className="mb-4">
                   <p className="text-sm font-medium text-gray-500">
-                    Special Instructions
+                    Hướng dẫn Đặc biệt
                   </p>
                   <p className="mt-1 text-gray-900">
-                    {selectedRequest.instructions || "None provided"}
+                    {selectedRequest.instructions || "Không có hướng dẫn"}
                   </p>
-                </div>
-
-                <div className="mb-4">
+                </div>                <div className="mb-4">
                   <p className="text-sm font-medium text-gray-500">
-                    Prescription Documentation
+                    Tài liệu Đơn thuốc
                   </p>
                   <div className="mt-1">
                     {selectedRequest.prescriptionUploaded ? (
@@ -378,7 +370,7 @@ function MedicationApproval() {
                           />
                         </svg>
                         <p className="ml-2 text-green-600">
-                          Prescription uploaded
+                          Đã tải lên đơn thuốc
                         </p>
                         <button
                           className="ml-4 text-blue-600 hover:text-blue-800 text-sm"
@@ -387,7 +379,7 @@ function MedicationApproval() {
                             handleViewPrescription(selectedRequest.prescriptionImage);
                           }}
                         >
-                          View Prescription
+                          Xem Đơn thuốc
                         </button>
                       </div>
                     ) : (
@@ -403,25 +395,22 @@ function MedicationApproval() {
                             d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
                             clipRule="evenodd"
                           />
-                        </svg>
-                        <p className="ml-2 text-yellow-600">
-                          No prescription uploaded
+                        </svg>                        <p className="ml-2 text-yellow-600">
+                          Chưa tải lên đơn thuốc
                         </p>
                       </div>
                     )}
                   </div>
                 </div>                <div className="mb-4">
                   <p className="text-sm font-medium text-gray-500">
-                    Parent Contact
+                    Liên hệ Phụ huynh
                   </p>
                   <p className="mt-1">
                     {selectedRequest.parentName} | {selectedRequest.parentPhone}
                   </p>
-                </div>
-
-                <div className="mb-4">
+                </div>                <div className="mb-4">
                   <p className="text-sm font-medium text-gray-500">
-                    Parent Consent
+                    Sự đồng ý của Phụ huynh
                   </p>
                   <div className="mt-1 flex items-center">
                     {selectedRequest.consentToAdminister ? (
@@ -439,7 +428,7 @@ function MedicationApproval() {
                           />
                         </svg>
                         <span className="ml-2 text-green-600 font-medium">
-                          Consent provided
+                          Đã đồng ý
                         </span>
                       </>
                     ) : (
@@ -457,20 +446,18 @@ function MedicationApproval() {
                           />
                         </svg>
                         <span className="ml-2 text-red-600 font-medium">
-                          No consent provided
+                          Chưa đồng ý
                         </span>
                       </>
                     )}
                   </div>
-                </div>
-
-                {selectedRequest.status === "denied" && (
+                </div>                {selectedRequest.status === "denied" && (
                   <div className="mb-4 bg-red-50 p-3 rounded">
                     <p className="text-sm font-medium text-red-800">
-                      Denial Reason:
+                      Lý do Từ chối:
                     </p>
                     <p className="mt-1 text-red-700">
-                      {selectedRequest.denialReason || "No reason provided"}
+                      {selectedRequest.denialReason || "Không có lý do được cung cấp"}
                     </p>
                   </div>
                 )}
@@ -478,11 +465,11 @@ function MedicationApproval() {
                 {selectedRequest.status === "info-requested" && (
                   <div className="mb-4 bg-yellow-50 p-3 rounded">
                     <p className="text-sm font-medium text-yellow-800">
-                      Information Requested:
+                      Thông tin được Yêu cầu:
                     </p>
                     <p className="mt-1 text-yellow-700">
                       {selectedRequest.infoRequest ||
-                        "No specific information requested"}
+                        "Không có thông tin cụ thể được yêu cầu"}
                     </p>
                   </div>
                 )}
@@ -497,7 +484,7 @@ function MedicationApproval() {
                         ? "border-transparent text-white bg-green-600 hover:bg-green-700"
                         : "border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed"
                       } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
-                    title={!selectedRequest.consentToAdminister ? "Cannot approve without parent consent" : "Approve medication request"}
+                    title={!selectedRequest.consentToAdminister ? "Không thể phê duyệt mà không có sự đồng ý của phụ huynh" : "Phê duyệt yêu cầu thuốc"}
                   >
                     {selectedRequest.consentToAdminister ? (
                       <svg
@@ -524,13 +511,12 @@ function MedicationApproval() {
                         <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5 10a5 5 0 1110 0 5 5 0 01-10 0z" clipRule="evenodd" />
                       </svg>
                     )}
-                    {selectedRequest.consentToAdminister ? "Approve" : "Need Consent"}
+                    {selectedRequest.consentToAdminister ? "Phê duyệt" : "Cần Đồng ý"}
                   </button>
 
-                    <button
-                      onClick={() => {
+                    <button                      onClick={() => {
                         const reason = prompt(
-                          "Please enter a reason for denying this medication request:"
+                          "Vui lòng nhập lý do từ chối yêu cầu thuốc này:"
                         );
                         if (reason)
                           handleDenyRequest(selectedRequest.id, reason);
@@ -549,13 +535,12 @@ function MedicationApproval() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      Deny
+                      Từ chối
                     </button>
 
-                    <button
-                      onClick={() => {
+                    <button                      onClick={() => {
                         const message = prompt(
-                          "What additional information do you need from the parent?"
+                          "Bạn cần thông tin bổ sung gì từ phụ huynh?"
                         );
                         if (message)
                           handleRequestInfo(selectedRequest.id, message);
@@ -574,7 +559,7 @@ function MedicationApproval() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      Request Info
+                      Yêu cầu Thông tin
                     </button>
                   </div>
                 </div>
@@ -594,12 +579,11 @@ function MedicationApproval() {
                   strokeWidth={2}
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No request selected
+              </svg>              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                Chưa chọn yêu cầu
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Select a medication request to view details.
+                Chọn một yêu cầu thuốc để xem chi tiết.
               </p>
             </div>
           )}
@@ -623,11 +607,10 @@ function MedicationApproval() {
               />
             </svg>
           </div>
-          <div className="ml-3">
-            <p className="text-sm text-blue-700">
-              Review medication requests carefully. Verify that prescriptions
-              are valid and appropriate for school administration. Contact the
-              parent or healthcare provider if you need additional information.
+          <div className="ml-3">            <p className="text-sm text-blue-700">
+              Xem xét yêu cầu thuốc một cách cẩn thận. Xác minh rằng đơn thuốc
+              là hợp lệ và phù hợp để cấp phát tại trường. Liên hệ với
+              phụ huynh hoặc nhà cung cấp dịch vụ chăm sóc sức khỏe nếu bạn cần thông tin bổ sung.
             </p>
           </div>
         </div>
@@ -638,7 +621,7 @@ function MedicationApproval() {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-900">Prescription Documentation</h3>
+              <h3 className="text-lg font-medium text-gray-900">Tài liệu Đơn thuốc</h3>
               <button
                 onClick={() => setShowPrescriptionModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -652,7 +635,7 @@ function MedicationApproval() {
               {currentPrescriptionImage ? (
                 <img
                   src={currentPrescriptionImage}
-                  alt="Prescription"
+                  alt="Đơn thuốc"
                   className="w-full h-auto object-contain"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -662,7 +645,7 @@ function MedicationApproval() {
                 />
               ) : (
                 <div className="text-center text-gray-500">
-                  <p>No prescription image available.</p>
+                  <p>Không có hình ảnh đơn thuốc.</p>
                 </div>
               )}
             </div>

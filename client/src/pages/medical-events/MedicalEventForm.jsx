@@ -21,8 +21,7 @@ function MedicalEventForm() {
   const [success, setSuccess] = useState("");
 
   // Current date and time for defaults
-  const currentDate = new Date().toISOString().split('T')[0];
-  const currentTime = new Date().toLocaleTimeString('en-US', {
+  const currentDate = new Date().toISOString().split('T')[0];  const currentTime = new Date().toLocaleTimeString('vi-VN', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true
@@ -59,20 +58,19 @@ function MedicalEventForm() {
     if (isEditMode) {
       setLoading(true);
       try {
-        const eventData = getMedicalEventById(parseInt(id));
-        if (eventData) {
+        const eventData = getMedicalEventById(parseInt(id));        if (eventData) {
           setFormData(eventData);
           // Set available subtypes based on event type
           if (eventData.eventType) {
             setAvailableSubtypes(eventSubtypes[eventData.eventType] || []);
           }
         } else {
-          setError("Medical event not found");
+          setError("Không tìm thấy sự kiện y tế");
           navigate("/nurse/medical-events");
         }
       } catch (error) {
-        console.error("Error fetching medical event:", error);
-        setError("Failed to load medical event data");
+        console.error("Lỗi khi tải sự kiện y tế:", error);
+        setError("Không thể tải dữ liệu sự kiện y tế");
       } finally {
         setLoading(false);
       }
@@ -125,10 +123,9 @@ function MedicalEventForm() {
     setSuccess("");
     setSubmitting(true);
 
-    try {
-      // Validation
+    try {      // Validation
       if (!formData.studentName || !formData.eventType || !formData.severity || !formData.description) {
-        throw new Error("Please fill all required fields");
+        throw new Error("Vui lòng điền đầy đủ các trường bắt buộc");
       }
 
       // Process the form data
@@ -136,76 +133,68 @@ function MedicalEventForm() {
         // Update existing event
         const updatedEvent = updateMedicalEvent(parseInt(id), formData);
         if (updatedEvent) {
-          setSuccess("Medical event updated successfully");
+          setSuccess("Cập nhật sự kiện y tế thành công");
           // Navigate back to event list after a short delay
           setTimeout(() => navigate("/nurse/medical-events"), 1500);
         } else {
-          throw new Error("Failed to update medical event");
+          throw new Error("Không thể cập nhật sự kiện y tế");
         }
       } else {
         // Create new event
         const newEvent = createMedicalEvent(formData);
         if (newEvent) {
-          setSuccess("Medical event recorded successfully");
+          setSuccess("Ghi nhận sự kiện y tế thành công");
           // Navigate back to event list after a short delay
           setTimeout(() => navigate("/nurse/medical-events"), 1500);
-        } else {
-          throw new Error("Failed to record medical event");
+        } else {          throw new Error("Không thể ghi nhận sự kiện y tế");
         }
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setError(error.message || "An error occurred while submitting the form");
+      }} catch (error) {
+      console.error("Lỗi khi gửi biểu mẫu:", error);
+      setError(error.message || "Đã xảy ra lỗi khi gửi biểu mẫu");
     } finally {
       setSubmitting(false);
     }
-  };
-
-  if (loading) {
+  };if (loading) {
     return (
       <div className="container mx-auto p-4 text-center">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Đang tải...</span>
         </div>
-        <p className="mt-2">Loading medical event data...</p>
+        <p className="mt-2">Đang tải dữ liệu sự kiện y tế...</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-6">
+    <div className="container mx-auto p-4">      <div className="mb-6">
         <h1 className="text-2xl font-bold">
-          {isEditMode ? "Edit Medical Event" : "Record New Medical Event"}
+          {isEditMode ? "Chỉnh sửa Sự kiện Y tế" : "Ghi nhận Sự kiện Y tế Mới"}
         </h1>
         <p className="text-gray-600">
           {isEditMode
-            ? "Update the details of this medical event"
-            : "Record a new medical incident or health event that occurred in the school"}
+            ? "Cập nhật chi tiết sự kiện y tế này"
+            : "Ghi nhận sự cố y tế hoặc sự kiện sức khỏe mới xảy ra trong trường"}
         </p>
       </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <strong className="font-bold">Error!</strong> {error}
+          <strong className="font-bold">Lỗi!</strong> {error}
         </div>
-      )}
-
-      {success && (
+      )}      {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          <strong className="font-bold">Success!</strong> {success}
+          <strong className="font-bold">Thành công!</strong> {success}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Student Information */}
-          <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Student Information</h2>
+          {/* Student Information */}          <div className="md:col-span-2">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông tin Học sinh</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Student Name <span className="text-red-500">*</span>
+                  Tên học sinh <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -215,10 +204,9 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 />
-              </div>
-              <div>
+              </div>              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Student ID <span className="text-red-500">*</span>
+                  Mã học sinh <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -228,10 +216,9 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 />
-              </div>
-              <div>
+              </div>              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Grade
+                  Lớp
                 </label>
                 <input
                   type="text"
@@ -242,15 +229,13 @@ function MedicalEventForm() {
                 />
               </div>
             </div>
-          </div>
-
-          {/* Event Details */}
+          </div>          {/* Event Details */}
           <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Event Details</h2>
+            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Chi tiết Sự kiện</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Event Type <span className="text-red-500">*</span>
+                  Loại sự kiện <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="eventType"
@@ -259,7 +244,7 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 >
-                  <option value="">Select Event Type</option>
+                  <option value="">Chọn loại sự kiện</option>
                   {eventTypes.map(type => (
                     <option key={type.value} value={type.value}>{type.label}</option>
                   ))}
@@ -268,7 +253,7 @@ function MedicalEventForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Event Subtype
+                  Loại sự kiện phụ
                 </label>
                 <select
                   name="eventSubtype"
@@ -277,7 +262,7 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                   disabled={!formData.eventType}
                 >
-                  <option value="">Select Subtype</option>
+                  <option value="">Chọn loại phụ</option>
                   {availableSubtypes.map(subtype => (
                     <option key={subtype.value} value={subtype.value}>{subtype.label}</option>
                   ))}
@@ -286,7 +271,7 @@ function MedicalEventForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date <span className="text-red-500">*</span>
+                  Ngày <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -358,12 +343,11 @@ function MedicalEventForm() {
           </div>
 
           {/* Treatment Information */}
-          <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Treatment Information</h2>
+          <div className="md:col-span-2">            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông tin Điều trị</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Treatment Provided
+                  Phương pháp điều trị
                 </label>
                 <textarea
                   name="treatment"
@@ -376,7 +360,7 @@ function MedicalEventForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Treated By
+                  Người điều trị
                 </label>
                 <input
                   type="text"
@@ -385,11 +369,9 @@ function MedicalEventForm() {
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded"
                 />
-              </div>
-
-              <div>
+              </div>              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  Trạng thái
                 </label>
                 <select
                   name="status"
@@ -407,7 +389,7 @@ function MedicalEventForm() {
 
           {/* Follow-up Information */}
           <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Follow-up Information</h2>
+            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông tin Theo dõi</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center">
                 <input
@@ -419,14 +401,12 @@ function MedicalEventForm() {
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded mr-2"
                 />
                 <label htmlFor="followUpRequired" className="text-sm font-medium text-gray-700">
-                  Follow-up Required
+                  Cần theo dõi thêm
                 </label>
-              </div>
-
-              {formData.followUpRequired && (
+              </div>              {formData.followUpRequired && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Follow-up Date
+                    Ngày theo dõi
                   </label>
                   <input
                     type="date"
@@ -442,7 +422,7 @@ function MedicalEventForm() {
 
           {/* Parent Notification */}
           <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Parent Notification</h2>
+            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông báo Phụ huynh</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center">
                 <input
@@ -454,7 +434,7 @@ function MedicalEventForm() {
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded mr-2"
                 />
                 <label htmlFor="parentNotified" className="text-sm font-medium text-gray-700">
-                  Parent Notified
+                  Đã thông báo phụ huynh
                 </label>
               </div>
 
@@ -489,8 +469,7 @@ function MedicalEventForm() {
             </div>
           </div>
 
-          {/* Additional Notes */}
-          <div className="md:col-span-2">
+          {/* Additional Notes */}          <div className="md:col-span-2">
             <h2 className="text-lg font-semibold mb-4 border-b pb-2">Ghi chú thêm</h2>
             <div>
               <textarea
@@ -499,12 +478,11 @@ function MedicalEventForm() {
                 onChange={handleChange}
                 rows={3}
                 className="w-full p-2 border border-gray-300 rounded"
-                placeholder="Any additional information or observations..."
+                placeholder="Thông tin bổ sung hoặc các quan sát khác..."
               ></textarea>
             </div>
           </div>
         </div>
-
         {/* Form Actions */}
         <div className="mt-8 flex justify-end space-x-4">
           <button
@@ -513,7 +491,7 @@ function MedicalEventForm() {
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
             disabled={submitting}
           >
-            Cancel
+            Hủy bỏ
           </button>
           <button
             type="submit"
@@ -523,13 +501,12 @@ function MedicalEventForm() {
             {submitting ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                {isEditMode ? "Updating..." : "Saving..."}
+                {isEditMode ? "Đang cập nhật..." : "Đang lưu..."}
               </>
             ) : (
-              isEditMode ? "Update Event" : "Record Event"
+              isEditMode ? "Cập nhật sự kiện" : "Ghi nhận sự kiện"
             )}
-          </button>
-        </div>
+          </button>        </div>
       </form>
     </div>
   );

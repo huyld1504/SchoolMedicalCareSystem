@@ -417,11 +417,11 @@ function MedicationInventory() {
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label
+          <div>            <label
               htmlFor="search"
               className="block text-sm font-medium text-gray-700 mb-1"
-            >              Search Medications
+            >
+              Tìm Kiếm Thuốc
             </label>
             <input
               type="text"

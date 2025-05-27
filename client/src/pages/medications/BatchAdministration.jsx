@@ -49,7 +49,7 @@ function BatchAdministration() {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching medications:", error);
-        setErrorMessage("Failed to load medications. Please try again.");
+        setErrorMessage("Không thể tải thuốc. Vui lòng thử lại.");
         setLoading(false);
       }
     };
@@ -145,7 +145,7 @@ function BatchAdministration() {
     );
 
     if (selectedIds.length === 0) {
-      setErrorMessage("Please select at least one medication to administer.");
+      setErrorMessage("Vui lòng chọn ít nhất một loại thuốc để cấp phát.");
       setSubmitting(false);
       return;
     }
@@ -170,10 +170,8 @@ function BatchAdministration() {
         });
       });
 
-      await Promise.all(administrationPromises);
-
-      setSuccessMessage(
-        `Successfully administered ${selectedIds.length} medications.`
+      await Promise.all(administrationPromises);      setSuccessMessage(
+        `Đã cấp phát thành công ${selectedIds.length} loại thuốc.`
       );
 
       // Reset selections
@@ -184,9 +182,8 @@ function BatchAdministration() {
       const updatedMedications = await getMedications();
       setMedications(updatedMedications);
     } catch (error) {
-      console.error("Error administering medications:", error);
-      setErrorMessage(
-        "Failed to record medication administration. Please try again."
+      console.error("Error administering medications:", error);      setErrorMessage(
+        "Không thể ghi nhận việc cấp phát thuốc. Vui lòng thử lại."
       );
     } finally {
       setSubmitting(false);
@@ -204,13 +201,13 @@ function BatchAdministration() {
     );
 
     if (selectedIds.length === 0) {
-      setErrorMessage("Please select at least one medication to skip.");
+      setErrorMessage("Vui lòng chọn ít nhất một loại thuốc để bỏ qua.");
       setSubmitting(false);
       return;
     }
 
     if (!batchNotes) {
-      setErrorMessage("Please provide a reason for skipping medications.");
+      setErrorMessage("Vui lòng cung cấp lý do bỏ qua thuốc.");
       setSubmitting(false);
       return;
     }
@@ -230,10 +227,8 @@ function BatchAdministration() {
         });
       });
 
-      await Promise.all(skipPromises);
-
-      setSuccessMessage(
-        `Successfully recorded ${selectedIds.length} skipped medications.`
+      await Promise.all(skipPromises);      setSuccessMessage(
+        `Đã ghi nhận thành công ${selectedIds.length} loại thuốc bị bỏ qua.`
       );
 
       // Reset selections
@@ -244,9 +239,8 @@ function BatchAdministration() {
       const updatedMedications = await getMedications();
       setMedications(updatedMedications);
     } catch (error) {
-      console.error("Error recording skipped medications:", error);
-      setErrorMessage(
-        "Failed to record skipped medications. Please try again."
+      console.error("Error recording skipped medications:", error);      setErrorMessage(
+        "Không thể ghi nhận thuốc bị bỏ qua. Vui lòng thử lại."
       );
     } finally {
       setSubmitting(false);
@@ -257,9 +251,8 @@ function BatchAdministration() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-1">
-              Batch Medication Administration
+          <div>            <h1 className="text-3xl font-bold mb-1">
+              Cấp phát Thuốc Hàng loạt
             </h1>
             <p className="text-gray-600">
               {currentDate} | {currentTime}
@@ -281,22 +274,20 @@ function BatchAdministration() {
                 clipRule="evenodd"
               />
             </svg>
-            Back to Dashboard
+            Trở về Bảng điều khiển
           </Link>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Filter Medications
+        <div className="bg-white rounded-lg shadow p-4 mb-6">          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Lọc Thuốc
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label
+            <div>              <label
                 htmlFor="grade"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Grade Level
+                Cấp độ Lớp
               </label>
               <select
                 id="grade"
@@ -305,25 +296,24 @@ function BatchAdministration() {
                 value={filters.grade}
                 onChange={handleFilterChange}
               >
-                <option value="all">All Grades</option>
-                <option value="K">Kindergarten</option>
-                <option value="1st">1st Grade</option>
-                <option value="2nd">2nd Grade</option>
-                <option value="3rd">3rd Grade</option>
-                <option value="4th">4th Grade</option>
-                <option value="5th">5th Grade</option>
-                <option value="6th">6th Grade</option>
-                <option value="7th">7th Grade</option>
-                <option value="8th">8th Grade</option>
+                <option value="all">Tất cả các Lớp</option>
+                <option value="K">Mẫu giáo</option>
+                <option value="1st">Lớp 1</option>
+                <option value="2nd">Lớp 2</option>
+                <option value="3rd">Lớp 3</option>
+                <option value="4th">Lớp 4</option>
+                <option value="5th">Lớp 5</option>
+                <option value="6th">Lớp 6</option>
+                <option value="7th">Lớp 7</option>
+                <option value="8th">Lớp 8</option>
               </select>
             </div>
 
-            <div>
-              <label
+            <div>              <label
                 htmlFor="timeWindow"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Time Window
+                Khoảng Thời gian
               </label>
               <select
                 id="timeWindow"
@@ -332,18 +322,17 @@ function BatchAdministration() {
                 value={filters.timeWindow}
                 onChange={handleFilterChange}
               >
-                <option value="all">All Times</option>
-                <option value="next30">Next 30 Minutes</option>
-                <option value="next60">Next 60 Minutes</option>
+                <option value="all">Tất cả Thời gian</option>
+                <option value="next30">30 Phút tới</option>
+                <option value="next60">60 Phút tới</option>
               </select>
             </div>
 
-            <div>
-              <label
+            <div>              <label
                 htmlFor="medicationType"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Medication Type
+                Loại Thuốc
               </label>
               <select
                 id="medicationType"
@@ -352,7 +341,7 @@ function BatchAdministration() {
                 value={filters.medicationType}
                 onChange={handleFilterChange}
               >
-                <option value="all">All Types</option>
+                <option value="all">Tất cả Loại</option>
                 <option value="ibuprofen">Ibuprofen</option>
                 <option value="albuterol">Albuterol</option>
                 <option value="cetirizine">Cetirizine</option>
@@ -413,23 +402,21 @@ function BatchAdministration() {
         )}
 
         {/* Batch Actions */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Batch Actions
+        <div className="bg-white rounded-lg shadow p-4 mb-6">          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Hành động Hàng loạt
           </h2>
 
-          <div className="mb-4">
-            <label
+          <div className="mb-4">            <label
               htmlFor="batchNotes"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Administration Notes / Skip Reason
+              Ghi chú Cấp phát / Lý do Bỏ qua
             </label>
             <textarea
               id="batchNotes"
               rows="3"
               className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-gray-300 rounded-md"
-              placeholder="Enter notes for administration or reason for skipping"
+              placeholder="Nhập ghi chú cho việc cấp phát hoặc lý do bỏ qua"
               value={batchNotes}
               onChange={(e) => setBatchNotes(e.target.value)}
             ></textarea>
@@ -442,7 +429,7 @@ function BatchAdministration() {
               onClick={handleBatchAdminister}
               disabled={submitting}
             >
-              {submitting ? "Processing..." : "Administer Selected"}
+              {submitting ? "Đang xử lý..." : "Cấp phát đã Chọn"}
             </button>
 
             <button
@@ -451,7 +438,7 @@ function BatchAdministration() {
               onClick={handleBatchSkip}
               disabled={submitting}
             >
-              {submitting ? "Processing..." : "Skip Selected"}
+              {submitting ? "Đang xử lý..." : "Bỏ qua đã Chọn"}
             </button>
           </div>
         </div>
@@ -459,9 +446,8 @@ function BatchAdministration() {
 
       {/* Medications Table */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="flex justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">
-            Medications ({filteredMedications.length})
+        <div className="flex justify-between p-4 border-b">          <h2 className="text-lg font-semibold text-gray-800">
+            Thuốc ({filteredMedications.length})
           </h2>
 
           <div className="flex items-center">
@@ -474,9 +460,8 @@ function BatchAdministration() {
                 filteredMedications.every((med) => selectedMedications[med.id])
               }
               onChange={handleSelectAll}
-            />
-            <label htmlFor="selectAll" className="ml-2 text-sm text-gray-700">
-              Select All
+            />            <label htmlFor="selectAll" className="ml-2 text-sm text-gray-700">
+              Chọn Tất cả
             </label>
           </div>
         </div>
@@ -484,47 +469,45 @@ function BatchAdministration() {
         {loading ? (
           <div className="p-8 text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent"></div>
-            <p className="mt-2 text-gray-500">Loading medications...</p>
+            <p className="mt-2 text-gray-500">Đang tải thuốc...</p>
           </div>
         ) : filteredMedications.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-gray-500">
-              No medications found matching the selected filters.
+          <div className="p-8 text-center">            <p className="text-gray-500">
+              Không tìm thấy thuốc nào phù hợp với bộ lọc đã chọn.
             </p>
           </div>
         ) : (
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
+            <thead className="bg-gray-50">              <tr>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Select
+                  Chọn
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Student
+                  Học sinh
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Medication
+                  Thuốc
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Time
+                  Thời gian
                 </th>
                 <th
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Status
+                  Trạng thái
                 </th>
               </tr>
             </thead>
@@ -575,8 +558,7 @@ function BatchAdministration() {
                       {medication.time}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
+                  <td className="px-6 py-4 whitespace-nowrap">                    <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         medication.status === "administered"
                           ? "bg-green-100 text-green-800"
@@ -585,8 +567,14 @@ function BatchAdministration() {
                           : "bg-blue-100 text-blue-800"
                       }`}
                     >
-                      {medication.status.charAt(0).toUpperCase() +
-                        medication.status.slice(1)}
+                      {medication.status === "administered"
+                        ? "Đã cấp phát"
+                        : medication.status === "missed"
+                        ? "Đã bỏ lỡ"
+                        : medication.status === "pending"
+                        ? "Chờ xử lý"
+                        : medication.status.charAt(0).toUpperCase() +
+                          medication.status.slice(1)}
                     </span>
                   </td>
                 </tr>
@@ -613,11 +601,10 @@ function BatchAdministration() {
               />
             </svg>
           </div>
-          <div className="ml-3">
-            <p className="text-sm text-blue-700">
-              Use this page to administer or skip multiple medications at once.
-              Filter by grade, time window, or medication type to find the
-              medications you need to manage.
+          <div className="ml-3">            <p className="text-sm text-blue-700">
+              Sử dụng trang này để cấp phát hoặc bỏ qua nhiều loại thuốc cùng một lúc.
+              Lọc theo lớp, khoảng thời gian, hoặc loại thuốc để tìm các
+              thuốc bạn cần quản lý.
             </p>
           </div>
         </div>

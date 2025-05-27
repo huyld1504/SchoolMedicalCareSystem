@@ -240,9 +240,7 @@ function UserProfile() {
                 [name]: type === 'checkbox' ? checked : value
             }));
         }
-    };
-
-    // Handle form submission
+    };    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -251,9 +249,9 @@ function UserProfile() {
             setMessage(null);
             setError(null);
 
-            // Validate form
+            // Validate form            
             if (!profileData.name.trim() || !profileData.email.trim()) {
-                throw new Error("Name and email are required fields");
+                throw new Error("Tên và email là các trường bắt buộc");
             }
 
             // Password change validation
@@ -261,13 +259,13 @@ function UserProfile() {
                 profileData.passwordChange.new &&
                 profileData.passwordChange.new !== profileData.passwordChange.confirm
             ) {
-                throw new Error("New passwords do not match");
+                throw new Error("Mật khẩu mới không khớp");
             }
 
             // In a real app, this would be an API call to update the profile
             await new Promise(resolve => setTimeout(resolve, 1200));
 
-            setMessage("Profile updated successfully");
+            setMessage("Hồ sơ đã được cập nhật thành công");
 
             // Reset password fields
             setProfileData(prevData => ({
@@ -281,7 +279,7 @@ function UserProfile() {
 
         } catch (err) {
             console.error("Error saving profile:", err);
-            setError(err.message || "Failed to update profile. Please try again.");
+            setError(err.message || "Cập nhật hồ sơ thất bại. Vui lòng thử lại.");
         } finally {
             setSaving(false);
         }
@@ -306,10 +304,9 @@ function UserProfile() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">User Profile</h1>
+            <div className="mb-6">                <h1 className="text-3xl font-bold mb-2">Hồ sơ Người dùng</h1>
                 <p className="text-gray-600">
-                    {id ? `Viewing profile for ${profileData.name}` : "Manage your account and preferences"}
+                    {id ? `Xem hồ sơ của ${profileData.name}` : "Quản lý tài khoản và tùy chọn của bạn"}
                 </p>
             </div>
 
@@ -410,11 +407,10 @@ function UserProfile() {
                     <form onSubmit={handleSubmit}>
                         <div className="p-6 space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+                                <div>                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Thông tin Cá nhân</h3>
 
                                     <div className="mb-4">
-                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Họ và Tên</label>
                                         <input
                                             type="text"
                                             id="name"
@@ -427,7 +423,7 @@ function UserProfile() {
                                     </div>
 
                                     <div className="mb-4">
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ Email</label>
                                         <input
                                             type="email"
                                             id="email"
@@ -440,7 +436,7 @@ function UserProfile() {
                                     </div>
 
                                     <div className="mb-4">
-                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Số Điện thoại</label>
                                         <input
                                             type="tel"
                                             id="phone"
@@ -452,7 +448,7 @@ function UserProfile() {
                                     </div>
 
                                     <div className="mb-4">
-                                        <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                        <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
                                         <textarea
                                             id="address"
                                             name="address"
@@ -465,7 +461,7 @@ function UserProfile() {
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="mb-4">
-                                            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                                            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">Ngày sinh</label>
                                             <input
                                                 type="date"
                                                 id="dateOfBirth"
@@ -476,8 +472,7 @@ function UserProfile() {
                                             />
                                         </div>
 
-                                        <div className="mb-4">
-                                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                        <div className="mb-4">                                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Giới tính</label>
                                             <select
                                                 id="gender"
                                                 name="gender"
@@ -485,11 +480,11 @@ function UserProfile() {
                                                 onChange={handleInputChange}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                             >
-                                                <option value="">Select Gender</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                                <option value="Other">Other</option>
-                                                <option value="Prefer not to say">Prefer not to say</option>
+                                                <option value="">Chọn giới tính</option>
+                                                <option value="Male">Nam</option>
+                                                <option value="Female">Nữ</option>
+                                                <option value="Other">Khác</option>
+                                                <option value="Prefer not to say">Không muốn nói</option>
                                             </select>
                                         </div>
                                     </div>
@@ -498,11 +493,10 @@ function UserProfile() {
                                 <div>
                                     {/* Role-specific fields */}
                                     {(profileData.role === 'student' || profileData.role === 'parent') && (
-                                        <div className="mb-6">
-                                            <h3 className="text-lg font-medium text-gray-900 mb-4">Emergency Contact</h3>
+                                        <div className="mb-6">                                            <h3 className="text-lg font-medium text-gray-900 mb-4">Liên hệ Khẩn cấp</h3>
 
                                             <div className="mb-4">
-                                                <label htmlFor="emergencyContact.name" className="block text-sm font-medium text-gray-700 mb-1">Contact Name</label>
+                                                <label htmlFor="emergencyContact.name" className="block text-sm font-medium text-gray-700 mb-1">Tên người liên hệ</label>
                                                 <input
                                                     type="text"
                                                     id="emergencyContact.name"
@@ -514,7 +508,7 @@ function UserProfile() {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label htmlFor="emergencyContact.relationship" className="block text-sm font-medium text-gray-700 mb-1">Relationship</label>
+                                                <label htmlFor="emergencyContact.relationship" className="block text-sm font-medium text-gray-700 mb-1">Mối quan hệ</label>
                                                 <input
                                                     type="text"
                                                     id="emergencyContact.relationship"
@@ -526,7 +520,7 @@ function UserProfile() {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label htmlFor="emergencyContact.phone" className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+                                                <label htmlFor="emergencyContact.phone" className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại liên hệ</label>
                                                 <input
                                                     type="tel"
                                                     id="emergencyContact.phone"
@@ -540,12 +534,11 @@ function UserProfile() {
                                     )}
 
                                     {profileData.role === 'student' && (
-                                        <div className="mb-6">
-                                            <h3 className="text-lg font-medium text-gray-900 mb-4">Student Information</h3>
+                                        <div className="mb-6">                                            <h3 className="text-lg font-medium text-gray-900 mb-4">Thông tin Học sinh</h3>
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="mb-4">
-                                                    <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+                                                    <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-1">Khối</label>
                                                     <input
                                                         type="text"
                                                         id="grade"
@@ -557,7 +550,7 @@ function UserProfile() {
                                                 </div>
 
                                                 <div className="mb-4">
-                                                    <label htmlFor="class" className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                                                    <label htmlFor="class" className="block text-sm font-medium text-gray-700 mb-1">Lớp</label>
                                                     <input
                                                         type="text"
                                                         id="class"
@@ -570,7 +563,7 @@ function UserProfile() {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 mb-1">Student ID</label>
+                                                <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 mb-1">Mã học sinh</label>
                                                 <input
                                                     type="text"
                                                     id="studentId"
@@ -581,8 +574,7 @@ function UserProfile() {
                                                 />
                                             </div>
 
-                                            <div className="mb-4">
-                                                <label htmlFor="allergies" className="block text-sm font-medium text-gray-700 mb-1">Allergies</label>
+                                            <div className="mb-4">                                                <label htmlFor="allergies" className="block text-sm font-medium text-gray-700 mb-1">Dị ứng</label>
                                                 <textarea
                                                     id="allergies"
                                                     name="allergies"
@@ -590,12 +582,11 @@ function UserProfile() {
                                                     value={profileData.allergies}
                                                     onChange={handleInputChange}
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="List any allergies or write 'None'"
+                                                    placeholder="Liệt kê các dị ứng hoặc viết 'Không'"
                                                 ></textarea>
                                             </div>
 
-                                            <div className="mb-4">
-                                                <label htmlFor="medicalConditions" className="block text-sm font-medium text-gray-700 mb-1">Medical Conditions</label>
+                                            <div className="mb-4">                                                <label htmlFor="medicalConditions" className="block text-sm font-medium text-gray-700 mb-1">Tình trạng Y tế</label>
                                                 <textarea
                                                     id="medicalConditions"
                                                     name="medicalConditions"
@@ -603,19 +594,18 @@ function UserProfile() {
                                                     value={profileData.medicalConditions}
                                                     onChange={handleInputChange}
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                    placeholder="List any medical conditions or write 'None'"
+                                                    placeholder="Liệt kê các tình trạng y tế hoặc viết 'Không'"
                                                 ></textarea>
                                             </div>
                                         </div>
                                     )}
 
                                     {(profileData.role === 'nurse' || profileData.role === 'manager' || profileData.role === 'admin') && (
-                                        <div className="mb-6">
-                                            <h3 className="text-lg font-medium text-gray-900 mb-4">Professional Information</h3>
+                                        <div className="mb-6">                                            <h3 className="text-lg font-medium text-gray-900 mb-4">Thông tin Nghề nghiệp</h3>
 
                                             {(profileData.role === 'nurse') && (
                                                 <div className="mb-4">
-                                                    <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
+                                                    <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">Chuyên khoa</label>
                                                     <input
                                                         type="text"
                                                         id="specialization"
@@ -628,7 +618,7 @@ function UserProfile() {
                                             )}
 
                                             <div className="mb-4">
-                                                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                                                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">Phòng ban</label>
                                                 <input
                                                     type="text"
                                                     id="department"
@@ -640,7 +630,7 @@ function UserProfile() {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label htmlFor="qualification" className="block text-sm font-medium text-gray-700 mb-1">Qualifications</label>
+                                                <label htmlFor="qualification" className="block text-sm font-medium text-gray-700 mb-1">Bằng cấp</label>
                                                 <input
                                                     type="text"
                                                     id="qualification"
@@ -652,7 +642,7 @@ function UserProfile() {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label htmlFor="employmentDate" className="block text-sm font-medium text-gray-700 mb-1">Employment Date</label>
+                                                <label htmlFor="employmentDate" className="block text-sm font-medium text-gray-700 mb-1">Ngày tuyển dụng</label>
                                                 <input
                                                     type="date"
                                                     id="employmentDate"
@@ -666,11 +656,10 @@ function UserProfile() {
                                     )}
 
                                     {/* Security Section - visible to all */}
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-medium text-gray-900 mb-4">Security Settings</h3>
+                                    <div className="mb-6">                                        <h3 className="text-lg font-medium text-gray-900 mb-4">Cài đặt Bảo mật</h3>
 
                                         <div className="mb-4">
-                                            <label htmlFor="passwordChange.current" className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                                            <label htmlFor="passwordChange.current" className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu hiện tại</label>
                                             <input
                                                 type="password"
                                                 id="passwordChange.current"
@@ -682,7 +671,7 @@ function UserProfile() {
                                         </div>
 
                                         <div className="mb-4">
-                                            <label htmlFor="passwordChange.new" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                                            <label htmlFor="passwordChange.new" className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu mới</label>
                                             <input
                                                 type="password"
                                                 id="passwordChange.new"
@@ -694,7 +683,7 @@ function UserProfile() {
                                         </div>
 
                                         <div className="mb-4">
-                                            <label htmlFor="passwordChange.confirm" className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                                            <label htmlFor="passwordChange.confirm" className="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu mới</label>
                                             <input
                                                 type="password"
                                                 id="passwordChange.confirm"
@@ -713,9 +702,8 @@ function UserProfile() {
                                                 checked={profileData.twoFactorEnabled}
                                                 onChange={handleInputChange}
                                                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                            />
-                                            <label htmlFor="twoFactorEnabled" className="ml-2 block text-sm text-gray-700">
-                                                Enable Two-Factor Authentication
+                                            />                                            <label htmlFor="twoFactorEnabled" className="ml-2 block text-sm text-gray-700">
+                                                Bật xác thực hai yếu tố
                                             </label>
                                         </div>
                                     </div>
@@ -723,8 +711,7 @@ function UserProfile() {
                             </div>
 
                             {/* Notification Preferences */}
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h3>
+                            <div>                                <h3 className="text-lg font-medium text-gray-900 mb-4">Tùy chọn Thông báo</h3>
                                 <div className="space-y-3">
                                     <div className="flex items-center">
                                         <input
@@ -736,7 +723,7 @@ function UserProfile() {
                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                         />
                                         <label htmlFor="notificationPreferences.email" className="ml-2 block text-sm text-gray-700">
-                                            Email Notifications
+                                            Thông báo qua Email
                                         </label>
                                     </div>
 
@@ -748,9 +735,8 @@ function UserProfile() {
                                             checked={profileData.notificationPreferences.sms}
                                             onChange={handleInputChange}
                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                        />
-                                        <label htmlFor="notificationPreferences.sms" className="ml-2 block text-sm text-gray-700">
-                                            SMS Notifications
+                                        />                                        <label htmlFor="notificationPreferences.sms" className="ml-2 block text-sm text-gray-700">
+                                            Thông báo qua SMS
                                         </label>
                                     </div>
 
@@ -764,7 +750,7 @@ function UserProfile() {
                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                         />
                                         <label htmlFor="notificationPreferences.app" className="ml-2 block text-sm text-gray-700">
-                                            In-App Notifications
+                                            Thông báo trong Ứng dụng
                                         </label>
                                     </div>
                                 </div>
@@ -775,17 +761,16 @@ function UserProfile() {
                         <div className="px-6 py-4 bg-gray-50 text-right">
                             <button
                                 type="button"
-                                className="px-4 py-2 mr-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                onClick={() => navigate(-1)}
+                                className="px-4 py-2 mr-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"                                onClick={() => navigate(-1)}
                             >
-                                Cancel
+                                Hủy bỏ
                             </button>
                             <button
                                 type="submit"
                                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 disabled={saving}
                             >
-                                {saving ? 'Saving...' : 'Save Changes'}
+                                {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
                             </button>
                         </div>
                     </form>
