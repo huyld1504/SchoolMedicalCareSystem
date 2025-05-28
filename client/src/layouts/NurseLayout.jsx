@@ -64,9 +64,7 @@ function NurseLayout({ children }) {
             <i className="bi bi-heart-pulse me-2"></i> Khám sức khỏe
           </a>
           
-          <a href="/nurse/medications/inventory" className="nav-link text-white d-flex align-items-center py-2">
-            <i className="bi bi-box-seam me-2"></i> Kho thuốc
-          </a>
+      
         
                    
           <a
