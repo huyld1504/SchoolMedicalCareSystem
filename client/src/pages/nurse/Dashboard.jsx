@@ -67,9 +67,9 @@ function NurseDashboard() {
       priority: "Cao",
     },
   ]; const stockAlerts = [
-    { id: 1, item: "Băng dán", status: "Sắp hết", level: "15%", current: 15, total: 100 },
-    { id: 2, item: "Ibuprofen", status: "Sắp hết", level: "20%", current: 20, total: 100 },
-    { id: 3, item: "Túi chườm lạnh", status: "Đủ", level: "60%", current: 60, total: 100 },
+    { id: 1, item: "Băng dán", status: "Sắp hết", level: "15%", current: 15, total: 100, unit: "hộp" },
+    { id: 2, item: "Ibuprofen", status: "Sắp hết", level: "20%", current: 20, total: 100, unit: "viên" },
+    { id: 3, item: "Túi chườm lạnh", status: "Đủ", level: "60%", current: 60, total: 100, unit: "túi" },
   ];
   // Full schedule data
   const fullSchedule = [
@@ -512,7 +512,7 @@ function NurseDashboard() {
                     style={{ width: item.level }}
                   ></div>
                   </div>                  <div className="text-right text-xs text-gray-500 mt-1">
-                    {item.current}/{item.total}
+                    {item.current}/{item.total} {item.unit}
                   </div>
                 </div>
               </li>
