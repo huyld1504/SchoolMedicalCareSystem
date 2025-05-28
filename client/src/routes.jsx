@@ -2,7 +2,6 @@
 
 // Auth Components
 import Login from "./components/auth/Login";
-import Register from "./components/auth/Register";
 import ForgotPassword from "./components/auth/ForgotPassword";
 
 // Layout Components
@@ -15,14 +14,12 @@ import PublicLayout from "./layouts/PublicLayout";
 
 // Public Pages
 import Home from "./pages/public/Home";
-// Temporarily using magnus components for some pages
-import About from "./components/magnus/MagnusAbout";
-import Blog from "./components/magnus/MagnusFeatures"; // Using Features as Blog
-import BlogPost from "./components/magnus/MagnusFeatures"; // Using Features as BlogPost
-import Contact from "./components/magnus/MagnusContact";
-import HealthResources from "./components/magnus/MagnusDoctors";
-import MagnusHealth from './components/magnus/MagnusHealth'; // Using Doctors as HealthResources
-import MagnusTestimonials from './components/magnus/MagnusTestimonials';
+import About from "./pages/public/About";
+import Blog from "./pages/public/Blog";
+import BlogPost from "./pages/public/BlogPost";
+import Contact from "./pages/public/Contact";
+import HealthResources from "./pages/public/HealthResources";
+import Testimonials from "./pages/public/Testimonials";
 
 // Dashboard Pages - All dashboards are implemented
 import NurseDashboard from "./pages/nurse/Dashboard";
@@ -775,16 +772,13 @@ const studentRoutes = [
 ];
 
 const publicRoutes = [
-  { path: '/', element: <PublicLayout><MagnusHealth /></PublicLayout> },
-  { path: '/home', element: <PublicLayout><Home /></PublicLayout> },
+  { path: '/', element: <PublicLayout><Home /></PublicLayout> },
   { path: '/about', element: <PublicLayout><About /></PublicLayout> },
-  { path: '/blog', element: <PublicLayout><Blog /></PublicLayout> },
-  { path: '/blog/:id', element: <PublicLayout><BlogPost /></PublicLayout> },
+  { path: '/blog', element: <PublicLayout><Blog /></PublicLayout> }, { path: '/blog/:id', element: <PublicLayout><BlogPost /></PublicLayout> },
   { path: '/contact', element: <PublicLayout><Contact /></PublicLayout> },
   { path: '/resources', element: <PublicLayout><HealthResources /></PublicLayout> },
-  { path: '/testimonials', element: <PublicLayout><MagnusTestimonials /></PublicLayout> },
+  { path: '/testimonials', element: <PublicLayout><Testimonials /></PublicLayout> },
   { path: '/login', element: <Login /> },
-  { path: '/register', element: <Register /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
 ];
 
