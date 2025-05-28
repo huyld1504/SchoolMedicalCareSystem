@@ -66,11 +66,10 @@ function NurseDashboard() {
       time: "4:00 PM",
       priority: "Cao",
     },
-  ];
-  const stockAlerts = [
-    { id: 1, item: "Băng dán", status: "Sắp hết", level: "15%" },
-    { id: 2, item: "Ibuprofen", status: "Sắp hết", level: "20%" },
-    { id: 3, item: "Túi chườm lạnh", status: "Đủ", level: "60%" },
+  ]; const stockAlerts = [
+    { id: 1, item: "Băng dán", status: "Sắp hết", level: "15%", current: 15, total: 100 },
+    { id: 2, item: "Ibuprofen", status: "Sắp hết", level: "20%", current: 20, total: 100 },
+    { id: 3, item: "Túi chườm lạnh", status: "Đủ", level: "60%", current: 60, total: 100 },
   ];
   // Full schedule data
   const fullSchedule = [
@@ -376,8 +375,8 @@ function NurseDashboard() {
                               />
                               <span
                                 className={`font-medium ${completedTasks.includes(task.id)
-                                    ? "line-through text-gray-500"
-                                    : ""
+                                  ? "line-through text-gray-500"
+                                  : ""
                                   }`}
                               >
                                 {task.time}
@@ -405,8 +404,8 @@ function NurseDashboard() {
                           </div>
                           <p
                             className={`mt-1 pl-7 ${completedTasks.includes(task.id)
-                                ? "line-through text-gray-500"
-                                : ""
+                              ? "line-through text-gray-500"
+                              : ""
                               }`}
                           >
                             {task.task}
@@ -507,14 +506,13 @@ function NurseDashboard() {
                 <div className="w-24">
                   <div className="bg-gray-200 rounded-full h-2.5">                    <div
                     className={`h-2.5 rounded-full ${item.status === "Sắp hết"
-                        ? "bg-red-600"
-                        : "bg-green-600"
+                      ? "bg-red-600"
+                      : "bg-green-600"
                       }`}
                     style={{ width: item.level }}
                   ></div>
-                  </div>
-                  <div className="text-right text-xs text-gray-500 mt-1">
-                    {item.level}
+                  </div>                  <div className="text-right text-xs text-gray-500 mt-1">
+                    {item.current}/{item.total}
                   </div>
                 </div>
               </li>
