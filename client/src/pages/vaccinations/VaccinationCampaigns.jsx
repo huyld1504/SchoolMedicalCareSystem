@@ -13,6 +13,10 @@ function VaccinationCampaigns() {
   const [scheduleCampaign, setScheduleCampaign] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [selectedCampaignForResponse, setSelectedCampaignForResponse] = useState(null);
+  const [declineReason, setDeclineReason] = useState("");
+  const [userResponses, setUserResponses] = useState({}); // Track user responses to campaigns
   const isNurseOrManager = ['nurse', 'manager', 'admin'].includes(currentUser?.role);
 
   // Form state for new campaign
@@ -45,8 +49,7 @@ function VaccinationCampaigns() {
         declined: 45,
         pending: 159
       }
-    },
-    {
+    }, {
       id: 2,
       title: "Mũi tiêm nhắc lại COVID-19",
       vaccineType: "COVID-19 mRNA",
@@ -54,7 +57,7 @@ function VaccinationCampaigns() {
       startDate: "2023-09-05",
       endDate: "2023-09-10",
       description: "Tiêm nhắc lại vắc xin COVID-19 cho học sinh đủ điều kiện từ 12 tuổi trở lên.",
-      status: "upcoming",
+      status: "active",
       createdBy: "Bác sĩ Robert Taylor",
       createdAt: "2023-05-18",
       stats: {
@@ -83,8 +86,7 @@ function VaccinationCampaigns() {
         declined: 30,
         pending: 200
       }
-    },
-    {
+    }, {
       id: 4,
       title: "Tiêm vắc xin HPV",
       vaccineType: "Vi rút u nhú người (HPV)",
@@ -92,7 +94,7 @@ function VaccinationCampaigns() {
       startDate: "2023-11-15",
       endDate: "2023-11-17",
       description: "Mũi tiêm đầu tiên vắc xin HPV cho học sinh lớp 7.",
-      status: "planning",
+      status: "active",
       createdBy: "Bác sĩ Michael Chen",
       createdAt: "2023-05-10",
       stats: {
@@ -264,10 +266,8 @@ function VaccinationCampaigns() {
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchCampaigns();
-  }, [sampleCampaigns]);
+    }; fetchCampaigns();
+  }, []); // Remove dependency to prevent infinite loop
 
   // Filter campaigns based on search term and status filter
   const filteredCampaigns = campaigns.filter(campaign => {
@@ -408,6 +408,46 @@ function VaccinationCampaigns() {
     setShowScheduleModal(true);
   };
 
+  // Handle consent for vaccination
+  const handleConsent = (campaignId) => {
+    setUserResponses(prev => ({
+      ...prev,
+      [campaignId]: {
+        type: 'consent',
+        timestamp: new Date().toISOString(),
+        reason: null
+      }
+    }));
+  };
+
+  // Handle decline for vaccination
+  const handleDecline = (campaignId) => {
+    setSelectedCampaignForResponse(campaignId);
+    setShowDeclineModal(true);
+  };
+
+  // Handle decline submission
+  const handleDeclineSubmit = () => {
+    if (selectedCampaignForResponse && declineReason.trim()) {
+      setUserResponses(prev => ({
+        ...prev,
+        [selectedCampaignForResponse]: {
+          type: 'decline',
+          timestamp: new Date().toISOString(),
+          reason: declineReason.trim()
+        }
+      }));
+      setShowDeclineModal(false);
+      setSelectedCampaignForResponse(null);
+      setDeclineReason('');
+    }
+  };
+
+  // Check if user has responded to a campaign
+  const getUserResponse = (campaignId) => {
+    return userResponses[campaignId] || null;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
       <div>
@@ -415,17 +455,7 @@ function VaccinationCampaigns() {
         <p className="text-gray-600">Quản lý và giám sát các chương trình tiêm chủng</p>
       </div>
 
-      {isNurseOrManager && (
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center transition duration-150"
-          onClick={handleCreateCampaign}
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          Tạo chiến dịch
-        </button>
-      )}
+
     </div>      {/* Filters */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -532,64 +562,68 @@ function VaccinationCampaigns() {
                 </div>
 
                 <p className="mt-4 text-sm text-gray-600 line-clamp-2">{campaign.description}</p>                {/* Campaign Stats */}
-                {campaign.stats && (
-                  <div className="mt-6">
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tình trạng chiến dịch</h4>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{
-                          width: `${(campaign.stats.consented / campaign.stats.eligible) * 100}%`
-                        }}
-                      ></div>
+
+
+                {/* Show consent/decline buttons for active campaigns (parent view) */}
+                {campaign.status === 'active' && !isNurseOrManager && (
+                  <div className="flex space-x-2 w-full">                    {getUserResponse(campaign.id) ? (<div className="w-full">
+                    {getUserResponse(campaign.id).type === 'consent' ? (
+                      <div className="w-full p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                        <div className="flex items-center justify-center text-green-700 font-medium mb-2">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          Đã đồng ý tham gia
+                        </div>
+                        <div className="text-sm text-green-600 text-center">
+                          Xác nhận ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                        <div className="flex items-center justify-center text-red-700 font-medium mb-2">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          Đã từ chối
+                        </div>
+                        <div className="text-sm text-red-600 text-center">
+                          Từ chối ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
+                        </div>
+                        {getUserResponse(campaign.id).reason && (
+                          <div className="text-sm text-red-600 text-center mt-2 italic">
+                            Lý do: {getUserResponse(campaign.id).reason}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>) : (
+                    <div className="grid grid-cols-2 gap-3 w-full">
+                      <button
+                        onClick={() => handleConsent(campaign.id)}
+                        className="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition duration-150 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Đồng ý tham gia
+                      </button>
+                      <button
+                        onClick={() => handleDecline(campaign.id)}
+                        className="flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition duration-150 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Từ chối
+                      </button>
                     </div>
-                    <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
-                      <div>
-                        <p className="text-gray-500">Đủ điều kiện</p>
-                        <p className="font-medium">{campaign.stats.eligible}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Đã đồng ý</p>
-                        <p className="font-medium">{campaign.stats.consented}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Đã tiêm</p>
-                        <p className="font-medium">{campaign.stats.vaccinated}</p>
-                      </div>
-                    </div>
+                  )}
                   </div>
                 )}
-              </div>              <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                <div className="text-xs text-gray-500">
-                  Tạo bởi {campaign.createdBy}
-                </div>
 
-                <div className="flex space-x-2">
-                  {isNurseOrManager && (
-                    <button
-                      className="px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm font-medium hover:bg-blue-200"
-                      onClick={() => handleEditCampaign(campaign)}
-                    >
-                      Chỉnh sửa
-                    </button>
-                  )}
+                {/* Admin/nurse controls */}
 
-                  {(campaign.status === 'upcoming' || campaign.status === 'active' || campaign.status === 'planning') && (
-                    <button
-                      className="px-3 py-1 bg-green-100 text-green-600 rounded text-sm font-medium hover:bg-green-200"
-                      onClick={() => handleViewSchedule(campaign)}
-                    >
-                      Lịch trình
-                    </button>
-                  )}
-
-                  <button
-                    className="px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm font-medium hover:bg-gray-200"
-                    onClick={() => navigate(`/nurse/vaccinations/${campaign.id}/records`)}
-                  >
-                    Hồ sơ
-                  </button>
-                </div>
               </div>
             </div>
           ))}
@@ -800,44 +834,77 @@ function VaccinationCampaigns() {
                 <div className="space-y-8">
                   {sampleSchedules[scheduleCampaign.id].map((day, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                      <h4 className="font-medium text-lg mb-4 text-gray-800">{formatDate(day.date)}</h4>
-
-                      <div className="overflow-x-auto">                        <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-100">
-                          <tr>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nhóm</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Địa điểm</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Người tiêm</th>
-                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiến độ</th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {day.timeSlots.map((slot, slotIndex) => (
-                            <tr key={slotIndex} className={slotIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.time}</td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.group}</td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.location}</td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{slot.vaccinator}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">
-                                <div className="flex items-center">
-                                  <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
-                                    <div
-                                      className="bg-green-600 h-2 rounded-full"
-                                      style={{
-                                        width: `${(slot.progress.completed / slot.progress.scheduled) * 100}%`
-                                      }}
-                                    ></div>
+                      <h4 className="font-medium text-lg mb-4 text-gray-800">{formatDate(day.date)}</h4>                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4">
+                        {day.timeSlots.map((slot, slotIndex) => (
+                          <div
+                            key={slotIndex}
+                            className="bg-white border rounded-lg shadow-sm overflow-hidden h-full flex flex-col border-gray-200 hover:shadow-md transition duration-200"
+                          >
+                            <div className={`px-4 py-3 font-medium text-white ${slotIndex % 2 === 0 ? 'bg-blue-600' : 'bg-green-600'}`}>
+                              <div className="flex items-center">
+                                <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span className="text-sm md:text-base">{slot.time}</span>
+                              </div>
+                            </div>
+                            <div className="flex-1 p-5">
+                              <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-5">
+                                  <div>
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Nhóm</p>
+                                    <div className="flex items-center">
+                                      <svg className="flex-shrink-0 h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                      </svg>
+                                      <p className="text-sm font-medium truncate">{slot.group}</p>
+                                    </div>
                                   </div>
-                                  <span className="text-xs whitespace-nowrap">
-                                    {slot.progress.completed} / {slot.progress.scheduled}
-                                  </span>
+
+                                  <div>
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Địa điểm</p>
+                                    <div className="flex items-center">
+                                      <svg className="flex-shrink-0 h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      </svg>
+                                      <p className="text-sm font-medium truncate">{slot.location}</p>
+                                    </div>
+                                  </div>
                                 </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+
+                                <div className="space-y-5">
+                                  <div>
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Người tiêm</p>
+                                    <div className="flex items-center">
+                                      <svg className="flex-shrink-0 h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                      </svg>
+                                      <p className="text-sm font-medium truncate">{slot.vaccinator}</p>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tiến độ</p>
+                                    <div className="flex items-center">
+                                      <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                                        <div
+                                          className={`h-2.5 rounded-full ${slotIndex % 2 === 0 ? 'bg-blue-500' : 'bg-green-500'}`}
+                                          style={{
+                                            width: `${(slot.progress.completed / slot.progress.scheduled) * 100}%`
+                                          }}
+                                        ></div>
+                                      </div>
+                                      <span className="text-xs font-medium whitespace-nowrap">
+                                        {slot.progress.completed} / {slot.progress.scheduled}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))}
@@ -880,7 +947,59 @@ function VaccinationCampaigns() {
             </div>
           </div>
         </div>
-      )}      {/* Info Section */}
+      )}
+
+      {/* Decline Reason Modal */}
+      {showDeclineModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div className="p-6 border-b">
+              <h3 className="text-xl font-semibold text-gray-900">Từ chối tham gia chiến dịch tiêm chủng</h3>
+            </div>
+
+            <div className="p-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Vui lòng cho biết lý do từ chối tham gia chiến dịch tiêm chủng này:
+              </p>
+
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Nhập lý do từ chối..."
+                required
+              />
+
+              {declineReason.trim() === '' && (
+                <p className="text-sm text-red-600 mt-1">Vui lòng nhập lý do từ chối</p>
+              )}
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowDeclineModal(false);
+                  setSelectedCampaignForResponse(null);
+                  setDeclineReason('');
+                }}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleDeclineSubmit}
+                disabled={declineReason.trim() === ''}
+                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Xác nhận từ chối
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Info Section */}
       <div className="mt-8 bg-blue-50 border-l-4 border-blue-500 p-5 rounded-lg">
         <div className="flex">
           <div className="flex-shrink-0">

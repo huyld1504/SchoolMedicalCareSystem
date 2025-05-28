@@ -251,23 +251,7 @@ function MedicalEventForm() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Loại sự kiện phụ
-                </label>
-                <select
-                  name="eventSubtype"
-                  value={formData.eventSubtype}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  disabled={!formData.eventType}
-                >
-                  <option value="">Chọn loại phụ</option>
-                  {availableSubtypes.map(subtype => (
-                    <option key={subtype.value} value={subtype.value}>{subtype.label}</option>
-                  ))}
-                </select>
-              </div>
+          
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

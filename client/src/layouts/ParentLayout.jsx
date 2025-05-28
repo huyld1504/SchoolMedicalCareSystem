@@ -106,12 +106,7 @@ function ParentLayout({ children }) {
           >
             <i className="bi bi-person me-2"></i> Hồ sơ cá nhân
           </a>
-          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/parent/settings"
-          >
-            <i className="bi bi-gear me-2"></i> Cài đặt
-          </a>
+         
         </nav>        <div className="mt-auto p-3 border-top">
           <button className="btn btn-light w-100" onClick={handleLogout}>
             <i className="bi bi-box-arrow-right me-2"></i> Đăng xuất

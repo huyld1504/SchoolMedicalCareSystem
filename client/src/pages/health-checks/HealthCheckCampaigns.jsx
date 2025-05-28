@@ -272,10 +272,10 @@ function HealthCheckCampaigns() {  // Dữ liệu demo cho các chiến dịch k
               {/* Campaign Header */}
               <div
                 className={`px-6 py-4 border-l-4 ${campaign.status === "Active"
-                    ? "border-green-500 bg-green-50"
-                    : campaign.status === "Upcoming"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-500 bg-gray-50"
+                  ? "border-green-500 bg-green-50"
+                  : campaign.status === "Upcoming"
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-500 bg-gray-50"
                   }`}
               >
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -285,10 +285,10 @@ function HealthCheckCampaigns() {  // Dữ liệu demo cho các chiến dịch k
                   </div>
                   <div className="mt-2 md:mt-0">                    <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${campaign.status === "Active"
-                        ? "bg-green-100 text-green-800"
-                        : campaign.status === "Upcoming"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
+                      ? "bg-green-100 text-green-800"
+                      : campaign.status === "Upcoming"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-100 text-gray-800"
                       }`}
                   >
                     {_translateStatus(campaign.status)}
@@ -356,64 +356,6 @@ function HealthCheckCampaigns() {  // Dữ liệu demo cho các chiến dịch k
                   </div>
                 </div>
 
-                {/* Progress Bar (if Active or Completed) */}
-                {(campaign.status === "Active" ||
-                  campaign.status === "Completed") && (<div className="mt-6">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-sm font-medium text-gray-700">
-                        Số lượt khám hoàn thành
-                      </h3>
-                      <span className="text-sm font-medium text-gray-700">
-                        {campaign.checkupsCompleted} / {campaign.totalStudents}{" "}
-                        (
-                        {Math.round(
-                          (campaign.checkupsCompleted /
-                            campaign.totalStudents) *
-                          100
-                        )}
-                        %)
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-green-600 h-2.5 rounded-full"
-                        style={{
-                          width: `${Math.round(
-                            (campaign.checkupsCompleted /
-                              campaign.totalStudents) *
-                            100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>                    <div className="flex justify-between items-center mt-4 mb-1">
-                      <h3 className="text-sm font-medium text-gray-700">
-                        Giấy đồng ý đã nhận
-                      </h3>
-                      <span className="text-sm font-medium text-gray-700">
-                        {campaign.consentsReceived} / {campaign.totalStudents}{" "}
-                        (
-                        {Math.round(
-                          (campaign.consentsReceived / campaign.totalStudents) *
-                          100
-                        )}
-                        %)
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{
-                          width: `${Math.round(
-                            (campaign.consentsReceived /
-                              campaign.totalStudents) *
-                            100
-                          )}%`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                  )}
-
                 {/* Campaign Actions - Cải thiện layout */}
                 <div className="mt-6 flex flex-wrap justify-end gap-2">
                   {campaign.status === "Active" && campaign.consentRequired && (
@@ -446,53 +388,9 @@ function HealthCheckCampaigns() {  // Dữ liệu demo cho các chiến dịch k
                     )
                   )}
 
-                  {campaign.status === "Active" && (
-                    <button
-                      onClick={() => handleViewSchedule(campaign)}
-                      className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 z-10"
-                    >
-                      <svg
-                        className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2a2 2 0 002-2z"
-                        />
-                      </svg>
-                      Xem lịch trình
-                    </button>
-                  )}
+                 
 
-                  {(campaign.status === "Active" ||
-                    campaign.status === "Completed") &&
-                    campaign.checkupsCompleted > 0 && (
-                      <button
-                        onClick={() => handleViewResults(campaign)}
-                        className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 z-10"
-                      >
-                        <svg
-                          className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                          />
-                        </svg>
-                        Xem kết quả
-                      </button>
-                    )}
+
                 </div>
               </div>
             </div>
