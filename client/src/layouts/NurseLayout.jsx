@@ -72,12 +72,7 @@ function NurseLayout({ children }) {
             href="/nurse/medical-events"
           >
             <i className="bi bi-journal-medical me-2"></i> Danh sách sự kiện
-          </a>          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/medical-events/new"
-          >
-            <i className="bi bi-plus-circle me-2"></i> Sự kiện y tế mới
-          </a>
+          </a>          
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medications"
