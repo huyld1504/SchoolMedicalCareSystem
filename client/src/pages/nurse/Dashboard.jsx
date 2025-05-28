@@ -153,9 +153,11 @@ function NurseDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">        <h1 className="text-3xl font-bold mb-2">Bảng điều khiển Y tá</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Bảng điều khiển Y tá</h1>
         <p className="text-gray-600">Chào mừng trở lại, {currentUser?.name}</p>
-      </div>      {/* Statistics Cards */}
+      </div>
+      {/* Statistics Cards */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-50 rounded-lg shadow p-6">
           <h3 className="text-gray-500 text-sm uppercase font-semibold">
@@ -215,75 +217,81 @@ function NurseDashboard() {
         </div>
       </div> */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Recent Incidents */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">          <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Sự cố gần đây</h2>
-        </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Học sinh
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Vấn đề
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Thời gian
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Trạng thái
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {recentIncidents.map((incident) => (
-                  <tr key={incident.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">
-                        {incident.studentName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {incident.grade}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {incident.issue}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {incident.time}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">                      <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${incident.status === "Đã điều trị"
-                          ? "bg-green-100 text-green-800"
-                          : incident.status === "Cho về nhà"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
+      {/* Main content grid */}
+      <div className="grid grid-cols-1 gap-6 mb-8">
+        {/* Recent Incidents - Full width */}
+        <div className="bg-white rounded-lg shadow p-6 flex flex-col h-[600px]">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Sự cố gần đây</h2>
+          </div>
+          <div className="overflow-y-auto flex-1">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      {incident.status}
-                    </span>
-                    </td>
+                      Học sinh
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Vấn đề
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Thời gian
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Trạng thái
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>          <div className="mt-4">
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {recentIncidents.map((incident) => (
+                    <tr key={incident.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-gray-900">
+                          {incident.studentName}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {incident.grade}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {incident.issue}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {incident.time}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${incident.status === "Đã điều trị"
+                            ? "bg-green-100 text-green-800"
+                            : incident.status === "Cho về nhà"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {incident.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="mt-4">
             <Link
               to="/nurse/events/new"
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out mr-2"
@@ -298,9 +306,10 @@ function NurseDashboard() {
             </Link>
           </div>
         </div>
+      </div>
 
-        {/* Upcoming Tasks */}
-        <div className="bg-white rounded-lg shadow p-6">
+      {/* Upcoming Tasks */}
+      {/* <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Nhiệm vụ sắp tới</h2>
           <ul className="divide-y divide-gray-200">
             {upcomingTasks.map((task) => (
@@ -317,35 +326,34 @@ function NurseDashboard() {
           >
             Xem lịch trình đầy đủ →
           </button>
-        </div>
-      </div>
-
+        </div> */}
       {/* Full Schedule Modal */}
       {showFullSchedule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl max-h-[80vh] overflow-y-auto">
-            <div className="p-6">              <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Lịch trình đầy đủ</h2>
-              <button
-                onClick={closeFullSchedule}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Lịch trình đầy đủ</h2>
+                <button
+                  onClick={closeFullSchedule}
+                  className="text-gray-500 hover:text-gray-700"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
 
               <div className="divide-y divide-gray-200">
                 {Object.entries(
@@ -416,7 +424,8 @@ function NurseDashboard() {
                     </ul>
                   </div>
                 ))}
-              </div>              <div className="mt-6 flex justify-end">
+              </div>
+              <div className="mt-6 flex justify-end">
                 <button
                   onClick={closeFullSchedule}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
@@ -429,11 +438,13 @@ function NurseDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">        {/* Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Hành động nhanh</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Convert anchor tags to Link components */}            <Link
+            {/* Convert anchor tags to Link components */}
+            <Link
               to="/nurse/medications/dashboard"
               className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
             >
@@ -441,7 +452,8 @@ function NurseDashboard() {
               <p className="text-sm text-gray-600 mt-1">
                 Xem và quản lý tất cả thuốc
               </p>
-            </Link>            <Link
+            </Link>
+            <Link
               to="/nurse/medications/admin"
               className="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition"
             >
@@ -449,7 +461,8 @@ function NurseDashboard() {
               <p className="text-sm text-gray-600 mt-1">
                 Ghi lại thuốc đã cấp cho học sinh
               </p>
-            </Link>            <Link
+            </Link>
+            <Link
               to="/nurse/medications/approval"
               className="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition"
             >
@@ -457,7 +470,8 @@ function NurseDashboard() {
               <p className="text-sm text-gray-600 mt-1">
                 Phê duyệt các yêu cầu thuốc đang chờ
               </p>
-            </Link>            <Link
+            </Link>
+            <Link
               to="/nurse/health-checks"
               className="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
             >
@@ -465,7 +479,8 @@ function NurseDashboard() {
               <p className="text-sm text-gray-600 mt-1">
                 Quản lý các cuộc khám sàng lọc sức khỏe đã lên lịch
               </p>
-            </Link>            <Link
+            </Link>
+            <Link
               to="/nurse/vaccinations"
               className="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition"
             >
@@ -475,7 +490,8 @@ function NurseDashboard() {
               </p>
             </Link>
           </div>
-        </div>        {/* Inventory Status */}
+        </div>
+        {/* Inventory Status */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Tình trạng kho</h2>
@@ -505,13 +521,14 @@ function NurseDashboard() {
                   </span>
                 </div>
                 <div className="w-24">
-                  <div className="bg-gray-200 rounded-full h-2.5">                    <div
-                    className={`h-2.5 rounded-full ${item.status === "Sắp hết"
-                        ? "bg-red-600"
-                        : "bg-green-600"
-                      }`}
-                    style={{ width: item.level }}
-                  ></div>
+                  <div className="bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className={`h-2.5 rounded-full ${item.status === "Sắp hết"
+                          ? "bg-red-600"
+                          : "bg-green-600"
+                        }`}
+                      style={{ width: item.level }}
+                    ></div>
                   </div>
                   <div className="text-right text-xs text-gray-500 mt-1">
                     {item.level}
@@ -519,7 +536,8 @@ function NurseDashboard() {
                 </div>
               </li>
             ))}
-          </ul>          <Link
+          </ul>
+          <Link
             to="/nurse/medications/inventory/order"
             className="block mt-4 text-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-150 ease-in-out"
           >

@@ -33,12 +33,11 @@ function MedicalEventForm() {
     studentId: "",
     grade: "",
     eventType: "",
-    eventSubtype: "",
-    date: currentDate,
+    eventSubtype: "",    date: currentDate,
     time: currentTime,
     location: "",
     description: "",
-    severity: "Minor",
+    severity: "Minor", // Giữ "Minor" làm giá trị, nhưng sẽ hiển thị nhãn tiếng Việt "Nhẹ - Chỉ cần sơ cứu"
     treatment: "",
     treatmentBy: "",
     followUpRequired: false,
@@ -189,8 +188,8 @@ function MedicalEventForm() {
 
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Student Information */}          <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông tin Học sinh</h2>
+          {/* Student Information */}          
+          <div className="md:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -229,9 +228,9 @@ function MedicalEventForm() {
                 />
               </div>
             </div>
-          </div>          {/* Event Details */}
+          </div>          
+          {/* Event Details */}
           <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Chi tiết Sự kiện</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -253,24 +252,6 @@ function MedicalEventForm() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Loại sự kiện phụ
-                </label>
-                <select
-                  name="eventSubtype"
-                  value={formData.eventSubtype}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                  disabled={!formData.eventType}
-                >
-                  <option value="">Chọn loại phụ</option>
-                  {availableSubtypes.map(subtype => (
-                    <option key={subtype.value} value={subtype.value}>{subtype.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ngày <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -283,8 +264,10 @@ function MedicalEventForm() {
                 />
               </div>
 
-              <div>                <label className="block text-sm font-medium text-gray-700 mb-1">
-                Thời gian <span className="text-red-500">*</span>
+              <div>                
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Thời gian 
+                <span className="text-red-500">*</span>
               </label>
                 <input
                   type="text"
@@ -297,8 +280,11 @@ function MedicalEventForm() {
                 />
               </div>
 
-              <div>                <label className="block text-sm font-medium text-gray-700 mb-1">
-                Địa điểm <span className="text-red-500">*</span>
+              {/* Địa điểm xảy ra */}
+              {/* <div>                
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Địa điểm 
+                <span className="text-red-500">*</span>
               </label>
                 <input
                   type="text"
@@ -309,10 +295,12 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                   required
                 />
-              </div>
+              </div> */}
 
-              <div>                <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mức độ nghiêm trọng <span className="text-red-500">*</span>
+              <div>                
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mức độ nghiêm trọng 
+                <span className="text-red-500">*</span>
               </label>
                 <select
                   name="severity"
@@ -343,7 +331,7 @@ function MedicalEventForm() {
           </div>
 
           {/* Treatment Information */}
-          <div className="md:col-span-2">            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông tin Điều trị</h2>
+          <div className="md:col-span-2">            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -357,117 +345,8 @@ function MedicalEventForm() {
                   className="w-full p-2 border border-gray-300 rounded"
                 ></textarea>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Người điều trị
-                </label>
-                <input
-                  type="text"
-                  name="treatmentBy"
-                  value={formData.treatmentBy}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Trạng thái
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                >
-                  {statusOptions.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </div>
             </div>
-          </div>
-
-          {/* Follow-up Information */}
-          <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông tin Theo dõi</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="followUpRequired"
-                  name="followUpRequired"
-                  checked={formData.followUpRequired}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded mr-2"
-                />
-                <label htmlFor="followUpRequired" className="text-sm font-medium text-gray-700">
-                  Cần theo dõi thêm
-                </label>
-              </div>              {formData.followUpRequired && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ngày theo dõi
-                  </label>
-                  <input
-                    type="date"
-                    name="followUpDate"
-                    value={formData.followUpDate}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Parent Notification */}
-          <div className="md:col-span-2">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-2">Thông báo Phụ huynh</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="parentNotified"
-                  name="parentNotified"
-                  checked={formData.parentNotified}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded mr-2"
-                />
-                <label htmlFor="parentNotified" className="text-sm font-medium text-gray-700">
-                  Đã thông báo phụ huynh
-                </label>
-              </div>
-
-              {formData.parentNotified && (
-                <>
-                  <div>                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Thời gian thông báo
-                  </label>
-                    <input
-                      type="text"
-                      name="notifiedAt"
-                      value={formData.notifiedAt}
-                      onChange={handleChange}
-                      placeholder="VD: 2025-05-21 10:30 AM"
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
-                  </div>
-
-                  <div>                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Người thông báo
-                  </label>
-                    <input
-                      type="text"
-                      name="notifiedBy"
-                      value={formData.notifiedBy}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+          </div>          
 
           {/* Additional Notes */}          <div className="md:col-span-2">
             <h2 className="text-lg font-semibold mb-4 border-b pb-2">Ghi chú thêm</h2>

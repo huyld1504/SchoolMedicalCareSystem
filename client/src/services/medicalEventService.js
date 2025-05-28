@@ -116,21 +116,21 @@ const medicalEvents = [
 
 // Event type options for dropdown menus
 export const eventTypes = [
-  { value: 'Injury', label: 'Injury' },
-  { value: 'Illness', label: 'Illness' },
-  { value: 'Medical Condition', label: 'Medical Condition' },
-  { value: 'Infectious Disease', label: 'Infectious Disease' },
-  { value: 'Allergic Reaction', label: 'Allergic Reaction' },
-  { value: 'Mental Health', label: 'Mental Health' },
-  { value: 'Other', label: 'Other' }
+  { value: 'Injury', label: 'Chấn thương' },
+  { value: 'Illness', label: 'Ốm bệnh' },
+  { value: 'Medical Condition', label: 'Tình trạng bệnh lý' },
+  { value: 'Infectious Disease', label: 'Bệnh truyền nhiễm' },
+  { value: 'Allergic Reaction', label: 'Phản ứng dị ứng' },
+  { value: 'Mental Health', label: 'Sức khỏe tâm thần' },
+  { value: 'Other', label: 'Khác' }
 ];
 
 // Severity levels
 export const severityLevels = [
-  { value: 'Minor', label: 'Minor - First aid only' },
-  { value: 'Moderate', label: 'Moderate - May require follow-up' },
-  { value: 'Serious', label: 'Serious - Immediate care needed' },
-  { value: 'Severe', label: 'Severe - Emergency response required' }
+  { value: 'Minor', label: 'Nhẹ - Chỉ cần sơ cứu' },
+  { value: 'Moderate', label: 'Trung bình - Có thể cần theo dõi thêm' },
+  { value: 'Serious', label: 'Nghiêm trọng - Cần chăm sóc ngay lập tức' },
+  { value: 'Severe', label: 'Rất nghiêm trọng - Cần đáp ứng khẩn cấp' }
 ];
 
 // Status options
@@ -144,49 +144,49 @@ export const statusOptions = [
 // Event subtypes based on event type
 export const eventSubtypes = {
   'Injury': [
-    { value: 'Fall', label: 'Fall' },
-    { value: 'Sports Injury', label: 'Sports Injury' },
-    { value: 'Cut/Scrape', label: 'Cut/Scrape' },
-    { value: 'Burn', label: 'Burn' },
-    { value: 'Head Injury', label: 'Head Injury' },
-    { value: 'Fracture/Sprain', label: 'Fracture/Sprain' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Fall', label: 'Té ngã' },
+    { value: 'Sports Injury', label: 'Chấn thương thể thao' },
+    { value: 'Cut/Scrape', label: 'Vết cắt/Trầy xước' },
+    { value: 'Burn', label: 'Bỏng' },
+    { value: 'Head Injury', label: 'Chấn thương đầu' },
+    { value: 'Fracture/Sprain', label: 'Gãy xương/Bong gân' },
+    { value: 'Other', label: 'Khác' }
   ],
   'Illness': [
-    { value: 'Fever', label: 'Fever' },
-    { value: 'Headache', label: 'Headache' },
-    { value: 'Nausea/Vomiting', label: 'Nausea/Vomiting' },
-    { value: 'Abdominal Pain', label: 'Abdominal Pain' },
-    { value: 'Respiratory', label: 'Respiratory' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Fever', label: 'Sốt' },
+    { value: 'Headache', label: 'Đau đầu' },
+    { value: 'Nausea/Vomiting', label: 'Buồn nôn/Nôn' },
+    { value: 'Abdominal Pain', label: 'Đau bụng' },
+    { value: 'Respiratory', label: 'Hô hấp' },
+    { value: 'Other', label: 'Khác' }
   ],
   'Medical Condition': [
-    { value: 'Asthma Attack', label: 'Asthma Attack' },
-    { value: 'Diabetic Episode', label: 'Diabetic Episode' },
-    { value: 'Seizure', label: 'Seizure' },
-    { value: 'Migraine', label: 'Migraine' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Asthma Attack', label: 'Cơn hen suyễn' },
+    { value: 'Diabetic Episode', label: 'Biến cố tiểu đường' },
+    { value: 'Seizure', label: 'Co giật' },
+    { value: 'Migraine', label: 'Đau nửa đầu' },
+    { value: 'Other', label: 'Khác' }
   ],
   'Infectious Disease': [
-    { value: 'Suspected Flu', label: 'Suspected Flu' },
-    { value: 'Common Cold', label: 'Common Cold' },
-    { value: 'Strep Throat', label: 'Strep Throat' },
-    { value: 'Skin Infection', label: 'Skin Infection' },
-    { value: 'Pink Eye', label: 'Pink Eye' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Suspected Flu', label: 'Nghi ngờ cúm' },
+    { value: 'Common Cold', label: 'Cảm lạnh thông thường' },
+    { value: 'Strep Throat', label: 'Viêm họng liên cầu' },
+    { value: 'Skin Infection', label: 'Nhiễm trùng da' },
+    { value: 'Pink Eye', label: 'Đau mắt đỏ' },
+    { value: 'Other', label: 'Khác' }
   ],
   'Allergic Reaction': [
-    { value: 'Food Allergy', label: 'Food Allergy' },
-    { value: 'Insect Sting', label: 'Insect Sting' },
-    { value: 'Medication', label: 'Medication' },
-    { value: 'Seasonal', label: 'Seasonal' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Food Allergy', label: 'Dị ứng thực phẩm' },
+    { value: 'Insect Sting', label: 'Côn trùng đốt' },
+    { value: 'Medication', label: 'Dị ứng thuốc' },
+    { value: 'Seasonal', label: 'Dị ứng theo mùa' },
+    { value: 'Other', label: 'Khác' }
   ],
   'Mental Health': [
-    { value: 'Anxiety', label: 'Anxiety' },
-    { value: 'Distress', label: 'Distress' },
-    { value: 'Behavioral Issue', label: 'Behavioral Issue' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Anxiety', label: 'Lo âu' },
+    { value: 'Distress', label: 'Căng thẳng' },
+    { value: 'Behavioral Issue', label: 'Vấn đề hành vi' },
+    { value: 'Other', label: 'Khác' }
   ]
 };
 

@@ -30,23 +30,20 @@ function HealthRecordView() {
   // Fetch student health record data
   useEffect(() => {
     // Simulate API call
-    setTimeout(() => {
-      // Set student basic info
+    setTimeout(() => {      // Set student basic info
       setStudentInfo({
-        firstName: "John Doe",
-        dateOfBirth: "2010-05-15",
+        firstName: "Emma Johnson",
+        dateOfBirth: "2015-01-20",
         gender: "male",
-        grade: "10",
-        class: "10A",
+        grade: "5",
+        class: "5A",
         studentId: "ST2024001",
-      });
-
-      // Set multiple health records
+      });      // Set multiple health records
       setHealthRecords([{
         id: "rec1",
         recordDate: "2025-05-15",
         recordType: "Khám sức khỏe hàng năm",
-        provider: "Bác sĩ Sarah Johnson",
+        provider: "Bác sĩ Nguyễn Thị Hương",
         bloodType: "A+",
         height: "170",
         weight: "65",
@@ -60,10 +57,10 @@ function HealthRecordView() {
         hearingAid: false,
         emergencyContacts: [
           {
-            name: "Mary Doe",
+            name: "Nguyễn Thị Lan",
             relationship: "mẹ",
             phone: "555-0123",
-            email: "mary.doe@email.com",
+            email: "lan.nguyen@email.com",
           },
         ],
         consentEmergencyTreatment: true,
@@ -75,7 +72,7 @@ function HealthRecordView() {
         id: "rec2",
         recordDate: "2024-11-10",
         recordType: "Tiêm chủng",
-        provider: "Bác sĩ Michael Chen",
+        provider: "Bác sĩ Trần Minh Đức",
         bloodType: "A+",
         height: "168",
         weight: "63",
@@ -89,10 +86,10 @@ function HealthRecordView() {
         hearingAid: false,
         emergencyContacts: [
           {
-            name: "Mary Doe",
+            name: "Nguyễn Thị Lan",
             relationship: "mẹ",
             phone: "555-0123",
-            email: "mary.doe@email.com",
+            email: "lan.nguyen@email.com",
           },
         ],
         consentEmergencyTreatment: true,
@@ -118,10 +115,10 @@ function HealthRecordView() {
         hearingAid: false,
         emergencyContacts: [
           {
-            name: "Mary Doe",
+            name: "Nguyễn Thị Lan",
             relationship: "mẹ",
             phone: "555-0123",
-            email: "mary.doe@email.com",
+            email: "lan.nguyen@email.com",
           },
         ],
         consentEmergencyTreatment: true,
@@ -563,23 +560,22 @@ function HealthRecordView() {
   );  // Simple record selector to switch between records
   const renderRecordSelector = () => (
     <div className="mb-6">
-      <div className="bg-white shadow rounded-lg">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Hồ sơ sức khỏe</h3>
-          <div className="flex space-x-2">
-            {healthRecords.map((record, index) => (
-              <button
-                key={record.id}
-                onClick={() => setSelectedRecordIndex(index)}
-                className={`px-4 py-2 rounded-md ${selectedRecordIndex === index
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                  }`}
-              >
-                {new Date(record.recordDate).toLocaleDateString()}
-              </button>
-            ))}
-          </div>
+      <div className="flex items-center justify-between border-b border-gray-200 py-3">
+        <h3 className="text-lg font-medium text-gray-900">Hồ sơ sức khỏe</h3>
+        <div className="flex space-x-2">
+          {healthRecords.map((record, index) => (
+            <button
+              key={record.id}
+              onClick={() => setSelectedRecordIndex(index)}
+              className={`px-3 py-1 rounded-md text-sm ${
+                selectedRecordIndex === index
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+              }`}
+            >
+              {new Date(record.recordDate).toLocaleDateString()}
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -591,75 +587,60 @@ function HealthRecordView() {
       </div>
     );
   }
-
-  return (<div className="max-w-4xl mx-auto py-8 px-4 print:p-0">
-    <div className="flex justify-between items-center mb-6 print:mb-8">
-      <h1 className="text-3xl font-bold">Hồ sơ sức khỏe</h1>
-      <div className="space-x-4 print:hidden">
-        {currentUser?.role === 'parent' && (
+  return (
+    <div className="max-w-5xl mx-auto py-4 px-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Hồ sơ sức khỏe</h1>
+        <div className="flex space-x-2">
+          {currentUser?.role === 'parent' && (
+            <>
+              <button
+                onClick={() => navigate(`/parent/health-records/${id}/edit`)}
+                className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                Chỉnh sửa
+              </button>
+              <button
+                onClick={() => navigate(`/parent/health-records/new?studentId=${id}`)}
+                className="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 flex items-center"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Thêm mới
+              </button>
+            </>
+          )}
           <button
-            onClick={() => navigate(`/parent/health-records/${id}/edit`)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={handlePrint}
+            className="px-3 py-1.5 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 flex items-center"
           >
-            Chỉnh sửa hồ sơ
-          </button>
-        )}
-        {currentUser?.role === 'parent' && (
-          <button
-            onClick={() => navigate(`/parent/health-records/new?studentId=${id}`)}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            <span className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              Thêm hồ sơ
-            </span>
-          </button>
-        )}
-        <button
-          onClick={handlePrint}
-          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-        >
-          <span className="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-              />
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            In hồ sơ
-          </span>
-        </button>
-        <button
-          onClick={() => navigate(-1)}
-          className="px-4 py-2 text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
-        >
-          Quay lại
-        </button>
-      </div>
-    </div>
-
-    {/* Student Info Card */}
-    <div className="bg-white shadow rounded-lg p-4 mb-6">
+            In
+          </button>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-3 py-1.5 text-gray-700 bg-gray-100 text-sm rounded hover:bg-gray-200"
+          >
+            Quay lại
+          </button>
+        </div>
+      </div>    {/* Student Basic Info */}
+    <div className="bg-gray-50 p-4 rounded-lg mb-4">
       <div className="flex items-center">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-4">
+        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-3">
           {studentInfo.firstName.charAt(0)}
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{studentInfo.firstName}</h2>
-          <div className="flex text-sm text-gray-500 mt-1">
-            <p className="mr-4">ID: {studentInfo.studentId}</p>
-            <p className="mr-4">Class: {studentInfo.class}</p>
-            <p>DOB: {new Date(studentInfo.dateOfBirth).toLocaleDateString()}</p>
+          <h2 className="font-semibold text-gray-900">{studentInfo.firstName}</h2>
+          <div className="flex text-sm text-gray-600 space-x-3">
+            <span>ID: {studentInfo.studentId}</span>
+            <span>•</span>
+            <span>Lớp: {studentInfo.class}</span>
+            <span>•</span>
+            <span>NS: {new Date(studentInfo.dateOfBirth).toLocaleDateString()}</span>
           </div>
         </div>
       </div>
@@ -668,89 +649,213 @@ function HealthRecordView() {
     {/* Record Selector */}
     {renderRecordSelector()}
 
-    {/* Selected Record Details */}
-    {currentRecord && (
-      <div className="bg-white shadow rounded-lg mb-6">
+    {/* Selected Record Details */}    {currentRecord && (
+      <div className="bg-white rounded-lg mb-4">
         {/* Record Header */}
-        <div className="bg-blue-50 p-4 border-b border-blue-100 flex justify-between items-center">
+        <div className="bg-blue-50 p-3 border-b flex justify-between items-center">
           <div>
-            <h3 className="text-lg font-medium text-blue-800">
+            <h3 className="text-base font-medium text-blue-800">
               {currentRecord.recordType}
-            </h3>              <p className="text-sm text-gray-600 mt-1">
-              Ngày: {new Date(currentRecord.recordDate).toLocaleDateString()} | Nhà cung cấp: {currentRecord.provider}
+            </h3>
+            <p className="text-sm text-gray-600">
+              Ngày: {new Date(currentRecord.recordDate).toLocaleDateString()} | Bác sĩ: {currentRecord.provider}
             </p>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-1">
             <button
               onClick={() => setSelectedRecordIndex(Math.max(0, selectedRecordIndex - 1))}
               disabled={selectedRecordIndex === 0}
-              className={`p-2 rounded-full mr-2 ${selectedRecordIndex === 0
+              className={`p-1.5 rounded ${
+                selectedRecordIndex === 0
                   ? "text-gray-400 cursor-not-allowed"
                   : "text-blue-600 hover:bg-blue-100"
-                }`}
+              }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </button>
             <button
               onClick={() => setSelectedRecordIndex(Math.min(healthRecords.length - 1, selectedRecordIndex + 1))}
               disabled={selectedRecordIndex === healthRecords.length - 1}
-              className={`p-2 rounded-full ${selectedRecordIndex === healthRecords.length - 1
+              className={`p-1.5 rounded ${
+                selectedRecordIndex === healthRecords.length - 1
                   ? "text-gray-400 cursor-not-allowed"
                   : "text-blue-600 hover:bg-blue-100"
-                }`}
+              }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
-        </div>
+        </div>        <div className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="bg-gray-50 p-3 rounded">
+              <p className="text-sm text-gray-500">Chiều cao</p>
+              <p className="text-lg font-medium">{currentRecord.height} cm</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded">
+              <p className="text-sm text-gray-500">Cân nặng</p>
+              <p className="text-lg font-medium">{currentRecord.weight} kg</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded">
+              <p className="text-sm text-gray-500">Nhóm máu</p>
+              <p className="text-lg font-medium">{currentRecord.bloodType}</p>
+            </div>
+          </div>          {/* Medical Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Left Column */}
+            <div className="space-y-4">
+              {/* Allergies */}
+              <div className="bg-gray-50 p-3 rounded">
+                <h4 className="text-sm font-medium mb-2">Dị ứng</h4>
+                <div className="flex flex-wrap gap-1">
+                  {currentRecord.allergies?.length > 0 ? (
+                    currentRecord.allergies.map((allergy, index) => (
+                      <span key={index} className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
+                        {allergy}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-500">Không có dị ứng</span>
+                  )}
+                </div>
+              </div>
 
-        <div className="p-6">            {/* Personal Information Card */}
-          <div className="bg-gray-50 p-5 rounded-lg mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Thông tin cá nhân
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Tên đầy đủ</p>
-                <p className="mt-1">{studentInfo.firstName}</p>
+              {/* Vision */}
+              <div className="bg-gray-50 p-3 rounded">
+                <h4 className="text-sm font-medium mb-2">Thị lực</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-xs text-gray-500">Mắt trái</p>
+                    <p className="text-sm">{currentRecord.visionLeft}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Mắt phải</p>
+                    <p className="text-sm">{currentRecord.visionRight}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 mt-2">
+                  {currentRecord.wearGlasses ? "Không đeo kính" : "Có đeo kính"}
+                </p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Mã học sinh</p>
-                <p className="mt-1">{studentInfo.studentId}</p>
+
+              {/* Vaccinations */}
+              {currentRecord.vaccinations && (
+                <div className="bg-gray-50 p-3 rounded">
+                  <h4 className="text-sm font-medium mb-2">Tiêm chủng</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {currentRecord.vaccinations.map((vac, index) => (
+                      <span key={index} className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                        {vac}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4">
+              {/* Chronic Conditions */}
+              <div className="bg-gray-50 p-3 rounded">
+                <h4 className="text-sm font-medium mb-2">Bệnh mạn tính</h4>
+                <div className="flex flex-wrap gap-1">
+                  {currentRecord.chronicConditions?.length > 0 ? (
+                    currentRecord.chronicConditions.map((condition, index) => (
+                      <span key={index} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                        {condition}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-500">Không có bệnh mạn tính</span>
+                  )}
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Lớp</p>
-                <p className="mt-1">{studentInfo.class}</p>
+
+              {/* Hearing */}
+              <div className="bg-gray-50 p-3 rounded">
+                <h4 className="text-sm font-medium mb-2">Thính lực</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-xs text-gray-500">Tai trái</p>
+                    <p className="text-sm">{currentRecord.hearingLeft}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Tai phải</p>
+                    <p className="text-sm">{currentRecord.hearingRight}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 mt-2">
+                  {currentRecord.hearingAid ? "Có dùng thiết bị trợ thính" : "Không dùng thiết bị trợ thính"}
+                </p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Ngày sinh</p>
-                <p className="mt-1">{studentInfo.dateOfBirth}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Giới tính</p>
-                <p className="mt-1 capitalize">{studentInfo.gender}</p>
-              </div>
+
+              {/* Sports Fitness */}
+              {currentRecord.sportsFitness && (
+                <div className="bg-gray-50 p-3 rounded">
+                  <h4 className="text-sm font-medium mb-2">Đánh giá thể lực</h4>
+                  <div className="grid gap-2">
+                    {Object.entries(currentRecord.sportsFitness).map(([key, value]) => (
+                      <div key={key} className="flex justify-between">
+                        <span className="text-xs text-gray-500">
+                          {key === 'cardioEndurance' ? 'Sức bền' :
+                           key === 'strength' ? 'Sức mạnh' : 'Linh hoạt'}
+                        </span>
+                        <span className="text-sm">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>          {/* Notes */}
+          {currentRecord.notes && (
+            <div className="mt-4 bg-gray-50 p-3 rounded">
+              <h4 className="text-sm font-medium mb-2">Ghi chú</h4>
+              <p className="text-sm text-gray-700">{currentRecord.notes}</p>
+            </div>
+          )}
+
+          {/* Emergency Contacts */}
+          <div className="mt-4 bg-gray-50 p-3 rounded">
+            <h4 className="text-sm font-medium mb-3">Liên hệ phụ huynh</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {currentRecord.emergencyContacts?.map((contact, index) => (
+                <div key={index} className="bg-white p-3 rounded border border-gray-200">
+                  <div className="flex items-start">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{contact.name}</p>
+                      <p className="text-xs text-gray-500 capitalize">{contact.relationship}</p>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs flex items-center">
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                          {contact.phone}
+                        </p>
+                        <p className="text-xs flex items-center">
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          {contact.email}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-
-          {/* Display the comprehensive record view */}
-          {renderComprehensiveRecord(currentRecord)}
         </div>
       </div>
     )}
-
-    <style type="text/css" media="print">{`
-        @page { size: auto; margin: 20mm; }
-        body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-        .print\\:hidden { display: none !important; }
-        .print\\:shadow-none { box-shadow: none !important; }
-        .print\\:p-0 { padding: 0 !important; }
-        .print\\:mb-8 { margin-bottom: 2rem !important; }
-      `}</style>
   </div>
   );
 }

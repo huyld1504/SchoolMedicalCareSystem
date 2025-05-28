@@ -5,15 +5,15 @@ function StudentRecords() {
     const [students] = useState([
         {
             id: 1,
-            studentId: "ST2025001",
-            name: "John Doe",
-            grade: "10",
-            age: 16,
-            class: "10A",
+            studentId: "ST2024001",
+            name: "Emma Johnson",
+            grade: "5",
+            age: 10,
+            class: "5A",
             bloodType: "A+",
-            allergies: ["Peanuts", "Dust"],
-            lastCheckup: "2025-04-15",
-            emergencyContact: "Mary Doe (Mother) - 555-0123"
+            allergies: ["Đậu Phộng", "Bụi"],
+            lastCheckup: "2025-05-15",
+            emergencyContact: "Nguyễn Thị Lan (Mẹ) - 555-0123"
         },
         {
             id: 2,
@@ -59,16 +59,17 @@ function StudentRecords() {
     );
 
     return (
-        <div className="p-6">            <div className="flex justify-between items-center mb-6">
+        <div className="p-6">            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <h1 className="text-2xl font-bold">Hồ Sơ Sức Khỏe Học Sinh</h1>
-            <div className="flex gap-4">
-                <div className="relative">                        <input
-                    type="text"
-                    placeholder="Tìm kiếm theo tên hoặc mã học sinh"
-                    className="w-72 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                <div className="relative w-full md:w-96">
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm theo tên hoặc mã học sinh"
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                     <svg
                         className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
                         fill="none"
@@ -126,7 +127,7 @@ function StudentRecords() {
                                     </div>
 
                                     {/* Plan Health Screening Button */}
-                                    <button
+                                    {/* <button
                                         className="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition duration-150 flex items-center"
                                         onClick={() => alert(`Open health screening for ${student.name}`)}
                                     >
@@ -138,7 +139,7 @@ function StudentRecords() {
                                             <div className="font-medium">Lập Kế Hoạch Khám Sức Khỏe</div>
                                             <div className="text-sm text-gray-500">Đặt lịch khám sức khỏe</div>
                                         </div>
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>                            <div className="mt-4">
                                 <p className="text-gray-600 text-sm font-medium">Dị ứng:</p>
