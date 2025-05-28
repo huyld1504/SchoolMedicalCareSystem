@@ -1,19 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import MagnusNavbar from "../components/magnus/MagnusNavbar";
-import MagnusFooter from "../components/magnus/MagnusFooter";
+import Navbar from "../components/public/Navbar";
+import Footer from "../components/public/Footer";
 
 function PublicLayout({ children }) {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    navigate(-1); // Navigate to the previous page
-  };
   return (
     <div className="public-layout">
-      <MagnusNavbar />
-      <main>{children}</main>
-      <MagnusFooter />
+      <Navbar />
+      <main className="pt-20">{children}</main>
+      <Footer />
     </div>
   );
 }

@@ -71,11 +71,9 @@ export function AuthProvider({ children }) {
 
     const user = mockUsers.find(
       (u) => u.email === email && u.password === password
-    );
-
-    if (user) {
+    ); if (user) {
       // Remove password before storing user data
-      const { password, ...userWithoutPassword } = user;
+      const { password: _password, ...userWithoutPassword } = user;
 
       // Store user in state and localStorage
       setCurrentUser(userWithoutPassword);
@@ -85,23 +83,15 @@ export function AuthProvider({ children }) {
       throw new Error("Invalid email or password");
     }
   };
-
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem("user");
-  };
-
-  const register = async (userDetails) => {
-    // In a real app, this would be an API call to your registration endpoint
-    // For demonstration, we're just returning a success message
-    return { success: true, message: "Registration successful" };
   };
 
   const value = {
     currentUser,
     login,
     logout,
-    register,
   };
 
   return (

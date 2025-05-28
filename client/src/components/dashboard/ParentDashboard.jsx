@@ -90,9 +90,8 @@ function ParentDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <nav className="bg-blue-600 p-4">
-        <div className="container mx-auto flex justify-between items-center">          <Link to="/" className="text-white text-xl font-bold">Hệ thống Y tế Magnus</Link>
+      {/* Header */}      <nav className="bg-blue-600 p-4">
+        <div className="container mx-auto flex justify-between items-center">          <Link to="/" className="text-white text-xl font-bold">School Medical Care System</Link>
           <button className="text-white">Đăng xuất</button>
         </div>
       </nav>

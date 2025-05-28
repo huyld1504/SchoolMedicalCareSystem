@@ -39,7 +39,7 @@ function MedicationForm() {
         <div className="min-h-screen bg-gray-100">            <nav className="bg-blue-600 p-4">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/dashboard" className="text-white text-xl font-bold">
-                    Magnus Health
+                    School Medical
                 </Link>
                 <Link to="/dashboard" className="text-white">
                     Quay lại Bảng điều khiển

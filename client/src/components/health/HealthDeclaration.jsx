@@ -28,15 +28,14 @@ function HealthDeclaration() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <nav className="bg-blue-600 p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <Link to="/dashboard" className="text-white text-xl font-bold">
-            Magnus Health
-          </Link>
-          <Link to="/dashboard" className="text-white">
-            Back to Dashboard
-          </Link>
-        </div>
+      <nav className="bg-blue-600 p-4">        <div className="container mx-auto flex justify-between items-center">
+        <Link to="/dashboard" className="text-white text-xl font-bold">
+          School Medical Care System
+        </Link>
+        <Link to="/dashboard" className="text-white">
+          Back to Dashboard
+        </Link>
+      </div>
       </nav>
 
       <div className="container mx-auto px-4 py-8">
