@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import "./MedicationInventory.css";
 
 function MedicationInventory() {
   const [loading, setLoading] = useState(true);
@@ -151,7 +152,6 @@ function MedicationInventory() {
       usageRate: "Low",
     },
   ];
-
   // Load medication data
   useEffect(() => {
     const fetchMedications = async () => {
@@ -169,7 +169,7 @@ function MedicationInventory() {
         setLoading(false);
       }
     }; fetchMedications();
-  }, [sampleMedications]);
+  }, []);
 
   // Handle sort
   const handleSort = (field) => {
@@ -418,11 +418,11 @@ function MedicationInventory() {
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>            <label
-              htmlFor="search"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Tìm Kiếm Thuốc
-            </label>
+            htmlFor="search"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Tìm Kiếm Thuốc
+          </label>
             <input
               type="text"
               id="search"
@@ -527,9 +527,7 @@ function MedicationInventory() {
               </div>
             </div>
           </div>
-        )}
-
-      {/* Medications List */}
+        )}      {/* Medications List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="p-6 border-b flex justify-between items-center">          <h2 className="text-xl font-semibold">Thuốc</h2>
           <div className="text-sm text-gray-500">
@@ -543,10 +541,9 @@ function MedicationInventory() {
           </div>
         ) : filteredMedications.length === 0 ? (<div className="p-12 text-center text-gray-500">
           Không tìm thấy thuốc nào phù hợp với tiêu chí của bạn.
-        </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+        </div>) : (
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto table-container">
+            <table className="min-w-full divide-y divide-gray-200 table-fixed w-full">
               <thead className="bg-gray-50">
                 <tr>
                   <th

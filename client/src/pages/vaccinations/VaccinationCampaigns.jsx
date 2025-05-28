@@ -13,6 +13,10 @@ function VaccinationCampaigns() {
   const [scheduleCampaign, setScheduleCampaign] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [selectedCampaignForResponse, setSelectedCampaignForResponse] = useState(null);
+  const [declineReason, setDeclineReason] = useState("");
+  const [userResponses, setUserResponses] = useState({}); // Track user responses to campaigns
   const isNurseOrManager = ['nurse', 'manager', 'admin'].includes(currentUser?.role);
 
   // Form state for new campaign
@@ -45,8 +49,7 @@ function VaccinationCampaigns() {
         declined: 45,
         pending: 159
       }
-    },
-    {
+    }, {
       id: 2,
       title: "Mũi tiêm nhắc lại COVID-19",
       vaccineType: "COVID-19 mRNA",
@@ -54,7 +57,7 @@ function VaccinationCampaigns() {
       startDate: "2023-09-05",
       endDate: "2023-09-10",
       description: "Tiêm nhắc lại vắc xin COVID-19 cho học sinh đủ điều kiện từ 12 tuổi trở lên.",
-      status: "upcoming",
+      status: "active",
       createdBy: "Bác sĩ Robert Taylor",
       createdAt: "2023-05-18",
       stats: {
@@ -83,8 +86,7 @@ function VaccinationCampaigns() {
         declined: 30,
         pending: 200
       }
-    },
-    {
+    }, {
       id: 4,
       title: "Tiêm vắc xin HPV",
       vaccineType: "Vi rút u nhú người (HPV)",
@@ -92,7 +94,7 @@ function VaccinationCampaigns() {
       startDate: "2023-11-15",
       endDate: "2023-11-17",
       description: "Mũi tiêm đầu tiên vắc xin HPV cho học sinh lớp 7.",
-      status: "planning",
+      status: "active",
       createdBy: "Bác sĩ Michael Chen",
       createdAt: "2023-05-10",
       stats: {
@@ -264,10 +266,8 @@ function VaccinationCampaigns() {
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchCampaigns();
-  }, [sampleCampaigns]);
+    }; fetchCampaigns();
+  }, []); // Remove dependency to prevent infinite loop
 
   // Filter campaigns based on search term and status filter
   const filteredCampaigns = campaigns.filter(campaign => {
@@ -408,6 +408,46 @@ function VaccinationCampaigns() {
     setShowScheduleModal(true);
   };
 
+  // Handle consent for vaccination
+  const handleConsent = (campaignId) => {
+    setUserResponses(prev => ({
+      ...prev,
+      [campaignId]: {
+        type: 'consent',
+        timestamp: new Date().toISOString(),
+        reason: null
+      }
+    }));
+  };
+
+  // Handle decline for vaccination
+  const handleDecline = (campaignId) => {
+    setSelectedCampaignForResponse(campaignId);
+    setShowDeclineModal(true);
+  };
+
+  // Handle decline submission
+  const handleDeclineSubmit = () => {
+    if (selectedCampaignForResponse && declineReason.trim()) {
+      setUserResponses(prev => ({
+        ...prev,
+        [selectedCampaignForResponse]: {
+          type: 'decline',
+          timestamp: new Date().toISOString(),
+          reason: declineReason.trim()
+        }
+      }));
+      setShowDeclineModal(false);
+      setSelectedCampaignForResponse(null);
+      setDeclineReason('');
+    }
+  };
+
+  // Check if user has responded to a campaign
+  const getUserResponse = (campaignId) => {
+    return userResponses[campaignId] || null;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
       <div>
@@ -532,64 +572,77 @@ function VaccinationCampaigns() {
                 </div>
 
                 <p className="mt-4 text-sm text-gray-600 line-clamp-2">{campaign.description}</p>                {/* Campaign Stats */}
-                {campaign.stats && (
-                  <div className="mt-6">
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tình trạng chiến dịch</h4>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{
-                          width: `${(campaign.stats.consented / campaign.stats.eligible) * 100}%`
-                        }}
-                      ></div>
+
+              </div>              <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
+                {/* Show consent/decline buttons for active campaigns (parent view) */}
+                {campaign.status === 'active' && !isNurseOrManager && (
+                  <div className="flex space-x-2 w-full">                    {getUserResponse(campaign.id) ? (<div className="w-full">
+                    {getUserResponse(campaign.id).type === 'consent' ? (
+                      <div className="w-full p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                        <div className="flex items-center justify-center text-green-700 font-medium mb-2">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          Đã đồng ý tham gia
+                        </div>
+                        <div className="text-sm text-green-600 text-center">
+                          Xác nhận ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-full p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                        <div className="flex items-center justify-center text-red-700 font-medium mb-2">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          Đã từ chối
+                        </div>
+                        <div className="text-sm text-red-600 text-center">
+                          Từ chối ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
+                        </div>
+                        {getUserResponse(campaign.id).reason && (
+                          <div className="text-sm text-red-600 text-center mt-2 italic">
+                            Lý do: {getUserResponse(campaign.id).reason}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>) : (
+                    <div className="grid grid-cols-2 gap-3 w-full">
+                      <button
+                        onClick={() => handleConsent(campaign.id)}
+                        className="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition duration-150 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Đồng ý tham gia
+                      </button>
+                      <button
+                        onClick={() => handleDecline(campaign.id)}
+                        className="flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition duration-150 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Từ chối
+                      </button>
                     </div>
-                    <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
-                      <div>
-                        <p className="text-gray-500">Đủ điều kiện</p>
-                        <p className="font-medium">{campaign.stats.eligible}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Đã đồng ý</p>
-                        <p className="font-medium">{campaign.stats.consented}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Đã tiêm</p>
-                        <p className="font-medium">{campaign.stats.vaccinated}</p>
-                      </div>
-                    </div>
+                  )}
                   </div>
                 )}
-              </div>              <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                <div className="text-xs text-gray-500">
-                  Tạo bởi {campaign.createdBy}
-                </div>
 
-                <div className="flex space-x-2">
-                  {isNurseOrManager && (
+                {/* Admin/nurse controls */}
+                {isNurseOrManager && (
+                  <div className="flex space-x-2">
                     <button
                       className="px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm font-medium hover:bg-blue-200"
                       onClick={() => handleEditCampaign(campaign)}
                     >
                       Chỉnh sửa
                     </button>
-                  )}
-
-                  {(campaign.status === 'upcoming' || campaign.status === 'active' || campaign.status === 'planning') && (
-                    <button
-                      className="px-3 py-1 bg-green-100 text-green-600 rounded text-sm font-medium hover:bg-green-200"
-                      onClick={() => handleViewSchedule(campaign)}
-                    >
-                      Lịch trình
-                    </button>
-                  )}
-
-                  <button
-                    className="px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm font-medium hover:bg-gray-200"
-                    onClick={() => navigate(`/nurse/vaccinations/${campaign.id}/records`)}
-                  >
-                    Hồ sơ
-                  </button>
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -880,7 +933,59 @@ function VaccinationCampaigns() {
             </div>
           </div>
         </div>
-      )}      {/* Info Section */}
+      )}
+
+      {/* Decline Reason Modal */}
+      {showDeclineModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div className="p-6 border-b">
+              <h3 className="text-xl font-semibold text-gray-900">Từ chối tham gia chiến dịch tiêm chủng</h3>
+            </div>
+
+            <div className="p-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Vui lòng cho biết lý do từ chối tham gia chiến dịch tiêm chủng này:
+              </p>
+
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Nhập lý do từ chối..."
+                required
+              />
+
+              {declineReason.trim() === '' && (
+                <p className="text-sm text-red-600 mt-1">Vui lòng nhập lý do từ chối</p>
+              )}
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowDeclineModal(false);
+                  setSelectedCampaignForResponse(null);
+                  setDeclineReason('');
+                }}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleDeclineSubmit}
+                disabled={declineReason.trim() === ''}
+                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Xác nhận từ chối
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Info Section */}
       <div className="mt-8 bg-blue-50 border-l-4 border-blue-500 p-5 rounded-lg">
         <div className="flex">
           <div className="flex-shrink-0">
