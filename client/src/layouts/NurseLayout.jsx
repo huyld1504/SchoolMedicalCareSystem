@@ -41,9 +41,9 @@ function NurseLayout({ children }) {
               className="rounded-circle"
             />          </div>
           <div className="user-name">{currentUser.name}</div>
-        </div>        
-        
-        
+        </div>
+
+
         <nav className="nav flex-column p-2">
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Chính
@@ -56,29 +56,21 @@ function NurseLayout({ children }) {
           </a>          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Dịch vụ Y tế
           </div>          {/* Quick Actions in Medical Services Section */}
-         
+          <a href="/nurse/medications/dashboard" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-graph-up me-2"></i> Bảng điều khiển thuốc
+          </a>
           <a href="/nurse/medications/admin" className="nav-link text-white d-flex align-items-center py-2">
             <i className="bi bi-clipboard2-pulse me-2"></i> Cấp thuốc
           </a>
           <a href="/nurse/health-checks" className="nav-link text-white d-flex align-items-center py-2">
             <i className="bi bi-heart-pulse me-2"></i> Khám sức khỏe
           </a>
-          
-          <a href="/nurse/medications/inventory" className="nav-link text-white d-flex align-items-center py-2">
-            <i className="bi bi-box-seam me-2"></i> Kho thuốc
-          </a>
-        
-                   
+
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medical-events"
           >
             <i className="bi bi-journal-medical me-2"></i> Danh sách sự kiện
-          </a>          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/medical-events/new"
-          >
-            <i className="bi bi-plus-circle me-2"></i> Sự kiện y tế mới
           </a>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
@@ -86,12 +78,7 @@ function NurseLayout({ children }) {
           >
             <i className="bi bi-capsule me-2"></i> Thuốc
           </a>
-          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/medications/admin"
-          >
-            <i className="bi bi-clipboard2-pulse me-2"></i> Cấp thuốc
-          </a>
+          
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medications/inventory"
@@ -147,7 +134,7 @@ function NurseLayout({ children }) {
             </div>
           </div>
         </div>
-  
+
       </header>
         <main className="p-4">{children}</main>
       </div>
