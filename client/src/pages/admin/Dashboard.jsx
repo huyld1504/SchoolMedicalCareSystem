@@ -3,79 +3,75 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 function AdminDashboard() {
-    const { currentUser } = useAuth();    // Dữ liệu thống kê mẫu
+    const { currentUser } = useAuth();    // Dữ liệu thống kê mẫu cho trường tiểu học
     const [stats, setStats] = useState({
-        totalUsers: 376,
-        activeUsers: 340,
-        pendingApprovals: 12,
-        securityAlerts: 3
-    });
-
-    // Hoạt động gần đây của người dùng
+        totalUsers: 850, // Học sinh: 600, Phụ huynh: 200, Giáo viên: 40, Nhân viên: 10
+        activeUsers: 780,
+        pendingApprovals: 8,
+        securityAlerts: 1
+    });    // Hoạt động gần đây phù hợp với trường tiểu học
     const [recentActivities, setRecentActivities] = useState([
         {
             id: 1,
             type: "medication_request",
-            user: "Sarah Johnson",
-            userRole: "Y tá",
+            user: "Cô Nguyễn Thị Lan",
+            userRole: "Y tá trường",
             action: "Cập nhật kho thuốc",
-            description: "Thêm 50 viên Ibuprofen vào kho",
-            time: "10 phút trước",
-            timestamp: "2025-05-25 14:30:00",
+            description: "Thêm 30 viên Paracetamol trẻ em vào kho",
+            time: "15 phút trước",
+            timestamp: "2025-05-29 14:30:00",
             ipAddress: "192.168.1.101",
             severity: "info"
         },
         {
             id: 2,
             type: "health_report",
-            user: "Robert Lee",
-            userRole: "Quản lý",
+            user: "Thầy Trần Văn Minh",
+            userRole: "Hiệu trưởng",
             action: "Tạo báo cáo sức khỏe hàng tháng",
-            description: "Tạo báo cáo sức khỏe tổng hợp tháng 5/2025",
-            time: "1 giờ trước",
-            timestamp: "2025-05-25 13:15:00",
+            description: "Báo cáo tình hình sức khỏe học sinh lớp 1-5 tháng 5/2025",
+            time: "2 giờ trước",
+            timestamp: "2025-05-29 13:15:00",
             ipAddress: "192.168.1.102",
             severity: "info"
         },
         {
             id: 3,
             type: "user_registration",
-            user: "Mary Williams",
+            user: "Cô Lê Thị Hồng",
             userRole: "Quản trị viên",
-            action: "Thêm tài khoản người dùng mới",
-            description: "Tạo tài khoản phụ huynh cho Jennifer Davis",
-            time: "3 giờ trước",
-            timestamp: "2025-05-25 11:20:00",
+            action: "Thêm tài khoản phụ huynh mới",
+            description: "Tạo tài khoản cho phụ huynh em Nguyễn Minh An - lớp 3A",
+            time: "4 giờ trước",
+            timestamp: "2025-05-29 11:20:00",
             ipAddress: "192.168.1.100",
             severity: "success"
         },
         {
             id: 4,
-            type: "medication_request",
-            user: "James Brown",
+            type: "vaccination_record",
+            user: "Chị Phạm Thị Mai",
             userRole: "Phụ huynh",
-            action: "Gửi yêu cầu thuốc",
-            description: "Yêu cầu cung cấp Albuterol hàng ngày cho con",
+            action: "Cập nhật thông tin tiêm chủng",
+            description: "Cập nhật mũi tiêm Sởi-Rubella cho con (lớp 2B)",
             time: "Hôm qua",
-            timestamp: "2025-05-24 16:45:00",
+            timestamp: "2025-05-28 16:45:00",
             ipAddress: "10.0.0.15",
-            severity: "warning"
+            severity: "success"
         },
         {
             id: 5,
-            type: "system_backup",
-            user: "Hệ thống",
-            userRole: "Hệ thống",
-            action: "Hoàn tất sao lưu cơ sở dữ liệu",
-            description: "Sao lưu tự động hàng ngày hoàn tất thành công",
+            type: "health_check",
+            user: "BS. Hoàng Thị Thu",
+            userRole: "Bác sĩ",
+            action: "Hoàn thành khám sức khỏe định kỳ",
+            description: "Khám sức khỏe đầu năm học cho 25 học sinh lớp 1A",
             time: "Hôm qua",
-            timestamp: "2025-05-24 02:00:00",
-            ipAddress: "127.0.0.1",
+            timestamp: "2025-05-28 10:30:00",
+            ipAddress: "192.168.1.103",
             severity: "success"
         }
-    ]);
-
-    // Helper function to get activity icon
+    ]);    // Helper function to get activity icon phù hợp với trường tiểu học
     const getActivityIcon = (type) => {
         const icons = {
             'user_login': '🔐',
@@ -85,6 +81,7 @@ function AdminDashboard() {
             'medication_approval': '✅',
             'health_record_update': '📋',
             'vaccination_record': '💉',
+            'health_check': '🩺',
             'system_backup': '💾',
             'health_report': '📊'
         };

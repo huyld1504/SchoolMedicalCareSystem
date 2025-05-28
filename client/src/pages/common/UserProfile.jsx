@@ -694,7 +694,7 @@ function UserProfile() {
                                             />
                                         </div>
 
-                                        <div className="flex items-center mt-4">
+                                        {/* <div className="flex items-center mt-4">
                                             <input
                                                 type="checkbox"
                                                 id="twoFactorEnabled"
@@ -705,13 +705,13 @@ function UserProfile() {
                                             />                                            <label htmlFor="twoFactorEnabled" className="ml-2 block text-sm text-gray-700">
                                                 Bật xác thực hai yếu tố
                                             </label>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Notification Preferences */}
-                            <div>                                <h3 className="text-lg font-medium text-gray-900 mb-4">Tùy chọn Thông báo</h3>
+                            {/* <div>                                <h3 className="text-lg font-medium text-gray-900 mb-4">Tùy chọn Thông báo</h3>
                                 <div className="space-y-3">
                                     <div className="flex items-center">
                                         <input
@@ -754,7 +754,7 @@ function UserProfile() {
                                         </label>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Form Actions */}

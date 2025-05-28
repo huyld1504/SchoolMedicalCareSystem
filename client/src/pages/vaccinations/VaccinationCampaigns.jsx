@@ -566,58 +566,56 @@ function VaccinationCampaigns() {
 
                 {/* Show consent/decline buttons for active campaigns (parent view) */}
                 {campaign.status === 'active' && !isNurseOrManager && (
-                  <div className="flex space-x-2 w-full">                    {getUserResponse(campaign.id) ? (<div className="w-full">
-                    {getUserResponse(campaign.id).type === 'consent' ? (
-                      <div className="w-full p-4 bg-green-50 border-2 border-green-200 rounded-lg">
-                        <div className="flex items-center justify-center text-green-700 font-medium mb-2">
-                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                          </svg>
-                          Đã đồng ý tham gia
-                        </div>
-                        <div className="text-sm text-green-600 text-center">
-                          Xác nhận ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full p-4 bg-red-50 border-2 border-red-200 rounded-lg">
-                        <div className="flex items-center justify-center text-red-700 font-medium mb-2">
-                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                          </svg>
-                          Đã từ chối
-                        </div>
-                        <div className="text-sm text-red-600 text-center">
-                          Từ chối ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
-                        </div>
-                        {getUserResponse(campaign.id).reason && (
-                          <div className="text-sm text-red-600 text-center mt-2 italic">
-                            Lý do: {getUserResponse(campaign.id).reason}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>) : (
-                    <div className="grid grid-cols-2 gap-3 w-full">
-                      <button
-                        onClick={() => handleConsent(campaign.id)}
-                        className="flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition duration-150 shadow-sm"
-                      >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex space-x-2 w-full">                    {getUserResponse(campaign.id) ? (<div className="w-full">                    {getUserResponse(campaign.id).type === 'consent' ? (
+                    <div className="w-full p-3 bg-green-50 border border-green-200 rounded-md">
+                      <div className="flex items-center justify-center text-green-700 font-medium mb-1">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        Đồng ý tham gia
-                      </button>
-                      <button
-                        onClick={() => handleDecline(campaign.id)}
-                        className="flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition duration-150 shadow-sm"
-                      >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        Đã đồng ý tham gia
+                      </div>
+                      <div className="text-xs text-green-600 text-center">
+                        Xác nhận ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full p-3 bg-red-50 border border-red-200 rounded-md">
+                      <div className="flex items-center justify-center text-red-700 font-medium mb-1">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        Từ chối
-                      </button>
+                        Đã từ chối
+                      </div>
+                      <div className="text-xs text-red-600 text-center">
+                        Từ chối ngày: {new Date(getUserResponse(campaign.id).timestamp).toLocaleDateString('vi-VN')}
+                      </div>
+                      {getUserResponse(campaign.id).reason && (
+                        <div className="text-xs text-red-600 text-center mt-1 italic">
+                          Lý do: {getUserResponse(campaign.id).reason}
+                        </div>
+                      )}
                     </div>
+                  )}
+                  </div>) : (<div className="grid grid-cols-2 gap-2 w-full">
+                    <button
+                      onClick={() => handleConsent(campaign.id)}
+                      className="flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-md text-xs font-medium hover:bg-green-700 transition duration-150 shadow-sm"
+                    >
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      Đồng ý
+                    </button>
+                    <button
+                      onClick={() => handleDecline(campaign.id)}
+                      className="flex items-center justify-center px-3 py-2 bg-red-600 text-white rounded-md text-xs font-medium hover:bg-red-700 transition duration-150 shadow-sm"
+                    >
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      Từ chối
+                    </button>
+                  </div>
                   )}
                   </div>
                 )}

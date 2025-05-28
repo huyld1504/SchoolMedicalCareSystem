@@ -22,99 +22,103 @@ function PendingApprovals() {
     const [showModal, setShowModal] = useState(false);
     const [selectedApproval, setSelectedApproval] = useState(null);
     const [actionType, setActionType] = useState('');
-    const [message, setMessage] = useState('');
-
-    // Sample pending approvals data with Vietnamese content
+    const [message, setMessage] = useState('');    // Sample pending approvals data phù hợp với trường tiểu học
     const [approvals, setApprovals] = useState([
         {
             id: 1,
             type: 'medication',
-            title: 'Yêu cầu thuốc - Amoxicillin',
-            student: 'Nguyễn Thị Mai',
-            class: '6A',
-            requestedBy: 'Nguyễn Văn Hùng (Phụ huynh)',
-            date: '2024-01-15',
+            title: 'Yêu cầu thuốc - Paracetamol trẻ em',
+            student: 'Nguyễn Minh An',
+            class: '1A',
+            requestedBy: 'Chị Nguyễn Thị Hoa (Mẹ)',
+            date: '2025-05-29',
             urgency: 'high',
             details: {
-                medication: 'Amoxicillin 250mg',
-                dosage: '1 viên, 2 lần/ngày',
-                duration: '7 ngày',
-                condition: 'Nhiễm trùng đường hô hấp',
-                prescribedBy: 'BS. Nguyễn Minh',
-                allergies: 'Không có dị ứng đã biết'
+                medication: 'Paracetamol trẻ em 120mg',
+                dosage: '1/2 viên khi sốt, tối đa 3 lần/ngày',
+                duration: '3-5 ngày',
+                condition: 'Sốt nhẹ, viêm họng',
+                prescribedBy: 'BS. Trần Thị Mai',
+                allergies: 'Không có dị ứng đã biết',
+                parentNote: 'Con hay bị sốt khi thời tiết thay đổi'
             }
         },
         {
             id: 2,
             type: 'vaccination',
-            title: 'Đồng ý tiêm chủng - HPV',
-            student: 'Trần Minh Tuấn',
-            class: '8B',
-            requestedBy: 'Lê Thị Lan (Phụ huynh)',
-            date: '2024-01-14',
+            title: 'Đồng ý tiêm chủng - Sởi Rubella',
+            student: 'Lê Thị Hoa',
+            class: '2B',
+            requestedBy: 'Anh Lê Văn Nam (Bố)',
+            date: '2025-05-28',
             urgency: 'medium',
             details: {
-                vaccine: 'HPV (Human Papillomavirus)',
-                campaign: 'Chương trình tiêm chủng HPV lớp 8',
-                scheduledDate: '2024-01-20',
-                location: 'Trung tâm Y tế Trường học',
-                notes: 'Thuộc chương trình tiêm chủng quốc gia'
+                vaccine: 'Sởi - Rubella (MR)',
+                campaign: 'Chương trình tiêm chủng mở rộng',
+                scheduledDate: '2025-06-05',
+                location: 'Phòng y tế trường',
+                notes: 'Mũi tiêm nhắc lại theo lịch',
+                ageAppropriate: '7-8 tuổi'
             }
         },
         {
             id: 3,
             type: 'healthcheck',
-            title: 'Đồng ý khám sức khỏe - Khám định kỳ hàng năm',
-            student: 'Phạm Thị Hương',
-            class: '5C',
-            requestedBy: 'Vũ Văn Nam (Phụ huynh)',
-            date: '2024-01-13',
+            title: 'Đồng ý khám sức khỏe - Khám đầu năm học',
+            student: 'Trần Văn Nam',
+            class: '3A',
+            requestedBy: 'Chị Trần Thị Lan (Mẹ)',
+            date: '2025-05-27',
             urgency: 'low',
             details: {
-                checkType: 'Khám sức khỏe định kỳ hàng năm',
-                scheduledDate: '2024-01-25',
-                examiner: 'Y tá trưởng Nguyễn Thị Bình',
+                checkType: 'Khám sức khỏe đầu năm học',
+                scheduledDate: '2025-06-10',
+                examiner: 'Cô Nguyễn Thị Thu - Y tá trường',
                 includesVision: true,
                 includesHearing: true,
-                includesWeightHeight: true
+                includesWeightHeight: true,
+                includesDental: true,
+                specialNote: 'Kiểm tra thị lực vì em hay nheo mắt'
             }
         },
         {
             id: 4,
             type: 'user',
             title: 'Đăng ký tài khoản phụ huynh mới',
-            student: 'Hoàng Văn Đức',
-            class: '3A',
-            requestedBy: 'Hoàng Thị Linh',
-            date: '2024-01-12',
+            student: 'Phạm Thị Mai',
+            class: '4B',
+            requestedBy: 'Phạm Văn Đức',
+            date: '2025-05-26',
             urgency: 'medium',
             details: {
                 accountType: 'Phụ huynh',
-                email: 'hoang.linh@email.com',
-                relationship: 'Mẹ',
+                email: 'pham.duc@email.com',
+                relationship: 'Bố',
                 emergencyContact: true,
-                documentsSubmitted: ['Bản sao CCCD', 'Giấy xác nhận địa chỉ'],
-                backgroundCheckStatus: 'Đang chờ xử lý'
+                documentsSubmitted: ['Bản sao CCCD', 'Giấy khai sinh con'],
+                backgroundCheckStatus: 'Đã hoàn thành',
+                reason: 'Chuyển trường từ tỉnh khác'
             }
         },
         {
             id: 5,
             type: 'medication',
-            title: 'Thuốc cấp cứu - EpiPen',
-            student: 'Lê Minh An',
-            class: '4B',
-            requestedBy: 'Lê Văn Cường (Phụ huynh)',
-            date: '2024-01-11',
+            title: 'Yêu cầu thuốc - Ventolin xịt',
+            student: 'Hoàng Văn Đức',
+            class: '5A',
+            requestedBy: 'Chị Hoàng Thị Linh (Mẹ)',
+            date: '2025-05-25',
             urgency: 'high',
             details: {
-                medication: 'EpiPen Auto-Injector',
-                condition: 'Dị ứng đậu phộng nghiêm trọng',
-                emergencyOnly: true,
-                trainingRequired: true,
-                expiryDate: '2024-12-01',
-                storageInstructions: 'Nhiệt độ phòng, dễ tiếp cận'
-            }
-        }
+                medication: 'Ventolin HFA 100mcg/liều',
+                dosage: '1-2 liều khi khó thở',
+                duration: 'Sử dụng dài hạn',
+                condition: 'Hen suyễn nhẹ',
+                prescribedBy: 'BS. Lê Văn Minh - Bệnh viện Nhi',
+                allergies: 'Không có',
+                emergencyUse: true,
+                parentNote: 'Con cần có thuốc sẵn tại trường để phòng ngừa cơn hen'
+            }        }
     ]);
 
     // Filter approvals based on selected filter

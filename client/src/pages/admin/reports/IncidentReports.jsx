@@ -22,101 +22,96 @@ function IncidentReports() {
     useEffect(() => {
         // In a real app, this would call an API to get incident reports
         const fetchIncidentReports = async () => {
-            try {
-                // Create sample incident reports
-                const incidentReports = [
+            try {                const incidentReports = [
                     {
-                        id: 'IR-2025-05-15',
-                        title: 'Sports Field Injury Report',
-                        date: '2025-05-15',
-                        type: 'Physical Injury',
-                        location: 'Sports Field',
-                        student: 'James Wilson',
-                        grade: '10A',
-                        severity: 'Moderate',
-                        status: 'Resolved',
-                        description: 'Twisted ankle during soccer practice. Ice applied, parents notified.',
-                        reporter: 'Coach Thomas Johnson',
-                        actionTaken: 'First aid administered, parent pickup arranged',
-                        tags: ['Sports', 'First Aid'],
-                        followUp: 'Required'
+                        id: 'BC-2025-05-29',
+                        title: 'Báo cáo chấn thương sân chơi',
+                        date: '2025-05-29',
+                        type: 'Chấn thương thể chất',
+                        location: 'Sân chơi',
+                        student: 'Nguyễn Minh An',
+                        grade: '2A',
+                        severity: 'Vừa',
+                        status: 'Đã giải quyết',
+                        description: 'Bị té khi chơi cầu trượt. Trầy xước ở đầu gối và khuỷu tay.',
+                        reporter: 'Cô Trần Thị Lan - Giáo viên trực',
+                        actionTaken: 'Sơ cứu, vệ sinh vết thương, thông báo phụ huynh',
+                        tags: ['Sân chơi', 'Sơ cứu'],
+                        followUp: 'Cần theo dõi'
                     },
                     {
-                        id: 'IR-2025-05-10',
-                        title: 'Cafeteria Allergic Reaction',
-                        date: '2025-05-10',
-                        type: 'Allergic Reaction',
-                        location: 'Cafeteria',
-                        student: 'Emma Davis',
-                        grade: '8B',
-                        severity: 'Severe',
-                        status: 'Resolved',
-                        description: 'Allergic reaction to peanuts. Epinephrine administered.',
-                        reporter: 'Cafeteria Staff',
-                        actionTaken: 'Emergency protocol followed, hospitalized',
-                        tags: ['Allergy', 'Emergency'],
-                        followUp: 'Completed'
+                        id: 'BC-2025-05-28',
+                        title: 'Phản ứng dị ứng với sữa',
+                        date: '2025-05-28',
+                        type: 'Phản ứng dị ứng',
+                        location: 'Phòng ăn',
+                        student: 'Lê Thị Hoa',
+                        grade: '1B',
+                        severity: 'Nặng',
+                        status: 'Đã giải quyết',
+                        description: 'Phản ứng dị ứng với sữa tươi. Nổi mẩn đỏ và khó thở nhẹ.',
+                        reporter: 'Cô Phạm Thị Mai - Nhân viên bếp ăn',
+                        actionTaken: 'Thực hiện quy trình khẩn cấp, liên hệ phụ huynh ngay',
+                        tags: ['Dị ứng', 'Khẩn cấp'],
+                        followUp: 'Đã hoàn thành'
                     },
                     {
-                        id: 'IR-2025-05-08',
-                        title: 'Classroom Fall Incident',
-                        date: '2025-05-08',
-                        type: 'Physical Injury',
-                        location: 'Classroom',
-                        student: 'Michael Brown',
-                        grade: '5C',
-                        severity: 'Minor',
-                        status: 'Resolved',
-                        description: 'Tripped and fell in classroom. Minor scrape on knee.',
-                        reporter: 'Ms. Patricia Smith',
-                        actionTaken: 'Cleaned wound and applied bandage',
-                        tags: ['Classroom', 'First Aid'],
-                        followUp: 'Not Required'
+                        id: 'BC-2025-05-27',
+                        title: 'Sự cố té ngã trong lớp học',
+                        date: '2025-05-27',
+                        type: 'Chấn thương thể chất',
+                        location: 'Lớp học 3A',
+                        student: 'Trần Văn Nam',
+                        grade: '3A',
+                        severity: 'Nhẹ',
+                        status: 'Đã giải quyết',
+                        description: 'Bị vấp ghế và té trong lớp học. Trầy xước nhẹ ở bàn tay.',
+                        reporter: 'Cô Nguyễn Thị Thu - Giáo viên chủ nhiệm',
+                        actionTaken: 'Vệ sinh vết thương và dán băng cá nhân',
+                        tags: ['Lớp học', 'Sơ cứu'],
+                        followUp: 'Không cần thiết'
                     },
                     {
-                        id: 'IR-2025-05-05',
-                        title: 'Laboratory Chemical Exposure',
-                        date: '2025-05-05',
-                        type: 'Chemical Exposure',
-                        location: 'Science Lab',
-                        student: 'Sarah Johnson',
-                        grade: '11A',
-                        severity: 'Moderate',
-                        status: 'Resolved',
-                        description: 'Eye irritation from chemical splash. Emergency eye wash used immediately.',
-                        reporter: 'Dr. Robert White',
-                        actionTaken: 'Emergency eye wash, medical assessment',
-                        tags: ['Lab', 'Chemical', 'Emergency'],
-                        followUp: 'Completed'
+                        id: 'BC-2025-05-26',
+                        title: 'Đau bụng trong giờ học',
+                        date: '2025-05-26',
+                        type: 'Vấn đề sức khỏe',
+                        location: 'Lớp học 4B',                        student: 'Phạm Thị Mai',
+                        grade: '4B',
+                        severity: 'Vừa',
+                        status: 'Đã giải quyết',
+                        description: 'Đau bụng đột ngột trong giờ học. Có thể do ăn sáng không phù hợp.',
+                        reporter: 'Cô Lê Thị Hương - Giáo viên',
+                        actionTaken: 'Đưa về phòng y tế, liên hệ phụ huynh đón về',
+                        tags: ['Sức khỏe', 'Đau bụng'],
+                        followUp: 'Đã hoàn thành'
                     },
                     {
-                        id: 'IR-2025-05-01',
-                        title: 'Playground Equipment Failure',
-                        date: '2025-05-01',
-                        type: 'Equipment Failure',
-                        location: 'Playground',
-                        student: 'Multiple Students',
-                        grade: 'Various',
-                        severity: 'Minor',
-                        status: 'Pending',
-                        description: 'Swing set chain broke. No injuries but requires immediate repair.',
-                        reporter: 'Playground Supervisor',
-                        actionTaken: 'Area cordoned off, maintenance notified',
-                        tags: ['Equipment', 'Maintenance'],
-                        followUp: 'Required'
+                        id: 'BC-2025-05-25',
+                        title: 'Hỏng thiết bị sân chơi',
+                        date: '2025-05-25',
+                        type: 'Hỏng thiết bị',
+                        location: 'Sân chơi',
+                        student: 'Hoàng Văn Đức',
+                        grade: '5A',
+                        severity: 'Nhẹ',
+                        status: 'Đang chờ',
+                        description: 'Cầu trượt bị lỏng ốc vít. Không có thương tích nhưng cần sửa chữa ngay.',
+                        reporter: 'Thầy Nguyễn Văn Minh - Giám sát sân chơi',
+                        actionTaken: 'Rào chắn khu vực, thông báo bảo trì',
+                        tags: ['Thiết bị', 'Bảo trì'],
+                        followUp: 'Cần theo dõi'
                     }
                 ];
 
-                setReports(incidentReports);
-
-                // Set sample stats
+                setReports(incidentReports);                // Set sample stats phù hợp với trường tiểu học
                 setStats({
-                    totalIncidents: 13,
-                    minor: 7,
-                    moderate: 4,
-                    severe: 2,
-                    resolved: 11,
-                    pending: 2
+                    totalIncidents: 5,
+                    minor: 2,
+                    moderate: 2,
+                    severe: 1,
+                    resolved: 4,
+                    pending: 1
                 });
 
                 setLoading(false);
@@ -163,21 +158,23 @@ function IncidentReports() {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
-    };
-
-    const getSeverityColor = (severity) => {
+    }; const getSeverityColor = (severity) => {
         const colors = {
             'Minor': 'bg-yellow-100 text-yellow-800',
             'Moderate': 'bg-orange-100 text-orange-800',
-            'Severe': 'bg-red-100 text-red-800'
+            'Severe': 'bg-red-100 text-red-800',
+            'Nhẹ': 'bg-yellow-100 text-yellow-800',
+            'Vừa': 'bg-orange-100 text-orange-800',
+            'Nặng': 'bg-red-100 text-red-800'
         };
         return colors[severity] || 'bg-gray-100 text-gray-800';
     };
 
     const getStatusColor = (status) => {
-        return status === 'Resolved'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-amber-100 text-amber-800';
+        if (status === 'Resolved' || status === 'Đã giải quyết') {
+            return 'bg-green-100 text-green-800';
+        }
+        return 'bg-amber-100 text-amber-800';
     };
 
     if (loading) {
@@ -185,148 +182,139 @@ function IncidentReports() {
     }
 
     return (
-        <div className="p-6">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">Incident Reports</h1>
-                <p className="text-gray-600">Track and manage all medical incidents and emergency responses</p>
-            </div>
-
-            {/* Incident Stats */}
+        <div className="p-6">            <div className="mb-6">
+            <h1 className="text-3xl font-bold mb-2">Báo cáo sự cố</h1>
+            <p className="text-gray-600">Theo dõi và quản lý tất cả các sự cố y tế và phản ứng khẩn cấp</p>
+        </div>            {/* Incident Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Total Incidents</p>
+                        <p className="text-gray-500 text-sm">Tổng sự cố</p>
                         <p className="text-3xl font-bold text-gray-800">{stats.totalIncidents}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Minor</p>
+                        <p className="text-gray-500 text-sm">Nhẹ</p>
                         <p className="text-3xl font-bold text-yellow-600">{stats.minor}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Moderate</p>
+                        <p className="text-gray-500 text-sm">Vừa</p>
                         <p className="text-3xl font-bold text-orange-600">{stats.moderate}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Severe</p>
+                        <p className="text-gray-500 text-sm">Nặng</p>
                         <p className="text-3xl font-bold text-red-600">{stats.severe}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Resolved</p>
+                        <p className="text-gray-500 text-sm">Đã giải quyết</p>
                         <p className="text-3xl font-bold text-green-600">{stats.resolved}</p>
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-center">
-                        <p className="text-gray-500 text-sm">Pending</p>
+                        <p className="text-gray-500 text-sm">Đang chờ</p>
                         <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
                     </div>
                 </div>
-            </div>
-
-            {/* Filters */}
+            </div>            {/* Filters */}
             <div className="bg-white rounded-lg shadow mb-6">
                 <div className="p-5 border-b">
-                    <h2 className="text-lg font-medium">Incident Filters</h2>
+                    <h2 className="text-lg font-medium">Bộ lọc sự cố</h2>
                 </div>
                 <div className="p-5 grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Incident Type</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Loại sự cố</label>
                         <select
                             name="reportType"
                             value={filters.reportType}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Types</option>
-                            <option value="physical">Physical Injury</option>
-                            <option value="allergic">Allergic Reaction</option>
-                            <option value="chemical">Chemical Exposure</option>
-                            <option value="equipment">Equipment Failure</option>
+                            <option value="all">Tất cả loại</option>
+                            <option value="physical">Chấn thương thể chất</option>
+                            <option value="allergic">Phản ứng dị ứng</option>
+                            <option value="chemical">Tiếp xúc hóa chất</option>
+                            <option value="equipment">Hỏng thiết bị</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Mức độ nghiêm trọng</label>
                         <select
                             name="severity"
                             value={filters.severity}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Severities</option>
-                            <option value="minor">Minor</option>
-                            <option value="moderate">Moderate</option>
-                            <option value="severe">Severe</option>
+                            <option value="all">Tất cả mức độ</option>
+                            <option value="minor">Nhẹ</option>
+                            <option value="moderate">Vừa</option>
+                            <option value="severe">Nặng</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Khoảng thời gian</label>
                         <select
                             name="timePeriod"
                             value={filters.timePeriod}
                             onChange={handleFilterChange}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50"
                         >
-                            <option value="all">All Time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
+                            <option value="all">Tất cả thời gian</option>
+                            <option value="today">Hôm nay</option>
+                            <option value="week">Tuần này</option>
+                            <option value="month">Tháng này</option>
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm</label>
                         <input
                             type="text"
                             name="searchQuery"
                             value={filters.searchQuery}
                             onChange={handleFilterChange}
-                            placeholder="Search by title, student, location..."
+                            placeholder="Tìm theo tiêu đề, học sinh, địa điểm..."
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50"
                         />
                     </div>
                 </div>
-            </div>
-
-            {/* Report Actions */}
+            </div>            {/* Report Actions */}
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <span className="text-gray-500">{filteredReports.length} incidents found</span>
+                    <span className="text-gray-500">{filteredReports.length} sự cố được tìm thấy</span>
                 </div>
                 <div className="flex space-x-3">
                     <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md flex items-center">
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Report New Incident
+                        Báo cáo sự cố mới
                     </button>
                     <button className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md flex items-center">
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                         </svg>
-                        Export Report
+                        Xuất báo cáo
                     </button>
                 </div>
-            </div>
-
-            {/* Reports Table */}
+            </div>            {/* Reports Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Incident</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Severity</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sự cố</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Địa điểm</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học sinh</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mức độ</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -387,11 +375,10 @@ function IncidentReports() {
                                         </div>
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
+                            ))) : (
                             <tr>
                                 <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-                                    No incidents found matching your criteria.
+                                    Không tìm thấy sự cố nào phù hợp với tiêu chí của bạn.
                                 </td>
                             </tr>
                         )}
@@ -431,9 +418,7 @@ function IncidentReports() {
                         </div>
                     </div>
                 </div>
-            </div> */}
-
-            {/* Emergency Protocol Reminder */}
+            </div> */}            {/* Emergency Protocol Reminder */}
             <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-5 rounded">
                 <div className="flex">
                     <div className="flex-shrink-0">
@@ -442,9 +427,9 @@ function IncidentReports() {
                         </svg>
                     </div>
                     <div className="ml-3">
-                        <h3 className="text-sm font-medium text-red-800">Emergency Protocol Reminder</h3>
+                        <h3 className="text-sm font-medium text-red-800">Nhắc nhở quy trình khẩn cấp</h3>
                         <div className="mt-2 text-sm text-red-700">
-                            <p>For severe incidents, always follow the school emergency response protocol and notify the appropriate authorities. All staff members should be familiar with the <a href="#" className="underline font-medium">Emergency Response Handbook</a>.</p>
+                            <p>Đối với các sự cố nghiêm trọng, luôn tuân theo quy trình ứng phó khẩn cấp của trường và thông báo cho các cơ quan thẩm quyền. Tất cả nhân viên nên quen thuộc với <a href="#" className="underline font-medium">Sổ tay ứng phó khẩn cấp</a>.</p>
                         </div>
                     </div>
                 </div>

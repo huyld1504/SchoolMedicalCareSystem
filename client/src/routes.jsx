@@ -72,7 +72,6 @@ import HealthCheckResults from "./pages/health-checks/HealthCheckResults";
 
 // Admin Management
 import PendingApprovals from "./pages/admin/PendingApprovals";
-import AdminActivities from "./pages/admin/Activities";
 
 // User Management
 import UsersList from "./pages/admin/UsersList";
@@ -174,14 +173,14 @@ const adminRoutes = [
       </AdminLayout>
     ),
   },
-  {
-    path: "/admin/activities",
-    element: (
-      <AdminLayout>
-        <AdminActivities />
-      </AdminLayout>
-    ),
-  },
+  // {
+  //   path: "/admin/activities",
+  //   element: (
+  //     <AdminLayout>
+  //       <AdminActivities />
+  //     </AdminLayout>
+  //   ),
+  // },
   {
     path: "/admin/vaccination-scheduler",
     element: (

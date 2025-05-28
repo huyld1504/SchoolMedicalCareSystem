@@ -23,68 +23,66 @@ function MedicationReports() {
         const fetchMedicationReports = async () => {
             try {
                 // Use the medication service to get compliance data                // Use the medication service to get compliance data
-                const complianceData = await generateComplianceReport();
-
-                // Create sample medication reports
+                const complianceData = await generateComplianceReport();                // Create sample medication reports phù hợp với trường tiểu học
                 const medReports = [
                     {
-                        id: 'MR-2025-05-15',
-                        title: 'Báo cáo cấp phát thuốc hàng tháng',
-                        date: '2025-05-15',
+                        id: 'MR-2025-05-29',
+                        title: 'Báo cáo cấp phát thuốc trẻ em tháng 5',
+                        date: '2025-05-29',
                         type: 'Cấp phát',
-                        author: 'Hệ thống',
-                        summary: 'Báo cáo hàng tháng về việc cấp phát thuốc trong toàn trường',
-                        compliance: '96%',
-                        grade: 'Tất cả',
-                        tags: ['Hàng tháng', 'Tự động'],
+                        author: 'Cô Nguyễn Thị Lan - Y tá trường',
+                        summary: 'Báo cáo hàng tháng về việc cấp phát thuốc cho học sinh tiểu học',
+                        compliance: '98%',
+                        grade: 'Lớp 1-5',
+                        tags: ['Hàng tháng', 'Trẻ em'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'MR-2025-05-01',
-                        title: 'Báo cáo tình trạng kho thuốc',
-                        date: '2025-05-01',
-                        type: 'Kho',
-                        author: 'Y tá Sarah Wilson',
-                        summary: 'Tình trạng kho hiện tại và nhu cầu bổ sung thuốc',
+                        id: 'MR-2025-05-25',
+                        title: 'Thuốc sơ cứu và chăm sóc khẩn cấp',
+                        date: '2025-05-25',
+                        type: 'Sơ cứu',
+                        author: 'BS. Trần Thị Mai',
+                        summary: 'Báo cáo sử dụng thuốc sơ cứu và chăm sóc khẩn cấp cho trẻ',
                         compliance: 'N/A',
-                        grade: 'Tất cả',
-                        tags: ['Kho', 'Hàng tháng'],
+                        grade: 'Tất cả các lớp',
+                        tags: ['Sơ cứu', 'Khẩn cấp'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'MR-2025-04-20',
-                        title: 'Báo cáo tuân thủ thuốc mạn tính',
-                        date: '2025-04-20',
+                        id: 'MR-2025-05-20',
+                        title: 'Tuân thủ thuốc hen suyễn ở trẻ em',
+                        date: '2025-05-20',
                         type: 'Tuân thủ',
-                        author: 'BS Emily Carter',
-                        summary: 'Báo cáo theo dõi học sinh cần uống thuốc hàng ngày',
-                        compliance: '92%',
-                        grade: 'Nhiều khối',
-                        tags: ['Tuân thủ', 'Mạn tính'],
+                        author: 'Cô Lê Thị Hương',
+                        summary: 'Theo dõi việc sử dụng thuốc xịt hen suyễn của học sinh',
+                        compliance: '94%',
+                        grade: 'Chủ yếu lớp 3-5',
+                        tags: ['Tuân thủ', 'Hen suyễn'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'MR-2025-04-10',
-                        title: 'Phân tích lỗi cấp phát thuốc',
-                        date: '2025-04-10',
-                        type: 'Phân tích lỗi',
-                        author: 'Nhóm đảm bảo chất lượng',
-                        summary: 'Phân tích các lỗi cấp phát thuốc và biện pháp khắc phục',
+                        id: 'MR-2025-05-15',
+                        title: 'Kho thuốc an toàn cho trẻ em',
+                        date: '2025-05-15',
+                        type: 'Kho',
+                        author: 'Phòng Dược',
+                        summary: 'Tình trạng kho thuốc dành riêng cho trẻ em và tình trạng hết hạn',
                         compliance: 'N/A',
                         grade: 'Tất cả',
-                        tags: ['Lỗi', 'Phân tích'],
+                        tags: ['Kho', 'An toàn'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'MR-2025-03-31',
-                        title: 'Báo cáo xu hướng thuốc Q1 2025',
-                        date: '2025-03-31',
-                        type: 'Phân tích xu hướng',
-                        author: 'Phòng Y tế',
-                        summary: 'Phân tích quý về xu hướng cấp phát thuốc',
-                        compliance: '95%',
+                        id: 'MR-2025-05-10',
+                        title: 'Báo cáo dị ứng thuốc ở học sinh',
+                        date: '2025-05-10',
+                        type: 'Dị ứng',
+                        author: 'Đội ngũ y tế trường',
+                        summary: 'Theo dõi và báo cáo các trường hợp dị ứng thuốc ở học sinh',
+                        compliance: 'N/A',
                         grade: 'Tất cả',
-                        tags: ['Theo quý', 'Xu hướng'],
+                        tags: ['Dị ứng', 'An toàn'],
                         downloadUrl: '#'
                     }
                 ];

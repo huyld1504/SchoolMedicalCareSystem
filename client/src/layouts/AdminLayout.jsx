@@ -67,12 +67,13 @@ function AdminLayout({ children }) {
             href="/admin/pending-approvals"
           >
             <i className="bi bi-check-circle me-2"></i> Phê duyệt đang chờ
-          </a>          <a
+          </a>          
+          {/* <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/activities"
           >
             <i className="bi bi-activity me-2"></i> Hoạt động hệ thống
-          </a>
+          </a> */}
 
           <a
             className="nav-link text-white d-flex align-items-center py-2"

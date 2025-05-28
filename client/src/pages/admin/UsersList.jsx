@@ -6,69 +6,107 @@ function UsersList() {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const [showAddModal, setShowAddModal] = useState(false);
-
-    // Sample data with Vietnamese content
+    const [showAddModal, setShowAddModal] = useState(false);    // Sample data phù hợp với trường tiểu học
     const [users, setUsers] = useState([
         {
             id: 1,
-            name: 'Nguyễn Văn An',
-            email: 'an.nguyen@student.edu.vn',
+            name: 'Nguyễn Minh An',
+            email: 'minhan.nguyen@tieuhoc.edu.vn',
             role: 'Học sinh',
-            grade: 'Lớp 10A',
-            school: 'Trường THPT Nguyễn Du',
+            grade: 'Lớp 1A',
+            school: 'Trường Tiểu học Nguyễn Du',
             status: 'Hoạt động',
-            lastActive: '2 giờ trước'
+            lastActive: '1 giờ trước'
         },
         {
             id: 2,
-            name: 'Trần Thị Bình',
+            name: 'Chị Trần Thị Bình',
             email: 'binh.tran@parent.com',
             role: 'Phụ huynh',
-            grade: null,
-            school: 'Nhiều trường',
+            grade: 'Con học lớp 2B',
+            school: 'Trường Tiểu học Nguyễn Du',
             status: 'Hoạt động',
             lastActive: '5 phút trước'
         },
         {
             id: 3,
-            name: 'BS. Lê Văn Cường',
-            email: 'cuong.le@yte.gov.vn',
-            role: 'Y tá',
+            name: 'Cô Lê Thị Lan',
+            email: 'lan.le@tieuhoc.edu.vn',
+            role: 'Y tá trường',
             grade: null,
-            school: 'Trường THCS Lê Lợi',
+            school: 'Trường Tiểu học Nguyễn Du',
+            status: 'Hoạt động',
+            lastActive: '30 phút trước'
+        },
+        {
+            id: 4,
+            name: 'Thầy Phạm Văn Minh',
+            email: 'minh.pham@tieuhoc.edu.vn',
+            role: 'Hiệu trưởng',
+            grade: null,
+            school: 'Trường Tiểu học Nguyễn Du',
+            status: 'Hoạt động',
+            lastActive: '2 giờ trước'
+        },
+        {
+            id: 5,
+            name: 'Lê Thị Hoa',
+            email: 'hoa.le@tieuhoc.edu.vn',
+            role: 'Học sinh',
+            grade: 'Lớp 3A',
+            school: 'Trường Tiểu học Nguyễn Du',
+            status: 'Hoạt động',
+            lastActive: '4 giờ trước'
+        },
+        {
+            id: 6,
+            name: 'Cô Vũ Thị Mai',
+            email: 'mai.vu@admin.tieuhoc.edu.vn',
+            role: 'Quản trị viên',
+            grade: null,
+            school: 'Trường Tiểu học Nguyễn Du',
+            status: 'Hoạt động',
+            lastActive: '1 giờ trước'
+        },
+        {
+            id: 7,
+            name: 'Trần Văn Nam',
+            email: 'nam.tran@tieuhoc.edu.vn',
+            role: 'Học sinh',
+            grade: 'Lớp 4B',
+            school: 'Trường Tiểu học Nguyễn Du',
+            status: 'Hoạt động',
+            lastActive: '6 giờ trước'
+        },
+        {
+            id: 8,
+            name: 'Anh Hoàng Văn Đức',
+            email: 'duc.hoang@parent.com',
+            role: 'Phụ huynh',
+            grade: 'Con học lớp 5A',
+            school: 'Trường Tiểu học Nguyễn Du',
             status: 'Hoạt động',
             lastActive: '1 ngày trước'
         },
         {
-            id: 4,
-            name: 'Phạm Thị Dung',
-            email: 'dung.pham@education.gov.vn',
-            role: 'Quản lý',
-            grade: null,
-            school: 'Sở Giáo dục',
+            id: 9,
+            name: 'Cô Nguyễn Thị Thu',
+            email: 'thu.nguyen@tieuhoc.edu.vn',
+            role: 'Giáo viên',
+            grade: 'Chủ nhiệm lớp 2A',
+            school: 'Trường Tiểu học Nguyễn Du',
             status: 'Hoạt động',
             lastActive: '3 giờ trước'
         },
         {
-            id: 5,
-            name: 'Hoàng Văn Đức',
-            email: 'duc.hoang@student.edu.vn',
-            role: 'Học sinh',
-            grade: 'Lớp 9B',
-            school: 'Trường THCS Trần Hưng Đạo',
-            status: 'Tạm ngưng',
-            lastActive: '1 tuần trước'
-        },
-        {
-            id: 6,
-            name: 'Vũ Thị Lan',
-            email: 'lan.vu@admin.edu.vn',
-            role: 'Quản trị viên',
+            id: 10,
+            name: 'BS. Trần Văn Cường',
+            email: 'cuong.tran@yte.gov.vn',
+            role: 'Bác sĩ',
             grade: null,
-            school: 'Hệ thống',
+            school: 'Trạm Y tế Phường 1',
             status: 'Hoạt động',
-            lastActive: '30 phút trước'
+            lastActive: '5 giờ trước'
         }
     ]);
 

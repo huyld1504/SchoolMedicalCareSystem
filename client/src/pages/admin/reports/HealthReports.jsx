@@ -20,79 +20,75 @@ function HealthReports() {
     useEffect(() => {
         // In a real app, this would call an API to get health reports
         const fetchHealthReports = async () => {
-            try {
-                // For demo: Using the student health records to simulate health reports
-                // Transform student health records into report format
+            try {                // Transform student health records into report format phù hợp tiểu học
                 const healthReports = [
                     {
-                        id: 'HR-2025-05-01',
-                        title: 'Tổng quan tình trạng sức khỏe hàng tháng',
-                        date: '2025-05-01',
+                        id: 'HR-2025-05-29',
+                        title: 'Báo cáo sức khỏe học sinh tiểu học tháng 5',
+                        date: '2025-05-29',
                         type: 'Báo cáo tình trạng',
-                        author: 'Hệ thống',
-                        summary: 'Báo cáo tự động hàng tháng về tình trạng sức khỏe tất cả học sinh',
-                        coverage: '100% học sinh',
-                        grade: 'Tất cả',
-                        tags: ['Hàng tháng', 'Tự động'],
+                        author: 'Cô Nguyễn Thị Lan - Y tá trường',
+                        summary: 'Báo cáo tổng quan sức khỏe học sinh từ lớp 1 đến lớp 5',
+                        coverage: '100% học sinh (600 em)',
+                        grade: 'Lớp 1-5',
+                        tags: ['Hàng tháng', 'Tổng quan'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'HR-2025-04-15',
-                        title: 'Báo cáo theo dõi bệnh mạn tính',
-                        date: '2025-04-15',
+                        id: 'HR-2025-05-25',
+                        title: 'Theo dõi hen suyễn và khó thở ở trẻ',
+                        date: '2025-05-25',
                         type: 'Bệnh mạn tính',
-                        author: 'BS Emily Carter',
-                        summary: 'Báo cáo theo dõi học sinh mắc hen suyễn và các bệnh mạn tính khác',
-                        coverage: '15% học sinh',
-                        grade: 'Nhiều khối',
-                        tags: ['Mạn tính', 'Theo dõi'],
+                        author: 'BS. Trần Thị Mai',
+                        summary: 'Báo cáo theo dõi học sinh mắc hen suyễn và các vấn đề hô hấp',
+                        coverage: '18 học sinh (3%)',
+                        grade: 'Chủ yếu lớp 3-5',
+                        tags: ['Mạn tính', 'Hô hấp'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'HR-2025-04-10',
-                        title: 'Chuẩn bị mùa dị ứng mùa xuân',
-                        date: '2025-04-10',
+                        id: 'HR-2025-05-20',
+                        title: 'Dị ứng thức ăn và môi trường ở trẻ em',
+                        date: '2025-05-20',
                         type: 'Dị ứng',
-                        author: 'Y tá Sarah Wilson',
-                        summary: 'Báo cáo về học sinh bị dị ứng theo mùa và kế hoạch can thiệp',
-                        coverage: '22% học sinh',
-                        grade: 'Nhiều khối',
-                        tags: ['Theo mùa', 'Dị ứng'],
+                        author: 'Cô Lê Thị Hương - Y tá',
+                        summary: 'Báo cáo về tình trạng dị ứng thức ăn và phấn hoa ở học sinh',
+                        coverage: '45 học sinh (7.5%)',
+                        grade: 'Tất cả các lớp',
+                        tags: ['Dị ứng', 'Thức ăn'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'HR-2025-03-28',
-                        title: 'Tóm tắt sự cố sức khỏe Q1 2025',
-                        date: '2025-03-28',
-                        type: 'Báo cáo sự cố',
-                        author: 'Phòng Y tế',
-                        summary: 'Tóm tắt theo quý về tất cả sự cố sức khỏe và giải pháp',
-                        coverage: '100% sự cố',
-                        grade: 'Tất cả',
-                        tags: ['Theo quý', 'Sự cố'],
-                        downloadUrl: '#'
-                    },
-                    {
-                        id: 'HR-2025-03-15',
-                        title: 'Kết quả chiến dịch khám sức khỏe',
-                        date: '2025-03-15',
+                        id: 'HR-2025-05-15',
+                        title: 'Khám sức khỏe đầu năm học sinh lớp 1',
+                        date: '2025-05-15',
                         type: 'Khám sức khỏe',
-                        author: 'Đội ngũ y tá trường',
-                        summary: 'Kết quả từ chiến dịch khám sức khỏe mùa xuân',
-                        coverage: '98% học sinh',
-                        grade: 'Tất cả',
-                        tags: ['Chiến dịch', 'Khám sức khỏe'],
+                        author: 'Đội khám sức khỏe học đường',
+                        summary: 'Kết quả khám sức khỏe định kỳ cho học sinh lớp 1 mới nhập học',
+                        coverage: '120 học sinh lớp 1 (100%)',
+                        grade: 'Lớp 1',
+                        tags: ['Khám định kỳ', 'Lớp 1'],
+                        downloadUrl: '#'
+                    },
+                    {
+                        id: 'HR-2025-05-10',
+                        title: 'Tình trạng dinh dưỡng và phát triển',
+                        date: '2025-05-10',
+                        type: 'Dinh dưỡng',
+                        author: 'BS. Phạm Văn Minh',
+                        summary: 'Đánh giá tình trạng dinh dưỡng, chiều cao cân nặng học sinh',
+                        coverage: '600 học sinh (100%)',
+                        grade: 'Tất cả các lớp',
+                        tags: ['Dinh dưỡng', 'Phát triển'],
                         downloadUrl: '#'
                     }
                 ];
 
-                setReports(healthReports);
-
-                // Set some sample stats
+                setReports(healthReports);                // Set sample stats phù hợp với trường tiểu học
                 setStats({
-                    totalReports: 32,
-                    chronicConditions: 12,
-                    allergies: 15,
+                    totalReports: 25,
+                    chronicConditions: 18,
+                    allergies: 45,
                     medicalIncidents: 5
                 });
 

@@ -20,77 +20,76 @@ function VaccinationReports() {
     useEffect(() => {
         // In a real app, this would call an API to get vaccination reports
         const fetchVaccinationReports = async () => {
-            try {                // Create sample vaccination reports
+            try {                // Create sample vaccination reports phù hợp với trường tiểu học
                 const vacReports = [
                     {
-                        id: 'VR-2025-05-01',
-                        title: 'Kết quả chiến dịch tiêm chủng xuân 2025',
-                        date: '2025-05-01',
+                        id: 'VR-2025-05-29',
+                        title: 'Báo cáo tiêm chủng Sởi-Rubella cho trẻ 6-11 tuổi',
+                        date: '2025-05-29',
                         type: 'Chiến dịch',
-                        author: 'Sở Y tế',
-                        summary: 'Kết quả từ chiến dịch tiêm chủng xuân 2025',
-                        compliance: '94%',
-                        grade: 'Tất cả',
-                        tags: ['Chiến dịch', 'Theo mùa'],
+                        author: 'Trạm Y tế Phường',
+                        summary: 'Kết quả chiến dịch tiêm chủng Sởi-Rubella cho học sinh tiểu học',
+                        compliance: '96%',
+                        grade: 'Lớp 1-2',
+                        tags: ['Sởi-Rubella', 'Trẻ em'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'VR-2025-04-15',
-                        title: 'Báo cáo tuân thủ tiêm chủng bắt buộc',
-                        date: '2025-04-15',
+                        id: 'VR-2025-05-25',
+                        title: 'Tuân thủ tiêm chủng bắt buộc trẻ em',
+                        date: '2025-05-25',
                         type: 'Tuân thủ',
-                        author: 'Bác sĩ Emily Carter',
-                        summary: 'Báo cáo tình trạng tuân thủ tiêm chủng bắt buộc trên tất cả các lớp',
+                        author: 'BS. Trần Thị Mai',
+                        summary: 'Báo cáo tình trạng tiêm chủng bắt buộc cho trẻ 6-11 tuổi',
                         compliance: '98%',
-                        grade: 'Tất cả',
+                        grade: 'Lớp 1-5',
                         tags: ['Bắt buộc', 'Tuân thủ'],
                         downloadUrl: '#'
-                    }, {
-                        id: 'VR-2025-04-01',
-                        title: 'Phạm vi tiêm chủng cúm',
-                        date: '2025-04-01',
+                    },
+                    {
+                        id: 'VR-2025-05-20',
+                        title: 'Tiêm chủng DPT (Bạch hầu-Ho gà-Uốn ván)',
+                        date: '2025-05-20',
                         type: 'Tiêm chủng cụ thể',
-                        author: 'Y tá Sarah Wilson',
-                        summary: 'Phân tích phạm vi tiêm chủng cúm cho mùa 2024-2025',
-                        compliance: '89%',
-                        grade: 'Tất cả',
-                        tags: ['Cúm', 'Theo mùa'],
+                        author: 'Cô Nguyễn Thị Lan',
+                        summary: 'Báo cáo tiêm nhắc lại DPT cho học sinh lớp 3-4',
+                        compliance: '92%',
+                        grade: 'Lớp 3-4',
+                        tags: ['DPT', 'Nhắc lại'],
                         downloadUrl: '#'
                     },
                     {
-                        id: 'VR-2025-03-20',
-                        title: 'Phân tích miễn trừ tiêm chủng',
-                        date: '2025-03-20',
-                        type: 'Miễn trừ',
-                        author: 'Ban quản lý trường',
-                        summary: 'Xem xét các trường hợp miễn trừ tiêm chủng và chiến lược giảm thiểu',
-                        compliance: 'Không áp dụng',
-                        grade: 'Tất cả',
-                        tags: ['Miễn trừ', 'Phân tích'],
-                        downloadUrl: '#'
-                    },
-                    {
-                        id: 'VR-2025-03-01',
-                        title: 'Báo cáo tình trạng tiêm chủng mẫu giáo',
-                        date: '2025-03-01',
+                        id: 'VR-2025-05-15',
+                        title: 'Tiêm chủng Viêm gan B cho học sinh lớp 5',
+                        date: '2025-05-15',
                         type: 'Theo lớp',
-                        author: 'Nhóm y tế tiểu học',
-                        summary: 'Báo cáo chi tiết về tình trạng tiêm chủng của học sinh mẫu giáo',
-                        compliance: '96%',
-                        grade: 'Mẫu giáo',
-                        tags: ['Theo lớp', 'Yêu cầu nhập học'],
+                        author: 'Đội tiêm chủng học đường',
+                        summary: 'Báo cáo chi tiết tiêm chủng Viêm gan B cho học sinh lớp 5',
+                        compliance: '94%',
+                        grade: 'Lớp 5',
+                        tags: ['Viêm gan B', 'Lớp 5'],
+                        downloadUrl: '#'
+                    },
+                    {
+                        id: 'VR-2025-05-10',
+                        title: 'Kiểm tra hồ sơ tiêm chủng học sinh mới',
+                        date: '2025-05-10',
+                        type: 'Kiểm tra hồ sơ',
+                        author: 'Phòng Y tế Trường',
+                        summary: 'Kiểm tra hồ sơ tiêm chủng của học sinh chuyển trường và nhập học',
+                        compliance: '99%',
+                        grade: 'Tất cả các lớp',
+                        tags: ['Hồ sơ', 'Học sinh mới'],
                         downloadUrl: '#'
                     }
                 ];
 
-                setReports(vacReports);
-
-                // Set sample stats
+                setReports(vacReports);                // Set sample stats phù hợp với trường tiểu học
                 setStats({
-                    totalReports: 18,
-                    complianceRate: 94,
-                    vaccinatedStudents: 1248,
-                    pendingConsent: 52
+                    totalReports: 15,
+                    complianceRate: 96,
+                    vaccinatedStudents: 576, // 96% của 600 học sinh
+                    pendingConsent: 24
                 });
 
                 setLoading(false);

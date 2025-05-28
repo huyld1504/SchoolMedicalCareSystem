@@ -46,39 +46,37 @@ function VaccinationScheduler() {
         notifyParents: true,
         notifyStudents: false,
         reminderDays: 7
-    });
-
-    // Sample existing schedules with Vietnamese content
+    });    // Sample existing schedules phù hợp với trường tiểu học
     const sampleSchedules = [
         {
             id: 1,
-            title: "Tiêm chủng cúm mùa 2025",
-            vaccineType: "Influenza",
-            targetGroups: ["Lớp 1", "Lớp 2", "Lớp 3"],
+            title: "Tiêm chủng Sởi - Rubella",
+            vaccineType: "Sởi - Rubella (MR)",
+            targetGroups: ["Lớp 1", "Lớp 2"],
             startDate: "2025-06-01",
             endDate: "2025-06-03",
-            description: "Tiêm chủng cúm mùa cho học sinh tiểu học",
-            location: "Hội trường trường",
+            description: "Tiêm chủng Sởi - Rubella cho học sinh lớp 1-2",
+            location: "Phòng y tế trường",
             status: "upcoming",
             createdBy: currentUser?.name || "Quản trị viên",
             createdAt: "2025-05-25",
             notificationsSent: true,
             reminderDays: 7,
             timeSlots: [
-                { startTime: "08:00", endTime: "10:00", assigned: "Y tá Nguyễn Lan", capacity: 30, registered: 25 },
-                { startTime: "10:30", endTime: "12:30", assigned: "Y tá Trần Minh", capacity: 30, registered: 28 },
-                { startTime: "13:30", endTime: "15:30", assigned: "Y tá Lê Hương", capacity: 30, registered: 22 }
+                { startTime: "08:00", endTime: "10:00", assigned: "Cô Nguyễn Thị Lan", capacity: 20, registered: 18 },
+                { startTime: "10:30", endTime: "12:30", assigned: "Cô Trần Thị Minh", capacity: 20, registered: 20 },
+                { startTime: "13:30", endTime: "15:30", assigned: "BS. Lê Thị Hương", capacity: 20, registered: 15 }
             ]
         },
         {
             id: 2,
-            title: "Tiêm chủng HPV cho học sinh lớp 6",
-            vaccineType: "HPV",
-            targetGroups: ["Lớp 6"],
+            title: "Tiêm chủng Bạch hầu - Ho gà - Uốn ván",
+            vaccineType: "DPT",
+            targetGroups: ["Lớp 3", "Lớp 4"],
             startDate: "2025-06-15",
             endDate: "2025-06-16",
-            description: "Chương trình tiêm chủng HPV theo kế hoạch quốc gia",
-            location: "Phòng y tế trường",
+            description: "Tiêm nhắc lại DPT cho học sinh lớp 3-4",
+            location: "Hội trường trường",
             status: "planning",
             createdBy: currentUser?.name || "Quản trị viên",
             createdAt: "2025-05-20",
@@ -91,13 +89,13 @@ function VaccinationScheduler() {
         },
         {
             id: 3,
-            title: "Tiêm chủng bạch hầu - ho gà - uốn ván",
-            vaccineType: "DPT",
-            targetGroups: ["Lớp 4", "Lớp 5"],
+            title: "Tiêm chủng Viêm gan B",
+            vaccineType: "Viêm gan B",
+            targetGroups: ["Lớp 5"],
             startDate: "2025-05-15",
             endDate: "2025-05-17",
-            description: "Tiêm chủng nhắc lại cho học sinh tiểu học",
-            location: "Hội trường trường",
+            description: "Tiêm chủng Viêm gan B cho học sinh lớp 5",
+            location: "Phòng y tế trường",
             status: "completed",
             createdBy: "BS. Nguyễn Cường",
             createdAt: "2025-05-01",
