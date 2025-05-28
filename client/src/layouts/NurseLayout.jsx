@@ -78,12 +78,7 @@ function NurseLayout({ children }) {
           >
             <i className="bi bi-capsule me-2"></i> Thuốc
           </a>
-          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/medications/admin"
-          >
-            <i className="bi bi-clipboard2-pulse me-2"></i> Cấp thuốc
-          </a>
+          
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medications/inventory"
