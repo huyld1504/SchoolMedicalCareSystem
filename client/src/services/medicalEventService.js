@@ -1,120 +1,120 @@
 /**
- * Service for handling medical event-related operations
+ * Service xử lý các thao tác liên quan đến sự kiện y tế
  */
 
-// Mock data for medical events
+// Dữ liệu mẫu cho các sự kiện y tế
 const medicalEvents = [
   {
     id: 1,
     studentName: 'Emma Johnson',
     studentId: 'S10045',
-    grade: '5th Grade',
-    eventType: 'Injury',
-    eventSubtype: 'Fall',
+    grade: 'Lớp 5',
+    eventType: 'Chấn thương',
+    eventSubtype: 'Té ngã',
     date: '2025-05-20',
     time: '10:30 AM',
-    location: 'Playground',
-    description: 'Fell from swing and scraped knee',
-    severity: 'Minor',
-    treatment: 'Cleaned wound with antiseptic and applied bandage',
-    treatmentBy: 'Nurse Sarah',
+    location: 'Sân chơi',
+    description: 'Ngã từ xích đu và trầy xước đầu gối',
+    severity: 'Nhẹ',
+    treatment: 'Làm sạch vết thương bằng dung dịch sát khuẩn và băng vết thương',
+    treatmentBy: 'Y tá Sarah',
     followUpRequired: false,
     parentNotified: true,
     notifiedAt: '2025-05-20 10:45 AM',
-    notifiedBy: 'Nurse Sarah',
-    notes: 'Student returned to class after treatment',
-    status: 'Resolved'
+    notifiedBy: 'Y tá Sarah',
+    notes: 'Học sinh đã trở lại lớp học sau khi được điều trị',
+    status: 'Đã giải quyết'
   },
   {
     id: 2,
     studentName: 'Michael Brown',
     studentId: 'S10062',
-    grade: '7th Grade',
-    eventType: 'Illness',
-    eventSubtype: 'Fever',
+    grade: 'Lớp 7',
+    eventType: 'Bệnh',
+    eventSubtype: 'Sốt',
     date: '2025-05-19',
     time: '01:15 PM',
-    location: 'Classroom',
-    description: 'Student complained of headache and was found to have elevated temperature (100.4°F)',
-    severity: 'Moderate',
-    treatment: 'Administered fever reducer with parent permission and monitored for 30 minutes',
-    treatmentBy: 'Nurse Robert',
+    location: 'Phòng học',
+    description: 'Học sinh than đau đầu và phát hiện nhiệt độ cao (38°C)',
+    severity: 'Trung bình',
+    treatment: 'Cho uống thuốc hạ sốt với sự cho phép của phụ huynh và theo dõi trong 30 phút',
+    treatmentBy: 'Y tá Robert',
     followUpRequired: true,
     followUpDate: '2025-05-21',
     parentNotified: true,
     notifiedAt: '2025-05-19 01:30 PM',
-    notifiedBy: 'Nurse Robert',
-    notes: 'Parent picked up student at 2:15 PM',
-    status: 'Requires Follow-up'
+    notifiedBy: 'Y tá Robert',
+    notes: 'Phụ huynh đón học sinh lúc 2:15 PM',
+    status: 'Cần theo dõi thêm'
   },
   {
     id: 3,
     studentName: 'Sophia Davis',
     studentId: 'S10078',
-    grade: '4th Grade',
-    eventType: 'Medical Condition',
-    eventSubtype: 'Asthma Attack',
+    grade: 'Lớp 4',
+    eventType: 'Tình trạng y tế',
+    eventSubtype: 'Cơn hen suyễn',
     date: '2025-05-18',
     time: '11:20 AM',
-    location: 'Gym',
-    description: 'Experienced difficulty breathing during PE class',
-    severity: 'Serious',
-    treatment: 'Administered rescue inhaler as per student\'s care plan',
-    treatmentBy: 'Nurse Sarah',
+    location: 'Phòng tập thể dục',
+    description: 'Gặp khó khăn khi thở trong giờ thể dục',
+    severity: 'Nghiêm trọng',
+    treatment: 'Sử dụng ống hít cứu sinh theo kế hoạch chăm sóc của học sinh',
+    treatmentBy: 'Y tá Sarah',
     followUpRequired: true,
     followUpDate: '2025-05-19',
     parentNotified: true,
     notifiedAt: '2025-05-18 11:25 AM',
-    notifiedBy: 'Nurse Sarah',
-    notes: 'Breathing normalized after inhaler use. Student rested in nurse\'s office for 30 minutes before returning to class.',
-    status: 'Resolved'
+    notifiedBy: 'Y tá Sarah',
+    notes: 'Hơi thở đã bình thường sau khi sử dụng ống hít. Học sinh nghỉ ngơi trong phòng y tá 30 phút trước khi trở lại lớp học.',
+    status: 'Đã giải quyết'
   },
   {
     id: 4,
     studentName: 'James Wilson',
     studentId: 'S10081',
-    grade: '6th Grade',
-    eventType: 'Injury',
-    eventSubtype: 'Sports Injury',
+    grade: 'Lớp 6',
+    eventType: 'Chấn thương',
+    eventSubtype: 'Chấn thương thể thao',
     date: '2025-05-15',
     time: '03:30 PM',
-    location: 'Soccer Field',
-    description: 'Twisted ankle during soccer practice',
-    severity: 'Moderate',
-    treatment: 'Applied ice pack, elevated leg, and used compression bandage',
-    treatmentBy: 'Nurse Robert',
+    location: 'Sân bóng đá',
+    description: 'Bị trẹo mắt cá chân trong lúc tập bóng đá',
+    severity: 'Trung bình',
+    treatment: 'Chườm đá, nâng chân lên và sử dụng băng nén',
+    treatmentBy: 'Y tá Robert',
     followUpRequired: true,
     followUpDate: '2025-05-16',
     parentNotified: true,
     notifiedAt: '2025-05-15 03:45 PM',
-    notifiedBy: 'Nurse Robert',
-    notes: 'Parent picked up student. Recommended to follow up with physician if pain persists.',
-    status: 'Resolved'
+    notifiedBy: 'Y tá Robert',
+    notes: 'Phụ huynh đón học sinh. Đề xuất khám bác sĩ nếu đau kéo dài.',
+    status: 'Đã giải quyết'
   },
   {
     id: 5,
     studentName: 'Olivia Smith',
     studentId: 'S10058',
-    grade: '3rd Grade',
-    eventType: 'Infectious Disease',
-    eventSubtype: 'Suspected Flu',
+    grade: 'Lớp 3',
+    eventType: 'Bệnh truyền nhiễm',
+    eventSubtype: 'Nghi cúm',
     date: '2025-05-14',
     time: '09:45 AM',
-    location: 'Classroom',
-    description: 'Exhibited symptoms of influenza including fever, cough, and fatigue',
-    severity: 'Moderate',
-    treatment: 'Isolated student, monitored symptoms',
-    treatmentBy: 'Nurse Sarah',
+    location: 'Phòng học',
+    description: 'Có các triệu chứng của cúm bao gồm sốt, ho và mệt mỏi',
+    severity: 'Trung bình',
+    treatment: 'Cách ly học sinh, theo dõi các triệu chứng',
+    treatmentBy: 'Y tá Sarah',
     followUpRequired: false,
     parentNotified: true,
     notifiedAt: '2025-05-14 10:00 AM',
-    notifiedBy: 'Nurse Sarah',
-    notes: 'Parent picked up student. Advised to consult pediatrician and keep home for at least 24 hours after fever subsides.',
-    status: 'Resolved'
+    notifiedBy: 'Y tá Sarah',
+    notes: 'Phụ huynh đón học sinh. Được khuyên đi khám bác sĩ nhi khoa và ở nhà ít nhất 24 giờ sau khi hết sốt.',
+    status: 'Đã giải quyết'
   }
 ];
 
-// Event type options for dropdown menus
+// Các tùy chọn loại sự kiện cho menu dropdown
 export const eventTypes = [
   { value: 'Injury', label: 'Chấn thương' },
   { value: 'Illness', label: 'Ốm bệnh' },
@@ -125,7 +125,7 @@ export const eventTypes = [
   { value: 'Other', label: 'Khác' }
 ];
 
-// Severity levels
+// Mức độ nghiêm trọng
 export const severityLevels = [
   { value: 'Minor', label: 'Nhẹ - Chỉ cần sơ cứu' },
   { value: 'Moderate', label: 'Trung bình - Có thể cần theo dõi thêm' },
@@ -133,15 +133,15 @@ export const severityLevels = [
   { value: 'Severe', label: 'Rất nghiêm trọng - Cần đáp ứng khẩn cấp' }
 ];
 
-// Status options
+// Các tùy chọn trạng thái
 export const statusOptions = [
-  { value: 'Open', label: 'Open' },
-  { value: 'In Progress', label: 'In Progress' },
-  { value: 'Requires Follow-up', label: 'Requires Follow-up' },
-  { value: 'Resolved', label: 'Resolved' }
+  { value: 'Mới', label: 'Mới' },
+  { value: 'Đang xử lý', label: 'Đang xử lý' },
+  { value: 'Cần theo dõi thêm', label: 'Cần theo dõi thêm' },
+  { value: 'Đã giải quyết', label: 'Đã giải quyết' }
 ];
 
-// Event subtypes based on event type
+// Phân loại chi tiết dựa trên loại sự kiện
 export const eventSubtypes = {
   'Injury': [
     { value: 'Fall', label: 'Té ngã' },
@@ -190,25 +190,25 @@ export const eventSubtypes = {
   ]
 };
 
-// Service functions
+// Các hàm dịch vụ
 
 /**
- * Get all medical events
- * @returns {Array} Array of medical events
+ * Lấy tất cả các sự kiện y tế
+ * @returns {Array} Mảng các sự kiện y tế
  */
 export const getAllMedicalEvents = () => {
   return [...medicalEvents];
 };
 
 /**
- * Get filtered medical events 
- * @param {Object} filters - Filters to apply
- * @returns {Array} Filtered medical events
+ * Lấy các sự kiện y tế đã lọc 
+ * @param {Object} filters - Các bộ lọc cần áp dụng
+ * @returns {Array} Các sự kiện y tế đã lọc
  */
 export const getFilteredMedicalEvents = (filters = {}) => {
   let result = [...medicalEvents];
 
-  // Apply filters if provided
+  // Áp dụng bộ lọc nếu được cung cấp
   if (filters.studentId) {
     result = result.filter(event => event.studentId === filters.studentId);
   }
@@ -237,18 +237,18 @@ export const getFilteredMedicalEvents = (filters = {}) => {
 };
 
 /**
- * Get a medical event by ID
- * @param {number} id - Event ID
- * @returns {Object|null} Medical event object or null if not found
+ * Lấy sự kiện y tế theo ID
+ * @param {number} id - ID sự kiện
+ * @returns {Object|null} Đối tượng sự kiện y tế hoặc null nếu không tìm thấy
  */
 export const getMedicalEventById = (id) => {
   return medicalEvents.find(event => event.id === parseInt(id)) || null;
 };
 
 /**
- * Add a new medical event
- * @param {Object} eventData - New event data
- * @returns {Object} Created event
+ * Thêm sự kiện y tế mới
+ * @param {Object} eventData - Dữ liệu sự kiện mới
+ * @returns {Object} Sự kiện đã tạo
  */
 export const createMedicalEvent = (eventData) => {
   const newEvent = {
@@ -256,65 +256,65 @@ export const createMedicalEvent = (eventData) => {
     ...eventData,
     date: eventData.date || new Date().toISOString().split('T')[0]
   };
-  
+
   medicalEvents.push(newEvent);
   return newEvent;
 };
 
 /**
- * Update an existing medical event
- * @param {number} id - Event ID to update
- * @param {Object} eventData - Updated event data
- * @returns {Object|null} Updated event or null if not found
+ * Cập nhật sự kiện y tế hiện có
+ * @param {number} id - ID sự kiện cần cập nhật
+ * @param {Object} eventData - Dữ liệu sự kiện đã cập nhật
+ * @returns {Object|null} Sự kiện đã cập nhật hoặc null nếu không tìm thấy
  */
 export const updateMedicalEvent = (id, eventData) => {
   const index = medicalEvents.findIndex(event => event.id === parseInt(id));
-  
+
   if (index === -1) {
     return null;
   }
-  
+
   const updatedEvent = {
     ...medicalEvents[index],
     ...eventData
   };
-  
+
   medicalEvents[index] = updatedEvent;
   return updatedEvent;
 };
 
 /**
- * Delete a medical event
- * @param {number} id - Event ID to delete
- * @returns {boolean} Whether the operation was successful
+ * Xóa sự kiện y tế
+ * @param {number} id - ID sự kiện cần xóa
+ * @returns {boolean} Cho biết thao tác có thành công hay không
  */
 export const deleteMedicalEvent = (id) => {
   const index = medicalEvents.findIndex(event => event.id === parseInt(id));
-  
+
   if (index === -1) {
     return false;
   }
-  
+
   medicalEvents.splice(index, 1);
   return true;
 };
 
 /**
- * Get events requiring follow-up
- * @returns {Array} Medical events requiring follow-up
+ * Lấy các sự kiện cần theo dõi thêm
+ * @returns {Array} Các sự kiện y tế cần theo dõi thêm
  */
 export const getFollowUpEvents = () => {
-  return medicalEvents.filter(event => 
-    event.followUpRequired && 
-    (event.status === 'Requires Follow-up' || event.status === 'In Progress')
+  return medicalEvents.filter(event =>
+    event.followUpRequired &&
+    (event.status === 'Cần theo dõi thêm' || event.status === 'Đang xử lý')
   );
 };
 
 /**
- * Get events by date range
- * @param {string} startDate - Start date (YYYY-MM-DD)
- * @param {string} endDate - End date (YYYY-MM-DD)
- * @returns {Array} Medical events in the date range
+ * Lấy các sự kiện theo khoảng thời gian
+ * @param {string} startDate - Ngày bắt đầu (YYYY-MM-DD)
+ * @param {string} endDate - Ngày kết thúc (YYYY-MM-DD)
+ * @returns {Array} Các sự kiện y tế trong khoảng thời gian
  */
 export const getEventsByDateRange = (startDate, endDate) => {
   return medicalEvents.filter(event => {
@@ -324,42 +324,42 @@ export const getEventsByDateRange = (startDate, endDate) => {
 };
 
 /**
- * Get statistics about medical events
- * @param {string} startDate - Start date (YYYY-MM-DD)
- * @param {string} endDate - End date (YYYY-MM-DD)
- * @returns {Object} Statistics
+ * Lấy thống kê về các sự kiện y tế
+ * @param {string} startDate - Ngày bắt đầu (YYYY-MM-DD)
+ * @param {string} endDate - Ngày kết thúc (YYYY-MM-DD)
+ * @returns {Object} Thống kê
  */
 export const getMedicalEventStats = (startDate, endDate) => {
-  const eventsInRange = startDate && endDate ? 
-    getEventsByDateRange(startDate, endDate) : 
+  const eventsInRange = startDate && endDate ?
+    getEventsByDateRange(startDate, endDate) :
     [...medicalEvents];
 
   const totalEvents = eventsInRange.length;
-  
-  // Count by type
+
+  // Đếm theo loại
   const countByType = {};
   eventsInRange.forEach(event => {
     countByType[event.eventType] = (countByType[event.eventType] || 0) + 1;
   });
-  
-  // Count by severity
+
+  // Đếm theo mức độ nghiêm trọng
   const countBySeverity = {};
   eventsInRange.forEach(event => {
     countBySeverity[event.severity] = (countBySeverity[event.severity] || 0) + 1;
   });
-  
-  // Count by status
+
+  // Đếm theo trạng thái
   const countByStatus = {};
   eventsInRange.forEach(event => {
     countByStatus[event.status] = (countByStatus[event.status] || 0) + 1;
   });
-  
+
   return {
     totalEvents,
     countByType,
     countBySeverity,
     countByStatus,
-    openEvents: eventsInRange.filter(e => e.status === 'Open').length,
+    openEvents: eventsInRange.filter(e => e.status === 'Mới').length,
     followUpRequired: eventsInRange.filter(e => e.followUpRequired).length
   };
 };

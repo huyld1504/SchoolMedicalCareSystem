@@ -249,7 +249,6 @@ function MedicalEventForm() {
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ngày <span className="text-red-500">*</span>

@@ -8,7 +8,6 @@ function MedicationRequest() {
     { id: 2, name: "Thomas Johnson", grade: "8th Grade", age: 13 },
     { id: 3, name: "Olivia Smith", grade: "3rd Grade", age: 8 },
   ];
-
   // Get selected student from localStorage if available
   useEffect(() => {
     const selectedStudentId = localStorage.getItem('selectedStudentId');
@@ -20,12 +19,16 @@ function MedicationRequest() {
         studentId
       }));
 
+      // Lock the student selection since it came from a previous selection
+      setIsStudentLocked(true);
+
       // Clear the localStorage after using it
       localStorage.removeItem('selectedStudentId');
       localStorage.removeItem('selectedStudentName');
       localStorage.removeItem('selectedStudentGrade');
     }
   }, []);
+
   // Form state
   const [formData, setFormData] = useState({
     studentId: "",
@@ -51,14 +54,21 @@ function MedicationRequest() {
     consentToAdminister: false,
     additionalNotes: "",
   });
+  const [validationErrors, setValidationErrors] = useState({});
+  const [isStudentLocked, setIsStudentLocked] = useState(false);
 
-  const [validationErrors, setValidationErrors] = useState({});  // Form handling
+  // Form handling
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
 
     // Clear validation errors when user starts typing
     if (validationErrors.consent && name === 'consentToAdminister') {
       setValidationErrors(prev => ({ ...prev, consent: null }));
+    }
+
+    // Lock student selection once a student is chosen
+    if (name === 'studentId' && value && !isStudentLocked) {
+      setIsStudentLocked(true);
     }
 
     if (type === "file") {
@@ -175,13 +185,17 @@ function MedicationRequest() {
       ]
     }));
   };
-
   // Remove a medication from the list
   const handleRemoveMedication = (indexToRemove) => {
     setFormData((prev) => ({
       ...prev,
       medications: prev.medications.filter((_, index) => index !== indexToRemove)
     }));
+  };
+
+  // Function to unlock student selection
+  const handleUnlockStudent = () => {
+    setIsStudentLocked(false);
   }; const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -261,30 +275,67 @@ function MedicationRequest() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Student Selection */}
-          <div className="mb-6">            <label
+        <form onSubmit={handleSubmit}>          {/* Student Selection */}
+          <div className="mb-6">
+            <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="studentId"
             >
               Học sinh <span className="text-red-500">*</span>
             </label>
-            <select
-              id="studentId"
-              name="studentId"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={formData.studentId}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Chọn học sinh</option>
-              {students.map((student) => (
-                <option key={student.id} value={student.id}>
-                  {student.name} ({student.grade})
-                </option>
-              ))}
-            </select>
-          </div>          {/* Medication Information */}
+
+            {isStudentLocked && formData.studentId ? (
+              <div className="flex items-center justify-between p-3 border rounded bg-green-50 border-green-200">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div>
+                    <div className="font-medium text-green-800">
+                      {students.find(s => s.id.toString() === formData.studentId.toString())?.name}
+                      ({students.find(s => s.id.toString() === formData.studentId.toString())?.grade})
+                    </div>
+                    <div className="text-sm text-green-600">Học sinh đã được chọn và khóa</div>
+                  </div>
+                </div>
+                {/* <button
+                  type="button"
+                  onClick={handleUnlockStudent}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                  </svg>
+                  Thay đổi
+                </button> */}
+              </div>
+            ) : (
+              <select
+                id="studentId"
+                name="studentId"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                value={formData.studentId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Chọn học sinh</option>
+                {students.map((student) => (
+                  <option key={student.id} value={student.id}>
+                    {student.name} ({student.grade})
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {formData.studentId && !isStudentLocked && (
+              <div className="mt-2 text-sm text-blue-600 flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Học sinh sẽ được khóa sau khi bạn chọn để tránh thay đổi nhầm lẫn
+              </div>
+            )}
+          </div>{/* Medication Information */}
           <div className="flex justify-between items-center border-b pb-2 mb-4">            <h2 className="text-xl font-bold">Thông tin thuốc</h2>
             <button
               type="button"
@@ -506,11 +557,11 @@ function MedicationRequest() {
             </div>
           </div>
           <div className="mb-6">            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Tải lên Tài liệu Đơn thuốc{" "}
-              {formData.medicationType === "prescription" && (
-                <span className="text-red-500">*</span>
-              )}
-            </label>
+            Tải lên Tài liệu Đơn thuốc{" "}
+            {formData.medicationType === "prescription" && (
+              <span className="text-red-500">*</span>
+            )}
+          </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
               <div className="space-y-1 text-center">
                 <svg
@@ -553,8 +604,8 @@ function MedicationRequest() {
             {/* Display uploaded documents */}
             {formData.prescriptionDocuments.length > 0 && (
               <div className="mt-4">                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Tài liệu đã tải lên
-                </h3>
+                Tài liệu đã tải lên
+              </h3>
                 <ul className="border rounded-md divide-y divide-gray-200">
                   {formData.prescriptionDocuments.map((file, index) => (
                     <li
@@ -579,12 +630,12 @@ function MedicationRequest() {
                         </span>
                       </div>
                       <div className="ml-4 flex-shrink-0">                        <button
-                          type="button"
-                          className="font-medium text-red-600 hover:text-red-500"
-                          onClick={() => handleRemoveDocument(index)}
-                        >
-                          Xóa
-                        </button>
+                        type="button"
+                        className="font-medium text-red-600 hover:text-red-500"
+                        onClick={() => handleRemoveDocument(index)}
+                      >
+                        Xóa
+                      </button>
                       </div>
                     </li>
                   ))}
@@ -602,11 +653,11 @@ function MedicationRequest() {
 
 
           <div className="mb-6">            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="sideEffects"
-            >
-              Tác dụng phụ có thể xảy ra cần theo dõi
-            </label>
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="sideEffects"
+          >
+            Tác dụng phụ có thể xảy ra cần theo dõi
+          </label>
             <textarea
               id="sideEffects"
               name="sideEffects"
@@ -624,11 +675,11 @@ function MedicationRequest() {
 
 
           <div className="mb-6">            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="additionalNotes"
-            >
-              Ghi chú bổ sung
-            </label>
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="additionalNotes"
+          >
+            Ghi chú bổ sung
+          </label>
             <textarea
               id="additionalNotes"
               name="additionalNotes"
@@ -647,8 +698,8 @@ function MedicationRequest() {
                 </svg>
               </div>
               <div className="ml-3 flex-1">                <h3 className="text-lg font-bold text-red-800 mb-3">
-                  BẮT BUỘC: Sự Đồng Ý của Phụ huynh/Người Giám hộ
-                </h3>
+                BẮT BUỘC: Sự Đồng Ý của Phụ huynh/Người Giám hộ
+              </h3>
                 <div className="flex items-start">
                   <input
                     id="consentToAdminister"
@@ -675,8 +726,8 @@ function MedicationRequest() {
                 </div>
                 {!formData.consentToAdminister && (
                   <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">                    <p className="text-sm font-medium text-red-800">
-                      ⚠️ Cần có sự đồng ý để gửi yêu cầu thuốc này. Vui lòng đánh dấu vào ô trên để đồng ý.
-                    </p>
+                    ⚠️ Cần có sự đồng ý để gửi yêu cầu thuốc này. Vui lòng đánh dấu vào ô trên để đồng ý.
+                  </p>
                   </div>
                 )}
               </div>
@@ -696,13 +747,13 @@ function MedicationRequest() {
                 className={`font-medium py-2 px-6 rounded transition duration-150 ease-in-out ${formData.consentToAdminister
                   ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}                title={!formData.consentToAdminister ? "Vui lòng đồng ý trước khi gửi" : "Gửi yêu cầu thuốc"}
+                  }`} title={!formData.consentToAdminister ? "Vui lòng đồng ý trước khi gửi" : "Gửi yêu cầu thuốc"}
               >
                 Gửi Yêu Cầu
               </button>
-              {!formData.consentToAdminister && (                <p className="text-xs text-red-600 mt-1 font-medium">
-                  Cần có sự đồng ý để gửi
-                </p>
+              {!formData.consentToAdminister && (<p className="text-xs text-red-600 mt-1 font-medium">
+                Cần có sự đồng ý để gửi
+              </p>
               )}
             </div>
           </div>

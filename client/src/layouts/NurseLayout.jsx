@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 function NurseLayout({ children }) {
@@ -39,10 +39,12 @@ function NurseLayout({ children }) {
               src="https://via.placeholder.com/50"
               alt="User"
               className="rounded-circle"
-            />
-          </div>
+            />          </div>
           <div className="user-name">{currentUser.name}</div>
-        </div>        <nav className="nav flex-column p-2">
+        </div>
+
+
+        <nav className="nav flex-column p-2">
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Chính
           </div>
@@ -51,20 +53,24 @@ function NurseLayout({ children }) {
             href="/nurse"
           >
             <i className="bi bi-speedometer2 me-2"></i> Bảng điều khiển
+          </a>          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
+            Dịch vụ Y tế
+          </div>          {/* Quick Actions in Medical Services Section */}
+          <a href="/nurse/medications/dashboard" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-graph-up me-2"></i> Bảng điều khiển thuốc
+          </a>
+          <a href="/nurse/medications/admin" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-clipboard2-pulse me-2"></i> Cấp thuốc
+          </a>
+          <a href="/nurse/health-checks" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-heart-pulse me-2"></i> Khám sức khỏe
           </a>
 
-          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
-            Dịch vụ Y tế
-          </div>          <a
+          <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medical-events"
           >
             <i className="bi bi-journal-medical me-2"></i> Danh sách sự kiện
-          </a>          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/medical-events/new"
-          >
-            <i className="bi bi-plus-circle me-2"></i> Sự kiện y tế mới
           </a>
           <a
             className="nav-link text-white d-flex align-items-center py-2"
@@ -72,12 +78,7 @@ function NurseLayout({ children }) {
           >
             <i className="bi bi-capsule me-2"></i> Thuốc
           </a>
-          <a
-            className="nav-link text-white d-flex align-items-center py-2"
-            href="/nurse/medications/admin"
-          >
-            <i className="bi bi-clipboard2-pulse me-2"></i> Cấp thuốc
-          </a>
+          
           <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medications/inventory"
@@ -133,6 +134,7 @@ function NurseLayout({ children }) {
             </div>
           </div>
         </div>
+
       </header>
         <main className="p-4">{children}</main>
       </div>

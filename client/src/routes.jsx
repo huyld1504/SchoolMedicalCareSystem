@@ -27,6 +27,7 @@ import ParentDashboard from "./pages/parent/Dashboard";
 import AdminDashboard from "./pages/admin/Dashboard";
 import ManagerDashboard from "./pages/manager/Dashboard";
 import StudentDashboard from "./pages/student/Dashboard";
+import MedicationSchedule from "./pages/medications/MedicationSchedule";
 
 // Health Records
 import HealthRecordsList from "./pages/health/HealthRecordsList";
@@ -491,14 +492,14 @@ const nurseRoutes = [
         <BatchAdministration />
       </NurseLayout>),
   },
-  // {
-  //   path: "/nurse/vaccinations",
-  //   element: (
-  //     <NurseLayout>
-  //       <VaccinationCampaigns />
-  //     </NurseLayout>
-  //   ),
-  // },
+  {
+    path: "/nurse/vaccinations",
+    element: (
+      <NurseLayout>
+        <VaccinationCampaigns />
+      </NurseLayout>
+    ),
+  },
   {
     path: "/nurse/vaccinations/:id/records",
     element: (
@@ -590,12 +591,19 @@ const parentRoutes = [
         <MedicationRequest />
       </ParentLayout>
     ),
-  },
-  {
+  }, {
     path: "/parent/medications",
     element: (
       <ParentLayout>
         <ParentMedicationTracking />
+      </ParentLayout>
+    ),
+  },
+  {
+    path: "/parent/medications/:id/schedule",
+    element: (
+      <ParentLayout>
+        <MedicationSchedule />
       </ParentLayout>
     ),
   },
