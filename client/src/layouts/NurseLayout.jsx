@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 function NurseLayout({ children }) {
@@ -39,10 +39,12 @@ function NurseLayout({ children }) {
               src="https://via.placeholder.com/50"
               alt="User"
               className="rounded-circle"
-            />
-          </div>
+            />          </div>
           <div className="user-name">{currentUser.name}</div>
-        </div>        <nav className="nav flex-column p-2">
+        </div>        
+        
+        
+        <nav className="nav flex-column p-2">
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Chính
           </div>
@@ -51,11 +53,23 @@ function NurseLayout({ children }) {
             href="/nurse"
           >
             <i className="bi bi-speedometer2 me-2"></i> Bảng điều khiển
-          </a>
-
-          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
+          </a>          <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Dịch vụ Y tế
-          </div>          <a
+          </div>          {/* Quick Actions in Medical Services Section */}
+         
+          <a href="/nurse/medications/admin" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-clipboard2-pulse me-2"></i> Cấp thuốc
+          </a>
+          <a href="/nurse/health-checks" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-heart-pulse me-2"></i> Khám sức khỏe
+          </a>
+          
+          <a href="/nurse/medications/inventory" className="nav-link text-white d-flex align-items-center py-2">
+            <i className="bi bi-box-seam me-2"></i> Kho thuốc
+          </a>
+        
+                   
+          <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/nurse/medical-events"
           >
@@ -133,6 +147,7 @@ function NurseLayout({ children }) {
             </div>
           </div>
         </div>
+  
       </header>
         <main className="p-4">{children}</main>
       </div>
