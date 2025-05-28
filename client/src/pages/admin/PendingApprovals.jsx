@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { 
+    FaCheck, 
+    FaTimes, 
+    FaInfoCircle, 
+    FaPills, 
+    FaSyringe, 
+    FaUserPlus, 
+    FaStethoscope,
+    FaFilter,
+    FaSort,
+    FaClock,
+    FaExclamationTriangle,
+    FaCheckCircle,
+    FaTimesCircle
+} from 'react-icons/fa';
 
 function PendingApprovals() {
     const [filter, setFilter] = useState('all');
@@ -7,57 +22,58 @@ function PendingApprovals() {
     const [showModal, setShowModal] = useState(false);
     const [selectedApproval, setSelectedApproval] = useState(null);
     const [actionType, setActionType] = useState('');
+    const [message, setMessage] = useState('');
 
-    // Sample pending approvals data
+    // Sample pending approvals data with Vietnamese content
     const [approvals, setApprovals] = useState([
         {
             id: 1,
             type: 'medication',
-            title: 'Medication Request - Amoxicillin',
-            student: 'Emily Johnson',
+            title: 'Yêu cầu thuốc - Amoxicillin',
+            student: 'Nguyễn Thị Mai',
             class: '6A',
-            requestedBy: 'Sarah Johnson (Parent)',
+            requestedBy: 'Nguyễn Văn Hùng (Phụ huynh)',
             date: '2024-01-15',
             urgency: 'high',
             details: {
                 medication: 'Amoxicillin 250mg',
-                dosage: '1 tablet twice daily',
-                duration: '7 days',
-                condition: 'Respiratory infection',
-                prescribedBy: 'Dr. Smith',
-                allergies: 'None known'
+                dosage: '1 viên, 2 lần/ngày',
+                duration: '7 ngày',
+                condition: 'Nhiễm trùng đường hô hấp',
+                prescribedBy: 'BS. Nguyễn Minh',
+                allergies: 'Không có dị ứng đã biết'
             }
         },
         {
             id: 2,
             type: 'vaccination',
-            title: 'Vaccination Consent - HPV',
-            student: 'Michael Chen',
+            title: 'Đồng ý tiêm chủng - HPV',
+            student: 'Trần Minh Tuấn',
             class: '8B',
-            requestedBy: 'Lisa Chen (Parent)',
+            requestedBy: 'Lê Thị Lan (Phụ huynh)',
             date: '2024-01-14',
             urgency: 'medium',
             details: {
                 vaccine: 'HPV (Human Papillomavirus)',
-                campaign: 'Grade 8 HPV Vaccination Program',
+                campaign: 'Chương trình tiêm chủng HPV lớp 8',
                 scheduledDate: '2024-01-20',
-                location: 'School Health Center',
-                notes: 'Part of national immunization program'
+                location: 'Trung tâm Y tế Trường học',
+                notes: 'Thuộc chương trình tiêm chủng quốc gia'
             }
         },
         {
             id: 3,
             type: 'healthcheck',
-            title: 'Health Check Consent - Annual Physical',
-            student: 'Sophia Martinez',
+            title: 'Đồng ý khám sức khỏe - Khám định kỳ hàng năm',
+            student: 'Phạm Thị Hương',
             class: '5C',
-            requestedBy: 'Carmen Martinez (Parent)',
+            requestedBy: 'Vũ Văn Nam (Phụ huynh)',
             date: '2024-01-13',
             urgency: 'low',
             details: {
-                checkType: 'Annual Physical Examination',
+                checkType: 'Khám sức khỏe định kỳ hàng năm',
                 scheduledDate: '2024-01-25',
-                examiner: 'School Nurse Johnson',
+                examiner: 'Y tá trưởng Nguyễn Thị Bình',
                 includesVision: true,
                 includesHearing: true,
                 includesWeightHeight: true
@@ -66,37 +82,37 @@ function PendingApprovals() {
         {
             id: 4,
             type: 'user',
-            title: 'New Parent Account Registration',
-            student: 'David Park',
+            title: 'Đăng ký tài khoản phụ huynh mới',
+            student: 'Hoàng Văn Đức',
             class: '3A',
-            requestedBy: 'Jennifer Park',
+            requestedBy: 'Hoàng Thị Linh',
             date: '2024-01-12',
             urgency: 'medium',
             details: {
-                accountType: 'Parent',
-                email: 'jennifer.park@email.com',
-                relationship: 'Mother',
+                accountType: 'Phụ huynh',
+                email: 'hoang.linh@email.com',
+                relationship: 'Mẹ',
                 emergencyContact: true,
-                documentsSubmitted: ['ID Copy', 'Proof of Address'],
-                backgroundCheckStatus: 'Pending'
+                documentsSubmitted: ['Bản sao CCCD', 'Giấy xác nhận địa chỉ'],
+                backgroundCheckStatus: 'Đang chờ xử lý'
             }
         },
         {
             id: 5,
             type: 'medication',
-            title: 'Emergency Medication - EpiPen',
-            student: 'Alex Thompson',
+            title: 'Thuốc cấp cứu - EpiPen',
+            student: 'Lê Minh An',
             class: '4B',
-            requestedBy: 'Mark Thompson (Parent)',
+            requestedBy: 'Lê Văn Cường (Phụ huynh)',
             date: '2024-01-11',
             urgency: 'high',
             details: {
                 medication: 'EpiPen Auto-Injector',
-                condition: 'Severe peanut allergy',
+                condition: 'Dị ứng đậu phộng nghiêm trọng',
                 emergencyOnly: true,
                 trainingRequired: true,
                 expiryDate: '2024-12-01',
-                storageInstructions: 'Room temperature, easily accessible'
+                storageInstructions: 'Nhiệt độ phòng, dễ tiếp cận'
             }
         }
     ]);
@@ -130,10 +146,390 @@ function PendingApprovals() {
         newAccounts: approvals.filter(a => a.type === 'user').length
     };
 
+    const styles = {
+        container: {
+            padding: '24px',
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            minHeight: '100vh'
+        },
+        header: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '32px',
+            borderRadius: '16px',
+            marginBottom: '24px',
+            boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)'
+        },
+        title: {
+            fontSize: '28px',
+            fontWeight: 'bold',
+            marginBottom: '8px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        },
+        subtitle: {
+            fontSize: '16px',
+            opacity: 0.9
+        },
+        statsGrid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '20px',
+            marginBottom: '24px'
+        },
+        statCard: {
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e5e7eb',
+            textAlign: 'center',
+            transition: 'transform 0.2s, box-shadow 0.2s'
+        },
+        statIcon: {
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            color: 'white',
+            fontSize: '20px'
+        },
+        statNumber: {
+            fontSize: '28px',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '4px'
+        },
+        statLabel: {
+            fontSize: '14px',
+            color: '#6b7280'
+        },
+        card: {
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            marginBottom: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid rgba(255,255,255,0.8)'
+        },
+        controlsContainer: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '24px',
+            flexWrap: 'wrap',
+            gap: '16px'
+        },
+        filtersContainer: {
+            display: 'flex',
+            gap: '16px',
+            alignItems: 'center'
+        },
+        select: {
+            padding: '12px 16px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            fontSize: '14px',
+            minWidth: '150px',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            outline: 'none'
+        },
+        approvalItem: {
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            marginBottom: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e5e7eb',
+            transition: 'transform 0.2s, box-shadow 0.2s'
+        },
+        approvalHeader: {
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            marginBottom: '16px'
+        },
+        approvalInfo: {
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '16px',
+            flex: 1
+        },
+        typeIcon: {
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '20px'
+        },
+        approvalTitle: {
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '8px'
+        },
+        urgencyBadge: {
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: '600',
+            marginLeft: '12px'
+        },
+        urgencyHigh: {
+            background: '#fee2e2',
+            color: '#991b1b'
+        },
+        urgencyMedium: {
+            background: '#fef3c7',
+            color: '#92400e'
+        },
+        urgencyLow: {
+            background: '#dcfce7',
+            color: '#166534'
+        },
+        infoGrid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '12px',
+            marginBottom: '16px',
+            fontSize: '14px',
+            color: '#6b7280'
+        },
+        infoItem: {
+            display: 'flex',
+            flexDirection: 'column'
+        },
+        infoLabel: {
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '2px'
+        },
+        detailsContainer: {
+            background: '#f8fafc',
+            borderRadius: '8px',
+            padding: '16px',
+            marginTop: '16px'
+        },
+        detailsTitle: {
+            fontWeight: '600',
+            color: '#1f2937',
+            marginBottom: '12px',
+            fontSize: '14px'
+        },
+        detailsGrid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '8px',
+            fontSize: '13px'
+        },
+        detailItem: {
+            color: '#6b7280'
+        },
+        detailLabel: {
+            fontWeight: '600',
+            color: '#374151'
+        },
+        actionsContainer: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            marginLeft: '16px'
+        },
+        actionButton: {
+            padding: '10px 20px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            border: 'none',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            minWidth: '120px'
+        },
+        approveButton: {
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+        },
+        denyButton: {
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+        },
+        infoButton: {
+            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            color: 'white',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+        },
+        emptyState: {
+            textAlign: 'center',
+            padding: '48px 24px',
+            color: '#6b7280'
+        },
+        emptyIcon: {
+            fontSize: '48px',
+            marginBottom: '16px',
+            color: '#d1d5db'
+        },
+        emptyTitle: {
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '8px'
+        },
+        modal: {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+        },
+        modalContent: {
+            background: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            width: '100%',
+            maxWidth: '500px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+        },
+        modalTitle: {
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '16px'
+        },
+        modalText: {
+            color: '#6b7280',
+            marginBottom: '16px',
+            lineHeight: '1.5'
+        },
+        modalHighlight: {
+            background: '#f8fafc',
+            borderRadius: '8px',
+            padding: '12px',
+            marginBottom: '16px',
+            border: '1px solid #e5e7eb'
+        },
+        modalHighlightTitle: {
+            fontWeight: '600',
+            color: '#1f2937',
+            marginBottom: '4px'
+        },
+        modalHighlightText: {
+            fontSize: '14px',
+            color: '#6b7280'
+        },
+        textarea: {
+            width: '100%',
+            padding: '12px 16px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            fontSize: '14px',
+            resize: 'vertical',
+            minHeight: '80px',
+            outline: 'none'
+        },
+        modalActions: {
+            display: 'flex',
+            gap: '12px',
+            justifyContent: 'flex-end',
+            marginTop: '24px'
+        },
+        buttonCancel: {
+            background: '#f3f4f6',
+            color: '#374151',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer'
+        },
+        label: {
+            display: 'block',
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '8px'
+        }
+    };
+
+    const getTypeIcon = (type) => {
+        switch (type) {
+            case 'medication':
+                return <FaPills />;
+            case 'vaccination':
+                return <FaSyringe />;
+            case 'healthcheck':
+                return <FaStethoscope />;
+            case 'user':
+                return <FaUserPlus />;
+            default:
+                return <FaInfoCircle />;
+        }
+    };
+
+    const getTypeIconColor = (type) => {
+        switch (type) {
+            case 'medication':
+                return 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+            case 'vaccination':
+                return 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            case 'healthcheck':
+                return 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
+            case 'user':
+                return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            default:
+                return 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+        }
+    };
+
+    const getUrgencyStyle = (urgency) => {
+        switch (urgency) {
+            case 'high':
+                return { ...styles.urgencyBadge, ...styles.urgencyHigh };
+            case 'medium':
+                return { ...styles.urgencyBadge, ...styles.urgencyMedium };
+            case 'low':
+                return { ...styles.urgencyBadge, ...styles.urgencyLow };
+            default:
+                return styles.urgencyBadge;
+        }
+    };
+
+    const getUrgencyText = (urgency) => {
+        switch (urgency) {
+            case 'high':
+                return 'Ưu tiên cao';
+            case 'medium':
+                return 'Ưu tiên trung bình';
+            case 'low':
+                return 'Ưu tiên thấp';
+            default:
+                return urgency;
+        }
+    };
+
     const handleAction = (approval, action) => {
         setSelectedApproval(approval);
         setActionType(action);
         setShowModal(true);
+        setMessage('');
     };
 
     const confirmAction = () => {
@@ -148,158 +544,114 @@ function PendingApprovals() {
         setShowModal(false);
         setSelectedApproval(null);
         setActionType('');
+        setMessage('');
     };
 
-    const getUrgencyColor = (urgency) => {
-        switch (urgency) {
-            case 'high': return 'text-red-600 bg-red-100';
-            case 'medium': return 'text-yellow-600 bg-yellow-100';
-            case 'low': return 'text-green-600 bg-green-100';
-            default: return 'text-gray-600 bg-gray-100';
-        }
-    };
-
-    const getTypeIcon = (type) => {
-        switch (type) {
-            case 'medication':
-                return (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                );
-            case 'vaccination':
-                return (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                );
-            case 'healthcheck':
-                return (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                );
-            case 'user':
-                return (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                );
-            default:
-                return (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                );
-        }
+    const formatDetailKey = (key) => {
+        const keyMap = {
+            medication: 'Thuốc',
+            dosage: 'Liều dùng',
+            duration: 'Thời gian',
+            condition: 'Tình trạng',
+            prescribedBy: 'Được kê bởi',
+            allergies: 'Dị ứng',
+            vaccine: 'Vắc xin',
+            campaign: 'Chiến dịch',
+            scheduledDate: 'Ngày đã lên lịch',
+            location: 'Địa điểm',
+            notes: 'Ghi chú',
+            checkType: 'Loại khám',
+            examiner: 'Người khám',
+            includesVision: 'Khám mắt',
+            includesHearing: 'Khám tai',
+            includesWeightHeight: 'Đo chiều cao cân nặng',
+            accountType: 'Loại tài khoản',
+            email: 'Email',
+            relationship: 'Mối quan hệ',
+            emergencyContact: 'Liên hệ khẩn cấp',
+            documentsSubmitted: 'Tài liệu đã nộp',
+            backgroundCheckStatus: 'Trạng thái kiểm tra lý lịch',
+            emergencyOnly: 'Chỉ khi khẩn cấp',
+            trainingRequired: 'Yêu cầu đào tạo',
+            expiryDate: 'Ngày hết hạn',
+            storageInstructions: 'Hướng dẫn bảo quản'
+        };
+        return keyMap[key] || key;
     };
 
     return (
-        <div className="p-6">
+        <div style={styles.container}>
             {/* Header */}
-            <div className="mb-6">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Pending Approvals</h1>
-                        <p className="text-gray-600 mt-1">Review and manage pending approval requests</p>
+            <div style={styles.header}>
+                <h1 style={styles.title}>Duyệt yêu cầu</h1>
+                <p style={styles.subtitle}>Xử lý các yêu cầu chờ phê duyệt trong hệ thống chăm sóc y tế học đường</p>
+            </div>
+
+            {/* Statistics */}
+            <div style={styles.statsGrid}>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                        <FaClock />
                     </div>
-                    <Link
-                        to="/admin"
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors"
-                    >
-                        Back to Dashboard
-                    </Link>
+                    <div style={styles.statNumber}>{summary.total}</div>
+                    <div style={styles.statLabel}>Tổng yêu cầu chờ</div>
+                </div>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'}}>
+                        <FaExclamationTriangle />
+                    </div>
+                    <div style={styles.statNumber}>{summary.high}</div>
+                    <div style={styles.statLabel}>Ưu tiên cao</div>
+                </div>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'}}>
+                        <FaPills />
+                    </div>
+                    <div style={styles.statNumber}>{summary.medication}</div>
+                    <div style={styles.statLabel}>Yêu cầu thuốc</div>
+                </div>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}}>
+                        <FaUserPlus />
+                    </div>
+                    <div style={styles.statNumber}>{summary.newAccounts}</div>
+                    <div style={styles.statLabel}>Tài khoản mới</div>
                 </div>
             </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div className="bg-white rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-blue-100 rounded-full mr-3">
-                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Total Pending</p>
-                            <p className="text-2xl font-bold">{summary.total}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-red-100 rounded-full mr-3">
-                            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 14c-.77.833.192 2.5 1.732 2.5z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">High Priority</p>
-                            <p className="text-2xl font-bold">{summary.high}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-green-100 rounded-full mr-3">
-                            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Medications</p>
-                            <p className="text-2xl font-bold">{summary.medication}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="p-2 bg-purple-100 rounded-full mr-3">
-                            <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">New Accounts</p>
-                            <p className="text-2xl font-bold">{summary.newAccounts}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Filters and Controls */}
-            <div className="bg-white rounded-lg shadow mb-6">
-                <div className="p-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Type</label>
+            {/* Controls */}
+            <div style={styles.card}>
+                <div style={styles.controlsContainer}>
+                    <div style={styles.filtersContainer}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaFilter style={{ color: '#6b7280' }} />
                             <select
+                                style={styles.select}
                                 value={filter}
                                 onChange={(e) => setFilter(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                             >
-                                <option value="all">All Types</option>
-                                <option value="medication">Medication Requests</option>
-                                <option value="vaccination">Vaccination Consents</option>
-                                <option value="healthcheck">Health Check Consents</option>
-                                <option value="user">User Accounts</option>
+                                <option value="all">Tất cả loại</option>
+                                <option value="medication">Yêu cầu thuốc</option>
+                                <option value="vaccination">Tiêm chủng</option>
+                                <option value="healthcheck">Khám sức khỏe</option>
+                                <option value="user">Tài khoản người dùng</option>
                             </select>
                         </div>
 
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Sort by</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FaSort style={{ color: '#6b7280' }} />
                             <select
+                                style={styles.select}
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                             >
-                                <option value="date">Date (Newest First)</option>
-                                <option value="urgency">Urgency (High to Low)</option>
-                                <option value="type">Type (A-Z)</option>
+                                <option value="date">Ngày mới nhất</option>
+                                <option value="urgency">Độ ưu tiên (Cao đến thấp)</option>
+                                <option value="type">Loại (A-Z)</option>
                             </select>
                         </div>
                     </div>
@@ -307,51 +659,71 @@ function PendingApprovals() {
             </div>
 
             {/* Approvals List */}
-            <div className="bg-white rounded-lg shadow">
-                <div className="p-6 border-b">
-                    <h2 className="text-lg font-semibold">Approval Requests ({sortedApprovals.length})</h2>
-                </div>
+            <div style={styles.card}>
+                <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '24px' }}>
+                    Danh sách yêu cầu ({sortedApprovals.length})
+                </h2>
 
-                <div className="divide-y divide-gray-200">
-                    {sortedApprovals.map(approval => (
-                        <div key={approval.id} className="p-6 hover:bg-gray-50">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-start space-x-4">
-                                    <div className={`p-2 rounded-full ${approval.urgency === 'high' ? 'bg-red-100 text-red-600' : approval.urgency === 'medium' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'}`}>
+                {sortedApprovals.length === 0 ? (
+                    <div style={styles.emptyState}>
+                        <div style={styles.emptyIcon}>
+                            <FaInfoCircle />
+                        </div>
+                        <h3 style={styles.emptyTitle}>Không có yêu cầu chờ duyệt</h3>
+                        <p>Không có yêu cầu nào phù hợp với bộ lọc hiện tại.</p>
+                    </div>
+                ) : (
+                    sortedApprovals.map(approval => (
+                        <div key={approval.id} 
+                             style={styles.approvalItem}
+                             onMouseEnter={(e) => {
+                                 e.currentTarget.style.transform = 'translateY(-2px)';
+                                 e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
+                             }}
+                             onMouseLeave={(e) => {
+                                 e.currentTarget.style.transform = 'translateY(0)';
+                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+                             }}>
+                            <div style={styles.approvalHeader}>
+                                <div style={styles.approvalInfo}>
+                                    <div style={{
+                                        ...styles.typeIcon,
+                                        background: getTypeIconColor(approval.type)
+                                    }}>
                                         {getTypeIcon(approval.type)}
                                     </div>
 
-                                    <div className="flex-1">
-                                        <div className="flex items-center space-x-3 mb-2">
-                                            <h3 className="text-lg font-medium text-gray-900">{approval.title}</h3>
-                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getUrgencyColor(approval.urgency)}`}>
-                                                {approval.urgency.charAt(0).toUpperCase() + approval.urgency.slice(1)} Priority
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                            <h3 style={styles.approvalTitle}>{approval.title}</h3>
+                                            <span style={getUrgencyStyle(approval.urgency)}>
+                                                {getUrgencyText(approval.urgency)}
                                             </span>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                                            <div>
-                                                <span className="font-medium">Student:</span> {approval.student}
-                                                {approval.class && <span className="ml-2">({approval.class})</span>}
+                                        <div style={styles.infoGrid}>
+                                            <div style={styles.infoItem}>
+                                                <span style={styles.infoLabel}>Học sinh:</span>
+                                                <span>{approval.student} {approval.class && `(${approval.class})`}</span>
                                             </div>
-                                            <div>
-                                                <span className="font-medium">Requested by:</span> {approval.requestedBy}
+                                            <div style={styles.infoItem}>
+                                                <span style={styles.infoLabel}>Người yêu cầu:</span>
+                                                <span>{approval.requestedBy}</span>
                                             </div>
-                                            <div>
-                                                <span className="font-medium">Date:</span> {new Date(approval.date).toLocaleDateString()}
+                                            <div style={styles.infoItem}>
+                                                <span style={styles.infoLabel}>Ngày:</span>
+                                                <span>{new Date(approval.date).toLocaleDateString('vi-VN')}</span>
                                             </div>
                                         </div>
 
-                                        {/* Type-specific details */}
-                                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-                                            <h4 className="font-medium text-gray-900 mb-2">Details:</h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                                        <div style={styles.detailsContainer}>
+                                            <h4 style={styles.detailsTitle}>Chi tiết:</h4>
+                                            <div style={styles.detailsGrid}>
                                                 {Object.entries(approval.details).map(([key, value]) => (
-                                                    <div key={key}>
-                                                        <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}:</span> {
-                                                            typeof value === 'boolean' ? (value ? 'Yes' : 'No') :
-                                                                Array.isArray(value) ? value.join(', ') : value
-                                                        }
+                                                    <div key={key} style={styles.detailItem}>
+                                                        <span style={styles.detailLabel}>{formatDetailKey(key)}:</span>{' '}
+                                                        {typeof value === 'boolean' ? (value ? 'Có' : 'Không') :
+                                                         Array.isArray(value) ? value.join(', ') : value}
                                                     </div>
                                                 ))}
                                             </div>
@@ -359,94 +731,113 @@ function PendingApprovals() {
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col space-y-2 ml-4">
+                                <div style={styles.actionsContainer}>
                                     <button
+                                        style={{...styles.actionButton, ...styles.approveButton}}
                                         onClick={() => handleAction(approval, 'approve')}
-                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        onMouseEnter={(e) => {
+                                            e.target.style.transform = 'translateY(-2px)';
+                                            e.target.style.boxShadow = '0 6px 16px rgba(16, 185, 129, 0.4)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.transform = 'translateY(0)';
+                                            e.target.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+                                        }}
                                     >
-                                        Approve
+                                        <FaCheckCircle />
+                                        Phê duyệt
                                     </button>
                                     <button
+                                        style={{...styles.actionButton, ...styles.denyButton}}
                                         onClick={() => handleAction(approval, 'deny')}
-                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        onMouseEnter={(e) => {
+                                            e.target.style.transform = 'translateY(-2px)';
+                                            e.target.style.boxShadow = '0 6px 16px rgba(239, 68, 68, 0.4)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.transform = 'translateY(0)';
+                                            e.target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+                                        }}
                                     >
-                                        Deny
+                                        <FaTimesCircle />
+                                        Từ chối
                                     </button>
                                     <button
+                                        style={{...styles.actionButton, ...styles.infoButton}}
                                         onClick={() => handleAction(approval, 'moreInfo')}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        onMouseEnter={(e) => {
+                                            e.target.style.transform = 'translateY(-2px)';
+                                            e.target.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.transform = 'translateY(0)';
+                                            e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+                                        }}
                                     >
-                                        Request Info
+                                        <FaInfoCircle />
+                                        Yêu cầu thông tin
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    ))}
-
-                    {sortedApprovals.length === 0 && (
-                        <div className="p-12 text-center">
-                            <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No pending approvals</h3>
-                            <p className="text-gray-600">There are no approval requests matching your current filter.</p>
-                        </div>
-                    )}
-                </div>
+                    ))
+                )}
             </div>
 
             {/* Action Modal */}
             {showModal && selectedApproval && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-                        <div className="p-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                {actionType === 'approve' && 'Approve Request'}
-                                {actionType === 'deny' && 'Deny Request'}
-                                {actionType === 'moreInfo' && 'Request More Information'}
-                            </h3>
+                <div style={styles.modal} onClick={() => setShowModal(false)}>
+                    <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <h3 style={styles.modalTitle}>
+                            {actionType === 'approve' && 'Xác nhận phê duyệt'}
+                            {actionType === 'deny' && 'Xác nhận từ chối'}
+                            {actionType === 'moreInfo' && 'Yêu cầu thông tin bổ sung'}
+                        </h3>
 
-                            <p className="text-gray-600 mb-4">
-                                Are you sure you want to {actionType === 'moreInfo' ? 'request more information for' : actionType} this request?
-                            </p>
+                        <p style={styles.modalText}>
+                            {actionType === 'moreInfo' 
+                                ? 'Bạn có chắc chắn muốn yêu cầu thông tin bổ sung cho yêu cầu này?'
+                                : `Bạn có chắc chắn muốn ${actionType === 'approve' ? 'phê duyệt' : 'từ chối'} yêu cầu này?`}
+                        </p>
 
-                            <div className="bg-gray-50 p-3 rounded-md mb-4">
-                                <p className="font-medium">{selectedApproval.title}</p>
-                                <p className="text-sm text-gray-600">Student: {selectedApproval.student}</p>
+                        <div style={styles.modalHighlight}>
+                            <p style={styles.modalHighlightTitle}>{selectedApproval.title}</p>
+                            <p style={styles.modalHighlightText}>Học sinh: {selectedApproval.student}</p>
+                        </div>
+
+                        {actionType === 'moreInfo' && (
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={styles.label}>
+                                    Tin nhắn (tùy chọn):
+                                </label>
+                                <textarea
+                                    style={styles.textarea}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Chỉ rõ thông tin bổ sung cần thiết..."
+                                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
                             </div>
+                        )}
 
-                            {actionType === 'moreInfo' && (
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Message (optional):
-                                    </label>
-                                    <textarea
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        rows="3"
-                                        placeholder="Specify what additional information is needed..."
-                                    />
-                                </div>
-                            )}
-
-                            <div className="flex justify-end space-x-3">
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={confirmAction}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${actionType === 'approve'
-                                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                                        : actionType === 'deny'
-                                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        }`}
-                                >
-                                    {actionType === 'moreInfo' ? 'Send Request' : 'Confirm'}
-                                </button>
-                            </div>
+                        <div style={styles.modalActions}>
+                            <button
+                                style={styles.buttonCancel}
+                                onClick={() => setShowModal(false)}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                style={{
+                                    ...styles.actionButton,
+                                    ...(actionType === 'approve' ? styles.approveButton :
+                                        actionType === 'deny' ? styles.denyButton : styles.infoButton)
+                                }}
+                                onClick={confirmAction}
+                            >
+                                {actionType === 'moreInfo' ? 'Gửi yêu cầu' : 'Xác nhận'}
+                            </button>
                         </div>
                     </div>
                 </div>

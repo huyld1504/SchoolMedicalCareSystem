@@ -81,12 +81,12 @@ function AdminLayout({ children }) {
             <i className="bi bi-calendar-check me-2"></i> Lịch tiêm chủng
           </a>
 
-          <a
+          {/* <a
             className="nav-link text-white d-flex align-items-center py-2"
             href="/admin/settings"
           >
             <i className="bi bi-gear me-2"></i> Cài đặt hệ thống
-          </a>
+          </a> */}
 
           <div className="nav-category py-2 text-uppercase text-white-50 small fw-bold ps-3">
             Phân tích

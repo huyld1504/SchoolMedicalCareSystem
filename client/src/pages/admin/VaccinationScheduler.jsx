@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { 
+    FaSyringe, 
+    FaPlus, 
+    FaCalendarAlt, 
+    FaClock, 
+    FaUsers, 
+    FaBell, 
+    FaEdit, 
+    FaTrash, 
+    FaEye,
+    FaCheckCircle,
+    FaTimesCircle,
+    FaHourglassHalf,
+    FaMapMarkerAlt,
+    FaUserMd,
+    FaClipboardList,
+    FaExclamationTriangle
+} from 'react-icons/fa';
 
 function VaccinationScheduler() {
     const { currentUser } = useAuth();
@@ -30,11 +48,11 @@ function VaccinationScheduler() {
         reminderDays: 7
     });
 
-    // Sample existing schedules
+    // Sample existing schedules with Vietnamese content
     const sampleSchedules = [
         {
             id: 1,
-            title: "Cúm mùa 2025",
+            title: "Tiêm chủng cúm mùa 2025",
             vaccineType: "Influenza",
             targetGroups: ["Lớp 1", "Lớp 2", "Lớp 3"],
             startDate: "2025-06-01",
@@ -42,74 +60,472 @@ function VaccinationScheduler() {
             description: "Tiêm chủng cúm mùa cho học sinh tiểu học",
             location: "Hội trường trường",
             status: "upcoming",
-            createdBy: currentUser?.name || "Admin",
+            createdBy: currentUser?.name || "Quản trị viên",
             createdAt: "2025-05-25",
             notificationsSent: true,
             reminderDays: 7,
             timeSlots: [
-                { startTime: "08:00", endTime: "10:00", assigned: "Y tá Sarah", capacity: 30, registered: 25 },
-                { startTime: "10:30", endTime: "12:30", assigned: "Y tá Michael", capacity: 30, registered: 28 },
-                { startTime: "13:30", endTime: "15:30", assigned: "Y tá Linda", capacity: 30, registered: 22 }
+                { startTime: "08:00", endTime: "10:00", assigned: "Y tá Nguyễn Lan", capacity: 30, registered: 25 },
+                { startTime: "10:30", endTime: "12:30", assigned: "Y tá Trần Minh", capacity: 30, registered: 28 },
+                { startTime: "13:30", endTime: "15:30", assigned: "Y tá Lê Hương", capacity: 30, registered: 22 }
             ]
         },
         {
             id: 2,
-            title: "Viêm gan B - Liều nhắc lại",
-            vaccineType: "Hepatitis B",
-            targetGroups: ["Lớp 6", "Lớp 7"],
+            title: "Tiêm chủng HPV cho học sinh lớp 6",
+            vaccineType: "HPV",
+            targetGroups: ["Lớp 6"],
             startDate: "2025-06-15",
             endDate: "2025-06-16",
-            description: "Liều nhắc lại vaccine viêm gan B cho học sinh THCS",
-            location: "Phòng y tế",
+            description: "Chương trình tiêm chủng HPV theo kế hoạch quốc gia",
+            location: "Phòng y tế trường",
             status: "planning",
-            createdBy: "BS. Emily Wilson",
-            createdAt: "2025-05-24",
+            createdBy: currentUser?.name || "Quản trị viên",
+            createdAt: "2025-05-20",
             notificationsSent: false,
+            reminderDays: 10,
+            timeSlots: [
+                { startTime: "08:00", endTime: "10:00", assigned: "", capacity: 25, registered: 0 },
+                { startTime: "10:30", endTime: "12:30", assigned: "", capacity: 25, registered: 0 }
+            ]
+        },
+        {
+            id: 3,
+            title: "Tiêm chủng bạch hầu - ho gà - uốn ván",
+            vaccineType: "DPT",
+            targetGroups: ["Lớp 4", "Lớp 5"],
+            startDate: "2025-05-15",
+            endDate: "2025-05-17",
+            description: "Tiêm chủng nhắc lại cho học sinh tiểu học",
+            location: "Hội trường trường",
+            status: "completed",
+            createdBy: "BS. Nguyễn Cường",
+            createdAt: "2025-05-01",
+            notificationsSent: true,
             reminderDays: 14,
-            timeSlots: [{ startTime: "09:00", endTime: "11:00", assigned: "BS. Wilson", capacity: 25, registered: 0 },
-            { startTime: "14:00", endTime: "16:00", assigned: "Y tá David", capacity: 25, registered: 0 }
+            timeSlots: [
+                { startTime: "08:00", endTime: "10:00", assigned: "Y tá Phạm Mai", capacity: 30, registered: 30 },
+                { startTime: "10:30", endTime: "12:30", assigned: "Y tá Hoàng An", capacity: 30, registered: 30 },
+                { startTime: "13:30", endTime: "15:30", assigned: "Y tá Vũ Linh", capacity: 30, registered: 28 }
             ]
         }
     ];
 
-    // Available target groups
-    const targetGroupOptions = [
-        "Mầm non", "Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5",
-        "Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9", "Lớp 10", "Lớp 11", "Lớp 12"
-    ];
-
-    // Vaccine types
-    const vaccineTypes = [
-        "Influenza (Cúm mùa)",
-        "COVID-19",
-        "Hepatitis B (Viêm gan B)",
-        "MMR (Sởi, Quai bị, Rubella)",
-        "Tdap (Uốn ván, Bạch hầu, Ho gà)",
-        "HPV (Ung thư cổ tử cung)",
-        "Varicella (Thủy đậu)",
-        "Khác"
-    ]; useEffect(() => {
+    useEffect(() => {
         setSchedules(sampleSchedules);
-    }, [sampleSchedules]);
+    }, []);
 
-    // Handle form input changes
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        if (type === "checkbox") {
-            setNewSchedule(prev => ({
-                ...prev,
-                [name]: checked
-            }));
-        } else {
-            setNewSchedule(prev => ({
-                ...prev,
-                [name]: value
-            }));
+    const styles = {
+        container: {
+            padding: '24px',
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            minHeight: '100vh'
+        },
+        header: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '32px',
+            borderRadius: '16px',
+            marginBottom: '24px',
+            boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)'
+        },
+        title: {
+            fontSize: '28px',
+            fontWeight: 'bold',
+            marginBottom: '8px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        },
+        subtitle: {
+            fontSize: '16px',
+            opacity: 0.9
+        },
+        statsGrid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '20px',
+            marginBottom: '24px'
+        },
+        statCard: {
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e5e7eb',
+            textAlign: 'center',
+            transition: 'transform 0.2s, box-shadow 0.2s'
+        },
+        statIcon: {
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            color: 'white',
+            fontSize: '20px'
+        },
+        statNumber: {
+            fontSize: '28px',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '4px'
+        },
+        statLabel: {
+            fontSize: '14px',
+            color: '#6b7280'
+        },
+        card: {
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            marginBottom: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid rgba(255,255,255,0.8)'
+        },
+        controlsContainer: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '24px',
+            flexWrap: 'wrap',
+            gap: '16px'
+        },
+        buttonPrimary: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+        },
+        scheduleGrid: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
+            gap: '20px'
+        },
+        scheduleCard: {
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            border: '1px solid #e5e7eb',
+            transition: 'transform 0.2s, box-shadow 0.2s'
+        },
+        scheduleHeader: {
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            marginBottom: '16px'
+        },
+        scheduleTitle: {
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '8px'
+        },
+        scheduleVaccine: {
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '600'
+        },
+        statusBadge: {
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: '600'
+        },
+        statusUpcoming: {
+            background: '#dbeafe',
+            color: '#1e40af'
+        },
+        statusPlanning: {
+            background: '#fef3c7',
+            color: '#92400e'
+        },
+        statusCompleted: {
+            background: '#dcfce7',
+            color: '#166534'
+        },
+        scheduleInfo: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '12px',
+            marginBottom: '16px',
+            fontSize: '14px'
+        },
+        infoItem: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: '#6b7280'
+        },
+        infoIcon: {
+            color: '#9ca3af',
+            fontSize: '12px'
+        },
+        targetGroups: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '6px',
+            marginBottom: '16px'
+        },
+        groupBadge: {
+            background: '#f3f4f6',
+            color: '#374151',
+            padding: '4px 8px',
+            borderRadius: '12px',
+            fontSize: '12px',
+            fontWeight: '500'
+        },
+        timeSlotsContainer: {
+            marginBottom: '16px'
+        },
+        timeSlotsTitle: {
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '8px'
+        },
+        timeSlot: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '8px 12px',
+            background: '#f8fafc',
+            borderRadius: '6px',
+            marginBottom: '4px',
+            fontSize: '12px'
+        },
+        timeSlotTime: {
+            fontWeight: '600',
+            color: '#374151'
+        },
+        timeSlotAssigned: {
+            color: '#6b7280'
+        },
+        timeSlotCapacity: {
+            color: '#059669',
+            fontWeight: '600'
+        },
+        actionsContainer: {
+            display: 'flex',
+            gap: '8px',
+            justifyContent: 'flex-end'
+        },
+        actionButton: {
+            padding: '8px',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '14px',
+            transition: 'background-color 0.2s, color 0.2s'
+        },
+        viewButton: {
+            background: '#dbeafe',
+            color: '#2563eb'
+        },
+        editButton: {
+            background: '#fef3c7',
+            color: '#d97706'
+        },
+        deleteButton: {
+            background: '#fee2e2',
+            color: '#dc2626'
+        },
+        notifyButton: {
+            background: '#dcfce7',
+            color: '#059669'
+        },
+        modal: {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+        },
+        modalContent: {
+            background: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            width: '100%',
+            maxWidth: '600px',
+            maxHeight: '90vh',
+            overflow: 'auto',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+        },
+        modalTitle: {
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#1f2937',
+            marginBottom: '24px',
+            textAlign: 'center'
+        },
+        formGroup: {
+            marginBottom: '20px'
+        },
+        label: {
+            display: 'block',
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '8px'
+        },
+        input: {
+            width: '100%',
+            padding: '12px 16px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            fontSize: '14px',
+            transition: 'border-color 0.2s',
+            outline: 'none'
+        },
+        select: {
+            width: '100%',
+            padding: '12px 16px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            fontSize: '14px',
+            backgroundColor: 'white',
+            cursor: 'pointer',
+            outline: 'none'
+        },
+        textarea: {
+            width: '100%',
+            padding: '12px 16px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            fontSize: '14px',
+            resize: 'vertical',
+            minHeight: '80px',
+            outline: 'none'
+        },
+        checkboxGroup: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '12px'
+        },
+        checkboxItem: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 12px',
+            background: '#f8fafc',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
+        },
+        checkboxItemSelected: {
+            background: '#dbeafe',
+            color: '#2563eb'
+        },
+        timeSlotsEditor: {
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '16px'
+        },
+        timeSlotEditor: {
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr 1fr',
+            gap: '12px',
+            alignItems: 'center',
+            marginBottom: '12px',
+            padding: '12px',
+            background: '#f8fafc',
+            borderRadius: '6px'
+        },
+        modalActions: {
+            display: 'flex',
+            gap: '12px',
+            justifyContent: 'flex-end',
+            marginTop: '24px',
+            paddingTop: '24px',
+            borderTop: '1px solid #e5e7eb'
+        },
+        buttonCancel: {
+            background: '#f3f4f6',
+            color: '#374151',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer'
+        },
+        emptyState: {
+            textAlign: 'center',
+            padding: '48px 24px',
+            color: '#6b7280'
+        },
+        emptyIcon: {
+            fontSize: '48px',
+            marginBottom: '16px',
+            color: '#d1d5db'
+        },
+        emptyTitle: {
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '8px'
         }
     };
 
-    // Handle target group selection
-    const handleTargetGroupChange = (group) => {
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'upcoming':
+                return 'Sắp tới';
+            case 'planning':
+                return 'Đang lên kế hoạch';
+            case 'completed':
+                return 'Đã hoàn thành';
+            default:
+                return status;
+        }
+    };
+
+    const getStatusStyle = (status) => {
+        switch (status) {
+            case 'upcoming':
+                return { ...styles.statusBadge, ...styles.statusUpcoming };
+            case 'planning':
+                return { ...styles.statusBadge, ...styles.statusPlanning };
+            case 'completed':
+                return { ...styles.statusBadge, ...styles.statusCompleted };
+            default:
+                return styles.statusBadge;
+        }
+    };
+
+    const getSummaryStats = () => {
+        return {
+            total: schedules.length,
+            upcoming: schedules.filter(s => s.status === 'upcoming').length,
+            planning: schedules.filter(s => s.status === 'planning').length,
+            completed: schedules.filter(s => s.status === 'completed').length
+        };
+    };
+
+    const handleInputChange = (field, value) => {
+        setNewSchedule(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleTargetGroupToggle = (group) => {
         setNewSchedule(prev => ({
             ...prev,
             targetGroups: prev.targetGroups.includes(group)
@@ -118,40 +534,29 @@ function VaccinationScheduler() {
         }));
     };
 
-    // Handle time slot changes
     const handleTimeSlotChange = (index, field, value) => {
         setNewSchedule(prev => ({
             ...prev,
-            timeSlots: prev.timeSlots.map((slot, i) =>
+            timeSlots: prev.timeSlots.map((slot, i) => 
                 i === index ? { ...slot, [field]: value } : slot
             )
         }));
     };
 
-    // Add new time slot
     const addTimeSlot = () => {
         setNewSchedule(prev => ({
             ...prev,
-            timeSlots: [...prev.timeSlots, {
-                startTime: "16:00",
-                endTime: "18:00",
-                assigned: "",
-                capacity: 30
-            }]
+            timeSlots: [...prev.timeSlots, { startTime: "", endTime: "", assigned: "", capacity: 30 }]
         }));
     };
 
-    // Remove time slot
     const removeTimeSlot = (index) => {
-        if (newSchedule.timeSlots.length > 1) {
-            setNewSchedule(prev => ({
-                ...prev,
-                timeSlots: prev.timeSlots.filter((_, i) => i !== index)
-            }));
-        }
+        setNewSchedule(prev => ({
+            ...prev,
+            timeSlots: prev.timeSlots.filter((_, i) => i !== index)
+        }));
     };
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -164,7 +569,7 @@ function VaccinationScheduler() {
             id: Date.now(),
             ...newSchedule,
             status: "planning",
-            createdBy: currentUser?.name || "Admin",
+            createdBy: currentUser?.name || "Quản trị viên",
             createdAt: new Date().toISOString().split('T')[0],
             notificationsSent: false,
             timeSlots: newSchedule.timeSlots.map(slot => ({
@@ -200,512 +605,384 @@ function VaccinationScheduler() {
         alert("Lịch tiêm chủng đã được tạo thành công!");
     };
 
-    // Send notifications
-    const handleSendNotifications = (schedule) => {
-        setSelectedSchedule(schedule);
-
-        // Determine notification targets
-        const targets = [];
-        if (schedule.notifyNurses || newSchedule.notifyNurses) {
-            targets.push("Y tá");
-        }
-        if (schedule.notifyParents || newSchedule.notifyParents) {
-            targets.push("Phụ huynh");
-        }
-        if (schedule.notifyStudents || newSchedule.notifyStudents) {
-            targets.push("Học sinh");
-        }
-
-        setNotificationTargets(targets);
-        setShowNotificationModal(true);
-    };
-
-    // Confirm send notifications
-    const confirmSendNotifications = () => {
-        // Update schedule to mark notifications as sent
-        setSchedules(prev => prev.map(schedule =>
-            schedule.id === selectedSchedule.id
-                ? { ...schedule, notificationsSent: true }
-                : schedule
-        ));
-
-        setShowNotificationModal(false);
-        alert(`Đã gửi thông báo đến ${notificationTargets.join(", ")} thành công!`);
-    };
-
-    // Get status color
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'planning':
-                return 'bg-blue-100 text-blue-800';
-            case 'upcoming':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'active':
-                return 'bg-green-100 text-green-800';
-            case 'completed':
-                return 'bg-gray-100 text-gray-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
+    const deleteSchedule = (id) => {
+        if (window.confirm("Bạn có chắc chắn muốn xóa lịch tiêm chủng này?")) {
+            setSchedules(prev => prev.filter(s => s.id !== id));
         }
     };
 
-    // Format date
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('vi-VN', options);
-    };
+    const stats = getSummaryStats();
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold mb-2">Quản lý lịch tiêm chủng</h1>
-                    <p className="text-gray-600">Tạo và quản lý lịch tiêm chủng cho học sinh</p>
+        <div style={styles.container}>
+            {/* Header */}
+            <div style={styles.header}>
+                <h1 style={styles.title}>Lập lịch Tiêm chủng</h1>
+                <p style={styles.subtitle}>Quản lý và lên lịch các chiến dịch tiêm chủng trong trường học</p>
+            </div>
+
+            {/* Statistics */}
+            <div style={styles.statsGrid}>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                        <FaSyringe />
+                    </div>
+                    <div style={styles.statNumber}>{stats.total}</div>
+                    <div style={styles.statLabel}>Tổng lịch tiêm</div>
                 </div>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center space-x-2"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span>Tạo lịch mới</span>
-                </button>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'}}>
+                        <FaHourglassHalf />
+                    </div>
+                    <div style={styles.statNumber}>{stats.upcoming}</div>
+                    <div style={styles.statLabel}>Sắp tới</div>
+                </div>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}}>
+                        <FaClipboardList />
+                    </div>
+                    <div style={styles.statNumber}>{stats.planning}</div>
+                    <div style={styles.statLabel}>Đang lên kế hoạch</div>
+                </div>
+                <div style={styles.statCard}>
+                    <div style={{...styles.statIcon, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}>
+                        <FaCheckCircle />
+                    </div>
+                    <div style={styles.statNumber}>{stats.completed}</div>
+                    <div style={styles.statLabel}>Đã hoàn thành</div>
+                </div>
+            </div>
+
+            {/* Controls */}
+            <div style={styles.card}>
+                <div style={styles.controlsContainer}>
+                    <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                        Danh sách lịch tiêm chủng
+                    </h2>
+                    <button
+                        style={styles.buttonPrimary}
+                        onClick={() => setShowCreateModal(true)}
+                        onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-2px)';
+                            e.target.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                        }}
+                    >
+                        <FaPlus />
+                        Tạo lịch tiêm mới
+                    </button>
+                </div>
             </div>
 
             {/* Schedules Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {schedules.map((schedule) => (
-                    <div key={schedule.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                        <div className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <h3 className="text-lg font-semibold text-gray-900">{schedule.title}</h3>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(schedule.status)}`}>
-                                    {schedule.status === 'planning' ? 'Đang lên kế hoạch' :
-                                        schedule.status === 'upcoming' ? 'Sắp diễn ra' :
-                                            schedule.status === 'active' ? 'Đang thực hiện' : 'Hoàn thành'}
-                                </span>
-                            </div>
-
-                            <div className="space-y-2 text-sm">
-                                <div>
-                                    <span className="font-medium text-gray-500">Vaccine:</span>
-                                    <span className="ml-2 text-gray-900">{schedule.vaccineType}</span>
-                                </div>
-                                <div>
-                                    <span className="font-medium text-gray-500">Đối tượng:</span>
-                                    <span className="ml-2 text-gray-900">{schedule.targetGroups.join(", ")}</span>
-                                </div>
-                                <div>
-                                    <span className="font-medium text-gray-500">Thời gian:</span>
-                                    <span className="ml-2 text-gray-900">
-                                        {formatDate(schedule.startDate)} - {formatDate(schedule.endDate)}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span className="font-medium text-gray-500">Địa điểm:</span>
-                                    <span className="ml-2 text-gray-900">{schedule.location}</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-4 pt-4 border-t">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium text-gray-500">Đăng ký:</span>
-                                    <span className="text-sm text-gray-900">
-                                        {schedule.timeSlots.reduce((sum, slot) => sum + slot.registered, 0)} / {schedule.timeSlots.reduce((sum, slot) => sum + slot.capacity, 0)}
-                                    </span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div
-                                        className="bg-blue-600 h-2 rounded-full"
-                                        style={{
-                                            width: `${(schedule.timeSlots.reduce((sum, slot) => sum + slot.registered, 0) / schedule.timeSlots.reduce((sum, slot) => sum + slot.capacity, 0)) * 100}%`
-                                        }}
-                                    ></div>
-                                </div>
-                            </div>
+            <div style={styles.card}>
+                {schedules.length === 0 ? (
+                    <div style={styles.emptyState}>
+                        <div style={styles.emptyIcon}>
+                            <FaSyringe />
                         </div>
-
-                        <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                            <span className="text-xs text-gray-500">
-                                Bởi {schedule.createdBy}
-                            </span>
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => handleSendNotifications(schedule)}
-                                    disabled={schedule.notificationsSent}
-                                    className={`px-3 py-1 rounded text-sm font-medium ${schedule.notificationsSent
-                                        ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                        : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                                        }`}
-                                >
-                                    {schedule.notificationsSent ? '✓ Đã thông báo' : 'Gửi thông báo'}
-                                </button>
-                            </div>
-                        </div>
+                        <h3 style={styles.emptyTitle}>Chưa có lịch tiêm chủng nào</h3>
+                        <p>Nhấp vào "Tạo lịch tiêm mới" để bắt đầu lên lịch tiêm chủng.</p>
                     </div>
-                ))}
+                ) : (
+                    <div style={styles.scheduleGrid}>
+                        {schedules.map(schedule => (
+                            <div key={schedule.id} 
+                                 style={styles.scheduleCard}
+                                 onMouseEnter={(e) => {
+                                     e.currentTarget.style.transform = 'translateY(-4px)';
+                                     e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
+                                 }}
+                                 onMouseLeave={(e) => {
+                                     e.currentTarget.style.transform = 'translateY(0)';
+                                     e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+                                 }}>
+                                <div style={styles.scheduleHeader}>
+                                    <div>
+                                        <h3 style={styles.scheduleTitle}>{schedule.title}</h3>
+                                        <p style={styles.scheduleVaccine}>Vắc xin: {schedule.vaccineType}</p>
+                                    </div>
+                                    <span style={getStatusStyle(schedule.status)}>
+                                        {getStatusText(schedule.status)}
+                                    </span>
+                                </div>
+
+                                <div style={styles.scheduleInfo}>
+                                    <div style={styles.infoItem}>
+                                        <FaCalendarAlt style={styles.infoIcon} />
+                                        <span>{new Date(schedule.startDate).toLocaleDateString('vi-VN')} - {new Date(schedule.endDate).toLocaleDateString('vi-VN')}</span>
+                                    </div>
+                                    <div style={styles.infoItem}>
+                                        <FaMapMarkerAlt style={styles.infoIcon} />
+                                        <span>{schedule.location}</span>
+                                    </div>
+                                    <div style={styles.infoItem}>
+                                        <FaUserMd style={styles.infoIcon} />
+                                        <span>Tạo bởi: {schedule.createdBy}</span>
+                                    </div>
+                                    <div style={styles.infoItem}>
+                                        <FaBell style={styles.infoIcon} />
+                                        <span>{schedule.notificationsSent ? 'Đã thông báo' : 'Chưa thông báo'}</span>
+                                    </div>
+                                </div>
+
+                                <div style={styles.targetGroups}>
+                                    {schedule.targetGroups.map(group => (
+                                        <span key={group} style={styles.groupBadge}>{group}</span>
+                                    ))}
+                                </div>
+
+                                <div style={styles.timeSlotsContainer}>
+                                    <h4 style={styles.timeSlotsTitle}>Khung giờ tiêm:</h4>
+                                    {schedule.timeSlots.map((slot, index) => (
+                                        <div key={index} style={styles.timeSlot}>
+                                            <span style={styles.timeSlotTime}>
+                                                {slot.startTime} - {slot.endTime}
+                                            </span>
+                                            <span style={styles.timeSlotAssigned}>
+                                                {slot.assigned || 'Chưa phân công'}
+                                            </span>
+                                            <span style={styles.timeSlotCapacity}>
+                                                {slot.registered || 0}/{slot.capacity}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div style={styles.actionsContainer}>
+                                    <button 
+                                        style={{...styles.actionButton, ...styles.viewButton}}
+                                        title="Xem chi tiết"
+                                        onMouseEnter={(e) => e.target.style.background = '#bfdbfe'}
+                                        onMouseLeave={(e) => e.target.style.background = '#dbeafe'}
+                                    >
+                                        <FaEye />
+                                    </button>
+                                    <button 
+                                        style={{...styles.actionButton, ...styles.editButton}}
+                                        title="Chỉnh sửa"
+                                        onMouseEnter={(e) => e.target.style.background = '#fde68a'}
+                                        onMouseLeave={(e) => e.target.style.background = '#fef3c7'}
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                    <button 
+                                        style={{...styles.actionButton, ...styles.notifyButton}}
+                                        title="Gửi thông báo"
+                                        onMouseEnter={(e) => e.target.style.background = '#bbf7d0'}
+                                        onMouseLeave={(e) => e.target.style.background = '#dcfce7'}
+                                    >
+                                        <FaBell />
+                                    </button>
+                                    <button 
+                                        style={{...styles.actionButton, ...styles.deleteButton}}
+                                        title="Xóa"
+                                        onClick={() => deleteSchedule(schedule.id)}
+                                        onMouseEnter={(e) => e.target.style.background = '#fecaca'}
+                                        onMouseLeave={(e) => e.target.style.background = '#fee2e2'}
+                                    >
+                                        <FaTrash />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Create Schedule Modal */}
             {showCreateModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-screen overflow-y-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">Tạo lịch tiêm chủng mới</h2>
-                            <button
-                                onClick={() => setShowCreateModal(false)}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-
+                <div style={styles.modal} onClick={() => setShowCreateModal(false)}>
+                    <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <h2 style={styles.modalTitle}>Tạo lịch tiêm chủng mới</h2>
                         <form onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Basic Information */}
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-semibold border-b pb-2">Thông tin cơ bản</h3>
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Tiêu đề lịch tiêm *</label>
+                                <input
+                                    type="text"
+                                    style={styles.input}
+                                    value={newSchedule.title}
+                                    onChange={(e) => handleInputChange('title', e.target.value)}
+                                    placeholder="Nhập tiêu đề lịch tiêm"
+                                    required
+                                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Tên chương trình <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            value={newSchedule.title}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Ví dụ: Tiêm chủng cúm mùa 2025"
-                                            required
-                                        />
-                                    </div>
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Loại vắc xin *</label>
+                                <select
+                                    style={styles.select}
+                                    value={newSchedule.vaccineType}
+                                    onChange={(e) => handleInputChange('vaccineType', e.target.value)}
+                                    required
+                                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                >
+                                    <option value="">Chọn loại vắc xin</option>
+                                    <option value="Influenza">Cúm mùa (Influenza)</option>
+                                    <option value="HPV">HPV</option>
+                                    <option value="DPT">Bạch hầu - Ho gà - Uốn ván (DPT)</option>
+                                    <option value="Hepatitis B">Viêm gan B</option>
+                                    <option value="MMR">Sởi - Quai bị - Rubella (MMR)</option>
+                                    <option value="COVID-19">COVID-19</option>
+                                </select>
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Loại vaccine <span className="text-red-500">*</span>
-                                        </label>
-                                        <select
-                                            name="vaccineType"
-                                            value={newSchedule.vaccineType}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            required
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Nhóm đích *</label>
+                                <div style={styles.checkboxGroup}>
+                                    {['Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5', 'Lớp 6', 'Lớp 7', 'Lớp 8', 'Lớp 9'].map(group => (
+                                        <div
+                                            key={group}
+                                            style={newSchedule.targetGroups.includes(group) ? 
+                                                {...styles.checkboxItem, ...styles.checkboxItemSelected} : 
+                                                styles.checkboxItem}
+                                            onClick={() => handleTargetGroupToggle(group)}
                                         >
-                                            <option value="">Chọn loại vaccine</option>
-                                            {vaccineTypes.map(type => (
-                                                <option key={type} value={type}>{type}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Mô tả
-                                        </label>
-                                        <textarea
-                                            name="description"
-                                            value={newSchedule.description}
-                                            onChange={handleInputChange}
-                                            rows="3"
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Mô tả chi tiết về chương trình tiêm chủng"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Địa điểm
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="location"
-                                            value={newSchedule.location}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Ví dụ: Hội trường trường, Phòng y tế"
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Ngày bắt đầu <span className="text-red-500">*</span>
-                                            </label>
                                             <input
-                                                type="date"
-                                                name="startDate"
-                                                value={newSchedule.startDate}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                required
+                                                type="checkbox"
+                                                checked={newSchedule.targetGroups.includes(group)}
+                                                onChange={() => {}}
+                                                style={{ pointerEvents: 'none' }}
                                             />
+                                            <span>{group}</span>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Ngày kết thúc <span className="text-red-500">*</span>
-                                            </label>
-                                            <input
-                                                type="date"
-                                                name="endDate"
-                                                value={newSchedule.endDate}
-                                                onChange={handleInputChange}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
+                            </div>
 
-                                {/* Target Groups and Schedule */}
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-semibold border-b pb-2">Đối tượng và lịch trình</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Ngày bắt đầu *</label>
+                                    <input
+                                        type="date"
+                                        style={styles.input}
+                                        value={newSchedule.startDate}
+                                        onChange={(e) => handleInputChange('startDate', e.target.value)}
+                                        required
+                                        onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                    />
+                                </div>
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Ngày kết thúc *</label>
+                                    <input
+                                        type="date"
+                                        style={styles.input}
+                                        value={newSchedule.endDate}
+                                        onChange={(e) => handleInputChange('endDate', e.target.value)}
+                                        required
+                                        onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                    />
+                                </div>
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Đối tượng tiêm chủng <span className="text-red-500">*</span>
-                                        </label>
-                                        <div className="grid grid-cols-3 gap-2 max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2">
-                                            {targetGroupOptions.map(group => (
-                                                <label key={group} className="flex items-center space-x-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={newSchedule.targetGroups.includes(group)}
-                                                        onChange={() => handleTargetGroupChange(group)}
-                                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                                    />
-                                                    <span className="text-sm">{group}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Địa điểm</label>
+                                <input
+                                    type="text"
+                                    style={styles.input}
+                                    value={newSchedule.location}
+                                    onChange={(e) => handleInputChange('location', e.target.value)}
+                                    placeholder="Nhập địa điểm tiêm"
+                                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
 
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Khung giờ tiêm chủng
-                                            </label>
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Mô tả</label>
+                                <textarea
+                                    style={styles.textarea}
+                                    value={newSchedule.description}
+                                    onChange={(e) => handleInputChange('description', e.target.value)}
+                                    placeholder="Nhập mô tả về chiến dịch tiêm chủng"
+                                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
+
+                            <div style={styles.formGroup}>
+                                <label style={styles.label}>Khung giờ tiêm</label>
+                                <div style={styles.timeSlotsEditor}>
+                                    {newSchedule.timeSlots.map((slot, index) => (
+                                        <div key={index} style={styles.timeSlotEditor}>
+                                            <input
+                                                type="time"
+                                                style={styles.input}
+                                                value={slot.startTime}
+                                                onChange={(e) => handleTimeSlotChange(index, 'startTime', e.target.value)}
+                                                placeholder="Giờ bắt đầu"
+                                            />
+                                            <input
+                                                type="time"
+                                                style={styles.input}
+                                                value={slot.endTime}
+                                                onChange={(e) => handleTimeSlotChange(index, 'endTime', e.target.value)}
+                                                placeholder="Giờ kết thúc"
+                                            />
+                                            <input
+                                                type="number"
+                                                style={styles.input}
+                                                value={slot.capacity}
+                                                onChange={(e) => handleTimeSlotChange(index, 'capacity', parseInt(e.target.value))}
+                                                placeholder="Sức chứa"
+                                                min="1"
+                                            />
                                             <button
                                                 type="button"
-                                                onClick={addTimeSlot}
-                                                className="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1"
+                                                style={{...styles.actionButton, ...styles.deleteButton}}
+                                                onClick={() => removeTimeSlot(index)}
+                                                disabled={newSchedule.timeSlots.length <= 1}
                                             >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                </svg>
-                                                <span>Thêm khung giờ</span>
+                                                <FaTrash />
                                             </button>
                                         </div>
-
-                                        <div className="space-y-3 max-h-40 overflow-y-auto">
-                                            {newSchedule.timeSlots.map((slot, index) => (
-                                                <div key={index} className="grid grid-cols-5 gap-2 items-center bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="time"
-                                                        value={slot.startTime}
-                                                        onChange={(e) => handleTimeSlotChange(index, 'startTime', e.target.value)}
-                                                        className="px-2 py-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                    <input
-                                                        type="time"
-                                                        value={slot.endTime}
-                                                        onChange={(e) => handleTimeSlotChange(index, 'endTime', e.target.value)}
-                                                        className="px-2 py-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        value={slot.assigned}
-                                                        onChange={(e) => handleTimeSlotChange(index, 'assigned', e.target.value)}
-                                                        placeholder="Y tá phụ trách"
-                                                        className="px-2 py-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        value={slot.capacity}
-                                                        onChange={(e) => handleTimeSlotChange(index, 'capacity', parseInt(e.target.value))}
-                                                        min="1"
-                                                        max="100"
-                                                        className="px-2 py-1 border border-gray-300 rounded text-sm"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeTimeSlot(index)}
-                                                        disabled={newSchedule.timeSlots.length === 1}
-                                                        className="text-red-600 hover:text-red-800 disabled:text-gray-400"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            Thứ tự: Giờ bắt đầu - Giờ kết thúc - Y tá phụ trách - Sức chứa - Xóa
-                                        </div>
-                                    </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        style={{...styles.buttonPrimary, marginTop: '8px', alignSelf: 'flex-start'}}
+                                        onClick={addTimeSlot}
+                                    >
+                                        <FaPlus />
+                                        Thêm khung giờ
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* Notification Settings */}
-                            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                                <h3 className="text-lg font-semibold mb-4">Cài đặt thông báo</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-3">
-                                        <div className="flex items-center space-x-2">
-                                            <input
-                                                type="checkbox"
-                                                id="notifyNurses"
-                                                name="notifyNurses"
-                                                checked={newSchedule.notifyNurses}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                            />
-                                            <label htmlFor="notifyNurses" className="text-sm font-medium text-gray-700">
-                                                Thông báo đến Y tá
-                                            </label>
-                                        </div>
-
-                                        <div className="flex items-center space-x-2">
-                                            <input
-                                                type="checkbox"
-                                                id="notifyParents"
-                                                name="notifyParents"
-                                                checked={newSchedule.notifyParents}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                            />
-                                            <label htmlFor="notifyParents" className="text-sm font-medium text-gray-700">
-                                                Thông báo đến Phụ huynh
-                                            </label>
-                                        </div>
-
-                                        <div className="flex items-center space-x-2">
-                                            <input
-                                                type="checkbox"
-                                                id="notifyStudents"
-                                                name="notifyStudents"
-                                                checked={newSchedule.notifyStudents}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                            />
-                                            <label htmlFor="notifyStudents" className="text-sm font-medium text-gray-700">
-                                                Thông báo đến Học sinh
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Gửi nhắc nhở trước (ngày)
-                                        </label>
-                                        <select
-                                            name="reminderDays"
-                                            value={newSchedule.reminderDays}
-                                            onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                        >
-                                            <option value={1}>1 ngày</option>
-                                            <option value={3}>3 ngày</option>
-                                            <option value={7}>7 ngày</option>
-                                            <option value={14}>14 ngày</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Form Actions */}
-                            <div className="flex justify-end space-x-4 mt-6">
+                            <div style={styles.modalActions}>
                                 <button
                                     type="button"
+                                    style={styles.buttonCancel}
                                     onClick={() => setShowCreateModal(false)}
-                                    className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                                 >
                                     Hủy
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    style={styles.buttonPrimary}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.transform = 'translateY(-1px)';
+                                        e.target.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.transform = 'translateY(0)';
+                                        e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                                    }}
                                 >
-                                    Tạo lịch tiêm chủng
+                                    Tạo lịch tiêm
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
-
-            {/* Notification Confirmation Modal */}
-            {showNotificationModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <div className="flex items-center mb-4">
-                            <div className="flex-shrink-0">
-                                <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                            </div>
-                            <div className="ml-4">
-                                <h3 className="text-lg font-medium text-gray-900">Xác nhận gửi thông báo</h3>
-                                <p className="text-sm text-gray-500">
-                                    Bạn có chắc chắn muốn gửi thông báo về lịch tiêm chủng "{selectedSchedule?.title}"?
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mb-4">
-                            <p className="text-sm text-gray-700 mb-2">Thông báo sẽ được gửi đến:</p>
-                            <ul className="list-disc list-inside space-y-1">
-                                {notificationTargets.map(target => (
-                                    <li key={target} className="text-sm text-blue-600">
-                                        {target}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="flex justify-end space-x-4">
-                            <button
-                                onClick={() => setShowNotificationModal(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                onClick={confirmSendNotifications}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                            >
-                                Gửi thông báo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Info Section */}
-            <div className="mt-8 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
-                <div className="flex">
-                    <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                    <div className="ml-3">
-                        <h3 className="text-sm font-medium text-yellow-800">Lưu ý quan trọng</h3>
-                        <div className="mt-2 text-sm text-yellow-700">
-                            <ul className="list-disc list-inside space-y-1">
-                                <li>Thông báo sẽ được gửi qua email và hệ thống thông báo trong ứng dụng</li>
-                                <li>Phụ huynh cần xác nhận đồng ý trước khi tiêm chủng cho con em</li>
-                                <li>Y tá sẽ nhận được chi tiết lịch trình và danh sách học sinh</li>
-                                <li>Hệ thống sẽ tự động gửi nhắc nhở theo thời gian đã cài đặt</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
