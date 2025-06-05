@@ -26,4 +26,12 @@ export default {
     Base: "/roles",
     Add: "/add",
   },
+  Child: {
+    Base: "/childs",
+    Add: "/add",
+    Update: "/update/:id",
+    Delete: "/delete/:id",
+    GetAll: "/all",
+    GetById: "/get/:id",
+  },
 } as const;
