@@ -1,12 +1,13 @@
 import { Router } from "express";
 
 import Paths from "@src/common/constants/Paths";
-import UserRoutes from "./UserRoutes";
-import AuthRoutes from "./AuthRoutes";
 import { auth } from "@src/middlewares/ middleware.authorization";
+import { authRoles } from "@src/middlewares/middleware.authorizationRole";
 import { transform } from "@src/middlewares/middleware.jwtTransform";
+import AuthRoutes from "./AuthRoutes";
+import ChildRoutes from "./ChildRoutes";
 import RoleRoutes from "./RoleRoutes";
-import { authAdmin } from "@src/middlewares/middleware.authorizationAdmin";
+import UserRoutes from "./UserRoutes";
 
 /******************************************************************************
                                 Setup
@@ -26,7 +27,7 @@ const userRouter = Router();
 userRouter.get(Paths.Users.Get, UserRoutes.getAll);
 userRouter.post(
   Paths.Users.Add,
-  [transform(), auth(), authAdmin()],
+  [transform(), auth(), authRoles(["admin"])],
   UserRoutes.add
 );
 userRouter.put(Paths.Users.Update, UserRoutes.update);
@@ -50,6 +51,20 @@ roleRouter.post(Paths.Roles.Add, RoleRoutes.add);
 roleRouter.get(Paths.Default, RoleRoutes.getAll);
 
 /******************************************************************************
+                                Role routes
+******************************************************************************/
+const childRouter = Router();
+childRouter.post(
+  Paths.Child.Add,
+  [transform(), auth(), authRoles(["parent"])],
+  ChildRoutes.add
+);
+childRouter.get(
+  Paths.Default,
+  [transform(), auth(), authRoles(["parent", "nurse"])],
+  ChildRoutes.get
+);
+/******************************************************************************
                                 Index routes
 ******************************************************************************/
 // Add UserRouter
@@ -58,6 +73,8 @@ apiRouter.use(Paths.Users.Base, userRouter);
 apiRouter.use(Paths.Auth.Base, authRouter);
 // Add RoleRouter
 apiRouter.use(Paths.Roles.Base, roleRouter);
+// Add ChildRouter
+apiRouter.use(Paths.Child.Base, childRouter);
 
 /******************************************************************************
                                 Export default
