@@ -17,6 +17,11 @@ class RoleService {
     }
     return roles;
   }
+
+  async getById(id: string): Promise<IRole | null> {
+    const role = await Role.findById(id);
+    return role;
+  }
 }
 
 const roleService = new RoleService();
