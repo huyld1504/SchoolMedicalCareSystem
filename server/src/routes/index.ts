@@ -1,10 +1,14 @@
 import { Router } from "express";
 
 import Paths from "@src/common/constants/Paths";
-import UserRoutes from "./UserRoutes";
-import AuthRoutes from "./AuthRoutes";
 import { auth } from "@src/middlewares/ middleware.authorization";
+import { authRoles } from "@src/middlewares/middleware.authorizationRole";
 import { transform } from "@src/middlewares/middleware.jwtTransform";
+import AuthRoutes from "./AuthRoutes";
+import ChildRoutes from "./ChildRoutes";
+import RoleRoutes from "./RoleRoutes";
+import UserRoutes from "./UserRoutes";
+import HealthProfileRoutes from "./HealthProfileRoutes";
 
 /******************************************************************************
                                 Setup
@@ -22,7 +26,11 @@ const userRouter = Router();
 ******************************************************************************/
 // Get all users
 userRouter.get(Paths.Users.Get, UserRoutes.getAll);
-userRouter.post(Paths.Users.Add, UserRoutes.add);
+userRouter.post(
+  Paths.Users.Add,
+  [transform(), auth(), authRoles(["admin"])],
+  UserRoutes.add
+);
 userRouter.put(Paths.Users.Update, UserRoutes.update);
 userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
 userRouter.get(Paths.Users.Pagination, UserRoutes.getUsersWithPagination);
@@ -36,10 +44,54 @@ const authRouter = Router();
 authRouter.post(Paths.Auth.Login, AuthRoutes.login);
 authRouter.post(Paths.Auth.Register, AuthRoutes.register);
 
+/******************************************************************************
+                                Role routes
+******************************************************************************/
+const roleRouter = Router();
+roleRouter.post(Paths.Roles.Add, RoleRoutes.add);
+roleRouter.get(Paths.Default, RoleRoutes.getAll);
+
+/******************************************************************************
+                                Role routes
+******************************************************************************/
+const childRouter = Router();
+childRouter.post(
+  Paths.Child.Add,
+  [transform(), auth(), authRoles(["parent"])],
+  ChildRoutes.add
+);
+childRouter.get(
+  Paths.Default,
+  [transform(), auth(), authRoles(["parent", "nurse"])],
+  ChildRoutes.get
+);
+/******************************************************************************
+                                Health Profile routes
+******************************************************************************/
+const healthProfileRouter = Router();
+healthProfileRouter.post(
+  Paths.HealthProfile.Add,
+  [transform(), auth(), authRoles(["nurse"])],
+  HealthProfileRoutes.add
+);
+healthProfileRouter.get(
+  Paths.HealthProfile.GetByChildId,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  HealthProfileRoutes.getByChildId
+);
+/******************************************************************************
+                                Index routes
+******************************************************************************/
 // Add UserRouter
 apiRouter.use(Paths.Users.Base, userRouter);
 // Add AuthRouter
 apiRouter.use(Paths.Auth.Base, authRouter);
+// Add RoleRouter
+apiRouter.use(Paths.Roles.Base, roleRouter);
+// Add ChildRouter
+apiRouter.use(Paths.Child.Base, childRouter);
+//Add HealthProfileRouter
+apiRouter.use(Paths.HealthProfile.Base, healthProfileRouter);
 
 /******************************************************************************
                                 Export default

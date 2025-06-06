@@ -1,4 +1,7 @@
+import { HealthProfile } from "@src/models/HealthProfile";
+
 export default {
+  Default: "",
   Base: "/api",
   Auth: {
     Base: "/auth",
@@ -21,4 +24,22 @@ export default {
     Update: "/update",
     Delete: "/delete/:id",
   },
+  Roles: {
+    Base: "/roles",
+    Add: "/add",
+  },
+  Child: {
+    Base: "/childs",
+    Add: "/add",
+    Update: "/update/:id",
+    Delete: "/delete/:id",
+    GetAll: "/all",
+    GetById: "/get/:id",
+  },
+  HealthProfile: {
+    Base: "/health-profiles",   
+    Add: "/add",
+    Search: "/search",
+    GetByChildId: "/child/:childId"
+  }
 } as const;
