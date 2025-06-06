@@ -10,7 +10,8 @@ import {
     Button
 } from '@mui/material';
 
-const FeaturesSection = () => {    const features = [
+const FeaturesSection = () => {
+    const features = [
         {
             icon: '👨‍🎓',
             title: 'Quản lý học sinh thông minh',
@@ -56,7 +57,7 @@ const FeaturesSection = () => {    const features = [
 
     ];
 
-    return (<Box sx={{ py: 16, backgroundColor: 'white', position: 'relative' } }>
+    return (<Box sx={{ py: 16, backgroundColor: 'white', position: 'relative' }}>
         <Container
             maxWidth="xl"
             sx={{
@@ -134,7 +135,6 @@ const FeaturesSection = () => {    const features = [
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                justifyContent: 'space-between',
                                 width: '100%',
                                 height: '100%',
                                 borderRadius: 3,
@@ -171,7 +171,6 @@ const FeaturesSection = () => {    const features = [
                             <CardContent sx={{ p: 2, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>                                    <Box
                                 className="feature-icon"
                                 sx={{
-                                   
                                     width: 40,
                                     height: 40,
                                     borderRadius: '10px',
@@ -181,8 +180,7 @@ const FeaturesSection = () => {    const features = [
                                     justifyContent: 'center',
                                     margin: '0 auto',
                                     mb: 1.5,
-                                    mt:1,
-                                    fontSize: '3rem',
+                                    fontSize: '2rem',
                                     transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
                                 }}
                             >
@@ -190,7 +188,6 @@ const FeaturesSection = () => {    const features = [
                             </Box>                                    <Typography
                                 variant="h6"
                                 sx={{
-                               
                                     fontWeight: 700,
                                     mb: 1,
                                     color: '#1a1a1a',
@@ -206,7 +203,6 @@ const FeaturesSection = () => {    const features = [
                                 <Typography
                                     variant="body2"
                                     color="text.secondary" sx={{
-                                       
                                         lineHeight: 1.4,
                                         mb: 1.5,
                                         fontSize: '1rem',
@@ -226,7 +222,6 @@ const FeaturesSection = () => {    const features = [
                                             label={item}
                                             size="small"
                                             sx={{
-                                               mt:1,
                                                 backgroundColor: feature.bgColor,
                                                 color: feature.color,
                                                 fontWeight: 600,
@@ -237,7 +232,7 @@ const FeaturesSection = () => {    const features = [
                                     ))}
                                 </Box>
 
-                               
+                              
                             </CardContent>
                         </Card>
                     </Grid>
@@ -358,7 +353,6 @@ const FeaturesSection = () => {    const features = [
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
                                     flex: 1
                                 }}>                                    <Typography
                                     variant="h6"

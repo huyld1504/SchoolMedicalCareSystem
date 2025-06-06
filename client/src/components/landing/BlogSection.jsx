@@ -24,14 +24,14 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const BlogSection = () => {    const blogs = [
+const BlogSection = () => {
+    const blogs = [
         {
             title: 'Dinh dưỡng hợp lý cho học sinh trong thời kỳ phát triển',
             excerpt: 'Hướng dẫn về chế độ ăn cân bằng giúp tăng cường sức khỏe và hỗ trợ phát triển trí tuệ cho học sinh trong giai đoạn học tập căng thẳng.',
             image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=2340&auto=format&fit=crop',
             category: 'Dinh dưỡng',
-            date: '15 Th12, 2024',
-            readTime: '5 phút đọc',
+
             featured: true
         },
         {
@@ -39,8 +39,7 @@ const BlogSection = () => {    const blogs = [
             excerpt: 'Giới thiệu các kỹ thuật sơ cứu đơn giản nhưng hiệu quả mà học sinh có thể học và áp dụng trong các tình huống khẩn cấp tại trường học.',
             image: 'https://images.unsplash.com/photo-1576765608622-067973a79f53?q=80&w=2206&auto=format&fit=crop',
             category: 'Sơ cứu',
-            date: '12 Th12, 2024',
-            readTime: '7 phút đọc',
+
             featured: true
         },
         {
@@ -48,8 +47,7 @@ const BlogSection = () => {    const blogs = [
             excerpt: 'Phương pháp giúp học sinh nhận biết dấu hiệu stress, các bài tập thư giãn và kỹ thuật quản lý cảm xúc hiệu quả trong môi trường học tập.',
             image: 'https://khoahoctamly.com/wp-content/uploads/2021/09/stress-hoc-duong-1-1.jpg',
             category: 'Tâm lý',
-            date: '10 Th12, 2024',
-            readTime: '6 phút đọc',
+
             featured: true
         },
         {
@@ -57,8 +55,6 @@ const BlogSection = () => {    const blogs = [
             excerpt: 'Khám phá tác động của giấc ngủ đến khả năng học tập, trí nhớ và sức khỏe tổng thể. Hướng dẫn xây dựng thói quen ngủ khoa học cho học sinh.',
             image: 'https://th.bing.com/th/id/OIP.uu_aI1Tx5vlOiyO2YaRQagHaEO?w=275&h=180&c=7&r=0&o=5&cb=thvnextc1&dpr=1.3&pid=1.7',
             category: 'Giấc ngủ',
-            date: '8 Th12, 2024',
-            readTime: '4 phút đọc',
             featured: true
         },
         {
@@ -66,8 +62,6 @@ const BlogSection = () => {    const blogs = [
             excerpt: 'Gợi ý các hoạt động thể chất phù hợp từ tiểu học đến trung học phổ thông, giúp phát triển thể lực và kỹ năng vận động một cách toàn diện.',
             image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2340&auto=format&fit=crop',
             category: 'Thể thao',
-            date: '5 Th12, 2024',
-            readTime: '6 phút đọc',
             featured: true
         },
         {
@@ -75,8 +69,6 @@ const BlogSection = () => {    const blogs = [
             excerpt: 'Hướng dẫn nhận biết thực phẩm an toàn, cách bảo quản đồ ăn và những lưu ý quan trọng khi mua sắm thực phẩm tại căng tin trường học.',
             image: 'https://th.bing.com/th/id/OIP.oR27Ks3wMSBFHg0CvVgRfQHaEU?r=0&cb=thvnextc1&rs=1&pid=ImgDetMain',
             category: 'An toàn thực phẩm',
-            date: '3 Th12, 2024',
-            readTime: '5 phút đọc',
             featured: true
         }
 
@@ -169,18 +161,18 @@ const BlogSection = () => {    const blogs = [
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            mb: 1
+                            mb: 5
                         }}
                     >
                         <Typography
                             variant="body2"
-                            sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+                            sx={{ color: 'text.secondary', fontSize: '1.5rem' }}
                         >
                             {blog.date}
                         </Typography>
                         <Typography
                             variant="body2"
-                            sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
+                            sx={{ color: 'text.secondary', fontSize: '1.5rem' }}
                         >
                             {blog.readTime}
                         </Typography>
@@ -221,30 +213,20 @@ const BlogSection = () => {    const blogs = [
                         }}
                     >
                         {blog.excerpt}
-                    </Typography>                </Box>
+                    </Typography>
+                </Box>
 
-                {/* Read More Button */}
-                <Button
-                    variant="text"
-                    color="primary"
-                    endIcon={<ArrowForwardIosIcon sx={{ fontSize: '0.8rem' }} />}
+                {/* Read More Button */}                <Button
+                    endIcon={<ArrowForwardIcon sx={{ fontSize: '0.8rem' }} />}
                     sx={{
-                        mt: 'auto',
                         alignSelf: 'flex-start',
                         textTransform: 'none',
                         fontWeight: 600,
-                        fontSize: '0.85rem',
                         p: 0,
-                        minHeight: 'auto',
+                        fontSize: '0.8rem',
                         '&:hover': {
                             backgroundColor: 'transparent',
-                            color: 'primary.dark',
-                            '& .MuiSvgIcon-root': {
-                                transform: 'translateX(4px)'
-                            }
-                        },
-                        '& .MuiSvgIcon-root': {
-                            transition: 'transform 0.2s ease'
+                            color: 'primary.dark'
                         }
                     }}
                 >
@@ -252,7 +234,7 @@ const BlogSection = () => {    const blogs = [
                 </Button>
             </CardContent>
         </Card>
-    );return (<Box sx={{ py: 12, backgroundColor: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
+    ); return (<Box sx={{ py: 12, backgroundColor: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
         <Container
             maxWidth="xl"
             sx={{
@@ -262,8 +244,7 @@ const BlogSection = () => {    const blogs = [
                 '@media (min-width: 1200px)': {
                     maxWidth: '1400px'
                 },
-                px: { xs: 2, md: 3 },
-                position: 'relative'
+                overflow: 'hidden'
             }}
         >
             {/* Header */}
@@ -327,68 +308,58 @@ const BlogSection = () => {    const blogs = [
                     }}
                 >
                     Bài viết mới nhất
-                </Typography>                <Box sx={{ width: '100%', position: 'relative', mx: 'auto', maxWidth: '1200px' }}>
-                    {/* Navigation Buttons positioned with proper spacing */}
+                </Typography>                <Box sx={{ width: '100%', position: 'relative' }}>
+                    {/* Navigation Buttons positioned outside Swiper */}
                     <IconButton
                         className="swiper-button-prev-featured"
                         sx={{
                             position: 'absolute',
-                            left: { xs: 4, sm: 8, md: -16 },
+                            left: { xs: -12, sm: -20, md: -24 },
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            zIndex: 30,
+                            zIndex: 20,
                             backgroundColor: 'white',
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            width: { xs: 36, md: 44 },
-                            height: { xs: 36, md: 44 },
-                            border: '1px solid rgba(0,0,0,0.08)',
+                            width: { xs: 40, md: 48 },
+                            height: { xs: 40, md: 48 },
+                            display: { xs: 'none', md: 'flex' },
                             '&:hover': {
                                 backgroundColor: 'primary.main',
                                 color: 'white',
-                                transform: 'translateY(-50%) scale(1.05)',
-                                boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
+                                transform: 'translateY(-50%) scale(1.05)'
                             },
-                            transition: 'all 0.3s ease',
-                            '&:disabled': {
-                                opacity: 0.5,
-                                pointerEvents: 'none'
-                            }
+                            transition: 'all 0.3s ease'
                         }}
                     >
-                        <ArrowBackIcon sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }} />
+                        <ArrowBackIcon />
                     </IconButton>
 
                     <IconButton
                         className="swiper-button-next-featured"
                         sx={{
                             position: 'absolute',
-                            right: { xs: 4, sm: 8, md: -16 },
+                            right: { xs: -12, sm: -20, md: -24 },
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            zIndex: 30,
+                            zIndex: 20,
                             backgroundColor: 'white',
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            width: { xs: 36, md: 44 },
-                            height: { xs: 36, md: 44 },
-                            border: '1px solid rgba(0,0,0,0.08)',
+                            width: { xs: 40, md: 48 },
+                            height: { xs: 40, md: 48 },
+                            display: { xs: 'none', md: 'flex' },
                             '&:hover': {
                                 backgroundColor: 'primary.main',
                                 color: 'white',
-                                transform: 'translateY(-50%) scale(1.05)',
-                                boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
+                                transform: 'translateY(-50%) scale(1.05)'
                             },
-                            transition: 'all 0.3s ease',
-                            '&:disabled': {
-                                opacity: 0.5,
-                                pointerEvents: 'none'
-                            }
+                            transition: 'all 0.3s ease'
                         }}
                     >
-                        <ArrowForwardIcon sx={{ fontSize: { xs: '1.2rem', md: '1.4rem' } }} />
+                        <ArrowForwardIcon />
                     </IconButton>
 
-                    {/* Swiper container with proper padding */}
-                    <Box sx={{ px: { xs: 1, sm: 2, md: 4 }, overflow: 'hidden' }}>
+                    {/* Swiper container with padding for navigation buttons */}
+                    <Box sx={{ px: { xs: 2, md: 6 } }}>
                         <Swiper
                             modules={[Navigation, Pagination, Autoplay]}
                             spaceBetween={20}
@@ -442,12 +413,32 @@ const BlogSection = () => {    const blogs = [
                                 ))}
                         </Swiper>
                     </Box>
-                </Box>            </Box>                {/* More Blog Posts Section */}
-         
+                </Box>
+            </Box>                {/* More Blog Posts Section */}
 
 
             {/* View All Button */}
-          
+            <Box sx={{ textAlign: 'center', mt: 6 }}>
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    sx={{
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 50,
+                        borderWidth: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        '&:hover': {
+                            borderWidth: 2,
+                            backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                        }
+                    }}
+                >
+                    Xem tất cả bài viết
+                </Button>
+            </Box>
         </Container>
     </Box>
     );

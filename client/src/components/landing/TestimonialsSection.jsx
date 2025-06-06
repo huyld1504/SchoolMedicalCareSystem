@@ -12,7 +12,7 @@ import {
     CardContent
 } from '@mui/material';
 // Import doctor images
-import { doctor1, doctor2, doctor3 } from '../../assets/doctors';
+
 
 const
     TestimonialsSection = () => {
