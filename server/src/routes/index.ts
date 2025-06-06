@@ -8,6 +8,7 @@ import AuthRoutes from "./AuthRoutes";
 import ChildRoutes from "./ChildRoutes";
 import RoleRoutes from "./RoleRoutes";
 import UserRoutes from "./UserRoutes";
+import HealthProfileRoutes from "./HealthProfileRoutes";
 
 /******************************************************************************
                                 Setup
@@ -65,6 +66,20 @@ childRouter.get(
   ChildRoutes.get
 );
 /******************************************************************************
+                                Health Profile routes
+******************************************************************************/
+const healthProfileRouter = Router();
+healthProfileRouter.post(
+  Paths.HealthProfile.Add,
+  [transform(), auth(), authRoles(["nurse"])],
+  HealthProfileRoutes.add
+);
+healthProfileRouter.get(
+  Paths.HealthProfile.GetByChildId,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  HealthProfileRoutes.getByChildId
+);
+/******************************************************************************
                                 Index routes
 ******************************************************************************/
 // Add UserRouter
@@ -75,6 +90,8 @@ apiRouter.use(Paths.Auth.Base, authRouter);
 apiRouter.use(Paths.Roles.Base, roleRouter);
 // Add ChildRouter
 apiRouter.use(Paths.Child.Base, childRouter);
+//Add HealthProfileRouter
+apiRouter.use(Paths.HealthProfile.Base, healthProfileRouter);
 
 /******************************************************************************
                                 Export default
