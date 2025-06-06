@@ -12,6 +12,7 @@ import { ApiResponse } from "@src/common/util/util.api-response";
 import { ValidationError } from "@src/common/util/util.route-errors";
 import { User } from "@src/models/User";
 import { log } from "console";
+import { registerSchema } from "@src/schemas/user.schema";
 
 /******************************************************************************
                                 Constants
@@ -50,7 +51,7 @@ async function login(req: IReq, res: IRes) {
  * Register a user.
  */
 async function register(req: IReq, res: IRes) {
-  const { error, value } = userSchema.validate(req.body);
+  const { error, value } = registerSchema.validate(req.body);
 
   if (error) {
     throw new ValidationError(error.details[0].message);

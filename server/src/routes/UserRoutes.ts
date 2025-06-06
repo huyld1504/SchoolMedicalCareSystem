@@ -8,6 +8,8 @@ import { IReq, IRes } from "./common/types";
 import { parseReq } from "./common/util";
 import { userSchema } from "./common/util/validation";
 import { ApiResponse } from "@src/common/util/util.api-response";
+import { ValidationError } from "@src/common/util/util.route-errors";
+import { addUserSchema } from "@src/schemas/user.schema";
 
 /******************************************************************************
                                 Constants
@@ -35,9 +37,17 @@ async function getAll(_: IReq, res: IRes) {
  * Add one user.
  */
 async function add(req: IReq, res: IRes) {
-  const { user } = Validators.add(req.body);
-  await UserService.addOne(user);
-  res.status(HttpStatusCodes.CREATED).end();
+  const { error, value } = addUserSchema.validate(req.body);
+
+  if (error) {
+    throw new ValidationError(error.details[0].message);
+  }
+  await UserService.addOne(value);
+  const response: ApiResponse = new ApiResponse(
+    HttpStatusCodes.CREATED,
+    "User created successfully"
+  );
+  res.status(HttpStatusCodes.CREATED).json(response);
 }
 
 /**

@@ -1,4 +1,5 @@
 export default {
+  Default: "",
   Base: "/api",
   Auth: {
     Base: "/auth",
@@ -20,5 +21,17 @@ export default {
     Add: "/add",
     Update: "/update",
     Delete: "/delete/:id",
+  },
+  Roles: {
+    Base: "/roles",
+    Add: "/add",
+  },
+  Child: {
+    Base: "/childs",
+    Add: "/add",
+    Update: "/update/:id",
+    Delete: "/delete/:id",
+    GetAll: "/all",
+    GetById: "/get/:id",
   },
 } as const;
