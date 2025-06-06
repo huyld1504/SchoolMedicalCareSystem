@@ -1,5 +1,6 @@
-import { Document, Model, Schema, model } from "mongoose";
+import { Document, Model, Schema, Types, model } from "mongoose";
 import { hashSync, genSaltSync, compareSync } from "bcrypt";
+import { IRole } from "./Role";
 
 export interface IUser extends Document {
   /** Email */
@@ -7,36 +8,33 @@ export interface IUser extends Document {
   /** Password */
   password: string;
   /** Password */
-  firstName: string;
-  /** Password */
-  lastName: string;
-  /** Created On */
-  createdOn: Date;
-  /** Created On */
-  updatedOn: Date;
+  name: string;
   encryptPassword: (password: string) => string;
   validPassword: (password: string) => boolean;
+
+  /** Role id */
+  roleId: Types.ObjectId | IRole;
+
+  isActive: boolean;
 }
 
 interface IUserModel extends Model<IUser> {}
 
-const schema = new Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  createdOn: {
-    required: true,
-    type: Date,
-    default: Date.now,
-    immutable: true,
+const schema = new Schema(
+  {
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    roleId: { type: Types.ObjectId, ref: "Role", required: true },
+    isActive: { type: Boolean, default: true },
   },
-  updatedOn: {
-    required: true,
-    type: Date,
-    default: Date.now,
-  },
-});
+  {
+    timestamps: {
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+    },
+  }
+);
 
 schema.methods.encryptPassword = (password: string) =>
   hashSync(password, genSaltSync(10));

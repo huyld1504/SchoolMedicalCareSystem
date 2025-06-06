@@ -9,4 +9,7 @@ export interface ILoginResponseDto {
   token: string;
   /** User Refresh token */
   refreshToken: string;
+
+  /** User Role */
+  role?: string;
 }
