@@ -17,10 +17,10 @@ async function add(req: IReq, res: IRes) {
     throw new ValidationError(error.details[0].message);
   }
     
-  const user = req.user;
+  const userId = req.user._id.toString();
+  console.log(userId);
 
-  value.user = user._id; // Assign the user ID to the health profile
-  await healthProfileService.addHealthProfile(value);
+  await healthProfileService.addHealthProfile(value, userId);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
     "Health profile added successfully"

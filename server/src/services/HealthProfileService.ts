@@ -1,5 +1,6 @@
 import { PaginationOptions, PaginationResult, SortOptions } from '@src/common/interfaces/mongo.interface';
 import { HealthProfile, IHealthProfile } from "@src/models/HealthProfile";
+import { User } from '@src/models/User';
 import { BaseQueryBuilder } from '@src/payload/request/filter/base.request';
 import { HealthProfileRepository } from "@src/repos/HealthProfileRepo";
 
@@ -22,8 +23,11 @@ class HealthProfileService {
     return this.healthProfileRepo.searchHealthProfiles(query, options, sort);
   }
 
-  async addHealthProfile(healthProfile: IHealthProfile): Promise<IHealthProfile> {
-    const newProfile = new HealthProfile(healthProfile);
+  async addHealthProfile(healthProfile: IHealthProfile, userId: string): Promise<IHealthProfile> {
+    const newProfile = new HealthProfile({
+      ...healthProfile, 
+      UserId: userId
+    });
     return this.healthProfileRepo.create(newProfile);
   }
 }
