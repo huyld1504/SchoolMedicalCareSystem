@@ -1,3 +1,5 @@
+import { HealthProfile } from "@src/models/HealthProfile";
+
 export default {
   Default: "",
   Base: "/api",
@@ -34,4 +36,10 @@ export default {
     GetAll: "/all",
     GetById: "/get/:id",
   },
+  HealthProfile: {
+    Base: "/health-profiles",   
+    Add: "/add",
+    Search: "/search",
+    GetByChildId: "/child/:childId"
+  }
 } as const;

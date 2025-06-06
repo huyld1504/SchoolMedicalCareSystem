@@ -12,7 +12,7 @@ export interface IHealthProfile extends Document {
   UserId: Types.ObjectId;
 }
 
-interface IIHealthProfileModel extends Model<IHealthProfile> {}
+interface IIHealthProfileModel extends Model<IHealthProfile> { }
 
 const schema = new Schema(
   {
@@ -21,9 +21,9 @@ const schema = new Schema(
     weight: { type: Number, required: true },
     bloodType: { type: String, required: true },
     vision: { type: String, required: true },
-    allergies: { type: String, required: true },
-    chronicDiseases: { type: String, required: true },
-    devicesSupport: { type: String, required: true },
+    allergies: { type: String },
+    chronicDiseases: { type: String },
+    devicesSupport: { type: String },
     UserId: { type: Types.ObjectId, ref: "User", required: true },
   },
   {
