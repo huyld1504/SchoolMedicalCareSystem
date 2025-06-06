@@ -23,6 +23,5 @@ export const addHealthProfileSchema = Joi.object({
   vision: Joi.string().max(50).required(),
   allergies: Joi.string().allow("").max(200).required(),
   chronicDiseases: Joi.string().allow("").max(200).required(),
-  devicesSupport: Joi.string().allow("").max(200).required(),
-  UserId: Joi.string().required(), // User ID of the person creating the profile
+  devicesSupport: Joi.string().allow("").max(200).required()
 });
