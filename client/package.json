@@ -17,6 +17,7 @@
     "@mui/material": "^7.1.1",
     "@mui/styled-engine-sc": "^7.1.1",
     "@reduxjs/toolkit": "^2.8.2",
+    "axios": "^1.9.0",
     "formik": "^2.4.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -24,6 +25,7 @@
     "react-router": "^7.6.1",
     "react-toastify": "^11.0.5",
     "styled-components": "^6.1.18",
+    "swiper": "^11.2.8",
     "yup": "^1.6.1"
   },
   "devDependencies": {
