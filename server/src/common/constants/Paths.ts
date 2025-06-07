@@ -39,6 +39,8 @@ export default {
   HealthProfile: {
     Base: "/health-profiles",   
     Add: "/add",
+    GetByID: "/get/:id",
+    UpdateById: "/update/:id",
     Search: "/search",
     GetByChildId: "/child/:childId"
   }

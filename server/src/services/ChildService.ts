@@ -71,6 +71,10 @@ class ChildService {
       totalPages: Math.ceil(count / queryBuilder.getLimit()),
     };
   }
+
+  async getById(id: string): Promise<IChild | null> {
+    return Child.findById(id);
+  }
 }
 
 const childService = new ChildService();
