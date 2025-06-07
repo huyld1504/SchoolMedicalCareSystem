@@ -1,5 +1,5 @@
 import { PaginationOptions, SortOptions } from './../common/interfaces/mongo.interface';
-import { addHealthProfileSchema } from "@src/schemas/healthProfile.schema";
+import { addHealthProfileSchema, updateHealthProfileSchema } from "@src/schemas/healthProfile.schema";
 import { IReq, IRes } from "./common/types";
 import { ValidationError } from "@src/common/util/util.route-errors";
 import healthProfileService from "@src/services/HealthProfileService";
@@ -8,6 +8,8 @@ import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
 import { HealthProfileQueryBuilder } from '@src/payload/request/filter/healthProfile.request';
 import { Child } from '@src/models/Child';
 import roleService from '@src/services/RoleService';
+import { HealthProfile } from '@src/models/HealthProfile';
+import childService from '@src/services/ChildService';
 
 // Function to add a health profile
 // This function validates the request body against the schema and adds a health profile for the user.
@@ -16,7 +18,7 @@ async function add(req: IReq, res: IRes) {
   if (error) {
     throw new ValidationError(error.details[0].message);
   }
-    
+
   const userId = req.user._id.toString();
   console.log(userId);
 
@@ -32,15 +34,8 @@ async function add(req: IReq, res: IRes) {
 // This function retrieves health profiles based on the query parameters provided in the request.
 async function searchProfiles(req: IReq, res: IRes) {
   const queryBuilder = new HealthProfileQueryBuilder(req.query);
-  const options: PaginationOptions = { 
-    page: queryBuilder.getPage(), 
-    limit: queryBuilder.getLimit() 
-  };
-  const profiles = await healthProfileService.searchHealthProfiles(
-    queryBuilder,
-    options,
-    queryBuilder.getSort()
-  );
+
+  const profiles = await healthProfileService.searchHealthProfiles(queryBuilder);
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
@@ -62,20 +57,18 @@ async function getByChildId(req: IReq, res: IRes) {
     throw new ValidationError("Child ID is required.");
   }
 
-  const student = await Child.findOne({ _id: childId });
-
-  if (userRole.name === "parent" && student?.userId.toString() !== user._id.toString()) {
-    throw new ValidationError("You do not have permission to access this child's health profile.");
+  // Check if the user is a parent or guardian of the child
+  if (userRole.name === "parent") {
+    const child = await Child.findOne({ _id: childId, userId: user._id });
+    if (!child) {
+      throw new ValidationError("You do not have permission to access this child's health profile.");
+    }
   }
 
-  const options: PaginationOptions = {
-    page: parseInt(req.query.page as string) || 1,
-    limit: parseInt(req.query.limit as string) || 10,
-  };
+  const query = new HealthProfileQueryBuilder(req.query);
+  query.childId = childId as string;
 
-  const sort: SortOptions = req.query.sort ? JSON.parse(req.query.sort as string) : undefined;
-
-  const profiles = await healthProfileService.findByChildIdWithPagination(childId, options, sort);
+  const profiles = await healthProfileService.findByChildIdWithPagination(query.childId, query);
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
@@ -93,12 +86,10 @@ async function getByChildIds(req: IReq, res: IRes) {
     throw new ValidationError("Child IDs are required.");
   }
 
-  const options: PaginationOptions = {
-    page: parseInt(req.query.page as string) || 1,
-    limit: parseInt(req.query.limit as string) || 10,
-  };
+  const query = new HealthProfileQueryBuilder(req.query);
+  query.childIds = childIds;
 
-  const profiles = await healthProfileService.findByChildIdsWithPagination(childIds, options, req.query.sort);
+  const profiles = await healthProfileService.findByChildIdsWithPagination(childIds, query);
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
@@ -107,9 +98,59 @@ async function getByChildIds(req: IReq, res: IRes) {
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
+
+// Function to get a health profile by ID
+// This function retrieves a specific health profile based on its ID.
+async function getById(req: IReq, res: IRes) {
+  const profileId = req.params.id as string;
+  if (!profileId) {
+    throw new ValidationError("Health profile ID is required.");
+  }
+
+  const profile = await healthProfileService.getHealthProfileById(profileId);
+  if (!profile) {
+    throw new ValidationError("Health profile not found.");
+  }
+
+  const response: ApiResponse = new ApiResponse(
+    HttpStatusCodes.OK,
+    "Health profile retrieved successfully",
+    profile
+  );
+  res.status(HttpStatusCodes.OK).json(response);
+}
+
+async function updateById(req: IReq, res: IRes) {
+  const profileId = req.params.id as string;
+  if (!profileId) {
+    throw new ValidationError("Health profile ID is required.");
+  }
+
+  const { error, value } = updateHealthProfileSchema.validate(req.body);
+
+  if (error) {
+    throw new ValidationError(error.details[0].message);
+  }
+
+  const updatedProfile = await healthProfileService.updateHealthProfile(profileId, value);
+  if (!updatedProfile) {
+    throw new ValidationError("Health profile not found.");
+  }
+  const response: ApiResponse = new ApiResponse(
+    HttpStatusCodes.OK,
+    "Health profile updated successfully",
+    updatedProfile
+  );
+
+  return res.status(HttpStatusCodes.OK).json(response);
+}
+
+// Exporting the functions as a module
 export default {
   add,
   searchProfiles,
   getByChildId,
   getByChildIds,
+  getById,
+  updateById
 } as const;

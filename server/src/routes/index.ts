@@ -79,6 +79,16 @@ healthProfileRouter.get(
   [transform(), auth(), authRoles(["nurse", "parent"])],
   HealthProfileRoutes.getByChildId
 );
+healthProfileRouter.get(
+  Paths.HealthProfile.GetByID,
+  [transform(), auth(), authRoles(["nurse"])],
+  HealthProfileRoutes.getById
+);
+healthProfileRouter.put(
+  Paths.HealthProfile.UpdateById,
+  [transform(), auth(), authRoles(["nurse"])],
+  HealthProfileRoutes.updateById
+);
 /******************************************************************************
                                 Index routes
 ******************************************************************************/

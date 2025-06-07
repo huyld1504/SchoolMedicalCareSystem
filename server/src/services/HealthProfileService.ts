@@ -11,16 +11,16 @@ class HealthProfileService {
     return this.healthProfileRepo.findById(id); 
   }
 
-  async findByChildIdWithPagination(childId: string, options: PaginationOptions, sort?: SortOptions): Promise<PaginationResult<IHealthProfile>> {
-    return this.healthProfileRepo.findByChildId(childId, options, sort);
+  async findByChildIdWithPagination(childId: string, query: BaseQueryBuilder): Promise<PaginationResult<IHealthProfile>> {
+    return this.healthProfileRepo.findByChildId(childId, query);
   }
   
-  async findByChildIdsWithPagination(childIds: string[], options: PaginationOptions, sort?: SortOptions): Promise<PaginationResult<IHealthProfile>> {
-    return this.healthProfileRepo.findByChildIds(childIds, options, sort);
+  async findByChildIdsWithPagination(childIds: string[], query: BaseQueryBuilder): Promise<PaginationResult<IHealthProfile>> {
+    return this.healthProfileRepo.findByChildIds(childIds, query);
   }
 
-  async searchHealthProfiles(query: BaseQueryBuilder, options: PaginationOptions, sort?: SortOptions): Promise<PaginationResult<IHealthProfile>> {
-    return this.healthProfileRepo.searchHealthProfiles(query, options, sort);
+  async searchHealthProfiles(query: BaseQueryBuilder): Promise<PaginationResult<IHealthProfile>> {
+    return this.healthProfileRepo.searchHealthProfiles(query);
   }
 
   async addHealthProfile(healthProfile: IHealthProfile, userId: string): Promise<IHealthProfile> {
@@ -29,6 +29,14 @@ class HealthProfileService {
       UserId: userId
     });
     return this.healthProfileRepo.create(newProfile);
+  }
+
+  async getHealthProfileById(id: string)  : Promise<IHealthProfile | null> {
+    return this.healthProfileRepo.findById(id);
+  }
+
+  async updateHealthProfile(id: string, healthProfile: IHealthProfile): Promise<IHealthProfile | null> {
+    return this.healthProfileRepo.updateById(id, healthProfile);
   }
 }
 

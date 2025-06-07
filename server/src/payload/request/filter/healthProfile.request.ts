@@ -9,22 +9,22 @@ export class HealthProfileQueryBuilder extends BaseQueryBuilder {
     this.childId = query.childId;
     this.childIds = query.childIds;
   }
-
   public buildFilter(): any {
     const filter: any = {};
 
     if (this.childId) {
-      filter.childId = this.childId;
+      filter.studentId = this.childId;
     }
 
     if (this.childIds && this.childIds.length > 0) {
-      filter.childId = { $in: this.childIds };
+      filter.studentId = { $in: this.childIds };
     }
 
     if (this.keyword) {
       filter.$or = [
-        { studentName: { $regex: this.keyword, $options: 'i' } },
-        { medicalCoverageId: { $regex: this.keyword, $options: 'i' } }
+        { bloodType: { $regex: this.keyword, $options: 'i' } },
+        { allergies: { $regex: this.keyword, $options: 'i' } },
+        { chronicDiseases: { $regex: this.keyword, $options: 'i' } }
       ];
     }
 
