@@ -54,3 +54,7 @@ export class AuthorizationError extends RouteError {
     super(HttpStatusCodes.UNAUTHORIZED, message);
   }
 }
+
+/**
+ * Handle "application" errors.
+ */
