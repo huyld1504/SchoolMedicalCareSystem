@@ -8,13 +8,15 @@ import {
   IconButton,
   Divider,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Chip
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   Email,
-  Lock
+  Lock,
+  ArrowBack
 } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -23,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { loginStart, loginSuccess, loginFailure } from '../../store/authSlice';
 import { LoginContainer, LoginPaper, LogoContainer, LogoIcon } from '../common/LoginPageStyles';
+import authApi from '../../api/authApi';
 
 // Validation schema
 const validationSchema = yup.object({
@@ -42,43 +45,108 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
+  // Test function for toast notifications
+  const testToastNotifications = () => {
+    toast.success('Thông báo thành công! Sẽ tự động tắt sau 3 giây', {
+      autoClose: 3000,
+    });
+    
+    setTimeout(() => {
+      toast.error('Thông báo lỗi! Cũng sẽ tự động tắt sau 3 giây', {
+        autoClose: 3000,
+      });
+    }, 500);
+  };
+
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    validationSchema: validationSchema,    onSubmit: async (values) => {
+    validationSchema: validationSchema,    
+    onSubmit: async (values) => {
       dispatch(loginStart());
       
       try {
-        // TODO: Replace with actual API call
-        console.log('Login attempt:', values);
+        const response = await authApi.login(values);
         
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // For demo purposes - remove in production
-        if (values.email === 'admin@school.com' && values.password === 'admin123') {
-          const mockUser = {
-            id: 1,
-            email: values.email,
-            name: 'Quản trị viên',
-            role: 'admin'
-          };
-          const mockToken = 'mock-jwt-token-123';
+        if (response.data && response.data.data) {          
+          const userData = response.data.data;
+            // Hiển thị thông tin user đơn giản
+          console.log('isSuccessful:', true);
+          console.log('message:', 'Đăng nhập thành công');
+          console.log('email:', userData.email || values.email);
+          //console.log('Password:', values.password);
+          console.log('role:', userData.role);
+          console.log('name:', userData.name);
+          console.log('id:', userData.id);
+          console.log('token:', userData.token);
+          console.log('refreshToken:', userData.refreshToken);
+            // Store tokens in localStorage
+          if (userData.token) {
+            localStorage.setItem('accessToken', userData.token);
+          }
+          if (userData.refreshToken) {
+            localStorage.setItem('refreshToken', userData.refreshToken);
+          }
           
-          dispatch(loginSuccess({ user: mockUser, token: mockToken }));
-          toast.success('Đăng nhập thành công!');
+          const user = {
+            id: userData.id,
+            email: userData.email || values.email,
+            name: userData.name,
+            role: userData.role,
+          };          dispatch(loginSuccess({
+            user: user,
+            token: userData.token,
+            refreshToken: userData.refreshToken
+          }));
+
+          // Log Redux state sau khi dispatch
+          console.log('=== REDUX STATE AFTER LOGIN ===');
+          console.log('Redux Token:', userData.token);
+          console.log('Redux RefreshToken:', userData.refreshToken);
+          console.log('Redux User:', user);
+          
+          toast.success(`Đăng nhập thành công!`);
           navigate('/dashboard');
+        }      } catch (apiError) {
+        console.log('isSuccessful:', false);
+        console.log('message:', 'Đăng nhập thất bại');
+                
+        let errorMessage = 'Đăng nhập thất bại';
+        
+        if (apiError.response) {
+          console.log('Server Error Response:', apiError.response.data);
+          
+          const serverMessage = apiError.response.data?.message || apiError.response.data?.error || '';
+          
+          if (serverMessage.toLowerCase().includes('user or password is incorrect') || 
+              serverMessage.toLowerCase().includes('invalid credentials') ||
+              serverMessage.toLowerCase().includes('authentication failed')) {
+            errorMessage = 'Email hoặc mật khẩu không chính xác';
+          } else if (serverMessage.toLowerCase().includes('user not found')) {
+            errorMessage = 'Tài khoản không tồn tại';
+          } else if (serverMessage.toLowerCase().includes('password')) {
+            errorMessage = 'Mật khẩu không chính xác';
+          } else if (serverMessage.toLowerCase().includes('email')) {
+            errorMessage = 'Email không hợp lệ';
+          } else if (serverMessage) {
+            errorMessage = serverMessage; // Giữ nguyên nếu đã là tiếng Việt
+          } else {
+            errorMessage = 'Email hoặc mật khẩu không chính xác';
+          }
+        } else if (apiError.request) {
+          console.log('Network Error - Server không phản hồi');
+          errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra server backend.';
         } else {
-          dispatch(loginFailure('Email hoặc mật khẩu không chính xác'));
+          errorMessage = apiError.message || 'Đăng nhập thất bại';
         }
-      } catch (err) {
-        dispatch(loginFailure('Có lỗi xảy ra. Vui lòng thử lại.'));
+        
+        dispatch(loginFailure(errorMessage));
+        toast.error(errorMessage);
       }
     },
   });
-
   const handleClickShowPassword = () => {
     setShowPassword((show) => !show);
   };
@@ -86,9 +154,42 @@ const LoginPage = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  return (
+
+  // Quick login functions
+  const quickLogin = (email, password, role) => {
+    formik.setValues({ email, password });
+    console.log(`Quick login selected: ${role} (${email})`);
+  };  return (
     <LoginContainer maxWidth={false} className="login-container">
       <LoginPaper elevation={3} className="login-paper">
+        {/* Back to Home Button */}
+        <Box sx={{ 
+          position: 'absolute', 
+          top: 16, 
+          left: 16,
+          zIndex: 1
+        }}>
+          <Button
+            startIcon={<ArrowBack />}
+            onClick={() => navigate('/')}
+            sx={{
+              color: '#1976d2',
+              textTransform: 'none',
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                transform: 'translateX(-3px)',
+              },
+              transition: 'all 0.3s ease',
+              borderRadius: 2,
+              px: 2,
+              py: 1
+            }}
+          >
+            Trang chủ
+          </Button>
+        </Box>
+
         <LogoContainer>
           <LogoIcon className="logo-icon" />
           <Typography variant="h4" component="h1" gutterBottom color="primary" fontWeight="bold">
@@ -171,8 +272,10 @@ const LoginPage = () => {
             color="primary"
             variant="contained"
             fullWidth
-            type="submit"            size="large"
-            disabled={loading}            sx={{
+            type="submit"            
+            size="large"
+            disabled={loading}            
+            sx={{
               mb: 2,
               py: 1.5,
               borderRadius: 2,
@@ -182,17 +285,11 @@ const LoginPage = () => {
             }}
             className="custom-button">
             {loading ? (
-              <CircularProgress size={24} color="inherit" />
+              <CircularProgress size={24} 
+              color="inherit" />
             ) : (
-              'Đăng nhập'
-            )}
-          </Button>
-
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Demo: admin@school.com / admin123
-            </Typography>
-          </Box>
+              'Đăng nhập'            )}
+          </Button>         
         </Box>
       </LoginPaper>
     </LoginContainer>

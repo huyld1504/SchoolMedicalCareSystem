@@ -16,7 +16,7 @@ import {
   Assessment,
   ExitToApp,
 } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { logout } from '../../store/authSlice';
@@ -24,12 +24,39 @@ import { logout } from '../../store/authSlice';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user, token, refreshToken } = useSelector((state) => state.auth);
+
+  // Debug Redux state
+  React.useEffect(() => {
+    console.log('=== DASHBOARD DEBUG ===');
+    console.log('Current user:', user);
+    console.log('Token:', token);
+    console.log('RefreshToken:', refreshToken);
+    console.log('=====================');
+  }, [user, token, refreshToken]);
 
   const handleLogout = () => {
     dispatch(logout());
     toast.success('Đã đăng xuất thành công!');
     navigate('/login');
   };
+
+  // Navigate to role-specific dashboard
+  React.useEffect(() => {
+    if (user?.role) {
+      const roleRoutes = {
+        admin: '/admin',
+        nurse: '/nurse',
+        parent: '/parent'
+      };
+      
+      const redirectPath = roleRoutes[user.role];
+      if (redirectPath) {
+        console.log('Redirecting to role-specific dashboard:', redirectPath);
+        navigate(redirectPath, { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const stats = [
     { title: 'Tổng học sinh', value: '1,234', icon: People, color: '#1976d2' },
@@ -74,8 +101,63 @@ const Dashboard = () => {
               </Card>
             </Grid>
           );
-        })}
-      </Grid>
+        })}      </Grid>
+
+      {/* Redux State Debug Card */}
+      <Paper sx={{ mt: 4, p: 3, bgcolor: '#f5f5f5' }}>
+        <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+          🔍 Redux State Debug - Token Information
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                User Information:
+              </Typography>
+              <Typography variant="body2" sx={{ fontFamily: 'monospace', bgcolor: 'white', p: 1, borderRadius: 1, mt: 1 }}>
+                {user ? JSON.stringify(user, null, 2) : 'No user data'}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Access Token:
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                fontFamily: 'monospace', 
+                bgcolor: 'white', 
+                p: 1, 
+                borderRadius: 1, 
+                mt: 1,
+                wordBreak: 'break-all'
+              }}>
+                {token ? `${token.substring(0, 50)}...` : 'No token'}
+              </Typography>
+            </Box>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Refresh Token:
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                fontFamily: 'monospace', 
+                bgcolor: 'white', 
+                p: 1, 
+                borderRadius: 1, 
+                mt: 1,
+                wordBreak: 'break-all'
+              }}>
+                {refreshToken ? `${refreshToken.substring(0, 50)}...` : 'No refresh token'}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+        <Box sx={{ mt: 2, p: 2, bgcolor: token && refreshToken ? '#e8f5e8' : '#fff3e0', borderRadius: 1 }}>
+          <Typography variant="body2" color={token && refreshToken ? 'success.main' : 'warning.main'}>
+            ✅ Status: {token && refreshToken ? 'Tokens saved successfully in Redux!' : 'Missing tokens in Redux state'}
+          </Typography>
+        </Box>
+      </Paper>
 
       <Paper sx={{ mt: 4, p: 3 }}>
         <Typography variant="h5" gutterBottom>
