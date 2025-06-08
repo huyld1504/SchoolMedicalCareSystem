@@ -43,5 +43,14 @@ export default {
     UpdateById: "/update/:id",
     Search: "/search",
     GetByChildId: "/child/:childId"
-  }
+  },
+  MedicalEvent: {
+    Base: "/medical-events",
+    GetAll: "/all",
+    GetByStudentId: "/student/:studentId",
+    GetById: "/get/:id",
+    Create: "/create",
+    Update: "/update/:id",
+    Delete: "/delete/:id"
+  },
 } as const;
