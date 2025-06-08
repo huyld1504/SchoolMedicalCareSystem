@@ -1,5 +1,3 @@
-import { HealthProfile } from "@src/models/HealthProfile";
-
 export default {
   Default: "",
   Base: "/api",
@@ -37,11 +35,23 @@ export default {
     GetById: "/get/:id",
   },
   HealthProfile: {
-    Base: "/health-profiles",   
+    Base: "/health-profiles",
     Add: "/add",
     GetByID: "/get/:id",
     UpdateById: "/update/:id",
     Search: "/search",
-    GetByChildId: "/child/:childId"
-  }
+    GetByChildId: "/child/:childId",
+  },
+  MedicalOrder: {
+    Base: "/medical-orders",
+    Add: "/add",
+    GetById: "/:id",
+    UpdateById: "/update/:id",
+    DeleteById: "/delete/:id",
+    Search: "/search",
+    UpdateStatus: "/update-status/:id",
+    AddRecord: "/:id/add-record",
+    GetRecords: "/:id/records",
+    AdditionalDetails: "/:id/additional-details",
+  },
 } as const;

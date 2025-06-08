@@ -9,6 +9,7 @@ import ChildRoutes from "./ChildRoutes";
 import RoleRoutes from "./RoleRoutes";
 import UserRoutes from "./UserRoutes";
 import HealthProfileRoutes from "./HealthProfileRoutes";
+import MedicalOrderRoutes from "./MedicalOrderRoutes";
 
 /******************************************************************************
                                 Setup
@@ -89,6 +90,47 @@ healthProfileRouter.put(
   [transform(), auth(), authRoles(["nurse"])],
   HealthProfileRoutes.updateById
 );
+
+/******************************************************************************
+                                Medical order routes
+******************************************************************************/
+const medicalOrderRouter = Router();
+medicalOrderRouter.post(
+  Paths.MedicalOrder.Add,
+  [transform(), auth(), authRoles(["parent"])],
+  MedicalOrderRoutes.add
+);
+medicalOrderRouter.get(
+  Paths.Default,
+  [transform(), auth(), authRoles(["parent", "nurse"])],
+  MedicalOrderRoutes.get
+);
+medicalOrderRouter.put(
+  Paths.MedicalOrder.UpdateStatus,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalOrderRoutes.updateStatus
+);
+medicalOrderRouter.get(
+  Paths.MedicalOrder.GetById,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  MedicalOrderRoutes.getById
+);
+medicalOrderRouter.post(
+  Paths.MedicalOrder.AddRecord,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalOrderRoutes.addRecord
+);
+medicalOrderRouter.get(
+  Paths.MedicalOrder.GetRecords,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  MedicalOrderRoutes.getRecords
+);
+medicalOrderRouter.put(
+  Paths.MedicalOrder.AdditionalDetails,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalOrderRoutes.additionalMedicalDetails
+);
+
 /******************************************************************************
                                 Index routes
 ******************************************************************************/
@@ -102,6 +144,8 @@ apiRouter.use(Paths.Roles.Base, roleRouter);
 apiRouter.use(Paths.Child.Base, childRouter);
 //Add HealthProfileRouter
 apiRouter.use(Paths.HealthProfile.Base, healthProfileRouter);
+// Add MedicalOrderRouter
+apiRouter.use(Paths.MedicalOrder.Base, medicalOrderRouter);
 
 /******************************************************************************
                                 Export default

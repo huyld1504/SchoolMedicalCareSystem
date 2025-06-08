@@ -1,15 +1,21 @@
-import { PaginationOptions, SortOptions } from './../common/interfaces/mongo.interface';
-import { addHealthProfileSchema, updateHealthProfileSchema } from "@src/schemas/healthProfile.schema";
+import {
+  PaginationOptions,
+  SortOptions,
+} from "./../common/interfaces/mongo.interface";
+import {
+  addHealthProfileSchema,
+  updateHealthProfileSchema,
+} from "@src/schemas/healthProfile.schema";
 import { IReq, IRes } from "./common/types";
 import { ValidationError } from "@src/common/util/util.route-errors";
 import healthProfileService from "@src/services/HealthProfileService";
-import { ApiResponse } from '@src/common/util/util.api-response';
-import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
-import { HealthProfileQueryBuilder } from '@src/payload/request/filter/healthProfile.request';
-import { Child } from '@src/models/Child';
-import roleService from '@src/services/RoleService';
-import { HealthProfile } from '@src/models/HealthProfile';
-import childService from '@src/services/ChildService';
+import { ApiResponse } from "@src/common/util/util.api-response";
+import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
+import { HealthProfileQueryBuilder } from "@src/payload/request/filter/healthProfile.request";
+import { Child } from "@src/models/Child";
+import roleService from "@src/services/RoleService";
+import { HealthProfile } from "@src/models/HealthProfile";
+import childService from "@src/services/ChildService";
 
 // Function to add a health profile
 // This function validates the request body against the schema and adds a health profile for the user.
@@ -35,12 +41,15 @@ async function add(req: IReq, res: IRes) {
 async function searchProfiles(req: IReq, res: IRes) {
   const queryBuilder = new HealthProfileQueryBuilder(req.query);
 
-  const profiles = await healthProfileService.searchHealthProfiles(queryBuilder);
+  const profiles = await healthProfileService.searchHealthProfiles(
+    queryBuilder
+  );
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
     "Health profiles retrieved successfully",
-    profiles);
+    profiles
+  );
 
   res.status(HttpStatusCodes.OK).json(response);
 }
@@ -61,14 +70,19 @@ async function getByChildId(req: IReq, res: IRes) {
   if (userRole.name === "parent") {
     const child = await Child.findOne({ _id: childId, userId: user._id });
     if (!child) {
-      throw new ValidationError("You do not have permission to access this child's health profile.");
+      throw new ValidationError(
+        "You do not have permission to access this child's health profile."
+      );
     }
   }
 
   const query = new HealthProfileQueryBuilder(req.query);
   query.childId = childId as string;
 
-  const profiles = await healthProfileService.findByChildIdWithPagination(query.childId, query);
+  const profiles = await healthProfileService.findByChildIdWithPagination(
+    query.childId,
+    query
+  );
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
@@ -89,7 +103,10 @@ async function getByChildIds(req: IReq, res: IRes) {
   const query = new HealthProfileQueryBuilder(req.query);
   query.childIds = childIds;
 
-  const profiles = await healthProfileService.findByChildIdsWithPagination(childIds, query);
+  const profiles = await healthProfileService.findByChildIdsWithPagination(
+    childIds,
+    query
+  );
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
@@ -132,7 +149,10 @@ async function updateById(req: IReq, res: IRes) {
     throw new ValidationError(error.details[0].message);
   }
 
-  const updatedProfile = await healthProfileService.updateHealthProfile(profileId, value);
+  const updatedProfile = await healthProfileService.updateHealthProfile(
+    profileId,
+    value
+  );
   if (!updatedProfile) {
     throw new ValidationError("Health profile not found.");
   }
@@ -142,7 +162,7 @@ async function updateById(req: IReq, res: IRes) {
     updatedProfile
   );
 
-  return res.status(HttpStatusCodes.OK).json(response);
+  res.status(HttpStatusCodes.OK).json(response);
 }
 
 // Exporting the functions as a module
@@ -152,5 +172,5 @@ export default {
   getByChildId,
   getByChildIds,
   getById,
-  updateById
+  updateById,
 } as const;
