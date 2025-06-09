@@ -26,60 +26,78 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, token, refreshToken } = useSelector((state) => state.auth);
 
-  // Debug Redux state
-  React.useEffect(() => {
-    console.log('=== DASHBOARD DEBUG ===');
-    console.log('Current user:', user);
-    console.log('Token:', token);
-    console.log('RefreshToken:', refreshToken);
-    console.log('=====================');
-  }, [user, token, refreshToken]);
-
   const handleLogout = () => {
     dispatch(logout());
     toast.success('Đã đăng xuất thành công!');
-    navigate('/login');
+    navigate('/login');  };
+
+  const getRoleBasedTitle = () => {
+    const roleTitles = {
+      admin: 'Dashboard - Quản trị viên',
+      nurse: 'Dashboard - Y tá trường học',
+      parent: 'Dashboard - Phụ huynh'
+    };
+    return roleTitles[user?.role] || 'Dashboard - School Medical Care';
   };
 
-  // Navigate to role-specific dashboard
-  React.useEffect(() => {
-    if (user?.role) {
-      const roleRoutes = {
-        admin: '/admin',
-        nurse: '/nurse',
-        parent: '/parent'
-      };
-      
-      const redirectPath = roleRoutes[user.role];
-      if (redirectPath) {
-        console.log('Redirecting to role-specific dashboard:', redirectPath);
-        navigate(redirectPath, { replace: true });
-      }
+  const getRoleBasedStats = () => {
+    if (user?.role === 'admin') {
+      return [
+        { title: 'Tổng học sinh', value: '1,234', icon: People, color: '#1976d2' },
+        { title: 'Khám sức khỏe hôm nay', value: '45', icon: LocalHospital, color: '#2e7d32' },
+        { title: 'Báo cáo tháng này', value: '89', icon: Assessment, color: '#ed6c02' },
+      ];
+    } else if (user?.role === 'nurse') {
+      return [
+        { title: 'Lịch khám hôm nay', value: '12', icon: LocalHospital, color: '#2e7d32' },
+        { title: 'Học sinh cần theo dõi', value: '8', icon: People, color: '#d32f2f' },
+        { title: 'Báo cáo đã tạo', value: '25', icon: Assessment, color: '#1976d2' },
+      ];
+    } else if (user?.role === 'parent') {
+      return [
+        { title: 'Con em của tôi', value: '2', icon: People, color: '#1976d2' },
+        { title: 'Lịch khám gần nhất', value: '3 ngày', icon: LocalHospital, color: '#2e7d32' },
+        { title: 'Thông báo mới', value: '5', icon: Assessment, color: '#ed6c02' },
+      ];
     }
-  }, [user, navigate]);
+    return [
+      { title: 'Tổng học sinh', value: '1,234', icon: People, color: '#1976d2' },
+      { title: 'Khám sức khỏe hôm nay', value: '45', icon: LocalHospital, color: '#2e7d32' },
+      { title: 'Báo cáo tháng này', value: '89', icon: Assessment, color: '#ed6c02' },
+    ];
+  };
 
-  const stats = [
-    { title: 'Tổng học sinh', value: '1,234', icon: People, color: '#1976d2' },
-    { title: 'Khám sức khỏe hôm nay', value: '45', icon: LocalHospital, color: '#2e7d32' },
-    { title: 'Báo cáo tháng này', value: '89', icon: Assessment, color: '#ed6c02' },
-  ];
+  const stats = getRoleBasedStats();
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <DashboardIcon sx={{ mr: 2, fontSize: 32, color: 'primary.main' }} />
           <Typography variant="h4" component="h1">
-            Dashboard - School Medical Care
+            {getRoleBasedTitle()}
           </Typography>
         </Box>
-        <Button
-          variant="outlined"
-          startIcon={<ExitToApp />}
-          onClick={handleLogout}
-        >
-          Đăng xuất
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ExitToApp />}
+            onClick={handleLogout}
+          >
+            Đăng xuất
+          </Button>
+          {user && (
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography variant="body2" color="text.secondary">
+                Xin chào, <strong>{user.name}</strong>
+              </Typography>
+              <Typography variant="caption" color="primary">
+                {user.role === 'admin' && '👨‍💼 Quản trị viên'}
+                {user.role === 'nurse' && '👩‍⚕️ Y tá'}
+                {user.role === 'parent' && '👨‍👩‍👧‍👦 Phụ huynh'}
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </Box>
 
       <Grid container spacing={3}>

@@ -45,84 +45,50 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
-  // Test function for toast notifications
-  const testToastNotifications = () => {
-    toast.success('Thông báo thành công! Sẽ tự động tắt sau 3 giây', {
-      autoClose: 3000,
-    });
-    
-    setTimeout(() => {
-      toast.error('Thông báo lỗi! Cũng sẽ tự động tắt sau 3 giây', {
-        autoClose: 3000,
-      });
-    }, 500);
-  };
-
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    validationSchema: validationSchema,    
+    validationSchema: validationSchema,
     onSubmit: async (values) => {
       dispatch(loginStart());
-      
       try {
         const response = await authApi.login(values);
-        
-        if (response.data && response.data.data) {          
-          const userData = response.data.data;
-            // Hiển thị thông tin user đơn giản
-          console.log('isSuccessful:', true);
-          console.log('message:', 'Đăng nhập thành công');
-          console.log('email:', userData.email || values.email);
-          //console.log('Password:', values.password);
-          console.log('role:', userData.role);
-          console.log('name:', userData.name);
-          console.log('id:', userData.id);
-          console.log('token:', userData.token);
-          console.log('refreshToken:', userData.refreshToken);
-            // Store tokens in localStorage
+
+        if (response.data && response.data) {
+          const userData = response.data;
+          // Store tokens in localStorage
           if (userData.token) {
             localStorage.setItem('accessToken', userData.token);
           }
           if (userData.refreshToken) {
             localStorage.setItem('refreshToken', userData.refreshToken);
           }
-          
+
           const user = {
             id: userData.id,
             email: userData.email || values.email,
             name: userData.name,
             role: userData.role,
-          };          dispatch(loginSuccess({
+          }; dispatch(loginSuccess({
             user: user,
             token: userData.token,
             refreshToken: userData.refreshToken
           }));
 
-          // Log Redux state sau khi dispatch
-          console.log('=== REDUX STATE AFTER LOGIN ===');
-          console.log('Redux Token:', userData.token);
-          console.log('Redux RefreshToken:', userData.refreshToken);
-          console.log('Redux User:', user);
-          
           toast.success(`Đăng nhập thành công!`);
           navigate('/dashboard');
-        }      } catch (apiError) {
-        console.log('isSuccessful:', false);
-        console.log('message:', 'Đăng nhập thất bại');
-                
+        }
+      } catch (apiError) {
         let errorMessage = 'Đăng nhập thất bại';
-        
+
         if (apiError.response) {
-          console.log('Server Error Response:', apiError.response.data);
-          
           const serverMessage = apiError.response.data?.message || apiError.response.data?.error || '';
-          
-          if (serverMessage.toLowerCase().includes('user or password is incorrect') || 
-              serverMessage.toLowerCase().includes('invalid credentials') ||
-              serverMessage.toLowerCase().includes('authentication failed')) {
+
+          if (serverMessage.toLowerCase().includes('user or password is incorrect') ||
+            serverMessage.toLowerCase().includes('invalid credentials') ||
+            serverMessage.toLowerCase().includes('authentication failed')) {
             errorMessage = 'Email hoặc mật khẩu không chính xác';
           } else if (serverMessage.toLowerCase().includes('user not found')) {
             errorMessage = 'Tài khoản không tồn tại';
@@ -136,12 +102,11 @@ const LoginPage = () => {
             errorMessage = 'Email hoặc mật khẩu không chính xác';
           }
         } else if (apiError.request) {
-          console.log('Network Error - Server không phản hồi');
           errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra server backend.';
         } else {
           errorMessage = apiError.message || 'Đăng nhập thất bại';
         }
-        
+
         dispatch(loginFailure(errorMessage));
         toast.error(errorMessage);
       }
@@ -158,14 +123,13 @@ const LoginPage = () => {
   // Quick login functions
   const quickLogin = (email, password, role) => {
     formik.setValues({ email, password });
-    console.log(`Quick login selected: ${role} (${email})`);
-  };  return (
+  }; return (
     <LoginContainer maxWidth={false} className="login-container">
       <LoginPaper elevation={3} className="login-paper">
         {/* Back to Home Button */}
-        <Box sx={{ 
-          position: 'absolute', 
-          top: 16, 
+        <Box sx={{
+          position: 'absolute',
+          top: 16,
           left: 16,
           zIndex: 1
         }}>
@@ -206,12 +170,6 @@ const LoginPage = () => {
           Đăng nhập
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
         <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 2 }}>
           <TextField
             fullWidth
@@ -230,7 +188,7 @@ const LoginPage = () => {
                   <Email color="action" />
                 </InputAdornment>
               ),
-            }}            sx={{ mb: 2 }}
+            }} sx={{ mb: 2 }}
             disabled={loading}
           />
 
@@ -272,9 +230,9 @@ const LoginPage = () => {
             color="primary"
             variant="contained"
             fullWidth
-            type="submit"            
+            type="submit"
             size="large"
-            disabled={loading}            
+            disabled={loading}
             sx={{
               mb: 2,
               py: 1.5,
@@ -285,11 +243,11 @@ const LoginPage = () => {
             }}
             className="custom-button">
             {loading ? (
-              <CircularProgress size={24} 
-              color="inherit" />
+              <CircularProgress size={24}
+                color="inherit" />
             ) : (
-              'Đăng nhập'            )}
-          </Button>         
+              'Đăng nhập')}
+          </Button>
         </Box>
       </LoginPaper>
     </LoginContainer>

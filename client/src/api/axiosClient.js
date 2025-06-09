@@ -50,7 +50,7 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
     (response) => {
         // Return successful responses as-is
-        return response;
+        return response.data;
     },
     async (error) => {
         const originalRequest = error.config;
