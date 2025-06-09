@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Medical Care System - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            color: #1976d2;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            background: #1565c0;
+        }
+        
+        .demo-info {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #e3f2fd;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #1565c0;
+        }
+        
+        .success {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #4caf50;
+            color: white;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🏥</div>
+        <h1>School Medical Care</h1>
+        <p class="subtitle">Hệ thống quản lý y tế trường học</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn">Đăng nhập</button>
+        </form>
+        
+        <div class="demo-info">
+            <strong>Demo:</strong> admin@school.com / admin123
+        </div>
+        
+        <div class="success" id="successMessage">
+            🎉 Đăng nhập thành công! Chuyển hướng đến dashboard...
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email === 'admin@school.com' && password === 'admin123') {
+                document.getElementById('successMessage').style.display = 'block';
+                setTimeout(() => {
+                    alert('Đây là demo trang login-page!\n\nTính năng đã hoàn thành:\n✅ Giao diện đẹp mắt\n✅ Form validation\n✅ Responsive design\n✅ Animation effects\n✅ Redux integration\n✅ Protected routes\n\nMở VS Code để xem code React hoàn chỉnh!');
+                }, 1000);
+            } else {
+                alert('Email hoặc mật khẩu không chính xác!\nThử: admin@school.com / admin123');
+            }
+        });
+    </script>
+</body>
+</html>
