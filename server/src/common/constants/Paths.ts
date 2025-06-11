@@ -5,6 +5,7 @@ export default {
     Base: "/auth",
     Login: "/login",
     Register: "/register",
+    VerifyToken: "/verify-token",
   },
   Users: {
     Base: "/users",
