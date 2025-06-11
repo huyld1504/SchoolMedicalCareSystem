@@ -6,7 +6,6 @@ import {
     FeaturesSection,
     TestimonialsSection,
     BlogSection,
-   
     FooterSection
 } from '../components/landing';
 
@@ -47,8 +46,8 @@ const LandingPage = () => {
             </Box>
             <Box id="blog">
                 <BlogSection />
-            </Box>      
-                  {/* <Box id="education">
+            </Box>
+            {/* <Box id="education">
                 <HealthEducationSection />
             </Box> */}
             <Box id="contact">

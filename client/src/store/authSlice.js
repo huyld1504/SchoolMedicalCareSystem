@@ -11,19 +11,19 @@ const initialState = {
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState,  reducers: {
+  initialState, reducers: {
     // Login actions
     loginStart: (state) => {
       state.loading = true;
       state.error = null;
-    },    loginSuccess: (state, action) => {
+    }, loginSuccess: (state, action) => {
       state.loading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
       state.error = null;
-    },    loginFailure: (state, action) => {
+    }, loginFailure: (state, action) => {
       state.loading = false;
       state.isAuthenticated = false;
       state.user = null;
@@ -33,7 +33,7 @@ const authSlice = createSlice({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     },
-    
+
     // Register actions
     registerStart: (state) => {
       state.loading = true;
@@ -47,16 +47,16 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    
+
     // Refresh token actions
     refreshTokenStart: (state) => {
       state.loading = true;
-    },    refreshTokenSuccess: (state, action) => {
+    }, refreshTokenSuccess: (state, action) => {
       state.loading = false;
       state.token = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
-    },    refreshTokenFailure: (state) => {
+    }, refreshTokenFailure: (state) => {
       state.loading = false;
       state.isAuthenticated = false;
       state.user = null;
@@ -65,7 +65,7 @@ const authSlice = createSlice({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     },
-      logout: (state) => {
+    logout: (state) => {
       state.user = null;
       state.token = null;
       state.refreshToken = null;
@@ -81,18 +81,18 @@ const authSlice = createSlice({
   },
 });
 
-export const { 
-  loginStart, 
-  loginSuccess, 
-  loginFailure, 
+export const {
+  loginStart,
+  loginSuccess,
+  loginFailure,
   registerStart,
   registerSuccess,
   registerFailure,
   refreshTokenStart,
   refreshTokenSuccess,
   refreshTokenFailure,
-  logout, 
-  clearError 
+  logout,
+  clearError
 } = authSlice.actions;
 
 export default authSlice.reducer;

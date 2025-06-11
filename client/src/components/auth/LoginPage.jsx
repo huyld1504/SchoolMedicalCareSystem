@@ -21,7 +21,7 @@ import {
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { loginStart, loginSuccess, loginFailure } from '../../store/authSlice';
 import { LoginContainer, LoginPaper, LogoContainer, LogoIcon } from '../common/LoginPageStyles';
@@ -78,7 +78,13 @@ const LoginPage = () => {
           }));
 
           toast.success(`Đăng nhập thành công!`);
-          navigate('/dashboard');
+
+          // Navigate based on user role
+          if (user.role === 'nurse' || user.role === 'admin') {
+            navigate('/nurse/dashboard');
+          } else {
+            navigate('/dashboard');
+          }
         }
       } catch (apiError) {
         let errorMessage = 'Đăng nhập thất bại';

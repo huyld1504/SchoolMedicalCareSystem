@@ -17,7 +17,7 @@ import {
   ExitToApp,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { logout } from '../../store/authSlice';
 
@@ -29,7 +29,8 @@ const Dashboard = () => {
   const handleLogout = () => {
     dispatch(logout());
     toast.success('Đã đăng xuất thành công!');
-    navigate('/login');  };
+    navigate('/login');
+  };
 
   const getRoleBasedTitle = () => {
     const roleTitles = {
@@ -71,53 +72,53 @@ const Dashboard = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <DashboardIcon sx={{ mr: 2, fontSize: 32, color: 'primary.main' }} />
-          <Typography variant="h4" component="h1">
-            {getRoleBasedTitle()}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button
-            variant="outlined"
-            startIcon={<ExitToApp />}
-            onClick={handleLogout}
-          >
-            Đăng xuất
-          </Button>
-          {user && (
-            <Box sx={{ textAlign: 'right' }}>
-              <Typography variant="body2" color="text.secondary">
-                Xin chào, <strong>{user.name}</strong>
-              </Typography>
-              <Typography variant="caption" color="primary">
-                {user.role === 'admin' && '👨‍💼 Quản trị viên'}
-                {user.role === 'nurse' && '👩‍⚕️ Y tá'}
-                {user.role === 'parent' && '👨‍👩‍👧‍👦 Phụ huynh'}
-              </Typography>
-            </Box>
-          )}
-        </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <DashboardIcon sx={{ mr: 2, fontSize: 32, color: 'primary.main' }} />
+        <Typography variant="h4" component="h1">
+          {getRoleBasedTitle()}
+        </Typography>
       </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ExitToApp />}
+          onClick={handleLogout}
+        >
+          Đăng xuất
+        </Button>
+        {user && (
+          <Box sx={{ textAlign: 'right' }}>
+            <Typography variant="body2" color="text.secondary">
+              Xin chào, <strong>{user.name}</strong>
+            </Typography>
+            <Typography variant="caption" color="primary">
+              {user.role === 'admin' && '👨‍💼 Quản trị viên'}
+              {user.role === 'nurse' && '👩‍⚕️ Y tá'}
+              {user.role === 'parent' && '👨‍👩‍👧‍👦 Phụ huynh'}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </Box>
 
       <Grid container spacing={3}>
         {stats.map((stat, index) => {
           const IconComponent = stat.icon;
-          return (            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card sx={{ height: '100%' }} className="dashboard-card">
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <IconComponent sx={{ color: stat.color, fontSize: 32, mr: 2 }} />
-                    <Typography variant="h6" component="h2">
-                      {stat.title}
-                    </Typography>
-                  </Box>
-                  <Typography variant="h3" component="div" color={stat.color} fontWeight="bold">
-                    {stat.value}
+          return (<Grid item xs={12} sm={6} md={4} key={index}>
+            <Card sx={{ height: '100%' }} className="dashboard-card">
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <IconComponent sx={{ color: stat.color, fontSize: 32, mr: 2 }} />
+                  <Typography variant="h6" component="h2">
+                    {stat.title}
                   </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+                </Box>
+                <Typography variant="h3" component="div" color={stat.color} fontWeight="bold">
+                  {stat.value}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
           );
         })}      </Grid>
 
@@ -142,11 +143,11 @@ const Dashboard = () => {
               <Typography variant="subtitle2" color="text.secondary">
                 Access Token:
               </Typography>
-              <Typography variant="body2" sx={{ 
-                fontFamily: 'monospace', 
-                bgcolor: 'white', 
-                p: 1, 
-                borderRadius: 1, 
+              <Typography variant="body2" sx={{
+                fontFamily: 'monospace',
+                bgcolor: 'white',
+                p: 1,
+                borderRadius: 1,
                 mt: 1,
                 wordBreak: 'break-all'
               }}>
@@ -157,11 +158,11 @@ const Dashboard = () => {
               <Typography variant="subtitle2" color="text.secondary">
                 Refresh Token:
               </Typography>
-              <Typography variant="body2" sx={{ 
-                fontFamily: 'monospace', 
-                bgcolor: 'white', 
-                p: 1, 
-                borderRadius: 1, 
+              <Typography variant="body2" sx={{
+                fontFamily: 'monospace',
+                bgcolor: 'white',
+                p: 1,
+                borderRadius: 1,
                 mt: 1,
                 wordBreak: 'break-all'
               }}>
