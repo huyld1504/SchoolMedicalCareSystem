@@ -20,7 +20,7 @@ import {
   HealthAndSafety,
   People
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const LandingPage = () => {
   const navigate = useNavigate();

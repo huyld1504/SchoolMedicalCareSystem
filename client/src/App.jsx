@@ -1,13 +1,11 @@
 import React from 'react';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from 'react-router';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ToastContainer } from 'react-toastify';
-import { Provider } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/global.css';
 import router from './routes';
-import store from './store';
 
 // Create a custom theme
 const theme = createTheme({
@@ -55,10 +53,10 @@ const theme = createTheme({
 
 function App() {
   return (
-    <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <RouterProvider router={router} />        <ToastContainer
+        <RouterProvider router={router} />        
+        <ToastContainer
           position="bottom-left"
           autoClose={3000}
           hideProgressBar={false}
@@ -96,7 +94,6 @@ function App() {
           progressClassName="custom-toast-progress"
         />
       </ThemeProvider>
-    </Provider>
   );
 }
 

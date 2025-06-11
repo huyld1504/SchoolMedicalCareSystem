@@ -20,10 +20,10 @@ import {
 } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import { loginStart, loginSuccess, loginFailure } from '../../store/authSlice';
+import { setUser } from '../../store/authSlice';
 import { LoginContainer, LoginPaper, LogoContainer, LogoIcon } from '../common/LoginPageStyles';
 import authApi from '../../api/authApi';
 
@@ -43,7 +43,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const [isLogin, setIsLogin] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -52,63 +52,23 @@ const LoginPage = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      dispatch(loginStart());
+      setIsLogin(true);
       try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const response = await authApi.login(values);
-
-        if (response.data && response.data) {
-          const userData = response.data;
-          // Store tokens in localStorage
-          if (userData.token) {
-            localStorage.setItem('accessToken', userData.token);
-          }
-          if (userData.refreshToken) {
-            localStorage.setItem('refreshToken', userData.refreshToken);
-          }
-
-          const user = {
-            id: userData.id,
-            email: userData.email || values.email,
-            name: userData.name,
-            role: userData.role,
-          }; dispatch(loginSuccess({
-            user: user,
-            token: userData.token,
-            refreshToken: userData.refreshToken
-          }));
-
-          toast.success(`Đăng nhập thành công!`);
-          navigate('/dashboard');
+        if(response.isSuccess) {
+          const user = {id: response.data.id, email: response.data.email, role: response.data.role};
+          const accessToken = response.data.token;
+          const refreshToken = response.data.refreshToken;
+          dispatch(setUser({user, accessToken, refreshToken}));
+          toast.success(response.message);
         }
-      } catch (apiError) {
-        let errorMessage = 'Đăng nhập thất bại';
-
-        if (apiError.response) {
-          const serverMessage = apiError.response.data?.message || apiError.response.data?.error || '';
-
-          if (serverMessage.toLowerCase().includes('user or password is incorrect') ||
-            serverMessage.toLowerCase().includes('invalid credentials') ||
-            serverMessage.toLowerCase().includes('authentication failed')) {
-            errorMessage = 'Email hoặc mật khẩu không chính xác';
-          } else if (serverMessage.toLowerCase().includes('user not found')) {
-            errorMessage = 'Tài khoản không tồn tại';
-          } else if (serverMessage.toLowerCase().includes('password')) {
-            errorMessage = 'Mật khẩu không chính xác';
-          } else if (serverMessage.toLowerCase().includes('email')) {
-            errorMessage = 'Email không hợp lệ';
-          } else if (serverMessage) {
-            errorMessage = serverMessage; // Giữ nguyên nếu đã là tiếng Việt
-          } else {
-            errorMessage = 'Email hoặc mật khẩu không chính xác';
-          }
-        } else if (apiError.request) {
-          errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra server backend.';
-        } else {
-          errorMessage = apiError.message || 'Đăng nhập thất bại';
-        }
-
-        dispatch(loginFailure(errorMessage));
-        toast.error(errorMessage);
+        navigate("/dashboard");
+        setIsLogin(false);
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response?.data?.message || 'Đăng nhập thất bại');
+        setIsLogin(false);
       }
     },
   });
@@ -120,10 +80,7 @@ const LoginPage = () => {
     event.preventDefault();
   };
 
-  // Quick login functions
-  const quickLogin = (email, password, role) => {
-    formik.setValues({ email, password });
-  }; return (
+  return (
     <LoginContainer maxWidth={false} className="login-container">
       <LoginPaper elevation={3} className="login-paper">
         {/* Back to Home Button */}
@@ -189,7 +146,7 @@ const LoginPage = () => {
                 </InputAdornment>
               ),
             }} sx={{ mb: 2 }}
-            disabled={loading}
+            disabled={isLogin}
           />
 
           <TextField
@@ -223,7 +180,7 @@ const LoginPage = () => {
               ),
             }}
             sx={{ mb: 3 }}
-            disabled={loading}
+            disabled={isLogin}
           />
 
           <Button
@@ -232,7 +189,7 @@ const LoginPage = () => {
             fullWidth
             type="submit"
             size="large"
-            disabled={loading}
+            disabled={isLogin}
             sx={{
               mb: 2,
               py: 1.5,
@@ -242,7 +199,7 @@ const LoginPage = () => {
               fontWeight: 'bold',
             }}
             className="custom-button">
-            {loading ? (
+            {isLogin ? (
               <CircularProgress size={24}
                 color="inherit" />
             ) : (

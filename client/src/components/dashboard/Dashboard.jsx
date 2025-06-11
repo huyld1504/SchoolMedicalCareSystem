@@ -17,9 +17,9 @@ import {
   ExitToApp,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import { logout } from '../../store/authSlice';
+import { clearUser } from '../../store/authSlice';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -27,9 +27,10 @@ const Dashboard = () => {
   const { user, token, refreshToken } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(clearUser());
     toast.success('Đã đăng xuất thành công!');
-    navigate('/login');  };
+    navigate('/login');
+  };
 
   const getRoleBasedTitle = () => {
     const roleTitles = {
