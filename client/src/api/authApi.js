@@ -1,3 +1,4 @@
+import { Axios } from "axios";
 import axiosClient from "./axiosClient";
 
 const authApi = {
@@ -10,6 +11,9 @@ const authApi = {
     refreshToken: () => {
         return axiosClient.post('/auth/refresh-token');
     },
+    verifyToken: () => {
+        return axiosClient.post('/auth/verify-token');
+    }
 };
 
 export default authApi;

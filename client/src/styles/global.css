@@ -91,15 +91,6 @@
   }
 }
 
-/* Toast notification customization */
-.Toastify__toast--success {
-  background: linear-gradient(135deg, #4caf50, #45a049);
-}
-
-.Toastify__toast--error {
-  background: linear-gradient(135deg, #f44336, #d32f2f);
-}
-
 /* Custom Toast Notification Styles */
 @keyframes slideInLeft {
   from {
