@@ -12,11 +12,11 @@ const axiosClient = axios.create({
 
 // Token management functions
 const getAccessToken = () => {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem('token');
 };
 
 const setAccessToken = (token) => {
-    localStorage.setItem('accessToken', token);
+    localStorage.setItem('token', token);
 };
 
 const getRefreshToken = () => {
@@ -28,7 +28,7 @@ const setRefreshToken = (token) => {
 };
 
 const clearTokens = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
 };
 

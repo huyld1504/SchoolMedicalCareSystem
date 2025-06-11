@@ -1,11 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { clearTokens } from '../api/axiosClient';
 
 const initialState = {
   user: null,
   isAuthenticated: false,
-  accessToken: null,
-  refreshToken: null
-}
+};
 
 const authSlice = createSlice({
   initialState,
@@ -14,22 +13,15 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
-      localStorage.setItem("accessToken", action.payload?.accessToken);
-      localStorage.setItem("refreshToken", action.payload?.refreshToken);
-    },    clearUser: (state) => {
+    },
+    clearUser: (state) => {
       state.user = null;
       state.isAuthenticated = false;
-      state.accessToken = null;
-      state.refreshToken = null;
-      // Clear localStorage
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      clearTokens();
     }
   }
 });
 
-export const {setUser, clearUser} = authSlice.actions;
+export const { setUser, clearUser } = authSlice.actions;
 
 export default authSlice.reducer;

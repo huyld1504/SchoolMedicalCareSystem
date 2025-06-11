@@ -60,7 +60,9 @@ const LoginPage = () => {
           const user = {id: response.data.id, email: response.data.email, role: response.data.role};
           const accessToken = response.data.token;
           const refreshToken = response.data.refreshToken;
-          dispatch(setUser({user, accessToken, refreshToken}));
+          localStorage.setItem("token", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+          dispatch(setUser({user}));
           toast.success(response.message);
         }
         navigate("/dashboard");
