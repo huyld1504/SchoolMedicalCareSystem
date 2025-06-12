@@ -122,7 +122,7 @@ const callAPIFormData = async (method, endpoint, formData) => {
     try {
         const response = await axios({
             method: method,
-            url: baseUrl + endpoint,
+            url: baseURL + endpoint,
             data: formData,
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -138,11 +138,12 @@ const callAPIFormData = async (method, endpoint, formData) => {
 };
 
 // Export both the client and token management functions
-export default {
+export {
     callAPI,
-    callAPIFormData,
-    axiosClient,
+    callAPIFormData
 };
+
+export default axiosClient;
 
 export {
     getAccessToken,
