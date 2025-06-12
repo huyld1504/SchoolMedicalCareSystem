@@ -44,7 +44,12 @@ const QuickActions = ({ onAction }) => {
             color: 'success',
             action: 'create-order'
         },
-      
+        {
+            title: 'Báo cáo tuần',
+            icon: <TrendingUpIcon />,
+            color: 'info',
+            action: 'weekly-report'
+        }
     ];
 
     const recentAlerts = [
@@ -80,10 +85,77 @@ const QuickActions = ({ onAction }) => {
     return (
         <Grid container spacing={3}>
             {/* Quick Actions */}
-          
+            <Grid item xs={12} md={6}>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                            <AssignmentIcon sx={{ mr: 1 }} />
+                            Thao tác nhanh
+                        </Typography>
+                        <Grid container spacing={2}>
+                            {quickActionButtons.map((action, index) => (
+                                <Grid item xs={6} key={index}>
+                                    <Button
+                                        variant="outlined"
+                                        color={action.color}
+                                        startIcon={action.icon}
+                                        fullWidth
+                                        onClick={() => onAction(action.action)}
+                                        sx={{
+                                            py: 1.5,
+                                            textTransform: 'none',
+                                            justifyContent: 'flex-start'
+                                        }}
+                                    >
+                                        {action.title}
+                                    </Button>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </CardContent>
+                </Card>
+            </Grid>
 
             {/* Recent Alerts */}
-        
+            <Grid item xs={12} md={6}>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                            <NotificationsIcon sx={{ mr: 1 }} />
+                            Thông báo gần đây
+                        </Typography>
+                        <List dense>
+                            {recentAlerts.map((alert) => (
+                                <React.Fragment key={alert.id}>
+                                    <ListItem>
+                                        <ListItemText
+                                            primary={alert.message}
+                                            secondary={alert.time}
+                                            primaryTypographyProps={{ fontSize: '0.9rem' }}
+                                            secondaryTypographyProps={{ fontSize: '0.8rem' }}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <Chip
+                                                size="small"
+                                                color={getSeverityColor(alert.severity)}
+                                                variant="outlined"
+                                            />
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                    {alert.id !== recentAlerts[recentAlerts.length - 1].id && (
+                                        <Divider component="li" />
+                                    )}
+                                </React.Fragment>
+                            ))}
+                        </List>
+                        <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            <Button size="small" onClick={() => onAction('view-all-alerts')}>
+                                Xem tất cả thông báo
+                            </Button>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Grid>
         </Grid>
     );
 };

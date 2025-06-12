@@ -55,32 +55,43 @@ const NurseLayout = () => {
 
     const { user } = useSelector((state) => state.auth);
 
-    const menuItems = [{
-        text: 'Dashboard',
-        icon: <DashboardIcon />,
-        path: '/nurse/dashboard',
-        active: location.pathname === '/nurse/dashboard' || location.pathname === '/nurse'
-    },
-    {
-        text: 'Quản lý học sinh',
-        icon: <PeopleIcon />,
-        path: '/nurse/students',
-        active: location.pathname === '/nurse/students'
-    },
-    {
-        text: 'Hồ sơ y tế',
-        icon: <MedicalServices />,
-        path: '/nurse/health-profiles',
-        active: location.pathname === '/nurse/health-profiles'
-    },
-    {
-        text: 'Đơn gửi thuốc ',
-        icon: <AssignmentIcon />,
-        path: '/nurse/medical-orders',
-        active: location.pathname === '/nurse/medical-orders'
-    },
-   
-   
+    const menuItems = [
+        {
+            text: 'Dashboard',
+            icon: <DashboardIcon />,
+            path: '/nurse/dashboard',
+            active: location.pathname === '/nurse/dashboard'
+        },
+        {
+            text: 'Quản lý học sinh',
+            icon: <PeopleIcon />,
+            path: '/nurse/students',
+            active: location.pathname === '/nurse/students'
+        },
+        {
+            text: 'Hồ sơ y tế',
+            icon: <MedicalServices />,
+            path: '/nurse/health-profiles',
+            active: location.pathname === '/nurse/health-profiles'
+        },
+        {
+            text: 'Đơn khám bệnh',
+            icon: <AssignmentIcon />,
+            path: '/nurse/medical-orders',
+            active: location.pathname === '/nurse/medical-orders'
+        },
+        {
+            text: 'Báo cáo',
+            icon: <Report />,
+            path: '/nurse/reports',
+            active: location.pathname === '/nurse/reports'
+        },
+        {
+            text: 'Cài đặt',
+            icon: <SettingsIcon />,
+            path: '/nurse/settings',
+            active: location.pathname === '/nurse/settings'
+        }
     ];
 
     const handleDrawerToggle = () => {

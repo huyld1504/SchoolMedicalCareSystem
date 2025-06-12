@@ -4,12 +4,41 @@ import { sampleStudents, sampleStats } from '../data/sampleData';
 // Students API endpoints
 const studentsApi = {
     // Lấy danh sách tất cả học sinh (cho nurse)
-    getAllStudents: async () => {
+    getAllStudents: async (params = {}) => {
         try {
-            const response = await axiosClient.get('/childs/all');
+            const response = await axiosClient.get('/childs/all', { params });
             return response;
         } catch (error) {
-            console.log(error)
+            console.warn('API call failed, using sample data:', error.message);
+            // Fallback to sample data if API fails
+            const { page = 1, limit = 10, search = '' } = params;
+            let filteredStudents = sampleStudents;
+
+            // Apply search filter
+            if (search) {
+                filteredStudents = sampleStudents.filter(student =>
+                    student.name.toLowerCase().includes(search.toLowerCase()) ||
+                    student.studentCode.toLowerCase().includes(search.toLowerCase())
+                );
+            }
+
+            // Apply pagination
+            const startIndex = (page - 1) * limit;
+            const endIndex = startIndex + limit;
+            const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
+
+            return {
+                data: {
+                    isSuccess: true,
+                    data: {
+                        records: paginatedStudents,
+                        total: filteredStudents.length,
+                        page: page,
+                        limit: limit,
+                        totalPages: Math.ceil(filteredStudents.length / limit)
+                    }
+                }
+            };
         }
     },
 

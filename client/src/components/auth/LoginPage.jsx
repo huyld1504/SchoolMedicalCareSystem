@@ -78,13 +78,7 @@ const LoginPage = () => {
           }));
 
           toast.success(`Đăng nhập thành công!`);
-
-          // Navigate based on user role
-          if (user.role === 'nurse' || user.role === 'admin') {
-            navigate('/nurse/dashboard');
-          } else {
-            navigate('/dashboard');
-          }
+          navigate('/dashboard');
         }
       } catch (apiError) {
         let errorMessage = 'Đăng nhập thất bại';

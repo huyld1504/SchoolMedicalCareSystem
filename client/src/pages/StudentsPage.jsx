@@ -50,10 +50,10 @@ import {
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import studentsApi from '../api/studentsApi';
+import NurseLayout from '../components/layouts/NurseLayout';
 
 const StudentsPage = () => {
     const { user } = useSelector((state) => state.auth);
-    console.log(user)
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -73,13 +73,18 @@ const StudentsPage = () => {
     const loadStudents = async () => {
         try {
             setLoading(true);
-          
+            const params = {
+                page: page + 1,
+                limit: rowsPerPage,
+                search: searchTerm || undefined,
+                gender: filterGender || undefined,
+                class: filterClass || undefined
+            };
 
-            const response = await studentsApi.getAllStudents();
-            console.log(response)
-            if (response && response.isSuccess) {
-                const { records, total } = response;
-                console.log(records)
+            const response = await studentsApi.getAllStudents(params);
+            console.log(response.data)
+            if (response.data ) {
+                const { records, total } = response.data;
                 setStudents(records || []);
                 setTotalStudents(total || 0);
             } else {

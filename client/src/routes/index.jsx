@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     path: '/dashboard',
     element: (
       <ProtectedRoute>
-        <Dashboard />
+        <NurseDashboard />
       </ProtectedRoute>
     ),
   },
@@ -31,11 +31,8 @@ const router = createBrowserRouter([
       <RoleProtectedRoute allowedRoles={['nurse', 'admin']}>
         <NurseLayout />
       </RoleProtectedRoute>
-    ), children: [
-      {
-        index: true,
-        element: <NurseDashboard />,
-      },
+    ),
+    children: [
       {
         path: 'dashboard',
         element: <NurseDashboard />,
@@ -45,7 +42,16 @@ const router = createBrowserRouter([
       },
       {
         path: 'health-profiles',
-        element: <div>Health Profiles Page - Coming Soon</div>, // Placeholder
+        children: [
+          {
+            path: ':studentId',
+            element: <div>Health Profile Details - Coming Soon</div>, // Placeholder
+          },
+          {
+            path:"/",
+            element: <div>All Health Profile</div>
+          }
+        ] // Placeholder
       },
       {
         path: 'medical-orders',
