@@ -69,12 +69,13 @@ const HealthProfilesPage = () => {
     const loadHealthProfiles = async () => {
         try {
             setLoading(true);
-            
+
             if (studentId) {
                 // Lấy hồ sơ y tế của học sinh cụ thể
                 const response = await healthProfileAPI.getByChildId(studentId);
                 if (response.data) {
-                    setHealthProfiles([response.data]);
+                    setHealthProfiles([response.data.records]);
+                    console.log(healthProfiles);
                     setTotalProfiles(1);
                 }
             } else {

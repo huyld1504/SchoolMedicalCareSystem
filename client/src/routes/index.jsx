@@ -44,10 +44,11 @@ const router = createBrowserRouter([
           {
             path: 'students',
             element: <StudentsPage />,
-          }, {
-            path: 'health-profiles',
-            element: <HealthProfilesPage />,
           },
+          // {
+          //   path: 'health-profiles',
+          //   element: <HealthProfilesPage />,
+          // },
           {
             path: 'health-profiles/:studentId',
             element: <HealthProfilesPage />,
