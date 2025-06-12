@@ -44,6 +44,10 @@ const authRouter = Router();
 // Add AuthRouter
 authRouter.post(Paths.Auth.Login, AuthRoutes.login);
 authRouter.post(Paths.Auth.Register, AuthRoutes.register);
+authRouter.post(
+  Paths.Auth.VerifyToken,
+  [transform(), auth()],
+  AuthRoutes.verifyToken);
 
 /******************************************************************************
                                 Role routes

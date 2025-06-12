@@ -19,15 +19,15 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import { logout } from '../../store/authSlice';
+import { clearUser } from '../../store/authSlice';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, token, refreshToken } = useSelector((state) => state.auth);
+  const { user } = useSelector(state => state.auth);
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(clearUser());
     toast.success('Đã đăng xuất thành công!');
     navigate('/login');
   };
@@ -151,7 +151,7 @@ const Dashboard = () => {
                 mt: 1,
                 wordBreak: 'break-all'
               }}>
-                {token ? `${token.substring(0, 50)}...` : 'No token'}
+                {localStorage.getItem("token")}
               </Typography>
             </Box>
             <Box sx={{ mb: 2 }}>
@@ -166,16 +166,12 @@ const Dashboard = () => {
                 mt: 1,
                 wordBreak: 'break-all'
               }}>
-                {refreshToken ? `${refreshToken.substring(0, 50)}...` : 'No refresh token'}
+                {localStorage.getItem("refreshToken") || 'No refresh token found'}
               </Typography>
             </Box>
           </Grid>
         </Grid>
-        <Box sx={{ mt: 2, p: 2, bgcolor: token && refreshToken ? '#e8f5e8' : '#fff3e0', borderRadius: 1 }}>
-          <Typography variant="body2" color={token && refreshToken ? 'success.main' : 'warning.main'}>
-            ✅ Status: {token && refreshToken ? 'Tokens saved successfully in Redux!' : 'Missing tokens in Redux state'}
-          </Typography>
-        </Box>
+        
       </Paper>
 
       <Paper sx={{ mt: 4, p: 3 }}>
