@@ -1,18 +1,14 @@
-import { Axios } from "axios";
-import axiosClient from "./axiosClient";
+import { callAPI } from "./axiosClient";
 
 const authApi = {
-    login: (credentials) => {
-        return axiosClient.post('/auth/login', credentials);
+    login: async (credentials) => {
+        return await callAPI("post", 'auth/login', credentials);
     },
-    register: (userData) => {
-        return axiosClient.post('/auth/register', userData);
+    refreshToken: async () => {
+        return await callAPI("post", 'auth/refresh-token');
     },
-    refreshToken: () => {
-        return axiosClient.post('/auth/refresh-token');
-    },
-    verifyToken: () => {
-        return axiosClient.post('/auth/verify-token');
+    verifyToken:async () => {
+        return await callAPI("post", 'auth/verify-token');
     }
 };
 
