@@ -38,7 +38,6 @@ import {
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet, useLocation } from 'react-router';
-import { logout } from '../../store/authSlice';
 import { toast } from 'react-toastify';
 
 const drawerWidth = 280;

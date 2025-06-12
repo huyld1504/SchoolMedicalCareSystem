@@ -83,7 +83,7 @@ const StudentsPage = () => {
 
             const response = await studentsApi.getAllStudents(params);
             console.log(response.data)
-            if (response.data ) {
+            if (response.data) {
                 const { records, total } = response.data;
                 setStudents(records || []);
                 setTotalStudents(total || 0);
@@ -167,355 +167,354 @@ const StudentsPage = () => {
             age--;
         }
         return age;
-    };
-
-    return (
-        <Container maxWidth="xl">
-            {/* Header */}
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                    <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-                        Quản lý học sinh
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                        Tổng số học sinh: {totalStudents}
-                    </Typography>
+    }; return (
+        <NurseLayout>
+            <Container maxWidth="xl">
+                {/* Header */}
+                <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                            Quản lý học sinh
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                            Tổng số học sinh: {totalStudents}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<DownloadIcon />}
+                            onClick={handleExport}
+                        >
+                            Xuất Excel
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            startIcon={<PrintIcon />}
+                            onClick={handlePrint}
+                        >
+                            In danh sách
+                        </Button>
+                    </Box>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                        onClick={handleExport}
-                    >
-                        Xuất Excel
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<PrintIcon />}
-                        onClick={handlePrint}
-                    >
-                        In danh sách
-                    </Button>
-                </Box>
-            </Box>
 
-            {/* Filters and Search */}
-            <Card sx={{ mb: 3 }}>
-                <CardContent>
-                    <Grid container spacing={3} alignItems="center">
-                        <Grid item xs={12} md={4}>
-                            <TextField
-                                fullWidth
-                                placeholder="Tìm kiếm theo tên, mã học sinh..."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                                size="small"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+                {/* Filters and Search */}
+                <Card sx={{ mb: 3 }}>
+                    <CardContent>
+                        <Grid container spacing={3} alignItems="center">
+                            <Grid item xs={12} md={4}>
+                                <TextField
+                                    fullWidth
+                                    placeholder="Tìm kiếm theo tên, mã học sinh..."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                    size="small"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <FormControl fullWidth size="small">
+                                    <InputLabel>Giới tính</InputLabel>
+                                    <Select
+                                        value={filterGender}
+                                        label="Giới tính"
+                                        onChange={(e) => setFilterGender(e.target.value)}
+                                    >
+                                        <MenuItem value="">Tất cả</MenuItem>
+                                        <MenuItem value="male">Nam</MenuItem>
+                                        <MenuItem value="female">Nữ</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <FormControl fullWidth size="small">
+                                    <InputLabel>Lớp</InputLabel>
+                                    <Select
+                                        value={filterClass}
+                                        label="Lớp"
+                                        onChange={(e) => setFilterClass(e.target.value)}
+                                    >
+                                        <MenuItem value="">Tất cả</MenuItem>
+                                        <MenuItem value="1A">1A</MenuItem>
+                                        <MenuItem value="1B">1B</MenuItem>
+                                        <MenuItem value="2A">2A</MenuItem>
+                                        <MenuItem value="2B">2B</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                    <Tooltip title="Làm mới">
+                                        <IconButton onClick={handleRefresh} color="primary">
+                                            <RefreshIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => toast.info('Tính năng thêm học sinh đang được phát triển')}
+                                    >
+                                        Thêm học sinh
+                                    </Button>
+                                </Box>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={2}>
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Giới tính</InputLabel>
-                                <Select
-                                    value={filterGender}
-                                    label="Giới tính"
-                                    onChange={(e) => setFilterGender(e.target.value)}
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    <MenuItem value="male">Nam</MenuItem>
-                                    <MenuItem value="female">Nữ</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Lớp</InputLabel>
-                                <Select
-                                    value={filterClass}
-                                    label="Lớp"
-                                    onChange={(e) => setFilterClass(e.target.value)}
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    <MenuItem value="1A">1A</MenuItem>
-                                    <MenuItem value="1B">1B</MenuItem>
-                                    <MenuItem value="2A">2A</MenuItem>
-                                    <MenuItem value="2B">2B</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                <Tooltip title="Làm mới">
-                                    <IconButton onClick={handleRefresh} color="primary">
-                                        <RefreshIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddIcon />}
-                                    onClick={() => toast.info('Tính năng thêm học sinh đang được phát triển')}
-                                >
-                                    Thêm học sinh
-                                </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Students Table */}
+                <Card>
+                    <CardContent sx={{ p: 0 }}>
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                                <CircularProgress />
                             </Box>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
-
-            {/* Students Table */}
-            <Card>
-                <CardContent sx={{ p: 0 }}>
-                    {loading ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                            <CircularProgress />
-                        </Box>
-                    ) : (
-                        <>
-                            <TableContainer>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow sx={{ bgcolor: 'grey.50' }}>
-                                            <TableCell sx={{ fontWeight: 600 }}>Học sinh</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Mã học sinh</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Giới tính</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Tuổi</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Ngày sinh</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Mã bảo hiểm</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Trạng thái sức khỏe</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }} align="center">Thao tác</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {students.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                                                    <Alert severity="info">
-                                                        {searchTerm ? 'Không tìm thấy học sinh nào phù hợp' : 'Chưa có học sinh nào'}
-                                                    </Alert>
-                                                </TableCell>
+                        ) : (
+                            <>
+                                <TableContainer>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow sx={{ bgcolor: 'grey.50' }}>
+                                                <TableCell sx={{ fontWeight: 600 }}>Học sinh</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }}>Mã học sinh</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }}>Giới tính</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }}>Tuổi</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }}>Ngày sinh</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }}>Mã bảo hiểm</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }}>Trạng thái sức khỏe</TableCell>
+                                                <TableCell sx={{ fontWeight: 600 }} align="center">Thao tác</TableCell>
                                             </TableRow>
-                                        ) : (
-                                            students.map((student) => (
-                                                <TableRow key={student._id} hover>
-                                                    <TableCell>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                                                                {student.name?.charAt(0)?.toUpperCase()}
-                                                            </Avatar>
-                                                            <Box>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                                                    {student.name}
-                                                                </Typography>
-                                                                <Typography variant="caption" color="text.secondary">
-                                                                    ID: {student._id}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Box>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Chip
-                                                            label={student.studentCode}
-                                                            size="small"
-                                                            variant="outlined"
-                                                            color="primary"
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {getGenderChip(student.gender)}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Typography variant="body2">
-                                                            {calculateAge(student.birthdate)} tuổi
-                                                        </Typography>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {formatDate(student.birthdate)}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-                                                            {student.medicalConverageId || 'N/A'}
-                                                        </Typography>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Chip
-                                                            label="Bình thường"
-                                                            size="small"
-                                                            color="success"
-                                                            variant="outlined"
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="center">
-                                                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                                            <Tooltip title="Xem chi tiết">
-                                                                <IconButton
-                                                                    size="small"
-                                                                    color="primary"
-                                                                    onClick={() => handleViewStudent(student)}
-                                                                >
-                                                                    <ViewIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                            <Tooltip title="Chỉnh sửa">
-                                                                <IconButton
-                                                                    size="small"
-                                                                    color="secondary"
-                                                                    onClick={() => toast.info('Tính năng chỉnh sửa đang được phát triển')}
-                                                                >
-                                                                    <EditIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </Box>
+                                        </TableHead>
+                                        <TableBody>
+                                            {students.length === 0 ? (
+                                                <TableRow>
+                                                    <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                                                        <Alert severity="info">
+                                                            {searchTerm ? 'Không tìm thấy học sinh nào phù hợp' : 'Chưa có học sinh nào'}
+                                                        </Alert>
                                                     </TableCell>
                                                 </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                            ) : (
+                                                students.map((student) => (
+                                                    <TableRow key={student._id} hover>
+                                                        <TableCell>
+                                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+                                                                    {student.name?.charAt(0)?.toUpperCase()}
+                                                                </Avatar>
+                                                                <Box>
+                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                                                                        {student.name}
+                                                                    </Typography>
+                                                                    <Typography variant="caption" color="text.secondary">
+                                                                        ID: {student._id}
+                                                                    </Typography>
+                                                                </Box>
+                                                            </Box>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Chip
+                                                                label={student.studentCode}
+                                                                size="small"
+                                                                variant="outlined"
+                                                                color="primary"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {getGenderChip(student.gender)}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2">
+                                                                {calculateAge(student.birthdate)} tuổi
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {formatDate(student.birthdate)}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                                                                {student.medicalConverageId || 'N/A'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Chip
+                                                                label="Bình thường"
+                                                                size="small"
+                                                                color="success"
+                                                                variant="outlined"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                                                <Tooltip title="Xem chi tiết">
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        color="primary"
+                                                                        onClick={() => handleViewStudent(student)}
+                                                                    >
+                                                                        <ViewIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                <Tooltip title="Chỉnh sửa">
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        color="secondary"
+                                                                        onClick={() => toast.info('Tính năng chỉnh sửa đang được phát triển')}
+                                                                    >
+                                                                        <EditIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </Box>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
 
-                            {/* Pagination */}
-                            <TablePagination
-                                component="div"
-                                count={totalStudents}
-                                page={page}
-                                onPageChange={handlePageChange}
-                                rowsPerPage={rowsPerPage}
-                                onRowsPerPageChange={handleRowsPerPageChange}
-                                rowsPerPageOptions={[5, 10, 25, 50]}
-                                labelRowsPerPage="Số dòng mỗi trang:"
-                                labelDisplayedRows={({ from, to, count }) =>
-                                    `${from}-${to} của ${count !== -1 ? count : `hơn ${to}`}`
-                                }
-                            />
-                        </>
-                    )}
-                </CardContent>
-            </Card>
+                                {/* Pagination */}
+                                <TablePagination
+                                    component="div"
+                                    count={totalStudents}
+                                    page={page}
+                                    onPageChange={handlePageChange}
+                                    rowsPerPage={rowsPerPage}
+                                    onRowsPerPageChange={handleRowsPerPageChange}
+                                    rowsPerPageOptions={[5, 10, 25, 50]}
+                                    labelRowsPerPage="Số dòng mỗi trang:"
+                                    labelDisplayedRows={({ from, to, count }) =>
+                                        `${from}-${to} của ${count !== -1 ? count : `hơn ${to}`}`
+                                    }
+                                />
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
 
-            {/* Student Detail Dialog */}
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-                <DialogTitle sx={{ pb: 2 }}>
-                    <Typography variant="h6" component="div">
-                        Thông tin chi tiết học sinh
-                    </Typography>
-                </DialogTitle>
-                <DialogContent dividers>
-                    {selectedStudent && (
-                        <Box>
-                            <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
-                                <Tab label="Thông tin cơ bản" />
-                                <Tab label="Hồ sơ y tế" />
-                                <Tab label="Lịch sử khám bệnh" />
-                            </Tabs>
+                {/* Student Detail Dialog */}
+                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
+                    <DialogTitle sx={{ pb: 2 }}>
+                        <Typography variant="h6" component="div">
+                            Thông tin chi tiết học sinh
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        {selectedStudent && (
+                            <Box>
+                                <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
+                                    <Tab label="Thông tin cơ bản" />
+                                    <Tab label="Hồ sơ y tế" />
+                                    <Tab label="Lịch sử khám bệnh" />
+                                </Tabs>
 
-                            {tabValue === 0 && (
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="subtitle2" gutterBottom>Họ và tên</Typography>
-                                        <Typography variant="body1" sx={{ mb: 2 }}>{selectedStudent.name}</Typography>
+                                {tabValue === 0 && (
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={12} md={6}>
+                                            <Typography variant="subtitle2" gutterBottom>Họ và tên</Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>{selectedStudent.name}</Typography>
 
-                                        <Typography variant="subtitle2" gutterBottom>Mã học sinh</Typography>
-                                        <Typography variant="body1" sx={{ mb: 2 }}>{selectedStudent.studentCode}</Typography>
+                                            <Typography variant="subtitle2" gutterBottom>Mã học sinh</Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>{selectedStudent.studentCode}</Typography>
 
-                                        <Typography variant="subtitle2" gutterBottom>Giới tính</Typography>
-                                        <Box sx={{ mb: 2 }}>{getGenderChip(selectedStudent.gender)}</Box>
+                                            <Typography variant="subtitle2" gutterBottom>Giới tính</Typography>
+                                            <Box sx={{ mb: 2 }}>{getGenderChip(selectedStudent.gender)}</Box>
 
-                                        <Typography variant="subtitle2" gutterBottom>Tuổi</Typography>
-                                        <Typography variant="body1" sx={{ mb: 2 }}>
-                                            {calculateAge(selectedStudent.birthdate)} tuổi
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="subtitle2" gutterBottom>Ngày sinh</Typography>
-                                        <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedStudent.birthdate)}</Typography>
-
-                                        <Typography variant="subtitle2" gutterBottom>Mã bảo hiểm y tế</Typography>
-                                        <Typography variant="body1" sx={{ mb: 2 }}>{selectedStudent.medicalConverageId || 'Chưa có'}</Typography>
-
-                                        <Typography variant="subtitle2" gutterBottom>Trạng thái</Typography>
-                                        <Chip label="Đang học" color="success" size="small" />
-                                    </Grid>
-                                </Grid>
-                            )}
-
-                            {tabValue === 1 && (
-                                <Box>
-                                    {selectedStudent.healthProfile ? (
-                                        <Grid container spacing={3}>
-                                            <Grid item xs={12} md={6}>
-                                                <Typography variant="subtitle2" gutterBottom>Chiều cao</Typography>
-                                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                                    {selectedStudent.healthProfile.height || 'N/A'} cm
-                                                </Typography>
-
-                                                <Typography variant="subtitle2" gutterBottom>Cân nặng</Typography>
-                                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                                    {selectedStudent.healthProfile.weight || 'N/A'} kg
-                                                </Typography>
-
-                                                <Typography variant="subtitle2" gutterBottom>Nhóm máu</Typography>
-                                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                                    {selectedStudent.healthProfile.bloodType || 'N/A'}
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <Typography variant="subtitle2" gutterBottom>Thị lực</Typography>
-                                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                                    {selectedStudent.healthProfile.vision || 'N/A'}
-                                                </Typography>
-
-                                                <Typography variant="subtitle2" gutterBottom>Dị ứng</Typography>
-                                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                                    {selectedStudent.healthProfile.allergies || 'Không có'}
-                                                </Typography>
-
-                                                <Typography variant="subtitle2" gutterBottom>Bệnh mãn tính</Typography>
-                                                <Typography variant="body1" sx={{ mb: 2 }}>
-                                                    {selectedStudent.healthProfile.chronicDiseases || 'Không có'}
-                                                </Typography>
-                                            </Grid>
+                                            <Typography variant="subtitle2" gutterBottom>Tuổi</Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                                {calculateAge(selectedStudent.birthdate)} tuổi
+                                            </Typography>
                                         </Grid>
-                                    ) : (
-                                        <Alert severity="info">
-                                            Chưa có hồ sơ y tế cho học sinh này
-                                        </Alert>
-                                    )}
-                                </Box>
-                            )}
+                                        <Grid item xs={12} md={6}>
+                                            <Typography variant="subtitle2" gutterBottom>Ngày sinh</Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedStudent.birthdate)}</Typography>
 
-                            {tabValue === 2 && (
-                                <Alert severity="info">
-                                    Tính năng lịch sử khám bệnh đang được phát triển
-                                </Alert>
-                            )}
-                        </Box>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDialogOpen(false)}>Đóng</Button>
-                    <Button variant="contained" color="primary">
-                        Chỉnh sửa
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                                            <Typography variant="subtitle2" gutterBottom>Mã bảo hiểm y tế</Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>{selectedStudent.medicalConverageId || 'Chưa có'}</Typography>
 
-            {/* Floating Action Button */}
-            <Fab
-                color="primary"
-                aria-label="add"
-                sx={{ position: 'fixed', bottom: 16, right: 16 }}
-                onClick={() => toast.info('Tính năng thêm học sinh đang được phát triển')}
-            >
-                <AddIcon />
-            </Fab>
-        </Container>
+                                            <Typography variant="subtitle2" gutterBottom>Trạng thái</Typography>
+                                            <Chip label="Đang học" color="success" size="small" />
+                                        </Grid>
+                                    </Grid>
+                                )}
+
+                                {tabValue === 1 && (
+                                    <Box>
+                                        {selectedStudent.healthProfile ? (
+                                            <Grid container spacing={3}>
+                                                <Grid item xs={12} md={6}>
+                                                    <Typography variant="subtitle2" gutterBottom>Chiều cao</Typography>
+                                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                                        {selectedStudent.healthProfile.height || 'N/A'} cm
+                                                    </Typography>
+
+                                                    <Typography variant="subtitle2" gutterBottom>Cân nặng</Typography>
+                                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                                        {selectedStudent.healthProfile.weight || 'N/A'} kg
+                                                    </Typography>
+
+                                                    <Typography variant="subtitle2" gutterBottom>Nhóm máu</Typography>
+                                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                                        {selectedStudent.healthProfile.bloodType || 'N/A'}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item xs={12} md={6}>
+                                                    <Typography variant="subtitle2" gutterBottom>Thị lực</Typography>
+                                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                                        {selectedStudent.healthProfile.vision || 'N/A'}
+                                                    </Typography>
+
+                                                    <Typography variant="subtitle2" gutterBottom>Dị ứng</Typography>
+                                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                                        {selectedStudent.healthProfile.allergies || 'Không có'}
+                                                    </Typography>
+
+                                                    <Typography variant="subtitle2" gutterBottom>Bệnh mãn tính</Typography>
+                                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                                        {selectedStudent.healthProfile.chronicDiseases || 'Không có'}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+                                        ) : (
+                                            <Alert severity="info">
+                                                Chưa có hồ sơ y tế cho học sinh này
+                                            </Alert>
+                                        )}
+                                    </Box>
+                                )}
+
+                                {tabValue === 2 && (
+                                    <Alert severity="info">
+                                        Tính năng lịch sử khám bệnh đang được phát triển
+                                    </Alert>
+                                )}
+                            </Box>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialogOpen(false)}>Đóng</Button>
+                        <Button variant="contained" color="primary">
+                            Chỉnh sửa
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Floating Action Button */}            <Fab
+                    color="primary"
+                    aria-label="add"
+                    sx={{ position: 'fixed', bottom: 16, right: 16 }}
+                    onClick={() => toast.info('Tính năng thêm học sinh đang được phát triển')}
+                >
+                    <AddIcon />
+                </Fab>
+            </Container>
+        </NurseLayout>
     );
 };
 
