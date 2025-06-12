@@ -39,6 +39,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
+import { clearUser } from '../../store/authSlice';
 
 const drawerWidth = 280;
 
@@ -103,10 +104,8 @@ const NurseLayout = () => {
 
     const handleProfileMenuClose = () => {
         setAnchorEl(null);
-    };
-
-    const handleLogout = () => {
-        dispatch(logout());
+    }; const handleLogout = () => {
+        dispatch(clearUser());
         toast.success('Đăng xuất thành công!');
         navigate('/login');
         handleProfileMenuClose();

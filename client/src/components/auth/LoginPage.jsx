@@ -65,7 +65,9 @@ const LoginPage = () => {
           dispatch(setUser({user}));
           toast.success(response.message);
         }
-        navigate("/dashboard");
+        if (response.data.role === 'nurse') {
+          navigate('/nurse/dashboard');
+        }
         setIsLogin(false);
       } catch (error) {
         console.log(error);

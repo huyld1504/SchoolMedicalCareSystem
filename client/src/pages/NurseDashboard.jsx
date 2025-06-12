@@ -94,8 +94,8 @@ const NurseDashboard = () => {
 
             const response = await studentsApi.getAllStudents(params);
 
-            if (response.data && response.data.isSuccess) {
-                const { records, total } = response.data.data;
+            if (response.isSuccess) {
+                const { records, total } = response;
                 setStudents(records || []);
                 setTotalStudents(total || 0);
                 setStats(prev => ({

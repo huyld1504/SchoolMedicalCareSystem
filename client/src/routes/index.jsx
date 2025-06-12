@@ -6,6 +6,8 @@ import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
 import NurseLayout from '../components/layouts/NurseLayout';
 import NurseDashboard from '../pages/NurseDashboard';
 import StudentsPage from '../pages/StudentsPage';
+import HealthProfilesPage from '../pages/HealthProfilesPage';
+import MedicationHistoryPage from '../pages/MedicationHistoryPage';
 import AppLayout from '../components/layouts/AppLayout';
 
 const router = createBrowserRouter([
@@ -29,7 +31,8 @@ const router = createBrowserRouter([
           <RoleProtectedRoute allowedRoles={["nurse"]}>
             <NurseLayout />
           </RoleProtectedRoute>
-        ), children: [
+        ),
+        children: [
           {
             index: true,
             element: <NurseDashboard />,
@@ -41,14 +44,17 @@ const router = createBrowserRouter([
           {
             path: 'students',
             element: <StudentsPage />,
-          },
-          {
+          }, {
             path: 'health-profiles',
-            element: <div>All Health Profiles - Coming Soon</div>, // Placeholder
+            element: <HealthProfilesPage />,
           },
           {
             path: 'health-profiles/:studentId',
-            element: <div>Health Profile Details - Coming Soon</div>, // Placeholder
+            element: <HealthProfilesPage />,
+          },
+          {
+            path: 'medication-history/:studentId',
+            element: <MedicationHistoryPage />,
           },
           {
             path: 'medical-orders',

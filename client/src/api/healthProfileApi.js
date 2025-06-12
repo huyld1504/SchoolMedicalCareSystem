@@ -5,7 +5,10 @@ const healthProfileAPI = {
     create: (profileData) => callAPI('POST', '/health-profiles/create', profileData),
     
     // Lấy hồ sơ sức khỏe của con em
-    getByChildId: (childId) => callAPI('GET', `/health-profiles/child/${childId}`),
+    getByChildId: (childId) => {
+        if (!childId) throw new Error('Child ID is required');
+       return callAPI('GET', `/health-profiles/child/${childId}`)
+     } ,
 
     // Lấy tất cả hồ sơ sức khỏe của parent
     getMyChildrenProfiles: (profileId) => callAPI('GET', `/health-profiles/get/${profileId}`),
