@@ -1,0 +1,227 @@
+/* Parent Dashboard Animations and Enhancements */
+
+/* Smooth animations for cards */
+.parent-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+}
+
+.parent-card:hover {
+    animation: cardHover 0.3s ease-out forwards;
+}
+
+@keyframes cardHover {
+    0% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    100% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Button press animation */
+.parent-button {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.parent-button:active {
+    transform: scale(0.98);
+}
+
+.parent-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.parent-button:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Loading animation */
+.parent-loading {
+    animation: pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Slide in animation for modals */
+.parent-modal {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Stats counter animation */
+.stats-number {
+    animation: countUp 0.8s ease-out;
+}
+
+@keyframes countUp {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Notification bell animation */
+.notification-bell {
+    animation: bell 2s ease-in-out infinite;
+}
+
+@keyframes bell {
+
+    0%,
+    50%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    10%,
+    30% {
+        transform: rotate(-10deg);
+    }
+
+    20%,
+    40% {
+        transform: rotate(10deg);
+    }
+}
+
+/* Floating help button */
+.help-button {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Success/Error animations */
+.success-animation {
+    animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0.8);
+        background-color: #4caf50;
+    }
+
+    50% {
+        transform: scale(1.1);
+        background-color: #45a049;
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #4caf50;
+    }
+}
+
+.error-animation {
+    animation: errorShake 0.6s ease-out;
+}
+
+@keyframes errorShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Responsive animations */
+@media (max-width: 768px) {
+    .parent-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    @keyframes cardHover {
+        0% {
+            transform: translateY(0) scale(1);
+        }
+
+        100% {
+            transform: translateY(-4px) scale(1.01);
+        }
+    }
+}
+
+/* Accessibility - reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+    .parent-card,
+    .parent-button,
+    .parent-modal,
+    .stats-number,
+    .notification-bell,
+    .help-button {
+        animation: none;
+        transition: none;
+    }
+
+    .parent-card:hover {
+        transform: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+}

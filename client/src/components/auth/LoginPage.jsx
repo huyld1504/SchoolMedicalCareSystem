@@ -55,17 +55,30 @@ const LoginPage = () => {
       setIsLogin(true);
       try {
         await new Promise(resolve => setTimeout(resolve, 2000));
-        const response = await authApi.login(values);
-        if(response.isSuccess) {
-          const user = {id: response.data.id, email: response.data.email, role: response.data.role};
+        const response = await authApi.login(values); if (response.isSuccess) {
+          const user = { id: response.data.id, email: response.data.email, role: response.data.role };
           const accessToken = response.data.token;
           const refreshToken = response.data.refreshToken;
           localStorage.setItem("token", accessToken);
           localStorage.setItem("refreshToken", refreshToken);
-          dispatch(setUser({user}));
+          dispatch(setUser({ user }));
           toast.success(response.message);
+
+          // Redirect based on user role
+          switch (user.role) {
+            case 'parent':
+              navigate("/parent");
+              break;
+            case 'admin':
+              navigate("/admin");
+              break;
+            case 'nurse':
+              navigate("/nurse");
+              break;
+            default:
+              navigate("/");
+          }
         }
-        navigate("/dashboard");
         setIsLogin(false);
       } catch (error) {
         console.log(error);

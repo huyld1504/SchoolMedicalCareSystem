@@ -1,11 +1,15 @@
 /* Custom styles for School Medical Care System */
 
+/* Import parent dashboard styles */
+@import './parent-dashboard.css';
+
 /* Login page animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -16,9 +20,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
   }
@@ -86,6 +92,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -97,6 +104,7 @@
     transform: translateX(-100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -108,6 +116,7 @@
     transform: translateX(0);
     opacity: 1;
   }
+
   to {
     transform: translateX(-100%);
     opacity: 0;
@@ -159,6 +168,7 @@
   from {
     width: 100%;
   }
+
   to {
     width: 0%;
   }
@@ -205,16 +215,16 @@
     width: calc(100vw - 20px) !important;
     max-width: calc(100vw - 20px) !important;
   }
-  
+
   .custom-toast {
     margin-bottom: 8px !important;
   }
-  
+
   .custom-toast-body {
     padding: 14px 18px !important;
     font-size: 13px !important;
   }
-  
+
   .Toastify__toast--success .custom-toast-body,
   .Toastify__toast--error .custom-toast-body,
   .Toastify__toast--warning .custom-toast-body,
@@ -249,7 +259,7 @@
   .login-container {
     padding: 16px;
   }
-  
+
   .login-paper {
     padding: 24px !important;
   }
