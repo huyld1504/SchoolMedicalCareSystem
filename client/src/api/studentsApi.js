@@ -6,6 +6,11 @@ const studentsApi = {
     // Lấy danh sách tất cả học sinh (cho nurse)
     getAllStudents: async (params) => {
         return await callAPI("get", "/childs/all", params)
+    },
+
+    // Lấy thông tin chi tiết một học sinh theo ID
+    getStudentById: async (studentId) => {
+        return await callAPI("get", `/childs/${studentId}`)
     }
 };
 
