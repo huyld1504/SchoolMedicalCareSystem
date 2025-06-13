@@ -7,9 +7,7 @@ import {
   InputAdornment,
   IconButton,
   Divider,
-  Alert,
   CircularProgress,
-  Chip
 } from '@mui/material';
 import {
   Visibility,
@@ -18,6 +16,7 @@ import {
   Lock,
   ArrowBack
 } from '@mui/icons-material';
+import {LoadingButton} from '@mui/lab';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -198,13 +197,13 @@ const LoginPage = () => {
             disabled={isLogin}
           />
 
-          <Button
+          <LoadingButton
             color="primary"
             variant="contained"
             fullWidth
             type="submit"
             size="large"
-            disabled={isLogin}
+            loading={isLogin}
             sx={{
               mb: 2,
               py: 1.5,
@@ -219,7 +218,7 @@ const LoginPage = () => {
                 color="inherit" />
             ) : (
               'Đăng nhập')}
-          </Button>
+          </LoadingButton>
         </Box>
       </LoginPaper>
     </LoginContainer>

@@ -1,18 +1,18 @@
-import callAPI from './axiosClient';
+import { callAPI } from './axiosClient';
 
 const healthProfileAPI = {
     // Tạo hồ sơ sức khỏe mới
-    create: (profileData) => callAPI('POST', '/health-profiles/create', profileData),
-    
+    create: async (profileData) => await callAPI('POST', '/health-profiles/create', profileData),
+
     // Lấy hồ sơ sức khỏe của con em
-    getByChildId: (childId) => callAPI('GET', `/health-profiles/child/${childId}`),
+    getByChildId: async (childId) => await callAPI('GET', `/health-profiles/child/${childId}`),
 
     // Lấy tất cả hồ sơ sức khỏe của parent
-    getMyChildrenProfiles: (profileId) => callAPI('GET', `/health-profiles/get/${profileId}`),
+    getMyChildrenProfiles: async (profileId) => await callAPI('GET', `/health-profiles/get/${profileId}`),
 
     // Cập nhật hồ sơ sức khỏe
-    update: (profileId, profileData) => callAPI('PUT', `/health-profiles/update/${profileId}`, profileData),
-    
+    update: async (profileId, profileData) => await callAPI('PUT', `/health-profiles/update/${profileId}`, profileData),
+
 };
 
 export default healthProfileAPI;

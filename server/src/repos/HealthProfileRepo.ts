@@ -27,8 +27,23 @@ export class HealthProfileRepository extends BaseRepository<IHealthProfile> {
       limit: query.getLimit()
     };
     const sort: SortOptions = query.getSort() || { createdAt: -1 }; // Default sort by createdAt descending
+    const [records, total] = await Promise.all([
+      await this.model.find(filter)
+        .populate("studentId")
+        .skip((options.page - 1) * options.limit)
+        .limit(options.limit)
+        .sort(sort)
+        .exec(),
+      await this.model.countDocuments(filter).exec()
+    ]);
 
-    return this.paginate(filter, options, sort);
+    return {
+      records: records,
+      total: total,
+      page: options.page,
+      limit: options.limit,
+      totalPages: Math.ceil(total / options.limit)
+    };
   }
 
   /**
