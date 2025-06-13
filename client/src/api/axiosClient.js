@@ -49,8 +49,8 @@ axiosClient.interceptors.request.use(
 // Response Interceptor - Handle token refresh and errors
 axiosClient.interceptors.response.use(
     (response) => {
-        // Return successful responses as-is
-        return response.data;
+        if (response && response.data) return response.data;
+        return response;
     },
     async (error) => {
         const originalRequest = error.config;

@@ -7,9 +7,7 @@ import {
   InputAdornment,
   IconButton,
   Divider,
-  Alert,
   CircularProgress,
-  Chip
 } from '@mui/material';
 import {
   Visibility,
@@ -18,6 +16,7 @@ import {
   Lock,
   ArrowBack
 } from '@mui/icons-material';
+import {LoadingButton} from '@mui/lab';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -54,7 +53,7 @@ const LoginPage = () => {
     onSubmit: async (values) => {
       setIsLogin(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const response = await authApi.login(values);
         if(response.isSuccess) {
           const user = {id: response.data.id, email: response.data.email, role: response.data.role};
@@ -187,13 +186,13 @@ const LoginPage = () => {
             disabled={isLogin}
           />
 
-          <Button
+          <LoadingButton
             color="primary"
             variant="contained"
             fullWidth
             type="submit"
             size="large"
-            disabled={isLogin}
+            loading={isLogin}
             sx={{
               mb: 2,
               py: 1.5,
@@ -208,7 +207,7 @@ const LoginPage = () => {
                 color="inherit" />
             ) : (
               'Đăng nhập')}
-          </Button>
+          </LoadingButton>
         </Box>
       </LoginPaper>
     </LoginContainer>
