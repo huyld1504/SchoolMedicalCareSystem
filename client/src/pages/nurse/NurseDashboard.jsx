@@ -45,9 +45,9 @@ import {
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import studentsApi from '../api/studentsApi';
-import QuickActions from '../components/dashboard/QuickActions';
-import NurseLayout from '../components/layouts/NurseLayout';
+import studentsApi from '../../api/studentsApi';
+import QuickActions from '../../components/dashboard/QuickActions';
+import NurseLayout from '../../components/layouts/NurseLayout';
 
 const NurseDashboard = () => {
     const { user } = useSelector((state) => state.auth);

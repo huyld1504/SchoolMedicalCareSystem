@@ -16,7 +16,7 @@ import {
   Lock,
   ArrowBack
 } from '@mui/icons-material';
-import {LoadingButton} from '@mui/lab';
+import { LoadingButton } from '@mui/lab';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -55,17 +55,16 @@ const LoginPage = () => {
       try {
         await new Promise(resolve => setTimeout(resolve, 1000));
         const response = await authApi.login(values);
-        if(response.isSuccess) {
-          const user = {id: response.data.id, email: response.data.email, role: response.data.role};
+        if (response.isSuccess) {
+          const user = { id: response.data.id, email: response.data.email, role: response.data.role };
           const accessToken = response.data.token;
           const refreshToken = response.data.refreshToken;
           localStorage.setItem("token", accessToken);
           localStorage.setItem("refreshToken", refreshToken);
-          dispatch(setUser({user}));
+          dispatch(setUser({ user }));
           toast.success(response.message);
-        }
-        if (response.data.role === 'nurse') {
-          navigate('/nurse/dashboard');
+        } if (response.data.role === 'nurse') {
+          navigate('/nurse/students');
         }
         setIsLogin(false);
       } catch (error) {

@@ -52,7 +52,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import studentsApi from '../api/studentsApi';
+import studentsApi from '../../api/studentsApi';
 
 const StudentsPage = () => {
     const { user } = useSelector((state) => state.auth);

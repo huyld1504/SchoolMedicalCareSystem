@@ -1,14 +1,16 @@
 import { createBrowserRouter } from 'react-router';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../components/auth/LoginPage';
-import ProtectedRoute from '../components/common/ProtectedRoute';
 import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
 import NurseLayout from '../components/layouts/NurseLayout';
-import NurseDashboard from '../pages/NurseDashboard';
-import StudentsPage from '../pages/StudentsPage';
-import HealthProfilesPage from '../pages/HealthProfilesPage';
-import MedicationHistoryPage from '../pages/MedicationHistoryPage';
+import NurseDashboard from '../pages/nurse/NurseDashboard';
+import StudentsPage from '../pages/nurse/StudentsPage';
+import HealthProfilesPage from '../pages/nurse/HealthProfilesPage';
+import AddHealthProfilePage from '../pages/nurse/AddHealthProfilePage';
+import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
+import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
 import AppLayout from '../components/layouts/AppLayout';
+
 
 const router = createBrowserRouter([
   {
@@ -46,12 +48,18 @@ const router = createBrowserRouter([
             element: <StudentsPage />,
           },
           // {
-          //   path: 'health-profiles',
-          //   element: <HealthProfilesPage />,
+          //   path: 'health-profiles',          //   element: <HealthProfilesPage />,
           // },
           {
             path: 'health-profiles/:studentId',
             element: <HealthProfilesPage />,
+          }, {
+            path: 'health-profiles/:studentId/add',
+            element: <AddHealthProfilePage />,
+          },
+          {
+            path: 'health-profiles/:studentId/edit',
+            element: <EditHealthProfilePage />,
           },
           {
             path: 'medication-history/:studentId',
