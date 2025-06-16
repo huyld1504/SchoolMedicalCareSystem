@@ -48,21 +48,26 @@ const validationSchema = yup.object({
         .positive('Chiều cao phải lớn hơn 0')
         .min(50, 'Chiều cao tối thiểu 50cm')
         .max(300, 'Chiều cao không hợp lệ')
-        .nullable(),
+        .nullable()
+        .required('Chiều cao là bắt buộc'),
     weight: yup
         .number('Cân nặng phải là số')
         .positive('Cân nặng phải lớn hơn 0')
         .min(10, 'Cân nặng tối thiểu 10kg')
         .max(500, 'Cân nặng không hợp lệ')
-        .nullable(),
+        .nullable()
+        .required('Cân nặng là bắt buộc'),
+        
     bloodType: yup
         .string('Nhóm máu phải là chuỗi')
         .oneOf(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'], 'Nhóm máu không hợp lệ')
-        .nullable(),
+        .nullable()
+        .required('Nhóm máu là bắt buộc'),
     vision: yup
         .string('Thị lực phải là chuỗi')
         .max(100, 'Thông tin thị lực quá dài')
-        .nullable(),
+        .nullable()
+        .required('Thông tin thị lực là bắt buộc'),
     allergies: yup
         .string('Dị ứng phải là chuỗi')
         .max(1000, 'Thông tin dị ứng quá dài')

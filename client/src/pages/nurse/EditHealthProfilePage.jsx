@@ -39,10 +39,10 @@ import healthProfileAPI from '../../api/healthProfileApi'; // Giả sử đườ
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 const validationSchema = yup.object({
-    height: yup.number('Chiều cao phải là số').positive('Chiều cao phải lớn hơn 0').min(50, 'Chiều cao tối thiểu 50cm').max(300, 'Chiều cao không hợp lệ').nullable(),
-    weight: yup.number('Cân nặng phải là số').positive('Cân nặng phải lớn hơn 0').min(5, 'Cân nặng tối thiểu 5kg').max(300, 'Cân nặng không hợp lệ').nullable(),
-    bloodType: yup.string().oneOf(bloodTypes, 'Nhóm máu không hợp lệ').nullable(),
-    vision: yup.string().max(100, 'Thông tin thị lực quá dài').nullable(),
+    height: yup.number('Chiều cao phải là số').positive('Chiều cao phải lớn hơn 0').min(50, 'Chiều cao tối thiểu 50cm').max(300, 'Chiều cao không hợp lệ').nullable().required('Chiều cao là bắt buộc'),
+    weight: yup.number('Cân nặng phải là số').positive('Cân nặng phải lớn hơn 0').min(5, 'Cân nặng tối thiểu 5kg').max(300, 'Cân nặng không hợp lệ').nullable().required('Cân nặng là bắt buộc'),
+    bloodType: yup.string().oneOf(bloodTypes, 'Nhóm máu không hợp lệ').nullable().required('Nhóm máu là bắt buộc'),
+    vision: yup.string().max(100, 'Thông tin thị lực quá dài').nullable().required('Thông tin thị lực là bắt buộc'),
     allergies: yup.string().max(1000, 'Thông tin dị ứng quá dài').nullable(),
     chronicDiseases: yup.string().max(1000, 'Thông tin bệnh mãn tính quá dài').nullable(),
     devicesSupport: yup.string().max(500, 'Thông tin thiết bị hỗ trợ quá dài').nullable(),
@@ -254,7 +254,7 @@ const EditHealthProfilePage = () => {
 
                 if (response.isSuccess) {
                     toast.success('Cập nhật hồ sơ y tế thành công!');
-                    loadData(); // Reload data to show fresh info
+                  navigate(-1)
                     formik.resetForm({ values: response.data.data }); // Reset dirty state
                 } else {
                     toast.error(response.message || 'Có lỗi xảy ra khi cập nhật hồ sơ');
