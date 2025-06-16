@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -12,11 +13,11 @@ import {
     TableHead,
     TableRow,
     IconButton,
-    Chip,
     Button,
     CircularProgress,
     Alert,
     Tooltip,
+    Pagination,
 } from '@mui/material';
 import {
     Edit as EditIcon,
@@ -33,11 +34,20 @@ import healthProfileAPI from '../../api/healthProfileApi';
 const HealthProfilesPage = () => {
     const { studentId } = useParams();
     const navigate = useNavigate();
-    const { user } = useSelector((state) => state.auth);
-
+    const [query, setQuery] = useState({
+        page: 1
+    })
     const [healthProfile, setHealthProfile] = useState([]);
     const [studentInfo, setStudentInfo] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleRowsPerPageChange = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
+    };
 
     useEffect(() => {
         loadHealthProfile();
@@ -48,7 +58,7 @@ const HealthProfilesPage = () => {
             setLoading(true);
 
             if (studentId) {
-                const response = await healthProfileAPI.getByChildId(studentId);
+                const response = await healthProfileAPI.getByChildId(studentId, query);
                 console.log('Health profile response:', response);
                 if (response.isSuccess && response.data.records && response.data.records.length > 0) {
                     setHealthProfile(response.data.records);
@@ -89,68 +99,10 @@ const HealthProfilesPage = () => {
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('vi-VN');
-    };
-
-    const getDisplayValue = (value) => {
+    }; const getDisplayValue = (value) => {
         if (value === null || value === undefined) return 'N/A';
         if (value === '') return 'Không có';
         return value;
-    };
-
-    const getValueChip = (value, type, fullValue = value) => {
-        if (value === 'N/A') {
-            return <Chip label={value} size="small" variant="outlined" color="default" />;
-        }
-
-        if (value === 'Không có') {
-            return <Chip label={value} size="small" variant="outlined" color="secondary" />;
-        }
-
-        const chipComponent = (() => {
-            switch (type) {
-                case 'bloodtype':
-                    return <Chip label={value} size="small" color="error" variant="outlined" />;
-                case 'measurement':
-                    return <Chip label={value} size="small" color="primary" variant="outlined" />;
-                case 'health':
-                    return value === 'Không có'
-                        ? <Chip label={value} size="small" color="success" variant="outlined" />
-                        : <Chip label={value} size="small" color="warning" variant="outlined" />;
-                case 'date':
-                    return <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>{value}</Typography>;
-                default:
-                    return <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>{value}</Typography>;
-            }
-        })();
-
-        // Nếu text dài hơn 20 ký tự hoặc có fullValue khác value, wrap trong Tooltip
-        if (fullValue && (fullValue.length > 20 || fullValue !== value)) {
-            return (
-                <Tooltip 
-                    title={fullValue} 
-                    arrow 
-                    placement="top"
-                    enterDelay={300}
-                    leaveDelay={200}
-                    sx={{
-                        '& .MuiTooltip-tooltip': {
-                            maxWidth: 300,
-                            fontSize: '0.875rem',
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                        },
-                        '& .MuiTooltip-arrow': {
-                            color: 'rgba(0, 0, 0, 0.9)',
-                        }
-                    }}
-                >
-                    <Box sx={{ cursor: 'help', display: 'inline-block' }}>
-                        {chipComponent}
-                    </Box>
-                </Tooltip>
-            );
-        }
-
-        return chipComponent;
     };
 
     const getTruncatedValue = (value, maxLength = 15) => {
@@ -248,8 +200,7 @@ const HealthProfilesPage = () => {
                                         <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Bệnh mãn tính</TableCell>
                                         <TableCell sx={{ fontWeight: 600, width: '8%' }} align="center">Thao tác</TableCell>
                                     </TableRow>
-                                </TableHead>
-                                <TableBody>
+                                </TableHead>                                <TableBody>
                                     {healthProfile
                                         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp theo ngày tạo mới nhất
                                         .map((record, index) => (
@@ -262,58 +213,99 @@ const HealthProfilesPage = () => {
                                                 }}
                                             >
                                                 <TableCell align="center">
-                                                    <Chip
-                                                        label={index + 1}
-                                                        size="small"
-                                                        color={index === 0 ? "primary" : "default"}
-                                                        variant={index === 0 ? "filled" : "outlined"}
-                                                    />
+                                                    <Typography
+                                                        variant="body2"
+                                                        sx={{
+                                                            fontWeight: index === 0 ? 600 : 400,
+                                                            color: '#000000',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        {index + 1}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(formatDate(record.createdAt), 'date')}
+                                                    <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#000000' }}>
+                                                        {formatDate(record.createdAt)}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(
-                                                        record.height ? `${record.height}` : getDisplayValue(record.height),
-                                                        'measurement'
-                                                    )}
+                                                    <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#000000' }}>
+                                                        {record.height ? `${record.height} cm` : getDisplayValue(record.height)}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(
-                                                        record.weight ? `${record.weight}` : getDisplayValue(record.weight),
-                                                        'measurement'
-                                                    )}
+                                                    <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#000000' }}>
+                                                        {record.weight ? `${record.weight} kg` : getDisplayValue(record.weight)}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(getDisplayValue(record.bloodType), 'bloodtype')}
+                                                    <Typography
+                                                        variant="body2"
+                                                        sx={{
+                                                            fontSize: '0.875rem',
+                                                            color: '#000000',
+                                                            fontWeight: record.bloodType ? 500 : 400
+                                                        }}
+                                                    >
+                                                        {getDisplayValue(record.bloodType)}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(
-                                                        getTruncatedValue(getDisplayValue(record.vision), 10),
-                                                        'text',
-                                                        getDisplayValue(record.vision)
-                                                    )}
+                                                    <Tooltip title={getDisplayValue(record.vision)} placement="top">
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontSize: '0.875rem',
+                                                                color: '#000000',
+                                                                cursor: record.vision && record.vision.length > 10 ? 'help' : 'default'
+                                                            }}
+                                                        >
+                                                            {getTruncatedValue(getDisplayValue(record.vision), 10)}
+                                                        </Typography>
+                                                    </Tooltip>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(
-                                                        getTruncatedValue(getDisplayValue(record.devicesSupport), 12),
-                                                        'text',
-                                                        getDisplayValue(record.devicesSupport)
-                                                    )}
+                                                    <Tooltip title={getDisplayValue(record.devicesSupport)} placement="top">
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontSize: '0.875rem',
+                                                                color: '#000000',
+                                                                cursor: record.devicesSupport && record.devicesSupport.length > 12 ? 'help' : 'default'
+                                                            }}
+                                                        >
+                                                            {getTruncatedValue(getDisplayValue(record.devicesSupport), 12)}
+                                                        </Typography>
+                                                    </Tooltip>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(
-                                                        getTruncatedValue(getDisplayValue(record.allergies), 15),
-                                                        'health',
-                                                        getDisplayValue(record.allergies)
-                                                    )}
+                                                    <Tooltip title={getDisplayValue(record.allergies)} placement="top">
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontSize: '0.875rem',
+                                                                color: '#000000',
+                                                                cursor: record.allergies && record.allergies.length > 15 ? 'help' : 'default'
+                                                            }}
+                                                        >
+                                                            {getTruncatedValue(getDisplayValue(record.allergies), 15)}
+                                                        </Typography>
+                                                    </Tooltip>
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    {getValueChip(
-                                                        getTruncatedValue(getDisplayValue(record.chronicDiseases), 15),
-                                                        'health',
-                                                        getDisplayValue(record.chronicDiseases)
-                                                    )}
+                                                    <Tooltip title={getDisplayValue(record.chronicDiseases)} placement="top">
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontSize: '0.875rem',
+                                                                color: '#000000',
+                                                                cursor: record.chronicDiseases && record.chronicDiseases.length > 15 ? 'help' : 'default'
+                                                            }}
+                                                        >
+                                                            {getTruncatedValue(getDisplayValue(record.chronicDiseases), 15)}
+                                                        </Typography>
+                                                    </Tooltip>
                                                 </TableCell>
                                                 <TableCell align="center">
                                                     {index === 0 ? (
@@ -331,16 +323,23 @@ const HealthProfilesPage = () => {
                                                             </IconButton>
                                                         </Tooltip>
                                                     ) : (
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            Hồ sơ cũ
-                                                        </Typography>
+                                                        null
                                                     )}
                                                 </TableCell>
                                             </TableRow>
                                         ))}
                                 </TableBody>
+                                
                             </Table>
                         </TableContainer>
+                        <Pagination
+                                    component="div"
+                                    count={Math.ceil(healthProfile.length / 10)}
+                                    page={query.page}
+                                    onPageChange={handlePageChange}
+                                    rowsPerPage={rowsPerPage}
+                                    onRowsPerPageChange={handleRowsPerPageChange}
+                                />
                     </CardContent>
                 </Card>
             )}
