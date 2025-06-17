@@ -46,9 +46,7 @@ const UserGuideDialog = ({ open, onClose }) => {
                     <Typography variant="body1" paragraph>
                         Đây là hướng dẫn nhanh giúp bạn sử dụng hệ thống một cách dễ dàng và hiệu quả.
                     </Typography>
-                    <Typography variant="body1">
-                        Hệ thống được thiết kế đơn giản, thân thiện để mọi phụ huynh đều có thể sử dụng dễ dàng.
-                    </Typography>
+
                 </Box>
             )
         },

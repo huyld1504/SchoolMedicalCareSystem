@@ -27,7 +27,8 @@ import {
     LocalHospital,
     Notifications,
     Settings,
-    Logout
+    Logout,
+    History
 } from '@mui/icons-material';
 import { Outlet, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -82,10 +83,10 @@ const DashboardLayout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         navigate('/login');
-    };
-
-    const menuItems = [
+    }; const menuItems = [
         { text: 'Tổng quan', icon: <Dashboard />, path: '/parent' },
+        { text: 'Thêm con em', icon: <Person />, path: '/parent/children/add' },
+        { text: 'Tạo đơn thuốc', icon: <LocalHospital />, path: '/parent/medical-orders/create' },
         { text: 'Thông tin cá nhân', icon: <Person />, path: '/parent/profile' },
         { text: 'Quản lý sức khỏe', icon: <LocalHospital />, path: '/parent/health' },
         { text: 'Thông báo', icon: <Notifications />, path: '/parent/notifications' },
@@ -154,8 +155,7 @@ const DashboardLayout = () => {
                             <Typography variant="subtitle1" fontWeight="bold">{user?.name}</Typography>
                             <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
                         </Box>
-                        <Divider />
-                        <MenuItem onClick={() => navigate('/parent/profile')}>
+                        <Divider />                        <MenuItem onClick={() => navigate('/parent/profile')}>
                             <ListItemIcon>
                                 <Person fontSize="small" />
                             </ListItemIcon>
@@ -215,20 +215,22 @@ const DashboardLayout = () => {
                         </ListItem>
                     ))}
                 </List>
-            </StyledDrawer>
-            <Box
+            </StyledDrawer>            <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3,
                     transition: theme.transitions.create('margin', {
                         easing: theme.transitions.easing.sharp,
                         duration: theme.transitions.duration.leavingScreen,
                     }),
-                    marginLeft: open ? `${drawerWidth}px` : 0,
-                    marginTop: '64px',
+                    marginLeft: 0,
+                    marginTop: 0,
+                    padding: 0,
                     backgroundColor: '#f5f5f5',
-                    minHeight: 'calc(100vh - 64px)'
+                    minHeight: '100vh',
+                    width: '100vw',
+                    position: 'relative',
+                    zIndex: open ? 0 : 1
                 }}
             >
                 <Outlet />

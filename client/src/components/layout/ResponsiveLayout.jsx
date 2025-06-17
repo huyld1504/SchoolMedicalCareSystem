@@ -41,26 +41,28 @@ const ResponsiveLayout = ({
     ];
 
     const handleSpeedDialOpen = () => setSpeedDialOpen(true);
-    const handleSpeedDialClose = () => setSpeedDialOpen(false);
-
-    return (
+    const handleSpeedDialClose = () => setSpeedDialOpen(false); return (
         <Box
             sx={{
                 minHeight: '100vh',
-                bgcolor: 'background.default',
-                pb: isMobile ? 8 : 0 // Add padding bottom for mobile FAB
+                bgcolor: '#f8fafc',
+                width: '100vw',
+                margin: 0,
+                padding: 0,
+                overflow: 'hidden',
+                position: 'relative'
             }}
         >
-            <Container
-                maxWidth={false}
+            <Box
                 sx={{
-                    px: isMobile ? 1 : 3,
-                    py: isMobile ? 1 : 2,
-                    maxWidth: '1400px'
+                    width: '100%',
+                    height: '100%',
+                    padding: 0,
+                    margin: 0
                 }}
             >
                 {children}
-            </Container>
+            </Box>
 
             {/* Floating Action Button for Mobile */}
             {showFab && isMobile && (

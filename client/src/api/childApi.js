@@ -1,28 +1,22 @@
-import axiosClient from './axiosClient';
+import { callAPI } from "./axiosClient";
 
 const childAPI = {
     // Lấy danh sách con em của parent
-    getChildren: (params = {}) =>
-        axiosClient.callAPI('GET', '/childs/all', params),
+    getChildren: async () => await callAPI('GET', '/childs/all'),
 
-    getMyChildren: (params = {}) =>
-        axiosClient.callAPI('GET', '/childs/all', params),
+    getMyChildren: async () => await callAPI('GET', '/childs/all'),
 
     // Thêm con em mới
-    addChild: (childData) =>
-        axiosClient.callAPI('POST', '/childs/add', childData),
+    addChild: async (childData) => await callAPI('POST', '/childs/add', childData),
 
     // Lấy thông tin chi tiết một đứa trẻ
-    getChildById: (childId) =>
-        axiosClient.callAPI('GET', `/childs/get/${childId}`),
+    getChildById: async (childId) => await callAPI('GET', `/childs/get/${childId}`),
 
     // Lấy hồ sơ sức khỏe của trẻ
-    getHealthProfile: (childId) =>
-        axiosClient.callAPI('GET', `/health-profiles/child/${childId}`),
+    getHealthProfile: async (childId) => await callAPI('GET', `/health-profiles/child/${childId}`),
 
     // Cập nhật thông tin con em
-    updateChild: (childId, childData) =>
-        axiosClient.callAPI('PUT', `/childs/update/${childId}`, childData),
+    updateChild: async (childId, childData) => await callAPI('PUT', `/childs/update/${childId}`, childData),
 };
 
 export const childApi = childAPI;
