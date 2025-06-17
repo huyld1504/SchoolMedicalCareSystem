@@ -11,6 +11,7 @@ import AddHealthProfilePage from '../pages/nurse/AddHealthProfilePage';
 import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
 import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
 import AppLayout from '../components/layouts/AppLayout';
+import LandingLayout from '../components/layouts/LandingLayout';
 
 
 const router = createBrowserRouter([
@@ -19,16 +20,20 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
             {
-                index: true,
-                element: <LandingPage />,
+                element: <LandingLayout />,
+                children: [
+                    {
+                        index: true,
+                        path: '/',
+                        element: <LandingPage />
+                    }
+                ]
             },
             {
-                path: "welcome",
-                element: <LandingPage />,
-            }, {
                 path: 'login',
                 element: <LoginPage />,
-            }, {
+            },
+            {
                 path: 'nurse',
                 element: (
                     <RoleProtectedRoute allowedRoles={["nurse"]}>

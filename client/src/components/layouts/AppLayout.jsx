@@ -9,6 +9,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
 
   // Check if user is authenticated and redirect accordingly
+  const currentPath = window.location.pathname;
   useEffect(() => {
     const authenticateUser = async () => {
       const user = await authUtils.isAuthenticated();
@@ -17,7 +18,7 @@ export default function AppLayout() {
         dispatch(setUser({ user }));
         
         if (['/login', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
-          navigate('/nurse');
+          navigate(currentPath === '/login' ? '/nurse/students' : currentPath);
         } else {
           navigate('/login');
         }

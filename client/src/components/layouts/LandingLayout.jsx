@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, AppBar, Toolbar, Button, Container, useScrollTrigger, Slide } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import logoImage from '../../assets/ChatGPT Image 18_26_19 4 thg 6, 2025.png';
+import { Outlet } from 'react-router';
 
 // Logo component
 const Logo = styled('div')(({ theme }) => ({
@@ -33,7 +34,7 @@ function HideOnScroll(props) {
     );
 }
 
-const LandingLayout = ({ children }) => {
+const LandingLayout = () => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Header with transparent AppBar */}
@@ -81,7 +82,7 @@ const LandingLayout = ({ children }) => {
 
             {/* Main content */}
             <Box component="main" sx={{ flexGrow: 1 }}>
-                {children}
+                <Outlet />
             </Box>
         </Box>
     );
