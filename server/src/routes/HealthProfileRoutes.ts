@@ -16,6 +16,7 @@ import { HealthProfileQueryBuilder } from '@src/payload/request/filter/healthPro
 import { Child } from '@src/models/Child';
 import { HealthProfile } from "@src/models/HealthProfile";
 import childService from "@src/services/ChildService";
+import roleService from "@src/services/RoleService";
 
 // Function to add a health profile
 // This function validates the request body against the schema and adds a health profile for the user.
