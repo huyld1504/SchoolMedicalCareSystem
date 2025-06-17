@@ -41,7 +41,16 @@ export default {
     GetByID: "/get/:id",
     UpdateById: "/update/:id",
     Search: "/search",
-    GetByChildId: "/child/:childId",
+    GetByChildId: "/child/:childId"
+  },
+  MedicalEvent: {
+    Base: "/medical-events",
+    GetAll: "/all",
+    GetByStudentId: "/student/:studentId",
+    GetById: "/get/:id",
+    Create: "/create",
+    Update: "/update/:id",
+    Delete: "/delete/:id"
   },
   MedicalOrder: {
     Base: "/medical-orders",

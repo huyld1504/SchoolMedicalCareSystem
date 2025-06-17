@@ -1,55 +1,24 @@
+
 import { createBrowserRouter } from 'react-router';
-
-// Public Pages
-import LandingPage from '../components/pages/LandingPage';
+import LandingPage from '../pages/LandingPage';
 import LoginPage from '../components/auth/LoginPage';
-
-// Layout Components
 import ProtectedRoute from '../components/common/ProtectedRoute';
+import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
+import NurseLayout from '../components/layouts/NurseLayout';
+import StudentsPage from '../pages/nurse/StudentsPage';
+import HealthProfilesPage from '../pages/nurse/HealthProfilesPage';
+import AddHealthProfilePage from '../pages/nurse/AddHealthProfilePage';
+import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
+import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
 import AppLayout from '../components/layouts/AppLayout';
-import DashboardLayout from '../components/layouts/DashboardLayout';
+import LandingLayout from '../components/layouts/LandingLayout';
 
-// Parent Components
-import ParentDashboard from '../components/parent/ParentDashboard';
-
-// Parent Pages (using the ones in /pages directory - these are the full pages)
-import AddChildPage from '../pages/parent/AddChildPage';
-import ChildDetailPage from '../pages/parent/ChildDetailPage';
-import CreateMedicalOrderPage from '../pages/parent/CreateMedicalOrderPage';
-
-// Temporary placeholder component for unimplemented features
-const ComingSoonPage = ({ title = "Tính năng" }) => (
-  <div style={{
-    padding: '40px',
-    textAlign: 'center',
-    minHeight: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }}>
-    <h2>{title}</h2>
-    <p>Tính năng này đang được phát triển...</p>
-    <button onClick={() => window.history.back()}>← Quay lại</button>
-  </div>
-);
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <AppLayout />,
     children: [
-      // Public Routes
-      {
-        index: true,
-        element: <LandingPage />,
-      },
-      {
-        path: 'login',
-        element: <LoginPage />,
-      },
-
-      // Parent Routes
       {
         path: 'parent',
         children: [
@@ -99,10 +68,6 @@ const router = createBrowserRouter([
               {
                 path: 'create',
                 element: <CreateMedicalOrderPage />
-              },
-              {
-                path: ':id',
-                element: <ComingSoonPage title="Chi tiết đơn thuốc" />
               }
             ]
           },
@@ -114,17 +79,7 @@ const router = createBrowserRouter([
               <ProtectedRoute>
                 <DashboardLayout />
               </ProtectedRoute>
-            ),
-            children: [
-              {
-                index: true,
-                element: <ComingSoonPage title="Thông tin cá nhân" />
-              },
-              {
-                path: 'edit',
-                element: <ComingSoonPage title="Chỉnh sửa thông tin" />
-              }
-            ]
+            )
           },          // Health Management Routes - With Sidebar Layout
           {
             path: 'health',
@@ -132,17 +87,7 @@ const router = createBrowserRouter([
               <ProtectedRoute>
                 <DashboardLayout />
               </ProtectedRoute>
-            ),
-            children: [
-              {
-                index: true,
-                element: <ComingSoonPage title="Tổng quan sức khỏe" />
-              },
-              {
-                path: 'profiles/:childId',
-                element: <ComingSoonPage title="Hồ sơ sức khỏe chi tiết" />
-              }
-            ]
+            )
           },
 
           // Notifications Route - With Sidebar Layout
@@ -152,13 +97,7 @@ const router = createBrowserRouter([
               <ProtectedRoute>
                 <DashboardLayout />
               </ProtectedRoute>
-            ),
-            children: [
-              {
-                index: true,
-                element: <ComingSoonPage title="Thông báo" />
-              }
-            ]
+            )
           },
 
           // Settings Route - With Sidebar Layout
@@ -168,56 +107,79 @@ const router = createBrowserRouter([
               <ProtectedRoute>
                 <DashboardLayout />
               </ProtectedRoute>
-            ),
-            children: [
-              {
-                index: true,
-                element: <ComingSoonPage title="Cài đặt" />
-              }
-            ]
+            )
           }
         ]
       },
-
-      // Future role-based routes (placeholder for expansion)
+      {
+        element: <LandingLayout />,
+        children: [
+          {
+            index: true,
+            path: '/',
+            element: <LandingPage />
+          }
+        ]
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
       {
         path: 'nurse',
         element: (
-          <ProtectedRoute requiredRole="nurse">
-            <ComingSoonPage title="Nurse Dashboard" />
-          </ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["nurse"]}>
+            <NurseLayout />
+          </RoleProtectedRoute>
         ),
-      },
-      {
-        path: 'admin',
-        element: (
-          <ProtectedRoute requiredRole="admin">
-            <ComingSoonPage title="Admin Dashboard" />
-          </ProtectedRoute>
-        ),
-      },
+        children: [
 
-      // Error Routes
-      {
-        path: '*',
-        element: (
-          <div style={{
-            padding: '40px',
-            textAlign: 'center',
-            minHeight: '400px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <h1>404 - Trang không tìm thấy</h1>
-            <p>Trang bạn đang tìm kiếm không tồn tại.</p>
-            <button onClick={() => window.location.href = '/'}>← Về trang chủ</button>
-          </div>
-        )
-      }
+
+          {
+            path: 'students',
+            element: <StudentsPage />,
+          },
+          // {
+          //   path: 'health-profiles',
+          //   element: <HealthProfilesPage />,
+          //   path: 'health-profiles',          //   element: <HealthProfilesPage />,
+          // },
+          {
+            path: 'health-profiles/:studentId',
+            element: <HealthProfilesPage />,
+          }, {
+            path: 'health-profiles/:studentId/add',
+            element: <AddHealthProfilePage />,
+          },
+          {
+            path: 'health-profiles/:studentId/edit',
+            element: <EditHealthProfilePage />,
+          },
+          {
+            path: 'medication-history/:studentId',
+            element: <MedicationHistoryPage />,
+          },
+          {
+            path: 'health-profile/:studentId/details/:profileId',
+            element: <div>Health Profile Details Page - Coming Soon</div>, // Placeholder
+          },
+          {
+            path: 'medical-orders',
+            element: <div>Medical Orders Page - Coming Soon</div>, // Placeholder
+          },
+          {
+            path: 'reports',
+            element: <div>Reports Page - Coming Soon</div>, // Placeholder
+          },
+          {
+            path: 'settings',
+            element: <div>Settings Page - Coming Soon</div>, // Placeholder
+          },
+        ]
+      },
     ]
   }
-]);
+]
+);
 
 export default router;

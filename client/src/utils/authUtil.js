@@ -15,3 +15,14 @@ export const authUtils = {
     } else return false;
   }
 };
+
+//role utils 
+export const roleUtils = {
+  isAdmin: (user) => user && user.role === "admin",
+  isParent: (user) => user && user.role === "parent",
+  isNursery: (user) => user && user.role === "nurse",
+  isAcceptedRole: (roles, user) => {
+    return user && roles.includes(user.role);
+  }
+};
+

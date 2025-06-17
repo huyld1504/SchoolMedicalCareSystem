@@ -16,7 +16,7 @@ import {
   Lock,
   ArrowBack
 } from '@mui/icons-material';
-import {LoadingButton} from '@mui/lab';
+import { LoadingButton } from '@mui/lab';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -53,8 +53,9 @@ const LoginPage = () => {
     onSubmit: async (values) => {
       setIsLogin(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const response = await authApi.login(values); if (response.isSuccess) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await authApi.login(values);
+        if (response.isSuccess) {
           const user = { id: response.data.id, email: response.data.email, role: response.data.role };
           const accessToken = response.data.token;
           const refreshToken = response.data.refreshToken;
@@ -62,21 +63,10 @@ const LoginPage = () => {
           localStorage.setItem("refreshToken", refreshToken);
           dispatch(setUser({ user }));
           toast.success(response.message);
-
-          // Redirect based on user role
-          switch (user.role) {
-            case 'parent':
-              navigate("/parent");
-              break;
-            case 'admin':
-              navigate("/admin");
-              break;
-            case 'nurse':
-              navigate("/nurse");
-              break;
-            default:
-              navigate("/");
-          }
+        } if (response.data.role === 'nurse') {
+          navigate('/nurse/students');
+        } else if (response.data.role === 'parent') {
+          navigate('/parent/students');
         }
         setIsLogin(false);
       } catch (error) {
