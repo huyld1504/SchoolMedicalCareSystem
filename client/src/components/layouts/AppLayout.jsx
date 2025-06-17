@@ -15,8 +15,9 @@ export default function AppLayout() {
       const pathName = window.location.pathname;
       if (user) {
         dispatch(setUser({ user }));
+        
         if (['/login', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
-          navigate('/dashboard');
+          navigate('/nurse');
         } else {
           navigate('/login');
         }
