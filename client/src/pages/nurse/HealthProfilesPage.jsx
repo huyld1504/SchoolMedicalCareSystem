@@ -37,13 +37,13 @@ import healthProfileAPI from '../../api/healthProfileApi';
 const HealthProfilesPage = () => {
     const { studentId } = useParams();
     const navigate = useNavigate();
-    
+
     // State cho pagination
     const [query, setQuery] = useState({
         page: 1,
         limit: 10
     });
-    
+
     // State cho data từ API
     const [healthProfile, setHealthProfile] = useState([]);
     const [paginationInfo, setPaginationInfo] = useState({
@@ -52,7 +52,7 @@ const HealthProfilesPage = () => {
         limit: 10,
         totalPages: 0
     });
-    
+
     const [studentInfo, setStudentInfo] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -68,11 +68,11 @@ const HealthProfilesPage = () => {
             if (studentId) {
                 const response = await healthProfileAPI.getByChildId(studentId, query);
                 console.log('Health profile response:', response);
-                
+
                 if (response.isSuccess && response.data) {
                     // Lấy data từ API response
                     setHealthProfile(response.data.records || []);
-                    
+
                     // Cập nhật thông tin pagination từ API
                     setPaginationInfo({
                         total: response.data.total || 0,
@@ -80,12 +80,12 @@ const HealthProfilesPage = () => {
                         limit: response.data.limit || 10,
                         totalPages: response.data.totalPages || 0
                     });
-                    
+
                     // Lấy thông tin student từ hồ sơ y tế đầu tiên
                     if (response.data.records && response.data.records.length > 0 && response.data.records[0].studentId) {
                         setStudentInfo(response.data.records[0].studentId);
                     }
-                    
+
                     console.log('Health profiles:', response.data.records);
                     console.log('Pagination info:', {
                         total: response.data.total,
@@ -149,10 +149,10 @@ const HealthProfilesPage = () => {
         navigate(`/nurse/health-profiles/${studentId}/add`);
     };
 
-    const 
-    handleEditProfile = (profileId) => {
-        navigate(`/nurse/health-profiles/${studentId}/edit`);
-    };
+    const
+        handleEditProfile = (profileId) => {
+            navigate(`/nurse/health-profiles/${studentId}/edit`);
+        };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
@@ -225,11 +225,11 @@ const HealthProfilesPage = () => {
                             <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                 Danh sách hồ sơ y tế ({paginationInfo.total} hồ sơ)
                             </Typography>
-                            
+
                             {/* Dropdown cho rows per page */}
-                           
+
                         </Box>
-                        
+
                         <TableContainer sx={{
                             maxHeight: 600,
                             overflowX: 'hidden',
@@ -374,32 +374,30 @@ const HealthProfilesPage = () => {
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell align="center">
-                                                {index === 0 ? (
-                                                    <Tooltip title="Chỉnh sửa hồ sơ mới nhất">
+                                                {/* --- ĐÂY LÀ THAY ĐỔI QUAN TRỌNG --- */}
+                                                {/* Chỉ hiển thị nút khi ở trang 1 VÀ là item đầu tiên */}
+                                                {(paginationInfo.page === 1 && index === 0) && (
+                                                    <Tooltip title="Chỉnh sửa hồ sơ">
                                                         <IconButton
                                                             color="primary"
-                                                            size="small"
-                                                            onClick={() => handleEditProfile(record._id)}
-                                                            sx={{
-                                                                bgcolor: 'primary.light',
-                                                                '&:hover': { bgcolor: 'primary.main', color: 'white' }
-                                                            }}
+                                                            onClick={() => handleEditProfile(profile._id)}
                                                         >
-                                                            <EditIcon fontSize="small" />
+                                                            <EditIcon />
                                                         </IconButton>
                                                     </Tooltip>
-                                                ) : null}
+                                                )}
+                                                {/* Các nút khác như "Xem chi tiết" có thể luôn hiển thị */}
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                        
+
                         {/* Pagination component được sửa */}
                         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            
-                            
+
+
                             <Pagination
                                 count={paginationInfo.totalPages}
                                 page={paginationInfo.page}

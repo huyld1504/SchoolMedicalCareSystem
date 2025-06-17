@@ -411,9 +411,7 @@ const StudentsPage = () => {
                                                                 <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#000000' }}>
                                                                     {student.name}
                                                                 </Typography>
-                                                                <Typography variant="caption" sx={{ color: '#000000' }}>
-                                                                    ID: {student._id}
-                                                                </Typography>
+                                                                
                                                             </Box>
                                                         </Box>
                                                     </TableCell>
