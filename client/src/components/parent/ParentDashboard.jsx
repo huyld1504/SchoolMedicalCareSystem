@@ -311,103 +311,7 @@ const ParentDashboard = () => {
                 </Paper>
 
                 {/* Quick Actions */}
-                <Grid container spacing={3} sx={{ mb: 4 }}>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{
-                            p: 2,
-                            cursor: 'pointer',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                            onClick={() => navigate('/parent/children/add')}
-                        >
-                            <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                                <PersonAdd sx={{ fontSize: 48, color: '#4caf50', mb: 1 }} />
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                    Thêm con em
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Thêm thông tin con em mới
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{
-                            p: 2,
-                            cursor: 'pointer',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                            onClick={() => navigate('/parent/health')}
-                        >
-                            <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                                <FavoriteOutlined sx={{ fontSize: 48, color: '#f44336', mb: 1 }} />
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                    Sức khỏe
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Theo dõi sức khỏe con em
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{
-                            p: 2,
-                            cursor: 'pointer',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                            onClick={() => navigate('/parent/notifications')}
-                        >
-                            <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                                <Notifications sx={{ fontSize: 48, color: '#ff9800', mb: 1 }} />
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                    Thông báo
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Xem thông báo mới nhất
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{
-                            p: 2,
-                            cursor: 'pointer',
-                            transition: 'transform 0.2s, box-shadow 0.2s',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: 4
-                            }
-                        }}
-                            onClick={() => navigate('/parent/medical-orders/create')}
-                        >
-                            <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                                <EventNote sx={{ fontSize: 48, color: '#2196f3', mb: 1 }} />
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                    Đơn thuốc
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Tạo đơn thuốc mới
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
+                
 
                 {/* Stats Cards */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -465,23 +369,7 @@ const ParentDashboard = () => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Card>
-                            <CardContent>
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Box>
-                                        <Typography color="textSecondary" gutterBottom>
-                                            Hoạt động tháng này
-                                        </Typography>
-                                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                                            12
-                                        </Typography>
-                                    </Box>
-                                    <TrendingUp sx={{ fontSize: 40, color: '#2196f3' }} />
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                    
                 </Grid>
 
                 {/* Children List */}
