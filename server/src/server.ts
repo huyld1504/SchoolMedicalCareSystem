@@ -3,6 +3,7 @@ import helmet from "helmet";
 import logger from "jet-logger";
 import morgan from "morgan";
 import path from "path";
+import cors from "cors";
 
 import BaseRouter from "@src/routes";
 
@@ -24,6 +25,7 @@ const app = express();
 // Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // Show routes called in console during development
 if (ENV.NodeEnv === NodeEnvs.Dev) {

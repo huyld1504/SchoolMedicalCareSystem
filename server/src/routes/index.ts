@@ -10,6 +10,7 @@ import RoleRoutes from "./RoleRoutes";
 import UserRoutes from "./UserRoutes";
 import HealthProfileRoutes from "./HealthProfileRoutes";
 import MedicalEventRoutes from "./MedicalEventRoutes";
+import MedicalOrderRoutes from "./MedicalOrderRoutes";
 
 /******************************************************************************
                                 Setup
@@ -44,6 +45,10 @@ const authRouter = Router();
 // Add AuthRouter
 authRouter.post(Paths.Auth.Login, AuthRoutes.login);
 authRouter.post(Paths.Auth.Register, AuthRoutes.register);
+authRouter.post(
+  Paths.Auth.VerifyToken,
+  [transform(), auth()],
+  AuthRoutes.verifyToken);
 
 /******************************************************************************
                                 Role routes
@@ -62,7 +67,7 @@ childRouter.post(
   ChildRoutes.add
 );
 childRouter.get(
-  Paths.Default,
+  Paths.Child.GetAll,
   [transform(), auth(), authRoles(["parent", "nurse"])],
   ChildRoutes.get
 );
@@ -126,6 +131,46 @@ medicalEventRouter.delete(
   MedicalEventRoutes.deleteById
 );
 /******************************************************************************
+                                Medical order routes
+******************************************************************************/
+const medicalOrderRouter = Router();
+medicalOrderRouter.post(
+  Paths.MedicalOrder.Add,
+  [transform(), auth(), authRoles(["parent"])],
+  MedicalOrderRoutes.add
+);
+medicalOrderRouter.get(
+  Paths.Default,
+  [transform(), auth(), authRoles(["parent", "nurse"])],
+  MedicalOrderRoutes.get
+);
+medicalOrderRouter.put(
+  Paths.MedicalOrder.UpdateStatus,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalOrderRoutes.updateStatus
+);
+medicalOrderRouter.get(
+  Paths.MedicalOrder.GetById,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  MedicalOrderRoutes.getById
+);
+medicalOrderRouter.post(
+  Paths.MedicalOrder.AddRecord,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalOrderRoutes.addRecord
+);
+medicalOrderRouter.get(
+  Paths.MedicalOrder.GetRecords,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  MedicalOrderRoutes.getRecords
+);
+medicalOrderRouter.put(
+  Paths.MedicalOrder.AdditionalDetails,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalOrderRoutes.additionalMedicalDetails
+);
+
+/******************************************************************************
                                 Index routes
 ******************************************************************************/
 // Add UserRouter
@@ -140,6 +185,9 @@ apiRouter.use(Paths.Child.Base, childRouter);
 apiRouter.use(Paths.HealthProfile.Base, healthProfileRouter);
 // Add MedicalEventRouter
 apiRouter.use(Paths.MedicalEvent.Base, medicalEventRouter);
+// Add MedicalOrderRouter
+apiRouter.use(Paths.MedicalOrder.Base, medicalOrderRouter);
+
 /******************************************************************************
                                 Export default
 ******************************************************************************/

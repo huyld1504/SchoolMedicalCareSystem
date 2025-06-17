@@ -12,11 +12,11 @@ const axiosClient = axios.create({
 
 // Token management functions
 const getAccessToken = () => {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem('token');
 };
 
 const setAccessToken = (token) => {
-    localStorage.setItem('accessToken', token);
+    localStorage.setItem('token', token);
 };
 
 const getRefreshToken = () => {
@@ -28,7 +28,7 @@ const setRefreshToken = (token) => {
 };
 
 const clearTokens = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
 };
 
@@ -49,7 +49,7 @@ axiosClient.interceptors.request.use(
 // Response Interceptor - Handle token refresh and errors
 axiosClient.interceptors.response.use(
     (response) => {
-        // Return successful responses as-is
+        if (response && response.data) return response.data;
         return response;
     },
     async (error) => {
@@ -103,7 +103,46 @@ axiosClient.interceptors.response.use(
     }
 );
 
+const callAPI = async (method, endpoint, params) => {
+    try {
+        const response = await axiosClient({
+            method: method,
+            url: endpoint,
+            data: params,
+        });
+        return response;
+    } catch (err) {
+        console.error(`API Error [${method}] ${endpoint}:`, err.response?.data || err.message);
+        throw err;
+    }
+};
+
+
+const callAPIFormData = async (method, endpoint, formData) => {
+    try {
+        const response = await axios({
+            method: method,
+            url: baseURL + endpoint,
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${getAccessToken()}`
+            },
+        });
+        if (response && response.data) return response.data;
+        return response;
+    } catch (err) {
+        console.error(`FormData API Error [${method}] ${endpoint}:`, err.response?.data || err.message);
+        throw err.response?.data || err;
+    }
+};
+
 // Export both the client and token management functions
+export {
+    callAPI,
+    callAPIFormData
+};
+
 export default axiosClient;
 
 export {

@@ -13,6 +13,8 @@ import { ValidationError } from "@src/common/util/util.route-errors";
 import { User } from "@src/models/User";
 import { log } from "console";
 import { registerSchema } from "@src/schemas/user.schema";
+import roleService from "@src/services/RoleService";
+import { IRole } from "@src/models/Role";
 
 /******************************************************************************
                                 Constants
@@ -65,7 +67,28 @@ async function register(req: IReq, res: IRes) {
   res.status(HttpStatusCodes.CREATED).json(response);
 }
 
+const verifyToken = async (req: IReq, res: IRes) => {
+  const user = req.user;
+  console.log(user);
+  const userRole: IRole | null = await roleService.getById(user.roleId);
+  if(!userRole) {
+    throw new ValidationError("User role not found"); 
+  }
+
+  const response: ApiResponse = new ApiResponse(
+    HttpStatusCodes.OK,
+    "Token verified successfully",
+    {
+      id: user._id,
+      email: user.email,
+      role: userRole.name,
+    });
+
+    return res.status(HttpStatusCodes.OK).json(response);
+}
+
 export default {
   login,
   register,
+  verifyToken
 } as const;
