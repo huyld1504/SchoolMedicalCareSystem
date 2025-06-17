@@ -1,3 +1,4 @@
+import { addHealthProfileSchema, updateHealthProfileSchema } from "@src/schemas/healthProfile.schema";
 import {
   PaginationOptions,
   SortOptions,
@@ -7,13 +8,12 @@ import {
   updateHealthProfileSchema,
 } from "@src/schemas/healthProfile.schema";
 import { IReq, IRes } from "./common/types";
-import { ValidationError } from "@src/common/util/util.route-errors";
+import { AuthorizationError, ValidationError } from "@src/common/util/util.route-errors";
 import healthProfileService from "@src/services/HealthProfileService";
-import { ApiResponse } from "@src/common/util/util.api-response";
-import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
-import { HealthProfileQueryBuilder } from "@src/payload/request/filter/healthProfile.request";
-import { Child } from "@src/models/Child";
-import roleService from "@src/services/RoleService";
+import { ApiResponse } from '@src/common/util/util.api-response';
+import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
+import { HealthProfileQueryBuilder } from '@src/payload/request/filter/healthProfile.request';
+import { Child } from '@src/models/Child';
 import { HealthProfile } from "@src/models/HealthProfile";
 import childService from "@src/services/ChildService";
 
@@ -70,9 +70,7 @@ async function getByChildId(req: IReq, res: IRes) {
   if (userRole.name === "parent") {
     const child = await Child.findOne({ _id: childId, userId: user._id });
     if (!child) {
-      throw new ValidationError(
-        "You do not have permission to access this child's health profile."
-      );
+      throw new AuthorizationError("You do not have permission to access this child's health profile.");
     }
   }
 

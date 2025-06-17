@@ -9,6 +9,7 @@ import ChildRoutes from "./ChildRoutes";
 import RoleRoutes from "./RoleRoutes";
 import UserRoutes from "./UserRoutes";
 import HealthProfileRoutes from "./HealthProfileRoutes";
+import MedicalEventRoutes from "./MedicalEventRoutes";
 import MedicalOrderRoutes from "./MedicalOrderRoutes";
 
 /******************************************************************************
@@ -96,6 +97,40 @@ healthProfileRouter.put(
 );
 
 /******************************************************************************
+                                Medical Event routes
+******************************************************************************/
+const medicalEventRouter = Router();
+medicalEventRouter.post(
+  Paths.MedicalEvent.Create,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalEventRoutes.create
+);
+medicalEventRouter.get(
+  Paths.MedicalEvent.GetAll,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalEventRoutes.getAll
+);
+medicalEventRouter.get(
+  Paths.MedicalEvent.GetByStudentId,
+  [transform(), auth(), authRoles(["nurse", "parent"])],
+  MedicalEventRoutes.getByStudentId
+);
+medicalEventRouter.get(
+  Paths.MedicalEvent.GetById,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalEventRoutes.getById
+);
+medicalEventRouter.put(
+  Paths.MedicalEvent.Update,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalEventRoutes.updateById
+);
+medicalEventRouter.delete(
+  Paths.MedicalEvent.Delete,
+  [transform(), auth(), authRoles(["nurse"])],
+  MedicalEventRoutes.deleteById
+);
+/******************************************************************************
                                 Medical order routes
 ******************************************************************************/
 const medicalOrderRouter = Router();
@@ -148,6 +183,8 @@ apiRouter.use(Paths.Roles.Base, roleRouter);
 apiRouter.use(Paths.Child.Base, childRouter);
 //Add HealthProfileRouter
 apiRouter.use(Paths.HealthProfile.Base, healthProfileRouter);
+// Add MedicalEventRouter
+apiRouter.use(Paths.MedicalEvent.Base, medicalEventRouter);
 // Add MedicalOrderRouter
 apiRouter.use(Paths.MedicalOrder.Base, medicalOrderRouter);
 
