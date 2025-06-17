@@ -380,7 +380,7 @@ const HealthProfilesPage = () => {
                                                     <Tooltip title="Chỉnh sửa hồ sơ">
                                                         <IconButton
                                                             color="primary"
-                                                            onClick={() => handleEditProfile(profile._id)}
+                                                            onClick={() => handleEditProfile(studentId)}
                                                         >
                                                             <EditIcon />
                                                         </IconButton>
