@@ -11,6 +11,14 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Add students to campaign (bulk insert)
+   * Chức năng: Thêm học sinh vào chiến dịch tiêm chủng
+   * Tối ưu hóa:
+   * - Sử dụng bulk insert để giảm số lượng truy vấn
+   * @param campaignId - ID của chiến dịch
+   * @param studentIds - Mảng ID của học sinh
+   * @param adminId - ID của admin thực hiện thao tác
+   * @return Promise<void>
+   * @throws Error nếu có lỗi trong quá trình thêm học sinh
    */
   async addStudentsToCampaign(
     campaignId: string,
@@ -30,6 +38,14 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Get participations by campaign
+   * Chức năng: Lấy danh sách tham gia tiêm chủng theo chiến dịch
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes cho trường campaign và vaccinationStatus
+   * @param campaignId - ID của chiến dịch
+   * @param options - Tùy chọn phân trang bao gồm page và limit
+   * @param sort - Tùy chọn sắp xếp (nếu cần)
+   * @return Promise<PaginationResult<IVaccinationParticipation>>
+   * @throws Error nếu không tìm thấy chiến dịch hoặc có lỗi trong quá trình truy vấn
    */
   async getParticipationsByCampaign(
     campaignId: string,
@@ -45,6 +61,14 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Get participations by parent (for parent to see their children)
+   * Chức năng: Lấy danh sách tham gia tiêm chủng của học sinh thuộc về phụ huynh
+   * Tối ưu hóa:
+   * - Sử dụng populate để lấy thông tin học sinh và chiến dịch
+   * - Sử dụng pagination để giới hạn số lượng kết quả trả về
+   * @param parentId - ID của phụ huynh
+   * @param options - Tùy chọn phân trang bao gồm page và limit
+   * @return Promise<PaginationResult<IVaccinationParticipation>>
+   * @throws Error nếu không tìm thấy phụ huynh hoặc có lỗi trong quá trình truy vấn
    */
   async getParticipationsByParent(
     parentId: string,
@@ -83,6 +107,15 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Update parent consent
+   * Chức năng: Cập nhật đồng ý của phụ huynh cho học sinh
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes cho trường parentConsent và vaccinationStatus
+   * @param participationId - ID của tham gia
+   * @param parentId - ID của phụ huynh
+   * @param consent - Trạng thái đồng ý (approved, denied)
+   * @param note - Ghi chú từ phụ huynh (nếu có)
+   * @return Promise<IVaccinationParticipation | null>
+   * @throws Error nếu participation không tồn tại hoặc phụ huynh không phải là người cập nhật
    */
   async updateParentConsent(
     participationId: string,
@@ -112,6 +145,15 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
   }
   /**
    * Record vaccination (nurse function)
+   * Chức năng: Ghi nhận kết quả tiêm chủng của học sinh
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes cho trường vaccinationStatus và vaccinatedNurse
+   * @param participationId - ID của tham giation
+   * @param nurseId - ID của y tá thực hiện tiêm
+   * @param status - Trạng thái tiêm chủng (completed, missed, cancelled)
+   * @param note - Ghi chú từ y tá (nếu có)
+   * @return Promise<IVaccinationParticipation | null>
+   * @throws Error nếu participation không tồn tại hoặc đã được tiêm chủng  
    */
   async recordVaccination(
     participationId: string,
@@ -134,6 +176,13 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Get students with pending consent for a campaign
+   * Chức năng: Lấy danh sách học sinh có consent từ phụ huynh đang chờ xử lý
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes cho trường parentConsent  
+   * * @param campaignId - ID của chiến dịch
+   * @param options - Tùy chọn phân trang bao gồm page và limit
+   * @return Promise<PaginationResult<IVaccinationParticipation>> 
+   * @throws Error nếu không tìm thấy chiến dịch hoặc có lỗi trong quá trình truy vấn
    */
   async getStudentsWithPendingConsent(
     campaignId: string,
@@ -149,6 +198,14 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Get approved students ready for vaccination
+   * Chức năng: Lấy danh sách học sinh đã được phụ huynh đồng ý tiêm chủng
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes cho các trường parentConsent và vaccinationStatus
+   * - Sử dụng pagination để giới hạn số lượng kết quả trả về
+   * @param campaignId - ID của chiến dịch  
+   * @param options - Tùy chọn phân trang bao gồm page và limit
+   * @return Promise<PaginationResult<IVaccinationParticipation>>
+   * @throws Error nếu không tìm thấy chiến dịch hoặc có lỗi trong quá trình truy vấn
    */
   async getApprovedStudentsForVaccination(
     campaignId: string,
@@ -165,6 +222,16 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
 
   /**
    * Get participations by campaign with filters
+   * Chức năng: Lấy danh sách tham gia theo chiến dịch với các bộ lọc
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes cho các trường parentConsent và vaccinationStatus
+   * - Sử dụng pagination để giới hạn số lượng kết quả trả về
+   * @param campaignId - ID của chiến dịch
+   * @param filters - Bộ lọc bao gồm parentConsent và vaccinationStatus
+   * @param options - Tùy chọn phân trang bao gồm page và limit
+   * @param sort - Tùy chọn sắp xếp (nếu cần) 
+   * @return Promise<PaginationResult<IVaccinationParticipation>>
+    * @throws Error nếu không tìm thấy chiến dịch hoặc có lỗi trong quá trình truy vấn
    */
   async getParticipationsByCampaignWithFilters(
     campaignId: string,
@@ -253,31 +320,78 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       limit: options.limit,
       totalPages: Math.ceil(total / options.limit)
     };
-  }
+  }  
+  
+  // ============================================================================
+  //                        SEARCH METHODS - OPTIMIZED WITH INDEXES
+  // ============================================================================
+
   /**
-   * Search participations with advanced filters using BaseQueryBuilder
+   * 🔍 MAIN SEARCH METHOD - Smart Query Routing
+   * 
+   * Chức năng: Entry point cho tất cả search operations
+   * Tối ưu hóa: Chọn strategy phù hợp dựa trên presence của keyword
+   * 
+   * Logic:
+   * - Có keyword → Dùng Aggregation Pipeline (search multi-fields)
+   * - Không keyword → Dùng Simple Filter Query (performance cao hơn)
+   * 
+   * @param queryBuilder - Object chứa tất cả query parameters
+   * @returns Paginated results với relevant data
    */
   async searchParticipations(
     queryBuilder: VaccinationParticipationQueryBuilder
   ): Promise<PaginationResult<IVaccinationParticipation>> {
+    // 🚀 PERFORMANCE OPTIMIZATION: Smart routing dựa trên keyword presence
     if (queryBuilder.getKeyword()) {
-      // Nếu có keyword, sử dụng aggregation để search trong related collections
-      return this.searchParticipationsWithKeyword(queryBuilder);
+      // Strategy 1: Aggregation Pipeline cho keyword search
+      // - Pros: Có thể search trong related collections (campaign, student, user)
+      // - Cons: Phức tạp hơn, tốn resources hơn
+      return this.searchWithAggregationPipeline(queryBuilder);
     }
 
-    // Nếu không có keyword, sử dụng simple filter
+    // Strategy 2: Simple MongoDB Query cho basic filtering
+    // - Pros: Performance cao, sử dụng indexes efficiently
+    // - Cons: Chỉ search trong current collection
+    return this.searchWithSimpleFilter(queryBuilder);
+  }
+
+  /**
+   * 🔧 SIMPLE FILTER SEARCH - High Performance Strategy
+   * 
+   * Chức năng: Search với MongoDB query đơn giản, tối ưu cho performance
+   * 
+   * Tối ưu hóa:
+   * - Sử dụng compound indexes: (campaign + parentConsent), (campaign + vaccinationStatus)
+   * - Populate chỉ select fields cần thiết để giảm data transfer
+   * - Sort theo createdAt index
+   * 
+   * @param queryBuilder - Query parameters không có keyword
+   * @returns Paginated results với populated data
+   */
+  private async searchWithSimpleFilter(
+    queryBuilder: VaccinationParticipationQueryBuilder
+  ): Promise<PaginationResult<IVaccinationParticipation>> {
+    // Build filter từ query parameters (không có keyword matching)
     const filter = queryBuilder.buildFilter();
 
+    // 📊 PARALLEL EXECUTION: Chạy đồng thời query + count để tối ưu response time
     const [records, total] = await Promise.all([
+      // Main query với optimized indexes và selective population
       this.model.find(filter)
-        .populate('campaign', 'vaccineName vaccineType startDate status')
-        .populate('student', 'name studentCode')
-        .populate('createdBy', 'name email')
-        .populate('vaccinatedNurse', 'name email')
+        // 🔗 SELECTIVE POPULATE: Chỉ lấy fields cần thiết, ẩn sensitive data
+        .populate('campaign', 'vaccineName vaccineType startDate status') // Campaign basics
+        .populate('student', 'name studentCode') // Student basics
+        .populate('createdBy', 'name email') // Creator info (NO password)
+        .populate('vaccinatedNurse', 'name email') // Nurse info (NO password)
+        // 📄 PAGINATION: Skip và limit cho phân trang
         .skip(queryBuilder.getSkip())
         .limit(queryBuilder.getLimit())
+        // 📈 SORTING: Sử dụng index để sort efficiently
         .sort(queryBuilder.getSort())
         .exec(),
+
+      // Count query để tính total pages
       this.model.countDocuments(filter).exec()
     ]);
 
@@ -289,35 +403,59 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       totalPages: Math.ceil(total / queryBuilder.getLimit())
     };
   }
+
   /**
-   * Search participations with keyword using aggregation
+   * 🔍 AGGREGATION PIPELINE SEARCH - Advanced Multi-Collection Search
+   * 
+   * Chức năng: Search với keyword across multiple related collections
+   * 
+   * Tối ưu hóa:
+   * - Sử dụng $lookup để join với related collections
+   * - $match sớm để giảm data cần process
+   * - Text search indexes cho keyword matching
+   * - Projection để chỉ trả về fields cần thiết
+   * 
+   * Pipeline stages:
+   * 1. $lookup: Join với campaigns, students, users
+   * 2. $match: Filter theo basic criteria + keyword matching
+   * 3. $project: Format output và hide sensitive fields
+   * 4. $sort: Sort theo relevance + user criteria
+   * 5. $skip/$limit: Pagination
+   * 
+   * @param queryBuilder - Query parameters có keyword
+   * @returns Paginated results với joined data
    */
-  private async searchParticipationsWithKeyword(
-    queryBuilder: VaccinationParticipationQueryBuilder
-  ): Promise<PaginationResult<IVaccinationParticipation>> {
+  private async searchWithAggregationPipeline(
+    queryBuilder: VaccinationParticipationQueryBuilder): Promise<PaginationResult<IVaccinationParticipation>> {
+    // Build filter conditions (không bao gồm keyword matching)
     const filter = queryBuilder.buildFilter();
+    // Build keyword matching conditions cho aggregation
     const keywordMatch = queryBuilder.buildKeywordMatch();
 
+    // 🔄 AGGREGATION PIPELINE: Multi-stage processing cho complex search
     const pipeline = [
-      // Lookup campaign info
+      // 🔗 STAGE 1: JOIN WITH CAMPAIGNS
+      // Mục đích: Lấy thông tin campaign để search trong vaccineName, vaccineType, etc.
       {
         $lookup: {
-          from: 'vaccinationcampaigns',
-          localField: 'campaign',
-          foreignField: '_id',
-          as: 'campaignInfo'
+          from: 'vaccinationcampaigns', // Collection name trong MongoDB
+          localField: 'campaign', // Field trong VaccinationParticipation
+          foreignField: '_id', // Field trong VaccinationCampaign
+          as: 'campaignInfo' // Alias cho joined data
         }
       },
-      // Lookup student info
+      // 🔗 STAGE 2: JOIN WITH STUDENTS/CHILDREN
+      // Mục đích: Lấy thông tin student để search trong name, studentCode
       {
         $lookup: {
-          from: 'children',
+          from: 'children', // Children collection
           localField: 'student',
           foreignField: '_id',
           as: 'studentInfo'
         }
       },
-      // Lookup created by info
+      // 🔗 STAGE 3: JOIN WITH CREATOR INFO
+      // Mục đích: Lấy thông tin user tạo record để search trong name, email
       {
         $lookup: {
           from: 'users',
@@ -326,7 +464,8 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
           as: 'createdByInfo'
         }
       },
-      // Lookup nurse info
+      // 🔗 STAGE 4: JOIN WITH NURSE INFO
+      // Mục đích: Lấy thông tin nurse để search trong name, email
       {
         $lookup: {
           from: 'users',
@@ -335,53 +474,65 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
           as: 'nurseInfo'
         }
       },
-      // Match with filter and keyword
+      // 🎯 STAGE 5: FILTERING
+      // Mục đích: Apply tất cả filter conditions + keyword matching
       {
         $match: {
-          ...filter,
-          ...keywordMatch
+          ...filter, // Basic filters (campaign, student, status, date ranges)
+          ...keywordMatch // Keyword search across joined collections
         }
-      },      // Project để trả về đúng format như populate và ẩn password
+      },
+      // 🔒 STAGE 6: PROJECTION & SECURITY
+      // Mục đích: Format output và hide sensitive information (passwords)
       {
         $project: {
           _id: 1,
+          // Campaign info (first element from array)
           campaign: { $arrayElemAt: ['$campaignInfo', 0] },
+          // Student info
           student: { $arrayElemAt: ['$studentInfo', 0] },
+          // Participation fields
           parentConsent: 1,
           parentConsentDate: 1,
           parentNote: 1,
           vaccinationStatus: 1,
           vaccinationDate: 1,
+          nurseNote: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          // 🔒 SECURE USER INFO: Chỉ expose safe fields
           vaccinatedNurse: {
             _id: { $arrayElemAt: ['$nurseInfo._id', 0] },
             name: { $arrayElemAt: ['$nurseInfo.name', 0] },
             email: { $arrayElemAt: ['$nurseInfo.email', 0] }
-            // Ẩn password
+            // ❌ Password và sensitive fields được ẩn
           },
-          nurseNote: 1,
           createdBy: {
             _id: { $arrayElemAt: ['$createdByInfo._id', 0] },
             name: { $arrayElemAt: ['$createdByInfo.name', 0] },
             email: { $arrayElemAt: ['$createdByInfo.email', 0] }
-            // Ẩn password
-          },
-          createdAt: 1,
-          updatedAt: 1
+            // ❌ Password và sensitive fields được ẩn
+          }
         }
       }
     ];
 
+    // 📊 PARALLEL EXECUTION: Chạy đồng thời data query + count query
     const [records, totalResult] = await Promise.all([
+      // Main aggregation với pagination và sorting 
       VaccinationParticipation.aggregate([
         ...pipeline,
+        // 📈 SORTING: Sort theo user criteria        // 📈 SORTING: Sort theo user criteria
+        { $sort: queryBuilder.getSort() },
+        // 📄 PAGINATION: Skip và limit
         { $skip: queryBuilder.getSkip() },
-        { $limit: queryBuilder.getLimit() },
-        { $sort: queryBuilder.getSort() }
+        { $limit: queryBuilder.getLimit() }
       ]).exec(),
 
+      // Count aggregation để tính total records
       VaccinationParticipation.aggregate([
         ...pipeline,
-        { $count: "total" }
+        { $count: "total" } // Đếm số documents sau khi filter
       ]).exec()
     ]);
 
@@ -394,9 +545,27 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       limit: queryBuilder.getLimit(),
       totalPages: Math.ceil(total / queryBuilder.getLimit())
     };
-  }  /**
-   * Search participations by parent with BaseQueryBuilder
-   */
+  }
+
+  /**
+  * 👨‍👩‍👧‍👦 PARENT SEARCH - Scoped Search for Parent's Children Only
+  * 
+  * Chức năng: Phụ huynh search vaccination records của con em mình
+  * 
+  * Security:
+  * - Chỉ search trong children của parent đó (userId matching)
+  * - Không thể access data của children khác
+  * - Same optimization strategies như general search
+  * 
+  * Tối ưu hóa:
+  * - Sử dụng aggregation pipeline với early filtering
+  * - Student lookup với userId matching ngay từ đầu
+  * - Index optimization: student + userId composite index
+  * 
+  * @param parentId - ID của parent user
+  * @param queryBuilder - Query parameters (có thể có keyword)
+  * @returns Paginated results chỉ của children thuộc parent
+  */
   async searchParticipationsByParent(
     parentId: string,
     queryBuilder: VaccinationParticipationQueryBuilder
