@@ -63,5 +63,22 @@ export default {
     AddRecord: "/:id/add-record",
     GetRecords: "/:id/records",
     AdditionalDetails: "/:id/additional-details",
+  }, VaccinationCampaign: {
+    Base: "/vaccination-campaigns",
+    Create: "/create",
+    Update: "/update/:campaignId",
+    GetAll: "/all",
+    GetById: "/get/:campaignId",
+    AddStudents: "/add-students/:campaignId",
+    GetParticipations: "/participations/:campaignId",
+    Search: "/search",
+  },
+  VaccinationParticipation: {
+    Base: "/vaccination-participations",
+    ParentConsent: "/parent-consent/:participationId",
+    RecordVaccination: "/record/:participationId",
+    GetParentParticipations: "/parent",
+    Search: "/search",
+    SearchParent: "/search-parent",
   },
 } as const;
