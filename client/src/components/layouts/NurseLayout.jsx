@@ -65,10 +65,16 @@ const NurseLayout = () => {
         },
         
         {
-            text: 'Sự kiện y tế',
             icon: <AssignmentIcon />,
             path: '/nurse/medical-orders',
-            active: location.pathname === '/nurse/medical-events'
+            active: location.pathname === '/nurse/medical-orders'
+        },
+        
+        {
+            text: 'Sự kiện y tế',
+            icon: <MedicalServices />,
+            path: '/nurse/medical-events',
+            active: location.pathname.includes('/medical-events')
         },
 
         

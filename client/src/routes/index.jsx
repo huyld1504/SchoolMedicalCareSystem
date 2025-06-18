@@ -10,6 +10,8 @@ import HealthProfilesPage from '../pages/nurse/HealthProfilesPage';
 import AddHealthProfilePage from '../pages/nurse/AddHealthProfilePage';
 import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
 import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
+import MedicalEventsPage from '../pages/nurse/MedicalEventsPage';
+import MedicalEventDetailPage from '../pages/nurse/MedicalEventDetailPage';
 import AppLayout from '../components/layouts/AppLayout';
 import LandingLayout from '../components/layouts/LandingLayout';
 
@@ -50,7 +52,8 @@ const router = createBrowserRouter([
                     // {
                     //   path: 'health-profiles',
                     //   element: <HealthProfilesPage />,
-                    //   path: 'health-profiles',          //   element: <HealthProfilesPage />,
+                    //   path: 'health-profiles',          
+                    //   element: <HealthProfilesPage />,
                     // },
                     {
                         path: 'health-profiles/:studentId',
@@ -62,10 +65,34 @@ const router = createBrowserRouter([
                     {
                         path: 'health-profiles/:studentId/edit',
                         element: <EditHealthProfilePage />,
-                    },
-                    {
+                    },                    {
                         path: 'medication-history/:studentId',
                         element: <MedicationHistoryPage />,
+                    },                    {
+                        path: 'medical-events',
+                        element: <MedicalEventsPage />,
+                    },
+                    {
+                        path: 'medical-events/add',
+                        element: <div>Add Medical Event Page (General) - Coming Soon</div>, // Placeholder
+                    },
+                    {
+                        path: 'medical-events/:studentId',
+                        element: <MedicalEventsPage />,
+                    },
+                    {
+                        path: 'medical-events/:studentId/add',
+                        element: <div>Add Medical Event Page - Coming Soon</div>, // Placeholder
+                    },
+                    {
+                        path: 'medical-events/:studentId/edit/:eventId',
+                        element: <div>Edit Medical Event Page - Coming Soon</div>, // Placeholder
+                    },                    {
+                        path: 'medical-events/:studentId/details/:eventId',
+                        element: <MedicalEventDetailPage />,
+                    },                    {
+                        path: 'medical-events/details/:eventId',
+                        element: <MedicalEventDetailPage />,
                     },
                     {
                         path: 'health-profile/:studentId/details/:profileId',
