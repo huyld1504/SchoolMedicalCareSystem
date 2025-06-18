@@ -97,11 +97,11 @@ const ChildDetailPage = () => {
         <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5', py: 4 }}>
             <Container maxWidth="xl">
                 {/* Header */}
-                <Paper elevation={0} sx={{ 
-                    p: 3, 
-                    mb: 4, 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                    color: 'white' 
+                <Paper elevation={0} sx={{
+                    p: 3,
+                    mb: 4,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white'
                 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <IconButton
@@ -182,7 +182,7 @@ const ChildDetailPage = () => {
                                     <Typography variant="body2" color="text.secondary">
                                         Trạng thái
                                     </Typography>
-                                    <Chip 
+                                    <Chip
                                         label={child.isActive ? 'Đang học' : 'Không hoạt động'}
                                         color={child.isActive ? 'success' : 'default'}
                                         sx={{ mt: 1 }}
@@ -235,8 +235,8 @@ const ChildDetailPage = () => {
                                 </Box>
 
                                 {healthProfiles.length === 0 ? (
-                                    <Box sx={{ 
-                                        textAlign: 'center', 
+                                    <Box sx={{
+                                        textAlign: 'center',
                                         py: 6,
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -275,7 +275,7 @@ const ChildDetailPage = () => {
                                                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                                                                 Ngày tạo: {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
                                                             </Typography>
-                                                            
+
                                                             <Grid container spacing={2}>
                                                                 <Grid item xs={6} sm={3}>
                                                                     <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#e3f2fd', borderRadius: 1 }}>
@@ -341,7 +341,7 @@ const ChildDetailPage = () => {
                                                                 )}
                                                             </Box>
                                                         </Grid>
-                                                        
+
                                                         <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                             <Box sx={{ textAlign: 'center' }}>
                                                                 <Chip

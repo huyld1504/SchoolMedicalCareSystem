@@ -21,12 +21,6 @@ import {
     CircularProgress,
     Alert,
     Tooltip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Tabs,
-    Tab,
     Chip,
     Fab,
     Pagination,
@@ -49,8 +43,6 @@ import {
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { childApi } from '../../api/childApi';
-import ParentLayout from '../../components/layouts/ParentLayout';
-import { extractArrayFromResponse, extractPaginationFromResponse } from '../../utils/apiResponseHelper';
 
 const ChildrenPage = () => {
     const navigate = useNavigate();
@@ -75,15 +67,14 @@ const ChildrenPage = () => {
 
     const [loading, setLoading] = useState(true);
     const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
-    const [selectedChild, setSelectedChild] = useState(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [tabValue, setTabValue] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuChild, setMenuChild] = useState(null);
 
     useEffect(() => {
         loadChildren();
-    }, [query.page, query.limit, query.keyword, query.gender]); const loadChildren = async () => {
+    }, [query.page, query.limit, query.keyword, query.gender]);
+
+    const loadChildren = async () => {
         try {
             setLoading(true);
             const params = {
@@ -91,18 +82,15 @@ const ChildrenPage = () => {
                 limit: query.limit,
                 keyword: query.keyword || undefined,
                 gender: query.gender || undefined,
-            }; const response = await childApi.getAllChildren(params);
-            console.log('Children response:', response);
-
-            // Extract data using helper functions
-            const childrenData = extractArrayFromResponse(response, 'children');
-            const paginationData = extractPaginationFromResponse(response, {
-                page: query.page,
-                limit: query.limit
+            };
+            const response = await childApi.getAllChildren(params);
+            setChildren(response.data.records);
+            setPaginationInfo({
+                total: response.data.total,
+                page: response.data.page,
+                limit: response.data.limit,
+                totalPages: response.data.totalPages
             });
-
-            setChildren(childrenData);
-            setPaginationInfo(paginationData);
 
         } catch (error) {
             console.error('Error loading children:', error);
@@ -200,7 +188,7 @@ const ChildrenPage = () => {
     };
 
     return (
-        <ParentLayout>
+        <>
             <Container maxWidth="xl">
                 {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -294,14 +282,6 @@ const ChildrenPage = () => {
                         )}
 
                         {/* Empty State */}
-                        {!loading && children.length === 0 && (
-                            <Alert severity="info" sx={{ mb: 3 }}>
-                                {query.keyword ?
-                                    `Không tìm thấy con em nào với từ khóa "${query.keyword}"` :
-                                    'Chưa có thông tin con em nào. Hãy thêm thông tin con em!'
-                                }
-                            </Alert>
-                        )}
 
                         {/* Table */}
                         {!loading && children.length > 0 && (
@@ -383,17 +363,15 @@ const ChildrenPage = () => {
                                 </TableContainer>
 
                                 {/* Pagination */}
-                                {paginationInfo.totalPages > 1 && (
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                                        <Pagination
-                                            count={paginationInfo.totalPages}
-                                            page={query.page}
-                                            onChange={handlePageChange}
-                                            color="primary"
-                                            size="large"
-                                        />
-                                    </Box>
-                                )}
+                                <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
+                                    <Pagination
+                                        count={paginationInfo.totalPages}
+                                        page={query.page}
+                                        onChange={handlePageChange}
+                                        color="primary"
+                                        size="large"
+                                    />
+                                </Box>
                             </>
                         )}
                     </CardContent>
@@ -430,7 +408,7 @@ const ChildrenPage = () => {
                     <AddIcon />
                 </Fab>
             </Container>
-        </ParentLayout>
+        </>
     );
 };
 

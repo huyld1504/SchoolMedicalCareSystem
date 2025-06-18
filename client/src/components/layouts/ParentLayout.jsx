@@ -58,12 +58,6 @@ const ParentLayout = () => {
 
     const menuItems = [
         {
-            text: 'Trang chủ',
-            icon: <DashboardIcon />,
-            path: '/parent',
-            active: location.pathname === '/parent'
-        },
-        {
             text: 'Quản lý con em',
             icon: <ChildCare />,
             path: '/parent/children',

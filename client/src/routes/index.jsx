@@ -18,7 +18,6 @@ import LandingLayout from '../components/layouts/LandingLayout';
 import ParentLayout from '../components/layouts/ParentLayout';
 
 // Parent pages (new structure)
-import ParentDashboardPage from '../pages/parent/ParentDashboard';
 import ChildrenPage from '../pages/parent/ChildrenPage';
 import MedicalOrdersPage from '../pages/parent/MedicalOrdersPage';
 import ParentHealthProfilesPage from '../pages/parent/HealthProfilesPage';
@@ -58,11 +57,6 @@ const router = createBrowserRouter([
         ),
         children: [
           // Main Dashboard
-          {
-            index: true,
-            element: <ParentDashboardPage />
-          },
-
           // Children Management
           {
             path: 'children',
