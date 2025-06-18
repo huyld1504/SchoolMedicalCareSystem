@@ -7,21 +7,35 @@ import { authUtils } from '../../utils/authUtil';
 export default function AppLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   // Check if user is authenticated and redirect accordingly
   const currentPath = window.location.pathname;
   useEffect(() => {
     const authenticateUser = async () => {
-      const user = await authUtils.isAuthenticated();
-      const pathName = window.location.pathname;
-      if (user) {
-        dispatch(setUser({ user }));
-        
-        if (['/login', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
-          navigate(currentPath === '/login' ? '/nurse/students' : currentPath);
+      try {
+        const user = await authUtils.isAuthenticated();
+        const pathName = window.location.pathname;
+
+        if (user) {
+          dispatch(setUser({ user }));
+
+          // If user is authenticated but on auth pages, redirect to dashboard
+          if (['/login', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
+            if (user.role === 'nurse') {
+              navigate('/nurse/students');
+            } else if (user.role === 'parent') {
+              navigate('/parent');
+            }
+          }
+          // If authenticated and on allowed page, stay there
         } else {
-          navigate('/login');
+          // If not authenticated and not on public pages, redirect to login
+          if (!['/login', '/password/forgot', '/password/reset', '/signup', '/'].some(p => pathName.startsWith(p))) {
+            navigate('/login');
+          }
         }
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        navigate('/login');
       }
     };
     authenticateUser();
