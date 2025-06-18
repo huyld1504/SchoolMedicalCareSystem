@@ -12,6 +12,8 @@ import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
 import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
 import AppLayout from '../components/layouts/AppLayout';
 import LandingLayout from '../components/layouts/LandingLayout';
+import MedicalOrdersPage from '../pages/nurse/MedicalOrdersPage';
+import MedicalOrderDetailPage from '../pages/nurse/MedicalOrderDetailPage';
 
 
 const router = createBrowserRouter([
@@ -72,8 +74,12 @@ const router = createBrowserRouter([
                         element: <div>Health Profile Details Page - Coming Soon</div>, // Placeholder
                     },
                     {
+                        path: 'medical-orders/:orderId',
+                        element: <MedicalOrderDetailPage /> , // Placeholder
+                    },
+                    {
                         path: 'medical-orders',
-                        element: <div>Medical Orders Page - Coming Soon</div>, // Placeholder
+                        element: <MedicalOrdersPage /> , // Placeholder
                     },
                     {
                         path: 'reports',
