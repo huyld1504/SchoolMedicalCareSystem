@@ -126,16 +126,17 @@ async function getById(req: IReq, res: IRes) {
     throw new ValidationError("Health profile ID is required.");
   }
 
-  if(userRole.name === "parent") {
-    const child = await Child.findOne({userId: user._id.toString() as string}) as any;
-    if(!child) {
-      throw new AuthorizationError("You do not have permission to access this health profile.");
-    }
-  }
-
   const profile = await healthProfileService.getHealthProfileById(profileId);
   if (!profile) {
     throw new ValidationError("Health profile not found.");
+  }
+
+  if (userRole.name === "parent") {
+    const child = await Child.findOne({ userId: user._id.toString() as string, _id: profile.studentId}) as any;
+    console.log("child", child);
+    if (!child) {
+      throw new AuthorizationError("You do not have permission to access this health profile.");
+    }
   }
 
   const response: ApiResponse = new ApiResponse(
