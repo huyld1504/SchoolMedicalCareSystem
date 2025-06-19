@@ -14,7 +14,13 @@ import {
     Card,
     CardContent,
     Avatar,
-    Badge
+    Badge,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
 } from '@mui/material';
 import {
     ArrowBack,
@@ -41,6 +47,7 @@ const ChildDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [child, setChild] = useState({});
+    const [query, setQuery] = useState({ page: 1 });
     const [healthProfiles, setHealthProfiles] = useState([]);
 
     useEffect(() => {
@@ -121,252 +128,197 @@ const ChildDetailPage = () => {
                                 Thông tin chi tiết và hồ sơ sức khỏe
                             </Typography>
                         </Box>
-                    </Box>
-                </Paper>
+                    </Box>                </Paper>
 
-                <Grid container spacing={3}>
-                    {/* Child Basic Information */}
-                    <Grid item xs={12} lg={4}>
-                        <Card elevation={3} sx={{ height: 'fit-content' }}>
-                            <CardContent sx={{ p: 3 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                                    <Person sx={{ fontSize: 32, color: '#1976d2', mr: 2 }} />
-                                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                                        Thông tin cơ bản
-                                    </Typography>
-                                </Box>
-
-                                <Box sx={{ mb: 3 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Cake sx={{ mr: 1, color: 'text.secondary' }} />
-                                        <Typography variant="body2" color="text.secondary">
-                                            Ngày sinh
-                                        </Typography>
-                                    </Box>
-                                    <Typography variant="h6">
+                {/* Child Basic Information - Compact Card at Top */}
+                <Card elevation={3} sx={{ mb: 3 }}>
+                    <CardContent sx={{ p: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Person sx={{ fontSize: 24, color: '#1976d2', mr: 1 }} />
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                                Thông tin cơ bản
+                            </Typography>
+                        </Box>                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                            <Box sx={{ display: 'flex', flex: 1, gap: 4, flexWrap: 'wrap', minWidth: '300px' }}>
+                                <Box sx={{ flex: '1 1 150px' }}>
+                                    <Typography variant="body2" color="text.secondary">Ngày sinh:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
                                         {new Date(child.birthdate).toLocaleDateString('vi-VN')}
                                     </Typography>
                                 </Box>
-
-                                <Box sx={{ mb: 3 }}>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Giới tính
-                                    </Typography>
-                                    <Typography variant="h6">
+                                <Box sx={{ flex: '1 1 120px' }}>
+                                    <Typography variant="body2" color="text.secondary">Giới tính:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
                                         {child.gender === 'male' ? 'Nam' : child.gender === 'female' ? 'Nữ' : 'Khác'}
                                     </Typography>
                                 </Box>
-
-                                <Box sx={{ mb: 3 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                        <School sx={{ mr: 1, color: 'text.secondary' }} />
-                                        <Typography variant="body2" color="text.secondary">
-                                            Mã học sinh
-                                        </Typography>
-                                    </Box>
-                                    <Typography variant="h6">
+                                <Box sx={{ flex: '1 1 150px' }}>
+                                    <Typography variant="body2" color="text.secondary">Mã học sinh:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
                                         {child.studentCode}
                                     </Typography>
                                 </Box>
-
-                                <Box sx={{ mb: 3 }}>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Mã bảo hiểm y tế
-                                    </Typography>
-                                    <Typography variant="h6">
-                                        {child.medicalConverageId}
+                                <Box sx={{ flex: '1 1 150px' }}>
+                                    <Typography variant="body2" color="text.secondary">Mã BHYT:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                                        {child.medicalConverageId || 'Chưa có'}
                                     </Typography>
                                 </Box>
-
-                                <Box sx={{ mb: 3 }}>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Trạng thái
-                                    </Typography>
+                                <Box sx={{ flex: '1 1 120px' }}>
+                                    <Typography variant="body2" color="text.secondary">Trạng thái:</Typography>
                                     <Chip
                                         label={child.isActive ? 'Đang học' : 'Không hoạt động'}
                                         color={child.isActive ? 'success' : 'default'}
-                                        sx={{ mt: 1 }}
+                                        size="small"
+                                        sx={{ mt: 0.5 }}
                                     />
                                 </Box>
+                            </Box>
 
-                                <Divider sx={{ my: 3 }} />
+                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<Edit />}
+                                    onClick={() => navigate(`/parent/children/${id}/edit`)}
+                                    size="small"
+                                >
+                                    Chỉnh sửa
+                                </Button>
+                            </Box>
+                        </Box>
+                    </CardContent>
+                </Card>
+                {/* Health Profiles - Full Width Table */}
+                <Card elevation={3}>
+                    <CardContent sx={{ p: 3 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <LocalHospital sx={{ fontSize: 32, color: '#f44336', mr: 2 }} />
+                                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#f44336' }}>
+                                    Hồ sơ sức khỏe
+                                </Typography>
+                                <Badge badgeContent={healthProfiles.length} color="primary" sx={{ ml: 2 }} />
+                            </Box>
+                        </Box>
 
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                    <Button
-                                        fullWidth
-                                        variant="outlined"
-                                        startIcon={<Edit />}
-                                        onClick={() => navigate(`/parent/children/${id}/edit`)}
-                                    >
-                                        Chỉnh sửa
-                                    </Button>
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        startIcon={<FavoriteOutlined />}
-                                        onClick={() => navigate(`/parent/health/profiles/${id}`)}
-                                    >
-                                        Hồ sơ sức khỏe
-                                    </Button>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    {/* Health Profiles */}
-                    <Grid item xs={12} lg={8}>
-                        <Card elevation={3}>
-                            <CardContent sx={{ p: 3 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <LocalHospital sx={{ fontSize: 32, color: '#f44336', mr: 2 }} />
-                                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#f44336' }}>
-                                            Hồ sơ sức khỏe
-                                        </Typography>
-                                        <Badge badgeContent={healthProfiles.length} color="primary" sx={{ ml: 2 }} />
-                                    </Box>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<Timeline />}
-                                        onClick={() => navigate(`/parent/health/profiles/${id}`)}
-                                    >
-                                        Xem tất cả
-                                    </Button>
-                                </Box>
-
-                                {healthProfiles.length === 0 ? (
-                                    <Box sx={{
-                                        textAlign: 'center',
-                                        py: 6,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        gap: 2
-                                    }}>
-                                        <FavoriteOutlined sx={{ fontSize: 64, color: 'text.secondary' }} />
-                                        <Typography variant="h6" color="text.secondary">
-                                            Chưa có hồ sơ sức khỏe
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Hồ sơ sức khỏe sẽ được tạo tự động khi có khám sức khỏe
-                                        </Typography>
-                                    </Box>
-                                ) : (
-                                    <Grid container spacing={2}>
+                        {healthProfiles.length === 0 ? (
+                            <Box sx={{
+                                textAlign: 'center',
+                                py: 6,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: 2
+                            }}>
+                                <FavoriteOutlined sx={{ fontSize: 64, color: 'text.secondary' }} />
+                                <Typography variant="h6" color="text.secondary">
+                                    Chưa có hồ sơ sức khỏe
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Hồ sơ sức khỏe sẽ được tạo tự động khi có khám sức khỏe
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <TableContainer component={Paper} variant="outlined">
+                                <Table>
+                                    <TableHead>
+                                        <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>STT</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Ngày tạo</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Chiều cao (cm)</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Cân nặng (kg)</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Nhóm máu</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Thị lực</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Thao tác</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
                                         {healthProfiles.map((profile, index) => (
-                                            <Grid item xs={12} key={profile._id}>
-                                                <Paper
-                                                    sx={{
-                                                        p: 3,
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.3s',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: 4
-                                                        }
-                                                    }}
-                                                    onClick={() => navigate(`/parent/health/profiles/${id}?profileId=${profile._id}`)}
-                                                >
-                                                    <Grid container spacing={3}>
-                                                        <Grid item xs={12} md={8}>
-                                                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
-                                                                📋 Hồ sơ khám sức khỏe #{index + 1}
-                                                            </Typography>
-                                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                                                Ngày tạo: {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
-                                                            </Typography>
-
-                                                            <Grid container spacing={2}>
-                                                                <Grid item xs={6} sm={3}>
-                                                                    <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#e3f2fd', borderRadius: 1 }}>
-                                                                        <Typography variant="body2" color="text.secondary">Chiều cao</Typography>
-                                                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                                                            {profile.height} cm
-                                                                        </Typography>
-                                                                    </Box>
-                                                                </Grid>
-                                                                <Grid item xs={6} sm={3}>
-                                                                    <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#f3e5f5', borderRadius: 1 }}>
-                                                                        <Typography variant="body2" color="text.secondary">Cân nặng</Typography>
-                                                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                                                            {profile.weight} kg
-                                                                        </Typography>
-                                                                    </Box>
-                                                                </Grid>
-                                                                <Grid item xs={6} sm={3}>
-                                                                    <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#fff3e0', borderRadius: 1 }}>
-                                                                        <Typography variant="body2" color="text.secondary">Nhóm máu</Typography>
-                                                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                                                            {profile.bloodType}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                </Grid>
-                                                                <Grid item xs={6} sm={3}>
-                                                                    <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#e8f5e8', borderRadius: 1 }}>
-                                                                        <Typography variant="body2" color="text.secondary">Thị lực</Typography>
-                                                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                                                            {profile.vision || 'N/A'}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                </Grid>
-                                                            </Grid>
-
-                                                            {/* Additional Health Info */}
-                                                            <Box sx={{ mt: 2 }}>
-                                                                {profile.allergies && profile.allergies !== '1' && (
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                                                        <Warning sx={{ mr: 1, color: '#ff9800' }} />
-                                                                        <Typography variant="body2" sx={{ color: '#ff9800' }}>
-                                                                            <strong>Dị ứng:</strong> {profile.allergies}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                )}
-
-                                                                {profile.chronicDiseases && profile.chronicDiseases !== '1' && (
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                                                        <MedicalInformation sx={{ mr: 1, color: '#d32f2f' }} />
-                                                                        <Typography variant="body2" sx={{ color: '#d32f2f' }}>
-                                                                            <strong>Bệnh mãn tính:</strong> {profile.chronicDiseases}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                )}
-
-                                                                {profile.devicesSupport && profile.devicesSupport !== '1' && (
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                                        <AccessibleForward sx={{ mr: 1, color: 'text.secondary' }} />
-                                                                        <Typography variant="body2" color="text.secondary">
-                                                                            <strong>Thiết bị hỗ trợ:</strong> {profile.devicesSupport}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                )}
-                                                            </Box>
-                                                        </Grid>
-
-                                                        <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <Box sx={{ textAlign: 'center' }}>
-                                                                <Chip
-                                                                    label="Hồ sơ đầy đủ"
-                                                                    color="success"
-                                                                    sx={{ mb: 2 }}
-                                                                />
-                                                                <Typography variant="caption" display="block" color="text.secondary">
-                                                                    Cập nhật lần cuối:
-                                                                </Typography>
-                                                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                                                                    {new Date(profile.updatedAt).toLocaleDateString('vi-VN')}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Grid>
-                                                    </Grid>
-                                                </Paper>
-                                            </Grid>
+                                            <TableRow
+                                                key={profile._id}
+                                                sx={{
+                                                    '&:hover': { bgcolor: '#f9f9f9' },
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => navigate(`/parent/health/profiles/${id}?profileId=${profile._id}`)}
+                                            >
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>
+                                                    {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                                                        {profile.height}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#9c27b0' }}>
+                                                        {profile.weight}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        label={profile.bloodType}
+                                                        color="primary"
+                                                        size="small"
+                                                        variant="outlined"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Typography variant="body2">
+                                                        {profile.vision || 'N/A'}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                                        {profile.allergies && profile.allergies !== '1' && (
+                                                            <Chip
+                                                                label={`Dị ứng: ${profile.allergies}`}
+                                                                color="warning"
+                                                                size="small"
+                                                                variant="outlined"
+                                                            />
+                                                        )}
+                                                        {profile.chronicDiseases && profile.chronicDiseases !== '1' && (
+                                                            <Chip
+                                                                label={`Bệnh mãn tính: ${profile.chronicDiseases}`}
+                                                                color="error"
+                                                                size="small"
+                                                                variant="outlined"
+                                                            />
+                                                        )}
+                                                        {profile.devicesSupport && profile.devicesSupport !== '1' && (
+                                                            <Chip
+                                                                label={`Thiết bị hỗ trợ: ${profile.devicesSupport}`}
+                                                                color="info"
+                                                                size="small"
+                                                                variant="outlined"
+                                                            />
+                                                        )}
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant="outlined"
+                                                        size="small"
+                                                        startIcon={<Visibility />}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate(`/parent/health/profiles/${id}?profileId=${profile._id}`);
+                                                        }}
+                                                    >
+                                                        Chi tiết
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
                                         ))}
-                                    </Grid>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        )}
+                    </CardContent>
+                </Card>
             </Container>
         </Box>
     );

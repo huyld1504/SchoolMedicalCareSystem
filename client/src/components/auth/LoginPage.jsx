@@ -67,7 +67,7 @@ const LoginPage = () => {
           if (response.data.role === 'nurse') {
             navigate('/nurse/students');
           } else if (response.data.role === 'parent') {
-            navigate('/parent');
+            navigate('/parent/children');
           }
         }
         setIsLogin(false);

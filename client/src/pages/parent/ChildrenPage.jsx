@@ -24,8 +24,6 @@ import {
     Chip,
     Fab,
     Pagination,
-    Menu,
-    MenuItem
 } from '@mui/material';
 import {
     Search as SearchIcon,
@@ -68,7 +66,7 @@ const ChildrenPage = () => {
     const [loading, setLoading] = useState(true);
     const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
     const [anchorEl, setAnchorEl] = useState(null);
-    const [menuChild, setMenuChild] = useState(null);
+
 
     useEffect(() => {
         loadChildren();
@@ -148,16 +146,6 @@ const ChildrenPage = () => {
         navigate(`/parent/medical-orders/create?childId=${child._id}`);
     };
 
-    const handleMenuClick = (event, child) => {
-        setAnchorEl(event.currentTarget);
-        setMenuChild(child);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        setMenuChild(null);
-    };
-
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('vi-VN');
@@ -209,40 +197,23 @@ const ChildrenPage = () => {
                     >
                         Thêm con em
                     </Button>
-                </Box>
-
-                {/* Statistics Cards */}
-                <Grid container spacing={3} sx={{ mb: 4 }}>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #1976d215 0%, #1976d225 100%)' }}>
-                            <CardContent>
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Box>
-                                        <Typography color="text.secondary" gutterBottom variant="h6">
-                                            Tổng số con em
-                                        </Typography>
-                                        <Typography variant="h4" component="div" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
-                                            {paginationInfo.total}
-                                        </Typography>
-                                    </Box>
-                                    <Avatar sx={{ bgcolor: '#1976d2', width: 56, height: 56 }}>
-                                        <ChildCareIcon />
-                                    </Avatar>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    {/* More stat cards can be added here */}
-                </Grid>
-
-                {/* Children Table */}
+                </Box>                {/* Children Table */}
                 <Card>
                     <CardContent>
                         {/* Table Header */}
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                            <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
-                                Danh sách con em
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+                                    Danh sách con em
+                                </Typography>
+                                <Chip
+                                    label={`${paginationInfo.total} con em`}
+                                    color="primary"
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{ fontWeight: 600 }}
+                                />
+                            </Box>
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                 <TextField
                                     placeholder="Tìm kiếm theo tên..."
@@ -346,14 +317,6 @@ const ChildrenPage = () => {
                                                                     <EditIcon />
                                                                 </IconButton>
                                                             </Tooltip>
-                                                            <Tooltip title="Thêm thao tác">
-                                                                <IconButton
-                                                                    size="small"
-                                                                    onClick={(e) => handleMenuClick(e, child)}
-                                                                >
-                                                                    <MoreVertIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>
@@ -376,22 +339,6 @@ const ChildrenPage = () => {
                         )}
                     </CardContent>
                 </Card>
-
-                {/* Menu for additional actions */}
-                <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                >
-                    <MenuItem onClick={() => { handleCreateOrder(menuChild); handleMenuClose(); }}>
-                        <HospitalIcon sx={{ mr: 2 }} />
-                        Tạo đơn thuốc
-                    </MenuItem>
-                    <MenuItem onClick={() => { navigate(`/parent/health-profiles/${menuChild?._id}`); handleMenuClose(); }}>
-                        <HealthIcon sx={{ mr: 2 }} />
-                        Xem hồ sơ sức khỏe
-                    </MenuItem>
-                </Menu>
 
                 {/* Floating Action Button for mobile */}
                 <Fab

@@ -23,7 +23,7 @@ export default function AppLayout() {
             if (user.role === 'nurse') {
               navigate('/nurse/students');
             } else if (user.role === 'parent') {
-              navigate('/parent');
+              navigate('/parent/children');
             }
           }
           // If authenticated and on allowed page, stay there

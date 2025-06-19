@@ -19,19 +19,38 @@ const childAPI = {
     getMyChildren: async () => await callAPI('GET', '/childs/all'),
 
     // Thêm con em mới
-    addChild: async (childData) => await callAPI('POST', '/childs/add', childData),
+    addChild: async (childData) => await callAPI('POST', '/childs/add', childData),    // Lấy thông tin chi tiết một đứa trẻ
+    getChildById: async (childId) => {
+        try {
+            // Thử gọi API trực tiếp trước
+            return await callAPI('GET', `/childs/get/${childId}`);
+        } catch (error) {
+            // Nếu không có API riêng, lấy từ danh sách và filter
+            console.log('Fallback to get child from list');
+            const response = await callAPI('GET', '/childs/all');
 
-    // Lấy thông tin chi tiết một đứa trẻ
-    getChildById: async (childId) => await callAPI('GET', `/childs/get/${childId}`),
+            if (response && response.data && response.data.records) {
+                const child = response.data.records.find(c => c._id === childId);
+                if (child) {
+                    return {
+                        ...response,
+                        data: child
+                    };
+                }
+            }
+
+            throw new Error('Child not found');
+        }
+    },
 
     // Lấy hồ sơ sức khỏe của trẻ
     getHealthProfile: async (childId) => await callAPI('GET', `/health-profiles/child/${childId}`),
 
     // Cập nhật thông tin con em
-    updateChild: async (childId, childData) => await callAPI('PUT', `/childs/update/${childId}`, childData),
+    updateChild: async (childId, childData) => await callAPI('PUT', `/child/update/${childId}`, childData),
 
     // Xóa con em (soft delete)
-    deleteChild: async (childId) => await callAPI('DELETE', `/childs/delete/${childId}`),
+    deleteChild: async (childId) => await callAPI('DELETE', `/child/delete/${childId}`),
 };
 
 export const childApi = childAPI;

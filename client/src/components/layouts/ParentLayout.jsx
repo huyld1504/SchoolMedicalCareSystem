@@ -70,12 +70,6 @@ const ParentLayout = () => {
             active: location.pathname.startsWith('/parent/medical-orders')
         },
         {
-            text: 'Hồ sơ sức khỏe',
-            icon: <HealthAndSafety />,
-            path: '/parent/health-profiles',
-            active: location.pathname.startsWith('/parent/health-profiles')
-        },
-        {
             text: 'Thông báo',
             icon: <NotificationsIcon />,
             path: '/parent/notifications',

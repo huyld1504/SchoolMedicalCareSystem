@@ -20,9 +20,10 @@ import ParentLayout from '../components/layouts/ParentLayout';
 // Parent pages (new structure)
 import ChildrenPage from '../pages/parent/ChildrenPage';
 import MedicalOrdersPage from '../pages/parent/MedicalOrdersPage';
-import ParentHealthProfilesPage from '../pages/parent/HealthProfilesPage';
 import AddChildPage from '../pages/parent/AddChildPage';
+import EditChildPage from '../pages/parent/EditChildPage';
 import ChildDetailPage from '../pages/parent/ChildDetailPage';
+import HealthProfileDetailPage from '../pages/parent/HealthProfileDetailPage';
 import CreateMedicalOrderPage from '../pages/parent/CreateMedicalOrderPage';
 
 // Temporary placeholder component for unimplemented features
@@ -56,8 +57,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          // Main Dashboard
-          // Children Management
+          // Main Dashboard          // Children Management
           {
             path: 'children',
             children: [
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
               },
               {
                 path: ':id/edit',
-                element: <AddChildPage />
+                element: <EditChildPage />
               }
             ]
           },
@@ -95,21 +95,10 @@ const router = createBrowserRouter([
               {
                 path: ':id',
                 element: <ComingSoonPage title="Chi tiết đơn thuốc" />
-              }
-            ]
-          },
-
-          // Health Profiles Management
-          {
-            path: 'health-profiles',
-            children: [
-              {
-                index: true,
-                element: <ParentHealthProfilesPage />
               },
               {
-                path: ':childId',
-                element: <ParentHealthProfilesPage />
+                path: 'health/:childId',
+                element: <HealthProfileDetailPage />
               }
             ]
           },

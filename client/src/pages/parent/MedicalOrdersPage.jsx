@@ -274,7 +274,7 @@ const MedicalOrdersPage = () => {
     );
 
     return (
-        <ParentLayout>
+        <>
             <Container maxWidth="xl">
                 {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -547,7 +547,7 @@ const MedicalOrdersPage = () => {
                     <AddIcon />
                 </Fab>
             </Container>
-        </ParentLayout>
+        </>
     );
 };
 
