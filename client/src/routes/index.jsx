@@ -1,8 +1,6 @@
-
 import { createBrowserRouter } from 'react-router';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../components/auth/LoginPage';
-import ProtectedRoute from '../components/common/ProtectedRoute';
 import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
 import NurseLayout from '../components/layouts/NurseLayout';
 import StudentsPage from '../pages/nurse/StudentsPage';
@@ -19,12 +17,10 @@ import LandingLayout from '../components/layouts/LandingLayout';
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <AppLayout />,
-        children: [
+        element: <AppLayout />,        children: [
             {
                 element: <LandingLayout />,
-                children: [
-                    {
+                children: [                    {
                         index: true,
                         path: '/',
                         element: <LandingPage />
@@ -73,26 +69,26 @@ const router = createBrowserRouter([
                         element: <MedicalEventsPage />,
                     },
                     {
-                        path: 'medical-events/add',
-                        element: <div>Add Medical Event Page (General) - Coming Soon</div>, // Placeholder
+                        path: 'medical-events/detail/:eventId',
+                        element: <MedicalEventDetailPage />,
                     },
                     {
+                        path: 'medical-events/add',
+                        element: <div>Add Medical Event Page (General) - Coming Soon</div>, // Placeholder
+                    },{
                         path: 'medical-events/:studentId',
                         element: <MedicalEventsPage />,
                     },
                     {
-                        path: 'medical-events/:studentId/add',
-                        element: <div>Add Medical Event Page - Coming Soon</div>, // Placeholder
+                        path: 'medical-events/:studentId/detail/:eventId',
+                        element: <MedicalEventDetailPage />,
                     },
                     {
+                        path: 'medical-events/:studentId/add',
+                        element: <div>Add Medical Event Page - Coming Soon</div>, // Placeholder
+                    },                    {
                         path: 'medical-events/:studentId/edit/:eventId',
                         element: <div>Edit Medical Event Page - Coming Soon</div>, // Placeholder
-                    },                    {
-                        path: 'medical-events/:studentId/details/:eventId',
-                        element: <MedicalEventDetailPage />,
-                    },                    {
-                        path: 'medical-events/details/:eventId',
-                        element: <MedicalEventDetailPage />,
                     },
                     {
                         path: 'health-profile/:studentId/details/:profileId',

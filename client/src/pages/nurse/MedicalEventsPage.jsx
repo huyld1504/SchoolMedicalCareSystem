@@ -26,17 +26,16 @@ import {
 import {
     Add as AddIcon,
     Edit as EditIcon,
-    Visibility as ViewIcon,
     Refresh as RefreshIcon,
     ArrowBack as BackIcon,
     MedicalServices as MedicalIcon,
+    Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import studentsApi from '../../api/studentsApi';
 import medicalEventAPI from '../../api/medicalEventApi';
-import { generateSampleMedicalEvents } from '../../data/sampleData';
 
 const MedicalEventsPage = () => {
     const { studentId } = useParams();
@@ -240,16 +239,25 @@ const MedicalEventsPage = () => {
         } else {
             navigate('/nurse/medical-events/add');
         }
-    };
-
-    const handleEditEvent = (eventId) => {
+    };    const handleEditEvent = (eventId) => {
         navigate(`/nurse/medical-events/${studentId}/edit/${eventId}`);
     };    const handleViewEvent = (eventId) => {
+        console.log('Viewing event with ID:', eventId);
+        
+        // Tìm event trong danh sách hiện tại để truyền qua state
+        const selectedEvent = medicalEvents.find(event => event._id === eventId);
+        console.log('Selected event:', selectedEvent);
+        
         if (studentId) {
-            navigate(`/nurse/medical-events/${studentId}/details/${eventId}`);
+            console.log('Navigating to student-specific route:', `/nurse/medical-events/${studentId}/detail/${eventId}`);
+            navigate(`/nurse/medical-events/${studentId}/detail/${eventId}`, {
+                state: { eventData: selectedEvent }
+            });
         } else {
-            // Sử dụng route tổng quát khi không có studentId
-            navigate(`/nurse/medical-events/details/${eventId}`);
+            console.log('Navigating to general route:', `/nurse/medical-events/detail/${eventId}`);
+            navigate(`/nurse/medical-events/detail/${eventId}`, {
+                state: { eventData: selectedEvent }
+            });
         }
     };
 
@@ -399,21 +407,6 @@ const MedicalEventsPage = () => {
                             <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                 Danh sách sự kiện y tế ({paginationInfo.total} sự kiện)
                             </Typography>
-
-                            {/* Dropdown cho rows per page */}
-                            <FormControl size="small" sx={{ minWidth: 120 }}>
-                                <InputLabel>Hiển thị</InputLabel>
-                                <Select
-                                    value={paginationInfo.limit}
-                                    label="Hiển thị"
-                                    onChange={handleRowsPerPageChange}
-                                >
-                                    <MenuItem value={5}>5 dòng</MenuItem>
-                                    <MenuItem value={10}>10 dòng</MenuItem>
-                                    <MenuItem value={25}>25 dòng</MenuItem>
-                                    <MenuItem value={50}>50 dòng</MenuItem>
-                                </Select>
-                            </FormControl>
                         </Box>
 
                         <TableContainer sx={{
@@ -439,17 +432,13 @@ const MedicalEventsPage = () => {
                                 width: '100%'
                             }}>                                <TableHead>
                                     <TableRow sx={{ bgcolor: 'grey.50' }}>
-                                        <TableCell sx={{ fontWeight: 600, width: '6%' }} align="center">STT</TableCell>                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Ngày sự kiện</TableCell>                                        {!studentId && (
-                                            <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Học sinh</TableCell>
-                                        )}
-                                        {!studentId && (
-                                            <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">Mã học sinh</TableCell>
-                                        )}
-                                        <TableCell sx={{ fontWeight: 600, width: '12%' }} align="center">Loại sự kiện</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: studentId ? '35%' : '20%' }} align="center">Mô tả</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">Mức độ</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: studentId ? '20%' : '15%' }} align="center">Người tạo</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '12%' }} align="center">Thao tác</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '8%' }} align="center">STT</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '18%' }} align="center">Ngày sự kiện</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Loại sự kiện</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '25%' }} align="center">Mô tả</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '12%' }} align="center">Mức độ</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '22%' }} align="center">Nhân viên xử lý</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Thao tác</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -484,36 +473,9 @@ const MedicalEventsPage = () => {
                                                 <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 700 }}>
                                                     {formatDate(event.dateHappened || event.createdAt)}
                                                 </Typography>
-                                            </TableCell>                                            {!studentId && (
-                                                <TableCell align="center" sx={{ px: 2 }}>
-                                                    <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 400 }}>
-                                                        {event.studentJoin && event.studentJoin.length > 1 ? (
-                                                            <span style={{ color: '#424242', fontWeight: 400 }}>
-                                                                {event.studentJoin.length} học sinh liên quan
-                                                            </span>
-                                                        ) : event.studentJoin && event.studentJoin.length === 1 ? (
-                                                            event.studentJoin[0].studentId?.name || 'N/A'
-                                                        ) : (
-                                                            'N/A'
-                                                        )}
-                                                    </Typography>
-                                                </TableCell>
-                                            )}
-                                            {!studentId && (
-                                                <TableCell align="center" sx={{ px: 1 }}>
-                                                    <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 400 }}>
-                                                        {event.studentJoin && event.studentJoin.length > 1 ? (
-                                                            <span style={{ color: '#424242', fontWeight: 400 }}>
-                                                                Nhiều HS
-                                                            </span>
-                                                        ) : event.studentJoin && event.studentJoin.length === 1 ? (
-                                                            event.studentJoin[0].studentId?.studentCode || 'N/A'
-                                                        ) : (
-                                                            'N/A'
-                                                        )}
-                                                    </Typography>
-                                                </TableCell>
-                                            )}<TableCell align="center" sx={{ px: 1 }}>
+                                            </TableCell>
+
+                                            <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography
                                                     variant="body2"
                                                     sx={{
@@ -552,9 +514,7 @@ const MedicalEventsPage = () => {
                                                 <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 400 }}>
                                                     {getDisplayValue(event.userId?.name)}
                                                 </Typography>
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                                            </TableCell>                                            <TableCell align="center">                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                                                     <Tooltip title="Xem chi tiết">
                                                         <IconButton
                                                             color="info"
@@ -579,22 +539,14 @@ const MedicalEventsPage = () => {
                                     ))}
                                 </TableBody>
                             </Table>
-                        </TableContainer>
-
-                        {/* Pagination component */}
-                        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Typography variant="body2" color="text.secondary">
-                                Hiển thị {(paginationInfo.page - 1) * paginationInfo.limit + 1} - {Math.min(paginationInfo.page * paginationInfo.limit, paginationInfo.total)} 
-                                {' '}trong tổng số {paginationInfo.total} sự kiện
-                            </Typography>
-
+                        </TableContainer>                        {/* Pagination component */}
+                        <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                             <Pagination
                                 count={paginationInfo.totalPages}
                                 page={paginationInfo.page}
                                 onChange={handlePageChange}
                                 showFirstButton
                                 showLastButton
-                                sx={{ display: 'flex', justifyContent: 'center' }}
                             />
                         </Box>
                     </CardContent>
