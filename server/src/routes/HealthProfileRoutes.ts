@@ -17,6 +17,7 @@ import { Child } from '@src/models/Child';
 import { HealthProfile } from "@src/models/HealthProfile";
 import childService from "@src/services/ChildService";
 import roleService from "@src/services/RoleService";
+import { Role } from "@src/models/Role";
 
 // Function to add a health profile
 // This function validates the request body against the schema and adds a health profile for the user.
@@ -119,8 +120,17 @@ async function getByChildIds(req: IReq, res: IRes) {
 // This function retrieves a specific health profile based on its ID.
 async function getById(req: IReq, res: IRes) {
   const profileId = req.params.id as string;
+  const user = req.user as any;
+  const userRole = await Role.findById(user.roleId.toString()) as any;
   if (!profileId) {
     throw new ValidationError("Health profile ID is required.");
+  }
+
+  if(userRole.name === "parent") {
+    const child = await Child.findOne({userId: user._id.toString() as string}) as any;
+    if(!child) {
+      throw new AuthorizationError("You do not have permission to access this health profile.");
+    }
   }
 
   const profile = await healthProfileService.getHealthProfileById(profileId);
