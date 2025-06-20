@@ -11,8 +11,7 @@ import {
     Chip,
     CircularProgress,
     Alert,
-    Card,
-    CardContent,
+    Card, CardContent,
     Avatar,
     Badge,
     Table,
@@ -40,15 +39,16 @@ import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { childApi } from '../../api/childApi';
 import healthProfileAPI from '../../api/healthProfileApi';
+import HealthProfileDetailModal from './HealthProfileDetailModal';
 
 const ChildDetailPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [child, setChild] = useState({});
-    const [query, setQuery] = useState({ page: 1 });
+    const [error, setError] = useState(null); const [child, setChild] = useState({});
     const [healthProfiles, setHealthProfiles] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedProfileId, setSelectedProfileId] = useState(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -75,6 +75,22 @@ const ChildDetailPage = () => {
         loadData();
     }, [id]);
 
+    const handleViewProfile = (profileId) => {
+        setSelectedProfileId(profileId);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedProfileId(null);
+    };
+
+    const hasHealthNotes = (profile) => {
+        return (profile.allergies && profile.allergies !== '1') ||
+            (profile.chronicDiseases && profile.chronicDiseases !== '1') ||
+            (profile.devicesSupport && profile.devicesSupport !== '1');
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -92,7 +108,7 @@ const ChildDetailPage = () => {
                 <Button
                     variant="contained"
                     startIcon={<ArrowBack />}
-                    onClick={() => navigate('/parent')}
+                    onClick={() => navigate('/parent/children')}
                 >
                     Quay lại trang chủ
                 </Button>
@@ -112,7 +128,7 @@ const ChildDetailPage = () => {
                 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <IconButton
-                            onClick={() => navigate('/parent')}
+                            onClick={() => navigate('/parent/children')}
                             sx={{ mr: 2, color: 'white' }}
                         >
                             <ArrowBack />
@@ -234,92 +250,88 @@ const ChildDetailPage = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {healthProfiles.map((profile, index) => (
-                                            <TableRow
-                                                key={profile._id}
-                                                sx={{
-                                                    '&:hover': { bgcolor: '#f9f9f9' },
-                                                    cursor: 'pointer'
-                                                }}
-                                                onClick={() => navigate(`/parent/health/profiles/${id}?profileId=${profile._id}`)}
-                                            >
-                                                <TableCell>{index + 1}</TableCell>
-                                                <TableCell>
-                                                    {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                                                        {profile.height}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#9c27b0' }}>
-                                                        {profile.weight}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
+                                        {healthProfiles.map((profile, index) => (<TableRow
+                                            key={profile._id}
+                                            sx={{
+                                                '&:hover': { bgcolor: '#f9f9f9' }
+                                            }}
+                                        >
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>
+                                                {new Date(profile.createdAt).toLocaleDateString('vi-VN')}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                                                    {profile.height}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#9c27b0' }}>
+                                                    {profile.weight}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    label={profile.bloodType}
+                                                    color="primary"
+                                                    size="small"
+                                                    variant="outlined"
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2">
+                                                    {profile.vision || 'N/A'}
+                                                </Typography>
+                                            </TableCell>                                                <TableCell>
+                                                {hasHealthNotes(profile) ? (
                                                     <Chip
-                                                        label={profile.bloodType}
-                                                        color="primary"
+                                                        label="Có"
+                                                        color="warning"
+                                                        size="small"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleViewProfile(profile._id);
+                                                        }}
+                                                        sx={{ cursor: 'pointer' }}
+                                                    />
+                                                ) : (
+                                                    <Chip
+                                                        label="Không"
+                                                        color="default"
                                                         size="small"
                                                         variant="outlined"
                                                     />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2">
-                                                        {profile.vision || 'N/A'}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                                        {profile.allergies && profile.allergies !== '1' && (
-                                                            <Chip
-                                                                label={`Dị ứng: ${profile.allergies}`}
-                                                                color="warning"
-                                                                size="small"
-                                                                variant="outlined"
-                                                            />
-                                                        )}
-                                                        {profile.chronicDiseases && profile.chronicDiseases !== '1' && (
-                                                            <Chip
-                                                                label={`Bệnh mãn tính: ${profile.chronicDiseases}`}
-                                                                color="error"
-                                                                size="small"
-                                                                variant="outlined"
-                                                            />
-                                                        )}
-                                                        {profile.devicesSupport && profile.devicesSupport !== '1' && (
-                                                            <Chip
-                                                                label={`Thiết bị hỗ trợ: ${profile.devicesSupport}`}
-                                                                color="info"
-                                                                size="small"
-                                                                variant="outlined"
-                                                            />
-                                                        )}
-                                                    </Box>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Button
-                                                        variant="outlined"
-                                                        size="small"
-                                                        startIcon={<Visibility />}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            navigate(`/parent/health/profiles/${id}?profileId=${profile._id}`);
-                                                        }}
-                                                    >
-                                                        Chi tiết
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    startIcon={<Visibility />}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleViewProfile(profile._id);
+                                                    }}
+                                                >
+                                                    Chi tiết
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
                                         ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                        )}
-                    </CardContent>
+                        )}                    </CardContent>
                 </Card>
             </Container>
+
+            {/* Health Profile Detail Modal */}
+            <HealthProfileDetailModal
+                open={modalOpen}
+                onClose={handleCloseModal}
+                profileId={selectedProfileId}
+                childId={id}
+            />
         </Box>
     );
 };

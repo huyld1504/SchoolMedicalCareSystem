@@ -23,7 +23,6 @@ import MedicalOrdersPage from '../pages/parent/MedicalOrdersPage';
 import AddChildPage from '../pages/parent/AddChildPage';
 import EditChildPage from '../pages/parent/EditChildPage';
 import ChildDetailPage from '../pages/parent/ChildDetailPage';
-import HealthProfileDetailPage from '../pages/parent/HealthProfileDetailPage';
 import CreateMedicalOrderPage from '../pages/parent/CreateMedicalOrderPage';
 
 // Temporary placeholder component for unimplemented features
@@ -76,7 +75,7 @@ const router = createBrowserRouter([
               {
                 path: ':id/edit',
                 element: <EditChildPage />
-              }
+              },
             ]
           },
 
@@ -96,30 +95,8 @@ const router = createBrowserRouter([
                 path: ':id',
                 element: <ComingSoonPage title="Chi tiết đơn thuốc" />
               },
-              {
-                path: 'health/:childId',
-                element: <HealthProfileDetailPage />
-              }
             ]
           },
-
-          // Notifications
-          {
-            path: 'notifications',
-            element: <ComingSoonPage title="Thông báo" />
-          },
-
-          // Settings
-          {
-            path: 'settings',
-            element: <ComingSoonPage title="Cài đặt" />
-          },
-
-          // Profile
-          {
-            path: 'profile',
-            element: <ComingSoonPage title="Thông tin cá nhân" />
-          }
         ]
       },
 

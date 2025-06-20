@@ -132,6 +132,8 @@ const ChildrenPage = () => {
     const handleRefresh = () => {
         loadChildren();
         toast.success('Đã làm mới danh sách');
+        setSearchInput('');
+        handleSearch();
     };
 
     const handleViewChild = (child) => {
@@ -238,7 +240,19 @@ const ChildrenPage = () => {
                                     Tìm kiếm
                                 </Button>
                                 <Tooltip title="Làm mới">
-                                    <IconButton onClick={handleRefresh} color="primary">
+                                    <IconButton 
+                                    onClick={() => {
+                                        setSearchInput('');
+                                        setQuery({
+                                            page: 1,
+                                            limit: 10,
+                                            keyword: '',
+                                            gender: ''
+                                        });
+                                        setSearchParams({});
+                                        handleRefresh;
+                                    }}
+                                    color="primary">
                                         <RefreshIcon />
                                     </IconButton>
                                 </Tooltip>

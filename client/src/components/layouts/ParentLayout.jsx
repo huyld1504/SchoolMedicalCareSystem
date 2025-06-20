@@ -68,12 +68,6 @@ const ParentLayout = () => {
             icon: <MedicalServices />,
             path: '/parent/medical-orders',
             active: location.pathname.startsWith('/parent/medical-orders')
-        },
-        {
-            text: 'Thông báo',
-            icon: <NotificationsIcon />,
-            path: '/parent/notifications',
-            active: location.pathname === '/parent/notifications'
         }
     ];
 
@@ -179,20 +173,6 @@ const ParentLayout = () => {
 
             {/* Settings and Logout */}
             <List>
-                <ListItem disablePadding>
-                    <ListItemButton
-                        onClick={() => handleNavigation('/parent/settings')}
-                        sx={{ mx: 2, borderRadius: 2, minHeight: 48 }}
-                    >
-                        <ListItemIcon sx={{ color: '#666', minWidth: 40 }}>
-                            <SettingsIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary="Cài đặt"
-                            primaryTypographyProps={{ fontSize: '0.95rem' }}
-                        />
-                    </ListItemButton>
-                </ListItem>
                 <ListItem disablePadding>
                     <ListItemButton
                         onClick={handleLogout}
@@ -319,10 +299,10 @@ const ParentLayout = () => {
                     <Person sx={{ mr: 2 }} />
                     Thông tin cá nhân
                 </MenuItem>
-                <MenuItem onClick={() => { handleNavigation('/parent/settings'); handleProfileMenuClose(); }}>
+                {/* <MenuItem onClick={() => { handleNavigation('/parent/settings'); handleProfileMenuClose(); }}>
                     <SettingsIcon sx={{ mr: 2 }} />
                     Cài đặt
-                </MenuItem>
+                </MenuItem> */}
                 <Divider />
                 <MenuItem onClick={handleLogout} sx={{ color: '#d32f2f' }}>
                     <LogoutIcon sx={{ mr: 2 }} />
