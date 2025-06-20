@@ -24,8 +24,10 @@ const MedicalOrdersPage = () => {
     const loadMedicalOrders = useCallback(async () => {
         try {
             setLoading(true);
-              const response = await medicalOrderApi.getMedicalOrder();
+              const response = await medicalOrderApi.getMedicalOrder(query);
             console.log(response)
+             console.log("API call with query:", query); 
+               
             if (response && response.data) {
                 setMedicalOrders(response.data.records || []);
                 setPaginationInfo({
@@ -56,7 +58,10 @@ const MedicalOrdersPage = () => {
     };
 
     const handleRefresh = () => {
-        loadMedicalOrders();
+        // Reset về trang 1 khi làm mới hoặc giữ nguyên trang hiện tại
+        setQuery(prev => ({ ...prev, page: 1 }));
+        // Nếu muốn giữ nguyên trang hiện tại thì chỉ cần gọi loadMedicalOrders()
+        // loadMedicalOrders();
         toast.success('Đã làm mới dữ liệu');
     };
 
@@ -64,24 +69,41 @@ const MedicalOrdersPage = () => {
         navigate(`/nurse/medical-orders/${orderId}`);
     };
     
-    const handleAddOrder = () => {
-        navigate('/nurse/medical-orders/add');
-    };
+   
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('vi-VN');
     };
     
-    const getStatus = (startDate, endDate) => {
-        const now = new Date();
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
+      const renderStatusChip = (status) => {
+        let color = 'default';
+        let label = status;
 
-        if (now < start) return <Chip label="Sắp tới" color="info" size="small" />;
-        if (now > end) return <Chip label="Hoàn thành" color="success" size="small" />;
-        return <Chip label="Đang diễn ra" color="warning" size="small" />;
+        switch (status) {
+            case 'pending':
+                label = 'Chờ duyệt';
+                color = 'warning';
+                break;
+            case 'approved':
+                label = 'Đã duyệt';
+                color = 'info';
+                break;
+            case 'completed':
+                label = 'Hoàn thành';
+                color = 'success';
+                break;
+            case 'canceled':
+                label = 'Bị từ chối';
+                color = 'error';
+                break;
+            default:
+                // Hiển thị giá trị gốc nếu status không khớp
+                label = status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Không rõ';
+                break;
+        }
+
+        return <Chip label={label} color={color} size="small" />;
     };
 
     return (
@@ -99,9 +121,7 @@ const MedicalOrdersPage = () => {
                             <RefreshIcon />
                         </IconButton>
                     </Tooltip>
-                    <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddOrder}>
-                        Tạo Đơn thuốc
-                    </Button>
+                   
                 </Box>
             </Box>
 
@@ -124,11 +144,11 @@ const MedicalOrdersPage = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell align="center" sx={{ fontWeight: 600, width: '5%' }}>STT</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '25%' }}>Tên Học sinh</TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: 600, width: '15%' }}>Ghi chú</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '15%' }}>Tên Học sinh</TableCell>
                                         <TableCell align="center" sx={{ fontWeight: 600, width: '15%' }}>Ngày Bắt đầu</TableCell>
                                         <TableCell align="center" sx={{ fontWeight: 600, width: '15%' }}>Ngày Kết thúc</TableCell>
                                         <TableCell align="center" sx={{ fontWeight: 600, width: '15%' }}>Trạng thái</TableCell>
+                                        <TableCell align="center" sx={{ fontWeight: 600, width: '15%' }}>Ghi chú</TableCell>
                                         <TableCell align="center" sx={{ fontWeight: 600, width: '10%' }}>Thao tác</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -139,10 +159,10 @@ const MedicalOrdersPage = () => {
                                                 {(paginationInfo.page - 1) * paginationInfo.limit + index + 1}
                                             </TableCell>
                                             <TableCell>{order.ChildId?.name || 'Không rõ'}</TableCell>
-                                            <TableCell align="center"><code>{order.note}</code></TableCell>
                                             <TableCell align="center">{formatDate(order.startDate)}</TableCell>
                                             <TableCell align="center">{formatDate(order.endDate)}</TableCell>
-                                            <TableCell align="center">{getStatus(order.startDate, order.endDate)}</TableCell>
+                                            <TableCell align="center">{renderStatusChip(order.status)}</TableCell>
+                                            <TableCell align="center">{order.note}</TableCell>
                                             <TableCell align="center">
                                                 <Tooltip title="Xem chi tiết">
                                                     <IconButton color="primary" onClick={() => handleViewDetails(order._id)}>

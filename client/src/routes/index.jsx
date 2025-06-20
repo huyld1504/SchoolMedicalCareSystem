@@ -82,13 +82,10 @@ const router = createBrowserRouter([
                         element: <MedicalOrdersPage /> , // Placeholder
                     },
                     {
-                        path: 'reports',
-                        element: <div>Reports Page - Coming Soon</div>, // Placeholder
+                        path: 'medical-orders/add',
+                        element: <MedicalOrdersPage /> , // Placeholder
                     },
-                    {
-                        path: 'settings',
-                        element: <div>Settings Page - Coming Soon</div>, // Placeholder
-                    },
+                    
                 ]
             },
         ]
