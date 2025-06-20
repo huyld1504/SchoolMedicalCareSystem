@@ -46,9 +46,7 @@ import medicalEventAPI from '../../api/medicalEventApi';
 const MedicalEventsPage = () => {
     const { studentId } = useParams();
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
-
-    // State cho pagination và search
+    const [searchParams, setSearchParams] = useSearchParams();    // State cho pagination và search
     const [query, setQuery] = useState({
         page: 1,
         limit: 10,
@@ -56,7 +54,8 @@ const MedicalEventsPage = () => {
         eventType: searchParams.get('eventType') || '',
         level: searchParams.get('level') || '',
         dateFrom: searchParams.get('dateFrom') || '',
-        dateTo: searchParams.get('dateTo') || ''
+        dateTo: searchParams.get('dateTo') || '',
+        status: searchParams.get('status') || ''
     });
 
     const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
@@ -79,7 +78,7 @@ const MedicalEventsPage = () => {
         } else {
             loadAllMedicalEvents();
         }
-    }, [studentId, query.page, query.limit, query.keyword, query.eventType, query.level, query.dateFrom, query.dateTo]);const loadMedicalEvents = async () => {
+    }, [studentId, query.page, query.limit, query.keyword, query.eventType, query.level, query.dateFrom, query.dateTo, query.status]);const loadMedicalEvents = async () => {
         try {
             setLoading(true);            if (studentId) {                // Chuẩn bị params cho API call
                 const params = {};
@@ -92,6 +91,7 @@ const MedicalEventsPage = () => {
                 if (query.level && query.level.trim()) params.level = query.level.trim();
                 if (query.dateFrom && query.dateFrom.trim()) params.dateFrom = query.dateFrom.trim();
                 if (query.dateTo && query.dateTo.trim()) params.dateTo = query.dateTo.trim();
+                if (query.status && query.status.trim()) params.status = query.status.trim();
 
                 console.log('Filter params being sent to API:', params);
                 const response = await medicalEventAPI.getEventsByStudentId(studentId, params);
@@ -143,8 +143,7 @@ const MedicalEventsPage = () => {
             toast.error('Lỗi khi tải dữ liệu sự kiện y tế');
         } finally {
             setLoading(false);
-        }
-    };    const loadAllMedicalEvents = async () => {
+        }    };    const loadAllMedicalEvents = async () => {
         try {
             setLoading(true);            
             // Chuẩn bị params cho API call
@@ -154,10 +153,11 @@ const MedicalEventsPage = () => {
             if (query.page) params.page = query.page;
             if (query.limit) params.limit = query.limit;
             if (query.keyword && query.keyword.trim()) params.keyword = query.keyword.trim();
-            if (query.eventType && query.eventType.trim()) params.eventType = query.eventType.trim();
+            if (query.eventType && query.eventType.trim()) params.type = query.eventType.trim(); 
             if (query.level && query.level.trim()) params.level = query.level.trim();
-            if (query.dateFrom && query.dateFrom.trim()) params.dateFrom = query.dateFrom.trim();
-            if (query.dateTo && query.dateTo.trim()) params.dateTo = query.dateTo.trim();
+            if (query.dateFrom && query.dateFrom.trim()) params.startDate = query.dateFrom.trim(); 
+            if (query.dateTo && query.dateTo.trim()) params.endDate = query.dateTo.trim();
+            if (query.status && query.status.trim()) params.status = query.status.trim();
 
             console.log('Filter params being sent to getAll API:', params);
             const response = await medicalEventAPI.getAll(params);
@@ -312,9 +312,7 @@ const MedicalEventsPage = () => {
             newSearchParams.delete('dateFrom');
         }
         setSearchParams(newSearchParams);
-    };
-
-    const handleDateToChange = (event) => {
+    };    const handleDateToChange = (event) => {
         const value = event.target.value;
         setQuery(prev => ({
             ...prev,
@@ -331,7 +329,22 @@ const MedicalEventsPage = () => {
         setSearchParams(newSearchParams);
     };
 
-    const handleClearFilters = () => {
+    const handleStatusChange = (event) => {
+        const value = event.target.value;
+        setQuery(prev => ({
+            ...prev,
+            status: value,
+            page: 1
+        }));
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (value) {
+            newSearchParams.set('status', value);
+        } else {
+            newSearchParams.delete('status');
+        }
+        setSearchParams(newSearchParams);
+    };    const handleClearFilters = () => {
         setSearchInput('');
         setQuery({
             page: 1,
@@ -340,7 +353,8 @@ const MedicalEventsPage = () => {
             eventType: '',
             level: '',
             dateFrom: '',
-            dateTo: ''
+            dateTo: '',
+            status: ''
         });
         setSearchParams({});
     };
@@ -431,47 +445,16 @@ const MedicalEventsPage = () => {
         return value.substring(0, maxLength) + '...';
     };    const getEventTypeColor = (type) => {
         // Xử lý type tiếng Việt từ API
-        if (type === 'Cấp cứu') return 'error';
-        if (type === 'Chấn Thương') return 'error';
-        if (type === 'Bệnh') return 'warning';
-        if (type === 'Tư vấn') return 'info';
-        if (type === 'Thiếu ngủ') return 'warning';
-        
-        // Fallback cho type tiếng Anh (nếu có)
-        switch (type?.toLowerCase()) {
-            case 'emergency':
-                return 'error';
-            case 'injury':
-                return 'error';
-            case 'illness':
-                return 'warning';
-            case 'consultation':
-                return 'info';
-            default:
-                return 'default';
-        }
+        if (type === 'cấp cứu') return 'error';
+        if (type === 'chấn thương') return 'error';
+        if (type === 'bệnh') return 'warning';
+
     };    const getEventTypeLabel = (type) => {
         // Nếu type đã là tiếng Việt từ API, trả về trực tiếp
-        if (type === 'Cấp cứu' || type === 'Chấn Thương' || type === 'Bệnh' || type === 'Tư vấn') {
+        if (type === 'cấp cứu' || type === 'chấn thương' || type === 'bệnh') {
             return type;
         }
-        
-        // Xử lý các type khác từ API 
-        if (type === 'Thiếu ngủ') return 'Thiếu ngủ';
-        
-        // Fallback cho type tiếng Anh (nếu có)
-        switch (type?.toLowerCase()) {
-            case 'emergency':
-                return 'Cấp cứu';
-            case 'injury':
-                return 'Chấn thương';
-            case 'illness':
-                return 'Bệnh';
-            case 'consultation':
-                return 'Tư vấn';
-            default:
-                return type || 'Không xác định';
-        }
+
     };const getLevelColor = (level) => {
         switch (level) {
             case 3:
@@ -483,9 +466,7 @@ const MedicalEventsPage = () => {
             default:
                 return '#757575'; // Xám
         }
-    };
-
-    const getLevelLabel = (level) => {
+    };    const getLevelLabel = (level) => {
         switch (level) {
             case 3:
                 return 'Cao';
@@ -495,6 +476,26 @@ const MedicalEventsPage = () => {
                 return 'Thấp';
             default:
                 return 'Không xác định';
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Đã xử lí':
+                return '#2e7d32'; // Xanh lá
+            case 'Đang xử lí':
+                return '#ed6c02'; // Cam
+            case 'Chờ xử lí':
+                return '#d32f2f'; // Đỏ
+            default:
+                return '#757575'; // Xám
+        }
+    };
+
+    const getStatusLabel = (status) => {
+        // Trả về status từ API hoặc giá trị mặc định
+        if (status === 'Đã xử lí' || status === 'Đang xử lí' || status === 'Chờ xử lí') {
+            return status;
         }
     };
 
@@ -535,13 +536,13 @@ const MedicalEventsPage = () => {
                     >
                         Tạo sự kiện mới
                     </Button>
-                </Box>            </Box>
+                </Box>            
+            </Box>
 
             {/* Filters and Search */}
             <Card sx={{ mb: 3 }}>
                 <CardContent>
-                    <Grid container spacing={2} alignItems="center">                        
-                        {/* Event Type filter */}
+                    <Grid container spacing={2} alignItems="center">                          {/* Event Type filter */}
                         <Grid item xs={12} sm={6} md={3}>
                             <FormControl fullWidth size="small" sx={{ minWidth: '140px' }}>
                                 <InputLabel>Loại sự kiện</InputLabel>
@@ -555,16 +556,15 @@ const MedicalEventsPage = () => {
                                             padding: '8px 14px',
                                             fontSize: '14px'
                                         }
-                                    }}                                >                                      <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả loại</MenuItem>
-                                    <MenuItem value="Cấp cứu" sx={{ fontSize: '14px' }}>Cấp cứu</MenuItem>
-                                    <MenuItem value="Chấn Thương" sx={{ fontSize: '14px' }}>Chấn thương</MenuItem>
-                                    <MenuItem value="Bệnh" sx={{ fontSize: '14px' }}>Bệnh</MenuItem>
+                                    }}                                >                                      
+                                    <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả loại</MenuItem>
+                                    <MenuItem value="cấp cứu" sx={{ fontSize: '14px' }}>Cấp cứu</MenuItem>
+                                    <MenuItem value="chấn thương" sx={{ fontSize: '14px' }}>Chấn thương</MenuItem>
+                                    <MenuItem value="bệnh" sx={{ fontSize: '14px' }}>Bệnh</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>
-
-                        {/* Level filter */}
-                        <Grid item xs={12} sm={6} md={3}>
+                        </Grid>{/* Level filter */}
+                        <Grid item xs={12} sm={6} md={2}>
                             <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
                                 <InputLabel>Mức độ</InputLabel>
                                 <Select
@@ -578,7 +578,8 @@ const MedicalEventsPage = () => {
                                             fontSize: '14px'
                                         }
                                     }}
-                                >                                      <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả mức độ</MenuItem>
+                                >                                      
+                                    <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả mức độ</MenuItem>
                                     <MenuItem value="3" sx={{ fontSize: '14px' }}>Cao</MenuItem>
                                     <MenuItem value="2" sx={{ fontSize: '14px' }}>Trung bình</MenuItem>
                                     <MenuItem value="1" sx={{ fontSize: '14px' }}>Thấp</MenuItem>
@@ -586,8 +587,30 @@ const MedicalEventsPage = () => {
                             </FormControl>
                         </Grid>
 
-                        {/* Date From */}
+                        {/* Status filter */}
                         <Grid item xs={12} sm={6} md={2}>
+                            <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
+                                <InputLabel>Tình trạng</InputLabel>
+                                <Select
+                                    value={query.status}
+                                    label="Tình trạng"
+                                    onChange={handleStatusChange}
+                                    sx={{
+                                        fontSize: '14px',
+                                        '& .MuiSelect-select': {
+                                            padding: '8px 14px',
+                                            fontSize: '14px'
+                                        }
+                                    }}
+                                >
+                                    <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả tình trạng</MenuItem>
+                                    <MenuItem value="Đã xử lí" sx={{ fontSize: '14px' }}>Đã xử lí</MenuItem>
+                                    <MenuItem value="Đang xử lí" sx={{ fontSize: '14px' }}>Đang xử lí</MenuItem>
+                                    <MenuItem value="Chờ xử lí" sx={{ fontSize: '14px' }}>Chờ xử lí</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>                        {/* Date From */}
+                        <Grid item xs={12} sm={6} md={1.5}>
                             <TextField
                                 fullWidth
                                 label="Từ ngày"
@@ -609,7 +632,7 @@ const MedicalEventsPage = () => {
                         </Grid>
 
                         {/* Date To */}
-                        <Grid item xs={12} sm={6} md={2}>
+                        <Grid item xs={12} sm={6} md={1.5}>
                             <TextField
                                 fullWidth
                                 label="Đến ngày"
@@ -654,7 +677,7 @@ const MedicalEventsPage = () => {
                 </Box>
             ) : !medicalEvents || medicalEvents.length === 0 ? (
                 <Alert severity="info">
-                    Học sinh này chưa có sự kiện y tế nào
+                    Chưa có sự kiện y tế nào theo bộ lọc hiện tại. Hãy tạo mới hoặc thay đổi bộ lọc để xem dữ liệu.
                 </Alert>
             ) : (
                 <Card>
@@ -688,15 +711,14 @@ const MedicalEventsPage = () => {
                                 tableLayout: 'fixed',
                                 width: '100%'
                             }}>                                
-                                <TableHead>
-                                    <TableRow sx={{ bgcolor: 'grey.50' }}>
+                                <TableHead>                                    <TableRow sx={{ bgcolor: 'grey.50' }}>
                                         <TableCell sx={{ fontWeight: 600, width: '8%' }} align="center">STT</TableCell>
                                         <TableCell sx={{ fontWeight: 600, width: '18%' }} align="center">Ngày sự kiện</TableCell>
                                         <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Loại sự kiện</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '25%' }} align="center">Mô tả</TableCell>
                                         <TableCell sx={{ fontWeight: 600, width: '12%' }} align="center">Mức độ</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '22%' }} align="center">Nhân viên xử lý</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Thao tác</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '22%' }} align="center">Nhân viên xử lí</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Trạng thái</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">Thao tác</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -732,9 +754,7 @@ const MedicalEventsPage = () => {
                                                 <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 700 }}>
                                                     {formatDate(event.dateHappened || event.createdAt)}
                                                 </Typography>
-                                            </TableCell>
-
-                                            <TableCell align="center" sx={{ px: 1 }}>
+                                            </TableCell>                                            <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography
                                                     variant="body2"
                                                     sx={{
@@ -744,23 +764,9 @@ const MedicalEventsPage = () => {
                                                     }}
                                                 >
                                                     {getEventTypeLabel(event.type)}
-                                                </Typography>
-                                            </TableCell><TableCell align="center" sx={{ px: 2 }}>
-                                                <Tooltip title={getDisplayValue(event.description)} placement="top">                                                    <Typography
-                                                        variant="body2"
-                                                        sx={{
-                                                            fontSize: '0.875rem',
-                                                            color: '#424242',
-                                                            cursor: event.description && event.description.length > 40 ? 'help' : 'default',
-                                                            lineHeight: 1.4,
-                                                            fontWeight: 400
-                                                        }}
-                                                    >
-                                                        {getTruncatedValue(getDisplayValue(event.description), 40)}
-                                                    </Typography>
-                                                </Tooltip>                                            
-                                                </TableCell>                                            
-                                                <TableCell align="center" sx={{ px: 1 }}>
+                                                </Typography>                                            </TableCell>
+
+                                            <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography 
                                                     variant="body2" 
                                                     sx={{ 
@@ -776,7 +782,20 @@ const MedicalEventsPage = () => {
                                                 <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 400 }}>
                                                     {getDisplayValue(event.userId?.name)}
                                                 </Typography>
-                                            </TableCell>                                            
+                                            </TableCell>
+
+                                            <TableCell align="center" sx={{ px: 2 }}>
+                                                <Typography 
+                                                    variant="body2" 
+                                                    sx={{ 
+                                                        fontSize: '0.875rem', 
+                                                        color: getStatusColor(event.status),
+                                                        fontWeight: 700
+                                                    }}
+                                                >
+                                                    {getStatusLabel(event.status)}
+                                                </Typography>
+                                            </TableCell>
                                             <TableCell align="center">                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                                                     <Tooltip title="Xem chi tiết">
                                                         <IconButton
