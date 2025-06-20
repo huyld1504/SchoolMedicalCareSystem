@@ -22,6 +22,9 @@ import {
     MenuItem,
     InputLabel,
     Chip,
+    TextField,
+    InputAdornment,
+    Grid,
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -30,9 +33,12 @@ import {
     ArrowBack as BackIcon,
     MedicalServices as MedicalIcon,
     Visibility as ViewIcon,
+    Search as SearchIcon,
+    FilterList as FilterIcon,
+    CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import studentsApi from '../../api/studentsApi';
 import medicalEventAPI from '../../api/medicalEventApi';
@@ -40,12 +46,20 @@ import medicalEventAPI from '../../api/medicalEventApi';
 const MedicalEventsPage = () => {
     const { studentId } = useParams();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    // State cho pagination
+    // State cho pagination và search
     const [query, setQuery] = useState({
         page: 1,
-        limit: 10
+        limit: 10,
+        keyword: searchParams.get('keyword') || '',
+        eventType: searchParams.get('eventType') || '',
+        level: searchParams.get('level') || '',
+        dateFrom: searchParams.get('dateFrom') || '',
+        dateTo: searchParams.get('dateTo') || ''
     });
+
+    const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
 
     // State cho data từ API
     const [medicalEvents, setMedicalEvents] = useState([]);
@@ -57,7 +71,7 @@ const MedicalEventsPage = () => {
     });
 
     const [studentInfo, setStudentInfo] = useState(null);
-    const [loading, setLoading] = useState(true);    // Sử dụng useEffect với dependency của query để load data khi thay đổi page/limit
+    const [loading, setLoading] = useState(true);    // Sử dụng useEffect với dependency của query để load data khi thay đổi page/limit/search
     useEffect(() => {
         if (studentId) {
             loadMedicalEvents();
@@ -65,12 +79,22 @@ const MedicalEventsPage = () => {
         } else {
             loadAllMedicalEvents();
         }
-    }, [studentId, query.page, query.limit]);const loadMedicalEvents = async () => {
+    }, [studentId, query.page, query.limit, query.keyword, query.eventType, query.level, query.dateFrom, query.dateTo]);const loadMedicalEvents = async () => {
         try {
-            setLoading(true);
+            setLoading(true);            if (studentId) {                // Chuẩn bị params cho API call
+                const params = {};
+                
+                // Chỉ thêm param nếu có giá trị
+                if (query.page) params.page = query.page;
+                if (query.limit) params.limit = query.limit;
+                if (query.keyword && query.keyword.trim()) params.keyword = query.keyword.trim();
+                if (query.eventType && query.eventType.trim()) params.eventType = query.eventType.trim();
+                if (query.level && query.level.trim()) params.level = query.level.trim();
+                if (query.dateFrom && query.dateFrom.trim()) params.dateFrom = query.dateFrom.trim();
+                if (query.dateTo && query.dateTo.trim()) params.dateTo = query.dateTo.trim();
 
-            if (studentId) {
-                const response = await medicalEventAPI.getEventsByStudentId(studentId, query);
+                console.log('Filter params being sent to API:', params);
+                const response = await medicalEventAPI.getEventsByStudentId(studentId, params);
                 console.log('Medical events response:', response);
 
                 if (response.isSuccess && response.data) {
@@ -93,49 +117,50 @@ const MedicalEventsPage = () => {
                         totalPages: response.data.totalPages
                     });
                 } else {
-                    // Fallback: sử dụng dữ liệu mẫu nếu API chưa sẵn sàng
-                    const sampleEvents = generateSampleMedicalEvents();
-                    const startIndex = (query.page - 1) * query.limit;
-                    const endIndex = startIndex + query.limit;
-                    const paginatedEvents = sampleEvents.slice(startIndex, endIndex);
-                    
-                    setMedicalEvents(paginatedEvents);
+                    // Nếu không có data hoặc response không thành công
+                    setMedicalEvents([]);
                     setPaginationInfo({
-                        total: sampleEvents.length,
-                        page: query.page,
-                        limit: query.limit,
-                        totalPages: Math.ceil(sampleEvents.length / query.limit)
+                        total: 0,
+                        page: 1,
+                        limit: 10,
+                        totalPages: 0
                     });
+                    console.log('No data from API or API failed');
                 }
             }
         } catch (error) {
             console.error('Error loading medical events:', error);
             
-            // Fallback: sử dụng dữ liệu mẫu khi có lỗi API
-            const sampleEvents = generateSampleMedicalEvents();
-            const startIndex = (query.page - 1) * query.limit;
-            const endIndex = startIndex + query.limit;
-            const paginatedEvents = sampleEvents.slice(startIndex, endIndex);
-            
-            setMedicalEvents(paginatedEvents);
+            // Set empty data khi có lỗi API
+            setMedicalEvents([]);
             setPaginationInfo({
-                total: sampleEvents.length,
-                page: query.page,
-                limit: query.limit,
-                totalPages: Math.ceil(sampleEvents.length / query.limit)
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0
             });
             
-            toast.info('Đang hiển thị dữ liệu mẫu - API chưa sẵn sàng');
+            toast.error('Lỗi khi tải dữ liệu sự kiện y tế');
         } finally {
             setLoading(false);
         }
-    };
-
-    const loadAllMedicalEvents = async () => {
+    };    const loadAllMedicalEvents = async () => {
         try {
-            setLoading(true);
+            setLoading(true);            
+            // Chuẩn bị params cho API call
+            const params = {};
+            
+            // Chỉ thêm param nếu có giá trị
+            if (query.page) params.page = query.page;
+            if (query.limit) params.limit = query.limit;
+            if (query.keyword && query.keyword.trim()) params.keyword = query.keyword.trim();
+            if (query.eventType && query.eventType.trim()) params.eventType = query.eventType.trim();
+            if (query.level && query.level.trim()) params.level = query.level.trim();
+            if (query.dateFrom && query.dateFrom.trim()) params.dateFrom = query.dateFrom.trim();
+            if (query.dateTo && query.dateTo.trim()) params.dateTo = query.dateTo.trim();
 
-            const response = await medicalEventAPI.getAll(query);
+            console.log('Filter params being sent to getAll API:', params);
+            const response = await medicalEventAPI.getAll(params);
             console.log('All medical events response:', response);
 
             if (response.isSuccess && response.data) {
@@ -150,38 +175,29 @@ const MedicalEventsPage = () => {
                     totalPages: response.data.totalPages || 0
                 });
             } else {
-                // Fallback: sử dụng dữ liệu mẫu nếu API chưa sẵn sàng
-                const sampleEvents = generateSampleMedicalEvents();
-                const startIndex = (query.page - 1) * query.limit;
-                const endIndex = startIndex + query.limit;
-                const paginatedEvents = sampleEvents.slice(startIndex, endIndex);
-                
-                setMedicalEvents(paginatedEvents);
+                // Nếu không có data hoặc response không thành công
+                setMedicalEvents([]);
                 setPaginationInfo({
-                    total: sampleEvents.length,
-                    page: query.page,
-                    limit: query.limit,
-                    totalPages: Math.ceil(sampleEvents.length / query.limit)
+                    total: 0,
+                    page: 1,
+                    limit: 10,
+                    totalPages: 0
                 });
+                console.log('No data from API or API failed');
             }
         } catch (error) {
             console.error('Error loading all medical events:', error);
             
-            // Fallback: sử dụng dữ liệu mẫu khi có lỗi API
-            const sampleEvents = generateSampleMedicalEvents();
-            const startIndex = (query.page - 1) * query.limit;
-            const endIndex = startIndex + query.limit;
-            const paginatedEvents = sampleEvents.slice(startIndex, endIndex);
-            
-            setMedicalEvents(paginatedEvents);
+            // Set empty data khi có lỗi API
+            setMedicalEvents([]);
             setPaginationInfo({
-                total: sampleEvents.length,
-                page: query.page,
-                limit: query.limit,
-                totalPages: Math.ceil(sampleEvents.length / query.limit)
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0
             });
             
-            toast.info('Đang hiển thị dữ liệu mẫu - API chưa sẵn sàng');
+            toast.error('Lỗi khi tải dữ liệu sự kiện y tế');
         } finally {
             setLoading(false);
         }
@@ -216,7 +232,120 @@ const MedicalEventsPage = () => {
             limit: newLimit,
             page: 1 // Reset về page 1 khi thay đổi limit
         }));
-    };    const handleRefresh = () => {
+    };
+
+    // Xử lý tìm kiếm
+    const handleSearchChange = (event) => {
+        setSearchInput(event.target.value);
+    };
+
+    const handleSearchSubmit = () => {
+        setQuery(prev => ({
+            ...prev,
+            keyword: searchInput,
+            page: 1 // Reset về page 1 khi search
+        }));
+
+        // Update URL params
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (searchInput.trim()) {
+            newSearchParams.set('keyword', searchInput.trim());
+        } else {
+            newSearchParams.delete('keyword');
+        }
+        setSearchParams(newSearchParams);
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSearchSubmit();
+        }
+    };
+
+    // Xử lý filter
+    const handleEventTypeChange = (event) => {
+        const value = event.target.value;
+        setQuery(prev => ({
+            ...prev,
+            eventType: value,
+            page: 1
+        }));
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (value) {
+            newSearchParams.set('eventType', value);
+        } else {
+            newSearchParams.delete('eventType');
+        }
+        setSearchParams(newSearchParams);
+    };
+
+    const handleLevelChange = (event) => {
+        const value = event.target.value;
+        setQuery(prev => ({
+            ...prev,
+            level: value,
+            page: 1
+        }));
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (value) {
+            newSearchParams.set('level', value);
+        } else {
+            newSearchParams.delete('level');
+        }
+        setSearchParams(newSearchParams);
+    };
+
+    const handleDateFromChange = (event) => {
+        const value = event.target.value;
+        setQuery(prev => ({
+            ...prev,
+            dateFrom: value,
+            page: 1
+        }));
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (value) {
+            newSearchParams.set('dateFrom', value);
+        } else {
+            newSearchParams.delete('dateFrom');
+        }
+        setSearchParams(newSearchParams);
+    };
+
+    const handleDateToChange = (event) => {
+        const value = event.target.value;
+        setQuery(prev => ({
+            ...prev,
+            dateTo: value,
+            page: 1
+        }));
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (value) {
+            newSearchParams.set('dateTo', value);
+        } else {
+            newSearchParams.delete('dateTo');
+        }
+        setSearchParams(newSearchParams);
+    };
+
+    const handleClearFilters = () => {
+        setSearchInput('');
+        setQuery({
+            page: 1,
+            limit: 10,
+            keyword: '',
+            eventType: '',
+            level: '',
+            dateFrom: '',
+            dateTo: ''
+        });
+        setSearchParams({});
+    };
+
+    const handleRefresh = () => {
         if (studentId) {
             loadMedicalEvents();
         } else {
@@ -240,8 +369,30 @@ const MedicalEventsPage = () => {
             navigate('/nurse/medical-events/add');
         }
     };    const handleEditEvent = (eventId) => {
-        navigate(`/nurse/medical-events/${studentId}/edit/${eventId}`);
-    };    const handleViewEvent = (eventId) => {
+        console.log('Editing event with ID:', eventId);
+        
+        // Tìm event trong danh sách hiện tại để truyền qua state
+        const selectedEvent = medicalEvents.find(event => event._id === eventId);
+        console.log('Selected event for editing:', selectedEvent);
+        
+        if (studentId) {
+            console.log('Navigating to student-specific edit route:', `/nurse/medical-events/${studentId}/edit/${eventId}`);
+            navigate(`/nurse/medical-events/${studentId}/edit/${eventId}`, {
+                state: { 
+                    eventData: selectedEvent,
+                    from: `/nurse/medical-events/${studentId}`
+                }
+            });
+        } else {
+            console.log('Navigating to general edit route:', `/nurse/medical-events/edit/${eventId}`);
+            navigate(`/nurse/medical-events/edit/${eventId}`, {
+                state: { 
+                    eventData: selectedEvent,
+                    from: '/nurse/medical-events'
+                }
+            });
+        }
+    };const handleViewEvent = (eventId) => {
         console.log('Viewing event with ID:', eventId);
         
         // Tìm event trong danh sách hiện tại để truyền qua state
@@ -257,16 +408,13 @@ const MedicalEventsPage = () => {
             console.log('Navigating to general route:', `/nurse/medical-events/detail/${eventId}`);
             navigate(`/nurse/medical-events/detail/${eventId}`, {
                 state: { eventData: selectedEvent }
-            });
-        }
-    };
-
-    const formatDate = (dateString) => {
+            });        }
+    };    const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
             day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
         });
@@ -282,50 +430,49 @@ const MedicalEventsPage = () => {
         if (!value || value.length <= maxLength) return value;
         return value.substring(0, maxLength) + '...';
     };    const getEventTypeColor = (type) => {
+        // Xử lý type tiếng Việt từ API
+        if (type === 'Cấp cứu') return 'error';
+        if (type === 'Chấn Thương') return 'error';
+        if (type === 'Bệnh') return 'warning';
+        if (type === 'Tư vấn') return 'info';
+        if (type === 'Thiếu ngủ') return 'warning';
+        
+        // Fallback cho type tiếng Anh (nếu có)
         switch (type?.toLowerCase()) {
             case 'emergency':
                 return 'error';
-            case 'routine check':
-            case 'routine':
-                return 'primary';
-            case 'follow-up':
-            case 'followup':
-                return 'warning';
-            case 'vaccination':
-                return 'success';
             case 'injury':
                 return 'error';
+            case 'illness':
+                return 'warning';
             case 'consultation':
                 return 'info';
-            case 'allergy':
-                return 'error';
             default:
                 return 'default';
         }
-    };
-
-    const getEventTypeLabel = (type) => {
+    };    const getEventTypeLabel = (type) => {
+        // Nếu type đã là tiếng Việt từ API, trả về trực tiếp
+        if (type === 'Cấp cứu' || type === 'Chấn Thương' || type === 'Bệnh' || type === 'Tư vấn') {
+            return type;
+        }
+        
+        // Xử lý các type khác từ API 
+        if (type === 'Thiếu ngủ') return 'Thiếu ngủ';
+        
+        // Fallback cho type tiếng Anh (nếu có)
         switch (type?.toLowerCase()) {
             case 'emergency':
                 return 'Cấp cứu';
-            case 'routine check':
-            case 'routine':
-                return 'Thường quy';
-            case 'follow-up':
-            case 'followup':
-                return 'Tái khám';
-            case 'vaccination':
-                return 'Tiêm chủng';
             case 'injury':
                 return 'Chấn thương';
+            case 'illness':
+                return 'Bệnh';
             case 'consultation':
                 return 'Tư vấn';
-            case 'allergy':
-                return 'Dị ứng';
             default:
                 return type || 'Không xác định';
         }
-    };    const getLevelColor = (level) => {
+    };const getLevelColor = (level) => {
         switch (level) {
             case 3:
                 return '#d32f2f'; // Đỏ
@@ -359,7 +506,8 @@ const MedicalEventsPage = () => {
                     <IconButton onClick={handleBack} sx={{ mr: 2 }}>
                         <BackIcon />
                     </IconButton>
-                    <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />                    <Box>
+                    <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />                    
+                    <Box>
                         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
                             {studentId ? 'Sự kiện y tế học sinh' : 'Quản lý sự kiện y tế'}
                         </Typography>
@@ -387,8 +535,117 @@ const MedicalEventsPage = () => {
                     >
                         Tạo sự kiện mới
                     </Button>
-                </Box>
-            </Box>
+                </Box>            </Box>
+
+            {/* Filters and Search */}
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Grid container spacing={2} alignItems="center">                        
+                        {/* Event Type filter */}
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth size="small" sx={{ minWidth: '140px' }}>
+                                <InputLabel>Loại sự kiện</InputLabel>
+                                <Select
+                                    value={query.eventType}
+                                    label="Loại sự kiện"
+                                    onChange={handleEventTypeChange}
+                                    sx={{
+                                        fontSize: '14px',
+                                        '& .MuiSelect-select': {
+                                            padding: '8px 14px',
+                                            fontSize: '14px'
+                                        }
+                                    }}                                >                                      <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả loại</MenuItem>
+                                    <MenuItem value="Cấp cứu" sx={{ fontSize: '14px' }}>Cấp cứu</MenuItem>
+                                    <MenuItem value="Chấn Thương" sx={{ fontSize: '14px' }}>Chấn thương</MenuItem>
+                                    <MenuItem value="Bệnh" sx={{ fontSize: '14px' }}>Bệnh</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        {/* Level filter */}
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
+                                <InputLabel>Mức độ</InputLabel>
+                                <Select
+                                    value={query.level}
+                                    label="Mức độ"
+                                    onChange={handleLevelChange}
+                                    sx={{
+                                        fontSize: '14px',
+                                        '& .MuiSelect-select': {
+                                            padding: '8px 14px',
+                                            fontSize: '14px'
+                                        }
+                                    }}
+                                >                                      <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả mức độ</MenuItem>
+                                    <MenuItem value="3" sx={{ fontSize: '14px' }}>Cao</MenuItem>
+                                    <MenuItem value="2" sx={{ fontSize: '14px' }}>Trung bình</MenuItem>
+                                    <MenuItem value="1" sx={{ fontSize: '14px' }}>Thấp</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        {/* Date From */}
+                        <Grid item xs={12} sm={6} md={2}>
+                            <TextField
+                                fullWidth
+                                label="Từ ngày"
+                                type="date"
+                                value={query.dateFrom}
+                                onChange={handleDateFromChange}
+                                size="small"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <CalendarIcon fontSize="small" />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+
+                        {/* Date To */}
+                        <Grid item xs={12} sm={6} md={2}>
+                            <TextField
+                                fullWidth
+                                label="Đến ngày"
+                                type="date"
+                                value={query.dateTo}
+                                onChange={handleDateToChange}
+                                size="small"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <CalendarIcon fontSize="small" />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+                        
+                        {/* Action buttons */}
+                        <Grid item xs={12} md>
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleClearFilters}
+                                    color="secondary"
+                                    startIcon={<FilterIcon />}
+                                >
+                                    Xóa bộ lọc
+                                </Button>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
 
             {/* Content */}
             {loading ? (
@@ -430,7 +687,8 @@ const MedicalEventsPage = () => {
                             <Table stickyHeader sx={{
                                 tableLayout: 'fixed',
                                 width: '100%'
-                            }}>                                <TableHead>
+                            }}>                                
+                                <TableHead>
                                     <TableRow sx={{ bgcolor: 'grey.50' }}>
                                         <TableCell sx={{ fontWeight: 600, width: '8%' }} align="center">STT</TableCell>
                                         <TableCell sx={{ fontWeight: 600, width: '18%' }} align="center">Ngày sự kiện</TableCell>
@@ -457,7 +715,8 @@ const MedicalEventsPage = () => {
                                                 cursor: 'pointer',
                                                 height: '60px'
                                             }}
-                                        >                                            <TableCell align="center" sx={{ px: 1 }}>
+                                        >                                            
+                                            <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography
                                                     variant="body2"
                                                     sx={{
@@ -499,7 +758,9 @@ const MedicalEventsPage = () => {
                                                     >
                                                         {getTruncatedValue(getDisplayValue(event.description), 40)}
                                                     </Typography>
-                                                </Tooltip>                                            </TableCell>                                            <TableCell align="center" sx={{ px: 1 }}>
+                                                </Tooltip>                                            
+                                                </TableCell>                                            
+                                                <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography 
                                                     variant="body2" 
                                                     sx={{ 
@@ -510,11 +771,13 @@ const MedicalEventsPage = () => {
                                                 >
                                                     {getLevelLabel(event.level)}
                                                 </Typography>
-                                            </TableCell>                                            <TableCell align="center" sx={{ px: 2 }}>
+                                            </TableCell>                                            
+                                            <TableCell align="center" sx={{ px: 2 }}>
                                                 <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 400 }}>
                                                     {getDisplayValue(event.userId?.name)}
                                                 </Typography>
-                                            </TableCell>                                            <TableCell align="center">                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                                            </TableCell>                                            
+                                            <TableCell align="center">                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                                                     <Tooltip title="Xem chi tiết">
                                                         <IconButton
                                                             color="info"
@@ -539,7 +802,8 @@ const MedicalEventsPage = () => {
                                     ))}
                                 </TableBody>
                             </Table>
-                        </TableContainer>                        {/* Pagination component */}
+                        </TableContainer>                        
+                        {/* Pagination component */}
                         <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                             <Pagination
                                 count={paginationInfo.totalPages}
