@@ -37,10 +37,11 @@ import {
     FitnessCenter,
     Bloodtype,
     RemoveRedEye,
-    Warning,
-    AccessibleForward,
+    Warning, AccessibleForward,
     CheckCircleOutline,
-    InfoOutlined
+    InfoOutlined,
+    Add,
+    Delete
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
@@ -59,9 +60,7 @@ const AddChildPage = () => {
         { label: 'Thông tin cơ bản', icon: <Person /> },
         { label: 'Sức khỏe', icon: <LocalHospital /> },
         { label: 'Xác nhận', icon: <CheckCircleOutline /> }
-    ];
-
-    const [formData, setFormData] = useState({
+    ]; const [formData, setFormData] = useState({
         // Thông tin con em
         name: '',
         birthdate: '',
@@ -74,9 +73,9 @@ const AddChildPage = () => {
         weight: '',
         bloodType: '',
         vision: '',
-        allergies: '',
-        chronicDiseases: '',
-        devicesSupport: ''
+        allergies: [], // Chuyển thành mảng
+        chronicDiseases: [], // Chuyển thành mảng
+        devicesSupport: [] // Chuyển thành mảng
     });
 
     const [formErrors, setFormErrors] = useState({}); const handleChange = (e) => {
@@ -93,6 +92,40 @@ const AddChildPage = () => {
                 [name]: ''
             }));
         }
+    };    // State cho input tạm thời của các field mảng
+    const [tempInputs, setTempInputs] = useState({
+        allergies: '',
+        chronicDiseases: '',
+        devicesSupport: ''
+    });
+
+    // Hàm xử lý thêm/xóa item cho mảng
+    const handleAddArrayItem = (fieldName) => {
+        const value = tempInputs[fieldName];
+        if (value.trim()) {
+            setFormData(prev => ({
+                ...prev,
+                [fieldName]: [...prev[fieldName], value.trim()]
+            }));
+            setTempInputs(prev => ({
+                ...prev,
+                [fieldName]: ''
+            }));
+        }
+    };
+
+    const handleRemoveArrayItem = (fieldName, index) => {
+        setFormData(prev => ({
+            ...prev,
+            [fieldName]: prev[fieldName].filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleTempInputChange = (fieldName, value) => {
+        setTempInputs(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
     };
 
     const validateStep = (step) => {
@@ -111,7 +144,7 @@ const AddChildPage = () => {
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
-    };    const handleNext = () => {
+    }; const handleNext = () => {
         if (validateStep(activeStep)) {
             setActiveStep(prev => prev + 1);
         }
@@ -153,10 +186,9 @@ const AddChildPage = () => {
                 height: parseFloat(formData.height) || 0,
                 weight: parseFloat(formData.weight) || 0,
                 bloodType: formData.bloodType,
-                vision: formData.vision || '',
-                allergies: formData.allergies || '',
-                chronicDiseases: formData.chronicDiseases || '',
-                devicesSupport: formData.devicesSupport || ''
+                vision: formData.vision || '', allergies: JSON.stringify(formData.allergies) || '',
+                chronicDiseases: JSON.stringify(formData.chronicDiseases) || '',
+                devicesSupport: JSON.stringify(formData.devicesSupport) || ''
             };
 
             console.log('Creating child with data:', childData);
@@ -174,7 +206,7 @@ const AddChildPage = () => {
         } finally {
             setLoading(false);
         }
-    };const renderStepContent = (step) => {
+    }; const renderStepContent = (step) => {
         switch (step) {
             case 0:
                 return (
@@ -192,10 +224,9 @@ const AddChildPage = () => {
                                         Vui lòng điền thông tin cơ bản của con em
                                     </Typography>
                                 </Box>
-                            </Box>
-
-                            <Grid container spacing={3}>
-                                <Grid item xs={12}>
+                            </Box>                            <Grid container spacing={3}>
+                                {/* Hàng 1: Họ và tên, Ngày sinh, Giới tính */}
+                                <Grid item xs={12} md={4}>
                                     <TextField
                                         fullWidth
                                         label="Họ và tên"
@@ -216,7 +247,7 @@ const AddChildPage = () => {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={4}>
                                     <TextField
                                         fullWidth
                                         label="Ngày sinh"
@@ -238,7 +269,7 @@ const AddChildPage = () => {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={4}>
                                     <TextField
                                         fullWidth
                                         select
@@ -248,13 +279,18 @@ const AddChildPage = () => {
                                         onChange={handleChange}
                                         error={!!formErrors.gender}
                                         helperText={formErrors.gender}
-                                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                            '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                                            '& .MuiSelect-select': { minWidth: '100px' }
+                                        }}
                                     >
                                         <MenuItem value="male">👦 Nam</MenuItem>
                                         <MenuItem value="female">👧 Nữ</MenuItem>
-                                        <MenuItem value="other">🧒 Khác</MenuItem>
                                     </TextField>
                                 </Grid>
+
+                                {/* Hàng 2: Mã học sinh, Mã BHYT */}
 
                                 <Grid item xs={12} sm={6}>
                                     <TextField
@@ -313,7 +349,7 @@ const AddChildPage = () => {
                             </Box>
 
                             <Grid container spacing={3}>
-                                <Grid item xs={12} sm={6}>
+                                <Grid xs={12} md={4}>
                                     <TextField
                                         fullWidth
                                         label="Chiều cao (cm)"
@@ -355,9 +391,7 @@ const AddChildPage = () => {
                                         }}
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                                     />
-                                </Grid>
-
-                                <Grid item xs={12} sm={6}>
+                                </Grid>                                <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
                                         select
@@ -374,7 +408,11 @@ const AddChildPage = () => {
                                                 </InputAdornment>
                                             ),
                                         }}
-                                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                            '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                                            '& .MuiSelect-select': { minWidth: '120px' }
+                                        }}
                                     >
                                         <MenuItem value="A+">🩸 A+</MenuItem>
                                         <MenuItem value="A-">🩸 A-</MenuItem>
@@ -405,72 +443,172 @@ const AddChildPage = () => {
                                         }}
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                                     />
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                    <Divider sx={{ my: 2 }}>
-                                        <Chip
-                                            label="Thông tin bổ sung (không bắt buộc)"
-                                            icon={<InfoOutlined />}
-                                            variant="outlined"
-                                        />
-                                    </Divider>
+                                </Grid>                                <Grid item xs={12} md={4}>
+                                    <Box>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: 'text.primary', display: 'flex', alignItems: 'center' }}>
+                                            <Warning color="warning" sx={{ mr: 1 }} />
+                                            Dị ứng
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                placeholder="Nhập dị ứng..."
+                                                value={tempInputs.allergies}
+                                                onChange={(e) => handleTempInputChange('allergies', e.target.value)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleAddArrayItem('allergies');
+                                                    }
+                                                }}
+                                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1 } }}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={() => handleAddArrayItem('allergies')}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    bgcolor: 'warning.main',
+                                                    '&:hover': { bgcolor: 'warning.dark' }
+                                                }}
+                                            >
+                                                <Add />
+                                            </Button>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 40 }}>
+                                            {formData.allergies.map((item, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={item}
+                                                    onDelete={() => handleRemoveArrayItem('allergies', index)}
+                                                    deleteIcon={<Delete />}
+                                                    size="small"
+                                                    color="warning"
+                                                    variant="outlined"
+                                                />
+                                            ))}
+                                            {formData.allergies.length === 0 && (
+                                                <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                                    Chưa có thông tin dị ứng
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
                                 </Grid>
 
                                 <Grid item xs={12} md={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Dị ứng"
-                                        name="allergies"
-                                        value={formData.allergies}
-                                        onChange={handleChange}
-                                        multiline
-                                        rows={3}
-                                        placeholder="Dị ứng thực phẩm, thuốc..."
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1 }}>
-                                                    <Warning color="warning" />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                                    />
+                                    <Box>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: 'text.primary', display: 'flex', alignItems: 'center' }}>
+                                            <LocalHospital color="error" sx={{ mr: 1 }} />
+                                            Bệnh mãn tính
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                placeholder="Nhập bệnh mãn tính..."
+                                                value={tempInputs.chronicDiseases}
+                                                onChange={(e) => handleTempInputChange('chronicDiseases', e.target.value)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleAddArrayItem('chronicDiseases');
+                                                    }
+                                                }}
+                                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1 } }}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={() => handleAddArrayItem('chronicDiseases')}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    bgcolor: 'error.main',
+                                                    '&:hover': { bgcolor: 'error.dark' }
+                                                }}
+                                            >
+                                                <Add />
+                                            </Button>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 40 }}>
+                                            {formData.chronicDiseases.map((item, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={item}
+                                                    onDelete={() => handleRemoveArrayItem('chronicDiseases', index)}
+                                                    deleteIcon={<Delete />}
+                                                    size="small"
+                                                    color="error"
+                                                    variant="outlined"
+                                                />
+                                            ))}
+                                            {formData.chronicDiseases.length === 0 && (
+                                                <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                                    Chưa có thông tin bệnh mãn tính
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
                                 </Grid>
 
                                 <Grid item xs={12} md={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Bệnh mãn tính"
-                                        name="chronicDiseases"
-                                        value={formData.chronicDiseases}
-                                        onChange={handleChange}
-                                        multiline
-                                        rows={3}
-                                        placeholder="Tim mạch, tiểu đường..."
-                                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                                    />
-                                </Grid>
-
-                                <Grid item xs={12} md={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Thiết bị hỗ trợ"
-                                        name="devicesSupport"
-                                        value={formData.devicesSupport}
-                                        onChange={handleChange}
-                                        multiline
-                                        rows={3}
-                                        placeholder="Kính cận, xe lăn..."
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1 }}>
-                                                    <AccessibleForward color="info" />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                                    />
+                                    <Box>
+                                        <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: 'text.primary', display: 'flex', alignItems: 'center' }}>
+                                            <AccessibleForward color="info" sx={{ mr: 1 }} />
+                                            Thiết bị hỗ trợ
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                placeholder="Nhập thiết bị hỗ trợ..."
+                                                value={tempInputs.devicesSupport}
+                                                onChange={(e) => handleTempInputChange('devicesSupport', e.target.value)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleAddArrayItem('devicesSupport');
+                                                    }
+                                                }}
+                                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1 } }}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={() => handleAddArrayItem('devicesSupport')}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    bgcolor: 'info.main',
+                                                    '&:hover': { bgcolor: 'info.dark' }
+                                                }}
+                                            >
+                                                <Add />
+                                            </Button>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 40 }}>
+                                            {formData.devicesSupport.map((item, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={item}
+                                                    onDelete={() => handleRemoveArrayItem('devicesSupport', index)}
+                                                    deleteIcon={<Delete />}
+                                                    size="small"
+                                                    color="info"
+                                                    variant="outlined"
+                                                />
+                                            ))}
+                                            {formData.devicesSupport.length === 0 && (
+                                                <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                                    Chưa có thiết bị hỗ trợ
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </Box>
                                 </Grid>
                             </Grid>
                         </CardContent>
@@ -479,7 +617,7 @@ const AddChildPage = () => {
 
             case 2:
                 return (
-                    <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+                    <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', width: '100%' }}>
                         <CardContent sx={{ p: 4 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                                 <Avatar sx={{ bgcolor: 'success.main', mr: 2, width: 48, height: 48 }}>
@@ -494,13 +632,13 @@ const AddChildPage = () => {
                                     </Typography>
                                 </Box>
                             </Box>
-
-                            <Grid container spacing={3}>
+                            <Grid container spacing={3} sx={{ minHeight: '400px' }}>
                                 {/* Thông tin cơ bản */}
-                                <Grid item xs={12} md={6}>
-                                    <Paper elevation={1} sx={{ p: 3, borderRadius: 2, bgcolor: 'primary.50' }}>
-                                        <Typography variant="h6" sx={{ mb: 2, color: 'primary.main', fontWeight: 600 }}>
-                                            👤 Thông tin cơ bản
+                                <Grid item xs={6} sx={{ display: 'flex' }}>
+                                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, bgcolor: 'primary.50', flex: 1, minHeight: '350px' }}>
+                                        <Typography variant="h6" sx={{ mb: 3, color: 'primary.main', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                                            <Person sx={{ mr: 1 }} />
+                                            Thông tin cơ bản
                                         </Typography>
                                         <Stack spacing={1.5}>
                                             <Box>
@@ -530,12 +668,12 @@ const AddChildPage = () => {
                                         </Stack>
                                     </Paper>
                                 </Grid>
-
                                 {/* Thông tin sức khỏe */}
-                                <Grid item xs={12} md={6}>
-                                    <Paper elevation={1} sx={{ p: 3, borderRadius: 2, bgcolor: 'error.50' }}>
-                                        <Typography variant="h6" sx={{ mb: 2, color: 'error.main', fontWeight: 600 }}>
-                                            🏥 Thông tin sức khỏe
+                                <Grid item xs={6} sx={{ display: 'flex' }}>
+                                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, bgcolor: 'error.50', flex: 1, minHeight: '350px' }}>
+                                        <Typography variant="h6" sx={{ mb: 3, color: 'error.main', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                                            <LocalHospital sx={{ mr: 1 }} />
+                                            Thông tin sức khỏe
                                         </Typography>
                                         <Stack spacing={1.5}>
                                             <Box>
@@ -556,15 +694,63 @@ const AddChildPage = () => {
                                             </Box>
                                             <Box>
                                                 <Typography variant="caption" color="text.secondary">Dị ứng:</Typography>
-                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{formData.allergies || 'Không có'}</Typography>
+                                                <Box sx={{ mt: 0.5 }}>
+                                                    {formData.allergies.length > 0 ? (
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                            {formData.allergies.map((item, index) => (
+                                                                <Chip
+                                                                    key={index}
+                                                                    label={item}
+                                                                    size="small"
+                                                                    color="warning"
+                                                                    variant="outlined"
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    ) : (
+                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>Không có</Typography>
+                                                    )}
+                                                </Box>
                                             </Box>
                                             <Box>
                                                 <Typography variant="caption" color="text.secondary">Bệnh mãn tính:</Typography>
-                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{formData.chronicDiseases || 'Không có'}</Typography>
+                                                <Box sx={{ mt: 0.5 }}>
+                                                    {formData.chronicDiseases.length > 0 ? (
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                            {formData.chronicDiseases.map((item, index) => (
+                                                                <Chip
+                                                                    key={index}
+                                                                    label={item}
+                                                                    size="small"
+                                                                    color="error"
+                                                                    variant="outlined"
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    ) : (
+                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>Không có</Typography>
+                                                    )}
+                                                </Box>
                                             </Box>
                                             <Box>
                                                 <Typography variant="caption" color="text.secondary">Thiết bị hỗ trợ:</Typography>
-                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{formData.devicesSupport || 'Không có'}</Typography>
+                                                <Box sx={{ mt: 0.5 }}>
+                                                    {formData.devicesSupport.length > 0 ? (
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                            {formData.devicesSupport.map((item, index) => (
+                                                                <Chip
+                                                                    key={index}
+                                                                    label={item}
+                                                                    size="small"
+                                                                    color="info"
+                                                                    variant="outlined"
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    ) : (
+                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>Không có</Typography>
+                                                    )}
+                                                </Box>
                                             </Box>
                                         </Stack>
                                     </Paper>

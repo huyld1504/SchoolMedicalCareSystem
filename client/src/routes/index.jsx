@@ -47,59 +47,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <AppLayout />,
     children: [
-      // Parent routes
-      {
-        path: 'parent',
-        element: (
-          <ProtectedRoute>
-            <ParentLayout />
-          </ProtectedRoute>
-        ),
-        children: [
-          // Main Dashboard          // Children Management
-          {
-            path: 'children',
-            children: [
-              {
-                index: true,
-                element: <ChildrenPage />
-              },
-              {
-                path: 'add',
-                element: <AddChildPage />
-              },
-              {
-                path: ':id',
-                element: <ChildDetailPage />
-              },
-              {
-                path: ':id/edit',
-                element: <EditChildPage />
-              },
-            ]
-          },
-
-          // Medical Orders Management
-          {
-            path: 'medical-orders',
-            children: [
-              {
-                index: true,
-                element: <MedicalOrdersPage />
-              },
-              {
-                path: 'create',
-                element: <CreateMedicalOrderPage />
-              },
-              {
-                path: ':id',
-                element: <ComingSoonPage title="Chi tiết đơn thuốc" />
-              },
-            ]
-          },
-        ]
-      },
-
       // Nurse routes
       {
         path: 'nurse',
@@ -172,26 +119,58 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
-
-      // Error Routes
+      // Parent routes
       {
-        path: '*',
+        path: 'parent',
         element: (
-          <div style={{
-            padding: '40px',
-            textAlign: 'center',
-            minHeight: '400px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <h1>404 - Trang không tìm thấy</h1>
-            <p>Trang bạn đang tìm kiếm không tồn tại.</p>
-            <button onClick={() => window.location.href = '/'}>← Về trang chủ</button>
-          </div>
-        )
-      }
+          <ProtectedRoute>
+            <ParentLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          // Main Dashboard          // Children Management
+          {
+            path: 'children',
+            children: [
+              {
+                index: true,
+                element: <ChildrenPage />
+              },
+              {
+                path: 'add',
+                element: <AddChildPage />
+              },
+              {
+                path: ':id',
+                element: <ChildDetailPage />
+              },
+              {
+                path: ':id/edit',
+                element: <EditChildPage />
+              },
+            ]
+          },
+
+          // Medical Orders Management
+          {
+            path: 'medical-orders',
+            children: [
+              {
+                index: true,
+                element: <MedicalOrdersPage />
+              },
+              {
+                path: 'create',
+                element: <CreateMedicalOrderPage />
+              },
+              {
+                path: ':id',
+                element: <ComingSoonPage title="Chi tiết đơn thuốc" />
+              },
+            ]
+          },
+        ]
+      },
     ]
   }
 ]);

@@ -322,7 +322,7 @@ const ChildrenPage = () => {
                                                                     <ViewIcon />
                                                                 </IconButton>
                                                             </Tooltip>
-                                                            <Tooltip title="Chỉnh sửa">
+                                                            {/* <Tooltip title="Chỉnh sửa">
                                                                 <IconButton
                                                                     size="small"
                                                                     color="secondary"
@@ -330,7 +330,7 @@ const ChildrenPage = () => {
                                                                 >
                                                                     <EditIcon />
                                                                 </IconButton>
-                                                            </Tooltip>
+                                                            </Tooltip> */}
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>

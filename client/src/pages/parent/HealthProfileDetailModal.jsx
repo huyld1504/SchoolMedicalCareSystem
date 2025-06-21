@@ -11,7 +11,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Chip
 } from '@mui/material';
 import {
   ArrowBack,
@@ -67,7 +68,6 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
       return 'Ngày không hợp lệ';
     }
   };
-
   const formatDateTime = (dateString) => {
     if (!dateString) return 'Chưa có thông tin';
     try {
@@ -80,6 +80,20 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
       });
     } catch {
       return 'Ngày không hợp lệ';
+    }
+  };
+
+  // Hàm parse JSON data cho các field array
+  const parseHealthData = (data) => {
+    if (!data || data === '1' || data === '') return [];
+
+    try {
+      // Nếu data là JSON string, parse nó
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      // Nếu không parse được, coi như string và split bằng dấu phẩy
+      return data.split(',').map(item => item.trim()).filter(item => item);
     }
   };
 
@@ -241,72 +255,96 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
             Thông tin sức khỏe bổ sung
           </Typography>
 
-          <Grid container spacing={2}>
-            {profile?.allergies && profile.allergies !== '1' && (
-              <Grid item xs={12} md={6}>
+          <Grid container spacing={2}>            {(() => {
+            const allergiesData = parseHealthData(profile?.allergies);
+            return allergiesData.length > 0 && (
+              <Grid item xs={12} md={4}>
                 <Box sx={{ p: 2, bgcolor: '#fff3e0', borderRadius: 1, border: '1px solid #ffcc02' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
                     <Warning sx={{ color: '#ff9800', mr: 1, mt: 0.5, fontSize: 20 }} />
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#e65100' }}>
-                        Dị ứng
-                      </Typography>
-                      <Typography variant="body2" color="text.primary">
-                        {profile.allergies}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              </Grid>
-            )}
-
-            {profile?.chronicDiseases && profile.chronicDiseases !== '1' && (
-              <Grid item xs={12} md={6}>
-                <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, border: '1px solid #ffcdd2' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                    <LocalHospital sx={{ color: '#d32f2f', mr: 1, mt: 0.5, fontSize: 20 }} />
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#c62828' }}>
-                        Bệnh mãn tính
-                      </Typography>
-                      <Typography variant="body2" color="text.primary">
-                        {profile.chronicDiseases}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              </Grid>
-            )}
-
-            {profile?.devicesSupport && profile.devicesSupport !== '1' && (
-              <Grid item xs={12} md={6}>
-                <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #bbdefb' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                    <AccessibleForward sx={{ color: '#1976d2', mr: 1, mt: 0.5, fontSize: 20 }} />
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1565c0' }}>
-                        Thiết bị hỗ trợ
-                      </Typography>
-                      <Typography variant="body2" color="text.primary">
-                        {profile.devicesSupport}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              </Grid>
-            )}
-
-            {(!profile?.allergies || profile.allergies === '1') &&
-              (!profile?.chronicDiseases || profile.chronicDiseases === '1') &&
-              (!profile?.devicesSupport || profile.devicesSupport === '1') && (
-                <Grid item xs={12}>
-                  <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Không có thông tin sức khỏe bổ sung nào được ghi nhận
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#e65100' }}>
+                      Dị ứng
                     </Typography>
                   </Box>
-                </Grid>
-              )}
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {allergiesData.map((item, index) => (
+                      <Chip
+                        key={index}
+                        label={item}
+                        size="small"
+                        color="warning"
+                        variant="outlined"
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Grid>
+            );
+          })()}            {(() => {
+            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
+            return chronicDiseasesData.length > 0 && (
+              <Grid item xs={12} md={4}>
+                <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, border: '1px solid #ffcdd2' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                    <LocalHospital sx={{ color: '#d32f2f', mr: 1, mt: 0.5, fontSize: 20 }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#c62828' }}>
+                      Bệnh mãn tính
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {chronicDiseasesData.map((item, index) => (
+                      <Chip
+                        key={index}
+                        label={item}
+                        size="small"
+                        color="error"
+                        variant="outlined"
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Grid>
+            );
+          })()}            {(() => {
+            const devicesSupportData = parseHealthData(profile?.devicesSupport);
+            return devicesSupportData.length > 0 && (
+              <Grid item xs={12} md={4}>
+                <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #bbdefb' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                    <AccessibleForward sx={{ color: '#1976d2', mr: 1, mt: 0.5, fontSize: 20 }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1565c0' }}>
+                      Thiết bị hỗ trợ
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {devicesSupportData.map((item, index) => (
+                      <Chip
+                        key={index}
+                        label={item}
+                        size="small"
+                        color="info"
+                        variant="outlined"
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Grid>
+            );
+          })()}            {(() => {
+            const allergiesData = parseHealthData(profile?.allergies);
+            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
+            const devicesSupportData = parseHealthData(profile?.devicesSupport);
+
+            return allergiesData.length === 0 && chronicDiseasesData.length === 0 && devicesSupportData.length === 0 && (
+              <Grid item xs={12}>
+                <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Không có thông tin sức khỏe bổ sung nào được ghi nhận
+                  </Typography>
+                </Box>
+              </Grid>
+            );
+          })()}
           </Grid>
 
           <Divider sx={{ my: 3 }} />
