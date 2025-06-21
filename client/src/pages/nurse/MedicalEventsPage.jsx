@@ -46,7 +46,9 @@ import medicalEventAPI from '../../api/medicalEventApi';
 const MedicalEventsPage = () => {
     const { studentId } = useParams();
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();    // State cho pagination và search
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // State cho query gọi API
     const [query, setQuery] = useState({
         page: 1,
         limit: 10,
@@ -56,11 +58,16 @@ const MedicalEventsPage = () => {
         dateFrom: searchParams.get('dateFrom') || '',
         dateTo: searchParams.get('dateTo') || '',
         status: searchParams.get('status') || ''
+    });    // State cho filter UI (tạm thời)
+    const [filters, setFilters] = useState({
+        eventType: searchParams.get('eventType') || '',
+        level: searchParams.get('level') || '',
+        dateFrom: searchParams.get('dateFrom') || '',
+        dateTo: searchParams.get('dateTo') || '',
+        status: searchParams.get('status') || ''
     });
 
-    const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
-
-    // State cho data từ API
+    const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');    // State cho data từ API
     const [medicalEvents, setMedicalEvents] = useState([]);
     const [paginationInfo, setPaginationInfo] = useState({
         total: 0,
@@ -70,7 +77,7 @@ const MedicalEventsPage = () => {
     });
 
     const [studentInfo, setStudentInfo] = useState(null);
-    const [loading, setLoading] = useState(true);    // Sử dụng useEffect với dependency của query để load data khi thay đổi page/limit/search
+    const [loading, setLoading] = useState(true);// Sử dụng useEffect với dependency của query để load data khi thay đổi page/limit/search
     useEffect(() => {
         if (studentId) {
             loadMedicalEvents();
@@ -80,7 +87,9 @@ const MedicalEventsPage = () => {
         }
     }, [studentId, query.page, query.limit, query.keyword, query.eventType, query.level, query.dateFrom, query.dateTo, query.status]);const loadMedicalEvents = async () => {
         try {
-            setLoading(true);            if (studentId) {                // Chuẩn bị params cho API call
+            setLoading(true);            
+            if (studentId) {                
+                // Chuẩn bị params cho API call
                 const params = {};
                 
                 // Chỉ thêm param nếu có giá trị
@@ -232,120 +241,87 @@ const MedicalEventsPage = () => {
             limit: newLimit,
             page: 1 // Reset về page 1 khi thay đổi limit
         }));
-    };
-
-    // Xử lý tìm kiếm
+    };    // Xử lý tìm kiếm
     const handleSearchChange = (event) => {
         setSearchInput(event.target.value);
     };
 
-    const handleSearchSubmit = () => {
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleApplyFilters();
+        }
+    };// Handler để áp dụng tất cả filter (chỉ gọi API khi nhấn nút này)
+    const handleApplyFilters = () => {
         setQuery(prev => ({
             ...prev,
-            keyword: searchInput,
-            page: 1 // Reset về page 1 khi search
+            keyword: searchInput, // Sử dụng searchInput thay vì filters.keyword
+            eventType: filters.eventType,
+            level: filters.level,
+            dateFrom: filters.dateFrom,
+            dateTo: filters.dateTo,
+            status: filters.status,
+            page: 1 // Reset về page 1 khi filter
         }));
 
         // Update URL params
-        const newSearchParams = new URLSearchParams(searchParams);
-        if (searchInput.trim()) {
-            newSearchParams.set('keyword', searchInput.trim());
-        } else {
-            newSearchParams.delete('keyword');
-        }
+        const newSearchParams = new URLSearchParams();
+        if (searchInput.trim()) newSearchParams.set('keyword', searchInput.trim());
+        if (filters.eventType) newSearchParams.set('eventType', filters.eventType);
+        if (filters.level) newSearchParams.set('level', filters.level);
+        if (filters.dateFrom) newSearchParams.set('dateFrom', filters.dateFrom);
+        if (filters.dateTo) newSearchParams.set('dateTo', filters.dateTo);
+        if (filters.status) newSearchParams.set('status', filters.status);
         setSearchParams(newSearchParams);
     };
 
-    const handleKeyPress = (event) => {
-        if (event.key === 'Enter') {
-            handleSearchSubmit();
-        }
-    };
-
-    // Xử lý filter
+    // Xử lý filter - chỉ cập nhật state filters, không gọi API
     const handleEventTypeChange = (event) => {
         const value = event.target.value;
-        setQuery(prev => ({
+        setFilters(prev => ({
             ...prev,
-            eventType: value,
-            page: 1
+            eventType: value
         }));
-
-        const newSearchParams = new URLSearchParams(searchParams);
-        if (value) {
-            newSearchParams.set('eventType', value);
-        } else {
-            newSearchParams.delete('eventType');
-        }
-        setSearchParams(newSearchParams);
     };
 
     const handleLevelChange = (event) => {
         const value = event.target.value;
-        setQuery(prev => ({
+        setFilters(prev => ({
             ...prev,
-            level: value,
-            page: 1
+            level: value
         }));
-
-        const newSearchParams = new URLSearchParams(searchParams);
-        if (value) {
-            newSearchParams.set('level', value);
-        } else {
-            newSearchParams.delete('level');
-        }
-        setSearchParams(newSearchParams);
     };
 
     const handleDateFromChange = (event) => {
         const value = event.target.value;
-        setQuery(prev => ({
+        setFilters(prev => ({
             ...prev,
-            dateFrom: value,
-            page: 1
+            dateFrom: value
         }));
+    };
 
-        const newSearchParams = new URLSearchParams(searchParams);
-        if (value) {
-            newSearchParams.set('dateFrom', value);
-        } else {
-            newSearchParams.delete('dateFrom');
-        }
-        setSearchParams(newSearchParams);
-    };    const handleDateToChange = (event) => {
+    const handleDateToChange = (event) => {
         const value = event.target.value;
-        setQuery(prev => ({
+        setFilters(prev => ({
             ...prev,
-            dateTo: value,
-            page: 1
+            dateTo: value
         }));
-
-        const newSearchParams = new URLSearchParams(searchParams);
-        if (value) {
-            newSearchParams.set('dateTo', value);
-        } else {
-            newSearchParams.delete('dateTo');
-        }
-        setSearchParams(newSearchParams);
     };
 
     const handleStatusChange = (event) => {
         const value = event.target.value;
-        setQuery(prev => ({
+        setFilters(prev => ({
             ...prev,
-            status: value,
-            page: 1
+            status: value
         }));
-
-        const newSearchParams = new URLSearchParams(searchParams);
-        if (value) {
-            newSearchParams.set('status', value);
-        } else {
-            newSearchParams.delete('status');
-        }
-        setSearchParams(newSearchParams);
     };    const handleClearFilters = () => {
         setSearchInput('');
+        setFilters({
+            eventType: '',
+            level: '',
+            dateFrom: '',
+            dateTo: '',
+            status: ''
+        });
         setQuery({
             page: 1,
             limit: 10,
@@ -469,17 +445,15 @@ const MedicalEventsPage = () => {
     };    const getLevelLabel = (level) => {
         switch (level) {
             case 3:
-                return 'Cao';
+                return 'Khẩn cấp';
             case 2:
                 return 'Trung bình';
             case 1:
-                return 'Thấp';
+                return 'Nhẹ';
             default:
                 return 'Không xác định';
         }
-    };
-
-    const getStatusColor = (status) => {
+    };    const getStatusColor = (status) => {
         switch (status) {
             case 'Đã xử lí':
                 return '#2e7d32'; // Xanh lá
@@ -490,13 +464,12 @@ const MedicalEventsPage = () => {
             default:
                 return '#757575'; // Xám
         }
-    };
-
-    const getStatusLabel = (status) => {
+    };    const getStatusLabel = (status) => {
         // Trả về status từ API hoặc giá trị mặc định
         if (status === 'Đã xử lí' || status === 'Đang xử lí' || status === 'Chờ xử lí') {
             return status;
         }
+        return 'Đã xử lí'; // Giá trị mặc định
     };
 
     return (
@@ -535,19 +508,18 @@ const MedicalEventsPage = () => {
                         onClick={handleAddEvent}
                     >
                         Tạo sự kiện mới
-                    </Button>
-                </Box>            
+                    </Button>                </Box>            
             </Box>
 
-            {/* Filters and Search */}
+            {/* Filters */}
             <Card sx={{ mb: 3 }}>
-                <CardContent>
-                    <Grid container spacing={2} alignItems="center">                          {/* Event Type filter */}
+                <CardContent>                    
+                    <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={6} md={3}>
                             <FormControl fullWidth size="small" sx={{ minWidth: '140px' }}>
                                 <InputLabel>Loại sự kiện</InputLabel>
                                 <Select
-                                    value={query.eventType}
+                                    value={filters.eventType}
                                     label="Loại sự kiện"
                                     onChange={handleEventTypeChange}
                                     sx={{
@@ -556,19 +528,22 @@ const MedicalEventsPage = () => {
                                             padding: '8px 14px',
                                             fontSize: '14px'
                                         }
-                                    }}                                >                                      
+                                    }}
+                                >
                                     <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả loại</MenuItem>
                                     <MenuItem value="cấp cứu" sx={{ fontSize: '14px' }}>Cấp cứu</MenuItem>
                                     <MenuItem value="chấn thương" sx={{ fontSize: '14px' }}>Chấn thương</MenuItem>
                                     <MenuItem value="bệnh" sx={{ fontSize: '14px' }}>Bệnh</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>{/* Level filter */}
+                        </Grid>
+
+                        {/* Level filter */}
                         <Grid item xs={12} sm={6} md={2}>
                             <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
                                 <InputLabel>Mức độ</InputLabel>
                                 <Select
-                                    value={query.level}
+                                    value={filters.level}
                                     label="Mức độ"
                                     onChange={handleLevelChange}
                                     sx={{
@@ -578,22 +553,20 @@ const MedicalEventsPage = () => {
                                             fontSize: '14px'
                                         }
                                     }}
-                                >                                      
+                                >
                                     <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả mức độ</MenuItem>
-                                    <MenuItem value="3" sx={{ fontSize: '14px' }}>Cao</MenuItem>
+                                    <MenuItem value="3" sx={{ fontSize: '14px' }}>Khẩn cấp</MenuItem>
                                     <MenuItem value="2" sx={{ fontSize: '14px' }}>Trung bình</MenuItem>
-                                    <MenuItem value="1" sx={{ fontSize: '14px' }}>Thấp</MenuItem>
+                                    <MenuItem value="1" sx={{ fontSize: '14px' }}>Nhẹ</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>
-
-                        {/* Status filter */}
+                        </Grid>                        {/* Status filter */}
                         <Grid item xs={12} sm={6} md={2}>
                             <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
-                                <InputLabel>Tình trạng</InputLabel>
+                                <InputLabel>Trạng thái</InputLabel>
                                 <Select
-                                    value={query.status}
-                                    label="Tình trạng"
+                                    value={filters.status}
+                                    label="Trạng thái"
                                     onChange={handleStatusChange}
                                     sx={{
                                         fontSize: '14px',
@@ -603,19 +576,21 @@ const MedicalEventsPage = () => {
                                         }
                                     }}
                                 >
-                                    <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả tình trạng</MenuItem>
+                                    <MenuItem value="" sx={{ fontSize: '14px' }}>Tất cả trạng thái</MenuItem>
                                     <MenuItem value="Đã xử lí" sx={{ fontSize: '14px' }}>Đã xử lí</MenuItem>
                                     <MenuItem value="Đang xử lí" sx={{ fontSize: '14px' }}>Đang xử lí</MenuItem>
                                     <MenuItem value="Chờ xử lí" sx={{ fontSize: '14px' }}>Chờ xử lí</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>                        {/* Date From */}
+                        </Grid>
+
+                        {/* Date From */}
                         <Grid item xs={12} sm={6} md={1.5}>
                             <TextField
                                 fullWidth
                                 label="Từ ngày"
                                 type="date"
-                                value={query.dateFrom}
+                                value={filters.dateFrom}
                                 onChange={handleDateFromChange}
                                 size="small"
                                 InputLabelProps={{
@@ -637,7 +612,7 @@ const MedicalEventsPage = () => {
                                 fullWidth
                                 label="Đến ngày"
                                 type="date"
-                                value={query.dateTo}
+                                value={filters.dateTo}
                                 onChange={handleDateToChange}
                                 size="small"
                                 InputLabelProps={{
@@ -656,6 +631,14 @@ const MedicalEventsPage = () => {
                         {/* Action buttons */}
                         <Grid item xs={12} md>
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleApplyFilters}
+                                    color="primary"
+                                    startIcon={<SearchIcon />}
+                                >
+                                    Tìm kiếm
+                                </Button>
                                 <Button
                                     variant="outlined"
                                     onClick={handleClearFilters}
@@ -711,19 +694,20 @@ const MedicalEventsPage = () => {
                                 tableLayout: 'fixed',
                                 width: '100%'
                             }}>                                
-                                <TableHead>                                    <TableRow sx={{ bgcolor: 'grey.50' }}>
-                                        <TableCell sx={{ fontWeight: 600, width: '8%' }} align="center">STT</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '18%' }} align="center">Ngày sự kiện</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Loại sự kiện</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '12%' }} align="center">Mức độ</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '22%' }} align="center">Nhân viên xử lí</TableCell>
-                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Trạng thái</TableCell>
+                                <TableHead>                                    
+                                    <TableRow sx={{ bgcolor: 'grey.50' }}>
+                                        <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">STT</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '25%' }} align="center">Ngày sự kiện</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '20%' }} align="center">Loại sự kiện</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Mức độ</TableCell>
+                                        <TableCell sx={{ fontWeight: 600, width: '20%' }} align="center">Trạng thái</TableCell>
                                         <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">Thao tác</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {/* Hiển thị data từ API (đã được phân trang) */}
-                                    {medicalEvents.map((event, index) => (                                        <TableRow
+                                    {medicalEvents.map((event, index) => (                                        
+                                        <TableRow
                                             key={event._id || index}
                                             hover
                                             sx={{
@@ -750,11 +734,13 @@ const MedicalEventsPage = () => {
                                                     {/* Tính STT dựa trên page hiện tại */}
                                                     {(paginationInfo.page - 1) * paginationInfo.limit + index + 1}
                                                 </Typography>
-                                            </TableCell>                                            <TableCell align="center" sx={{ px: 2 }}>
+                                            </TableCell>                                            
+                                            <TableCell align="center" sx={{ px: 2 }}>
                                                 <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 700 }}>
                                                     {formatDate(event.dateHappened || event.createdAt)}
                                                 </Typography>
-                                            </TableCell>                                            <TableCell align="center" sx={{ px: 1 }}>
+                                            </TableCell>                                            
+                                            <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography
                                                     variant="body2"
                                                     sx={{
@@ -764,8 +750,8 @@ const MedicalEventsPage = () => {
                                                     }}
                                                 >
                                                     {getEventTypeLabel(event.type)}
-                                                </Typography>                                            </TableCell>
-
+                                                </Typography>                                            
+                                            </TableCell>                                            
                                             <TableCell align="center" sx={{ px: 1 }}>
                                                 <Typography 
                                                     variant="body2" 
@@ -778,11 +764,6 @@ const MedicalEventsPage = () => {
                                                     {getLevelLabel(event.level)}
                                                 </Typography>
                                             </TableCell>                                            
-                                            <TableCell align="center" sx={{ px: 2 }}>
-                                                <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 400 }}>
-                                                    {getDisplayValue(event.userId?.name)}
-                                                </Typography>
-                                            </TableCell>
 
                                             <TableCell align="center" sx={{ px: 2 }}>
                                                 <Typography 
@@ -796,7 +777,8 @@ const MedicalEventsPage = () => {
                                                     {getStatusLabel(event.status)}
                                                 </Typography>
                                             </TableCell>
-                                            <TableCell align="center">                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                                            <TableCell align="center">                                                
+                                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                                                     <Tooltip title="Xem chi tiết">
                                                         <IconButton
                                                             color="info"

@@ -36,15 +36,20 @@ const MedicalEventDetailPage = () => {
     const [medicalEvent, setMedicalEvent] = useState(null);
     const [studentInfo, setStudentInfo] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
+    const [error, setError] = useState(null);    useEffect(() => {
         // Kiểm tra xem có dữ liệu được truyền qua state không
         const eventDataFromState = location.state?.eventData;
+        const isUpdated = location.state?.updated;
+        
         if (eventDataFromState) {
             console.log('Using event data from navigation state:', eventDataFromState);
             setMedicalEvent(eventDataFromState);
             setLoading(false);
+
+            // Hiển thị thông báo nếu dữ liệu vừa được cập nhật
+            if (isUpdated) {
+                toast.success('Dữ liệu sự kiện y tế đã được cập nhật');
+            }
 
             // Vẫn load thông tin student nếu có studentId
             if (studentId) {
@@ -61,7 +66,7 @@ const MedicalEventDetailPage = () => {
                 loadStudentInfo();
             }
         }
-    }, [eventId, studentId, location.state]); const loadMedicalEventDetail = async () => {
+    }, [eventId, studentId, location.state]);    const loadMedicalEventDetail = async () => {
         try {
             setLoading(true);
             setError(null);
@@ -75,47 +80,15 @@ const MedicalEventDetailPage = () => {
             if (response.isSuccess && response.data) {
                 setMedicalEvent(response.data);
             } else {
-                // Fallback: sử dụng dữ liệu mẫu nếu API chưa sẵn sàng
-                const sampleEvents = generateSampleMedicalEvents();
-                console.log('Sample events:', sampleEvents);
-                const foundEvent = sampleEvents.find(event => event._id === eventId);
-                console.log('Found event:', foundEvent, 'for eventId:', eventId);
-                if (foundEvent) {
-                    setMedicalEvent(foundEvent);
-                } else {
-                    // Nếu không tìm thấy event cụ thể, lấy event đầu tiên làm ví dụ
-                    if (sampleEvents.length > 0) {
-                        setMedicalEvent(sampleEvents[0]);
-                        toast.info('Đang hiển thị dữ liệu mẫu - API chưa sẵn sàng');
-                    } else {
-                        setError('Không tìm thấy sự kiện y tế');
-                    }
-                }
+                setError('Không tìm thấy sự kiện y tế');
             }
         } catch (error) {
             console.error('Error loading medical event detail:', error);
-
-            // Fallback: sử dụng dữ liệu mẫu khi có lỗi API
-            const sampleEvents = generateSampleMedicalEvents();
-            console.log('Fallback sample events:', sampleEvents);
-            const foundEvent = sampleEvents.find(event => event._id === eventId);
-            console.log('Fallback found event:', foundEvent, 'for eventId:', eventId);
-            if (foundEvent) {
-                setMedicalEvent(foundEvent);
-                toast.info('Đang hiển thị dữ liệu mẫu - API chưa sẵn sàng');
-            } else {
-                // Nếu không tìm thấy event cụ thể, lấy event đầu tiên làm ví dụ
-                if (sampleEvents.length > 0) {
-                    setMedicalEvent(sampleEvents[0]);
-                    toast.info('Đang hiển thị dữ liệu mẫu - API chưa sẵn sàng');
-                } else {
-                    setError('Không tìm thấy sự kiện y tế');
-                }
-            }
+            setError('Lỗi khi tải thông tin sự kiện y tế');
         } finally {
             setLoading(false);
         }
-    }; const loadStudentInfo = async () => {
+    };const loadStudentInfo = async () => {
         try {
             if (studentId) {
                 const response = await studentsApi.getStudentById(studentId);
@@ -176,44 +149,15 @@ const MedicalEventDetailPage = () => {
             minute: '2-digit',
             second: '2-digit'
         });
-    };
-
-    const getDisplayValue = (value) => {
+    };    const getDisplayValue = (value) => {
         if (value === null || value === undefined) return 'Không có thông tin';
         if (value === '') return 'Không có thông tin';
         return value;
-    }; const getEventTypeColor = (type) => {
-        switch (type?.toLowerCase()) {
-            case 'cấp cứu':
-            case 'emergency':
-                return '#d32f2f'; // Đỏ
-            case 'thường quy':
-            case 'routine check':
-            case 'routine':
-                return '#1976d2'; // Xanh dương
-            case 'tái khám':
-            case 'follow-up':
-            case 'followup':
-                return '#ed6c02'; // Cam
-            case 'tiêm chủng':
-            case 'vaccination':
-                return '#2e7d32'; // Xanh lá
-            case 'chấn thương':
-            case 'injury':
-                return '#d32f2f'; // Đỏ
-            case 'tư vấn':
-            case 'consultation':
-                return '#0288d1'; // Xanh nước biển
-            case 'dị ứng':
-            case 'allergy':
-                return '#d32f2f'; // Đỏ
-            default:
-                return '#1976d2'; // Xanh dương
-        }
     };
 
     const getEventTypeLabel = (type) => {
         // API trả về trực tiếp tiếng Việt, chỉ cần return luôn
+        // Chỉ có 3 loại: cấp cứu, chấn thương, bệnh
         return type || 'Không xác định';
     };
 
@@ -228,19 +172,36 @@ const MedicalEventDetailPage = () => {
             default:
                 return '#757575'; // Xám
         }
-    };
-
-    const getLevelLabel = (level) => {
+    };    const getLevelLabel = (level) => {
         switch (level) {
             case 3:
-                return 'Cao';
+                return 'Khẩn cấp';
             case 2:
                 return 'Trung bình';
             case 1:
-                return 'Thấp';
+                return 'Nhẹ';
             default:
                 return 'Không xác định';
         }
+    };    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Đã xử lí':
+                return '#2e7d32'; // Xanh lá
+            case 'Đang xử lí':
+                return '#ed6c02'; // Cam
+            case 'Chờ xử lí':
+                return '#d32f2f'; // Đỏ
+            default:
+                return '#757575'; // Xám
+        }
+    };
+
+    const getStatusLabel = (status) => {
+        // Trả về status từ API hoặc giá trị mặc định
+        if (status === 'Đã xử lí' || status === 'Đang xử lí' || status === 'Chờ xử lí') {
+            return status;
+        }
+        return 'Đã xử lí'; // Giá trị mặc định
     };
 
     if (loading) {
@@ -285,7 +246,7 @@ const MedicalEventDetailPage = () => {
                             Chi tiết sự kiện y tế
                         </Typography>
                     </Box>
-                </Box>
+                </Box>                
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button
                         variant="contained"
@@ -295,7 +256,8 @@ const MedicalEventDetailPage = () => {
                         Chỉnh sửa
                     </Button>
                 </Box>
-            </Box>            {/* Content */}
+            </Box>            
+            {/* Content */}
             <Card>
                 <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -338,7 +300,8 @@ const MedicalEventDetailPage = () => {
                                         </Table>
                                     </TableCell>
                                 </TableRow>
-                            )}<TableRow>
+                            )}                            
+                            <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Loại sự kiện:</TableCell>
                                 <TableCell>
                                     <Typography
@@ -420,16 +383,21 @@ const MedicalEventDetailPage = () => {
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
-                            )}
-
+                            )}                            
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Trạng thái:</TableCell>
                                 <TableCell>
                                     <Chip
-                                        label={medicalEvent.status || 'Đã xử lý'}
-                                        color="success"
+                                        label={getStatusLabel(medicalEvent.status)}
+                                        sx={{ 
+                                            fontSize: '0.95rem', 
+                                            px: 2, 
+                                            py: 1,
+                                            backgroundColor: getStatusColor(medicalEvent.status),
+                                            color: 'white',
+                                            fontWeight: 600
+                                        }}
                                         size="medium"
-                                        sx={{ fontSize: '0.95rem', px: 2, py: 1 }}
                                     />
                                 </TableCell>
                             </TableRow>
