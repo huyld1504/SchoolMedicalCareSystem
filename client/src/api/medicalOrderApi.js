@@ -18,7 +18,11 @@ const medicalOrderApi = {
      * @param {string} orderId - ID của đơn thuốc cần lấy.
      */
     
-    getMedicalOrder: async (query) => await callAPI('GET', `/medical-orders?page=${query.page || 1}&limit=${query.limit || 10}`),
+  getMedicalOrder: async (query) => {
+    const params = new URLSearchParams(query);
+    const queryString = params.toString();
+    return await callAPI('GET', `/medical-orders?${queryString}`);
+},
 
     /**
      * Lấy danh sách đơn thuốc của một học sinh (có phân trang).

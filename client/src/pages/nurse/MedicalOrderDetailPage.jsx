@@ -20,8 +20,7 @@ import medicalOrderApi from '../../api/medicalOrderApi';
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
     approved: { label: 'Đã duyệt', color: 'success' },
-    canceled: { label: 'Đã từ chối', color: 'error' },
-    completed: { label: 'Đã hoàn thành', color: 'primary' },
+    
 };
 
 const initialNewMedicineState = {
@@ -317,11 +316,11 @@ const MedicalOrderDetailPage = () => {
                     <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn thuốc</Typography>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems="center">
-                    <Button variant="outlined" startIcon={<PrintIcon />} onClick={handlePrint}>In Đơn</Button>
+                  
                     {medicalOrder.status === 'pending' && (
                         <>
                             <Button variant="contained" color="success" startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <ApproveIcon />} onClick={() => handleUpdateStatus('approved')} disabled={isUpdating}>Duyệt</Button>
-                            <Button variant="contained" color="error" startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <CancelIcon />} onClick={() => handleUpdateStatus('canceled')} disabled={isUpdating}>Từ chối</Button>
+                            
                         </>
                     )}
                 </Stack>
@@ -381,7 +380,7 @@ const MedicalOrderDetailPage = () => {
                                     <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
-                                    <TableCell align="center" sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
+                                   
                                 </TableRow>
                             </TableHead>
                             <TableBody>
