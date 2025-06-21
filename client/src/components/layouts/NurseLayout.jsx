@@ -53,9 +53,7 @@ const NurseLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { user } = useSelector((state) => state.auth);
-
-    const menuItems = [
+    const { user } = useSelector((state) => state.auth);    const menuItems = [
         
         {
             text: 'Quản lý học sinh',
@@ -66,9 +64,9 @@ const NurseLayout = () => {
         
         {
             text: 'Sự kiện y tế',
-            icon: <AssignmentIcon />,
-            path: '/nurse/medical-orders',
-            active: location.pathname === '/nurse/medical-events'
+            icon: <MedicalServices />,
+            path: '/nurse/medical-events',
+            active: location.pathname.includes('/medical-events')
         },
 
         

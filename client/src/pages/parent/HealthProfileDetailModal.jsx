@@ -174,20 +174,10 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
             <Grid item xs={12} sm={6} lg={3}>
               <Box>
                 <Typography variant="caption" color="text.secondary">
-                  Ngày sinh
+                  Mã BHYT
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {formatDate(profile?.studentId?.birthdate)}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Giới tính
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {profile?.studentId?.gender === 'male' ? 'Nam' : profile?.studentId?.gender === 'female' ? 'Nữ' : 'Khác'}
+                  {profile?.studentId?.medicalConverageId}
                 </Typography>
               </Box>
             </Grid>

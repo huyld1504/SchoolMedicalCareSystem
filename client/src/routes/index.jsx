@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../components/auth/LoginPage';
-import ProtectedRoute from '../components/common/ProtectedRoute';
 import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
 
 // Nurse components
@@ -11,6 +10,10 @@ import HealthProfilesPage from '../pages/nurse/HealthProfilesPage';
 import AddHealthProfilePage from '../pages/nurse/AddHealthProfilePage';
 import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
 import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
+import MedicalEventsPage from '../pages/nurse/MedicalEventsPage';
+import MedicalEventDetailPage from '../pages/nurse/MedicalEventDetailPage';
+import MedicalEventEditPage from '../pages/nurse/MedicalEventEditPage';
+
 
 // Layout components
 import AppLayout from '../components/layouts/AppLayout';
@@ -25,107 +28,110 @@ import EditChildPage from '../pages/parent/EditChildPage';
 import ChildDetailPage from '../pages/parent/ChildDetailPage';
 import CreateMedicalOrderPage from '../pages/parent/CreateMedicalOrderPage';
 
-// Temporary placeholder component for unimplemented features
-const ComingSoonPage = ({ title = "Tính năng" }) => (
-  <div style={{
-    padding: '40px',
-    textAlign: 'center',
-    minHeight: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }}>
-    <h2>{title}</h2>
-    <p>Tính năng này đang được phát triển...</p>
-    <button onClick={() => window.history.back()}>← Quay lại</button>
-  </div>
-);
-
 const router = createBrowserRouter([
   {
     path: "/",
     element: <AppLayout />,
     children: [
-      // Nurse routes
+      {
+        element: <LandingLayout />,
+        children: [{
+          index: true,
+          path: '/',
+          element: <LandingPage />
+        }
+        ]
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
       {
         path: 'nurse',
         element: (
-          <RoleProtectedRoute allowedRoles={['nurse']}>
+          <RoleProtectedRoute allowedRoles={["nurse"]}>
             <NurseLayout />
           </RoleProtectedRoute>
         ),
         children: [
           {
-            index: true,
-            element: <StudentsPage />
-          },
-          {
             path: 'students',
-            element: <StudentsPage />
+            element: <StudentsPage />,
           },
+          // {
+          //   path: 'health-profiles',
+          //   element: <HealthProfilesPage />,
+          //   path: 'health-profiles',          
+          //   element: <HealthProfilesPage />,
+          // },
           {
             path: 'health-profiles/:studentId',
-            element: <HealthProfilesPage />
-          },
-          {
+            element: <HealthProfilesPage />,
+          }, {
             path: 'health-profiles/:studentId/add',
-            element: <AddHealthProfilePage />
+            element: <AddHealthProfilePage />,
           },
           {
             path: 'health-profiles/:studentId/edit',
-            element: <EditHealthProfilePage />
+            element: <EditHealthProfilePage />,
+          }, {
+            path: 'medication-history/:studentId',
+            element: <MedicationHistoryPage />,
+          }, {
+            path: 'medical-events',
+            element: <MedicalEventsPage />,
           },
           {
-            path: 'medication-history/:studentId',
-            element: <MedicationHistoryPage />
+            path: 'medical-events/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+          {
+            path: 'medical-events/add',
+            element: <div>Add Medical Event Page (General) - Coming Soon</div>, // Placeholder
+          }, {
+            path: 'medical-events/:studentId',
+            element: <MedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/:studentId/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+          {
+            path: 'medical-events/:studentId/add',
+            element: <div>Add Medical Event Page - Coming Soon</div>, // Placeholder
+          }, {
+            path: 'medical-events/edit/:eventId',
+            element: <MedicalEventEditPage />,
+          },
+          {
+            path: 'medical-events/:studentId/edit/:eventId',
+            element: <MedicalEventEditPage />,
           },
           {
             path: 'health-profile/:studentId/details/:profileId',
-            element: <ComingSoonPage title="Chi tiết hồ sơ sức khỏe" />
+            element: <div>Health Profile Details Page - Coming Soon</div>, // Placeholder
           },
           {
             path: 'medical-orders',
-            element: <ComingSoonPage title="Quản lý đơn thuốc" />
+            element: <div>Medical Orders Page - Coming Soon</div>, // Placeholder
           },
           {
             path: 'reports',
-            element: <ComingSoonPage title="Báo cáo" />
-          }
-        ]
-      },      // Landing page
-      {
-        element: <LandingLayout />,
-        children: [
+            element: <div>Reports Page - Coming Soon</div>, // Placeholder
+          },
           {
-            index: true,
-            element: <LandingPage />
-          }
+            path: 'settings',
+            element: <div>Settings Page - Coming Soon</div>, // Placeholder
+          },
         ]
-      },
-
-      // Public routes
-      {
-        path: 'login',
-        element: <LoginPage />
-      },
-
-      // Admin routes (placeholder)
-      {
-        path: 'admin',
-        element: (
-          <ProtectedRoute requiredRole="admin">
-            <ComingSoonPage title="Admin Dashboard" />
-          </ProtectedRoute>
-        )
       },
       // Parent routes
       {
         path: 'parent',
         element: (
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["parent"]}>
             <ParentLayout />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         ),
         children: [
           // Main Dashboard          // Children Management
@@ -165,7 +171,7 @@ const router = createBrowserRouter([
               },
               {
                 path: ':id',
-                element: <ComingSoonPage title="Chi tiết đơn thuốc" />
+                element: <div>Medical Order Detail Page - Coming Soon</div>, // Placeholder
               },
             ]
           },
@@ -173,6 +179,7 @@ const router = createBrowserRouter([
       },
     ]
   }
-]);
+]
+);
 
 export default router;
