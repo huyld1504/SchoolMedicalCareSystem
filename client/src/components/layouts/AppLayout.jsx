@@ -12,14 +12,19 @@ export default function AppLayout() {
       try {
         const user = await authUtils.isAuthenticated();
         const pathName = window.location.pathname;
-        
         if (user) {
           dispatch(setUser({ user }));
-          
           // If user is authenticated and on login page, redirect to main page
-          if (['/login', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
-            navigate('/nurse/students');
-          }        } else {
+          if (['/login', '/password/forgot', '/password/reset', '/signup', '/'].some(p => pathName.startsWith(p))) {
+            if (user.role === 'nurse') {
+              navigate('/nurse/students');
+            } else if (user.role === 'parent') {
+              navigate('/parent/children');
+            } else {
+              navigate(-1);
+            }
+          }
+        } else {
           // If user is not authenticated and not on public pages, redirect to login
           if (!['/login', '/', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
             navigate('/login');
@@ -31,7 +36,9 @@ export default function AppLayout() {
       }
     };
     authenticateUser();
-  }, [dispatch, navigate]);  return (
+  }, [dispatch, navigate]); 
+  
+  return (
     <Outlet />
   );
 }
