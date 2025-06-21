@@ -207,27 +207,14 @@ const MedicalEventEditPage = () => {
             console.log('Update response:', response);            if (response.isSuccess) {
                 toast.success('Cập nhật sự kiện y tế thành công');
                 
-                // Tạo dữ liệu đã cập nhật để truyền về trang chi tiết
-                const updatedEventData = {
-                    ...medicalEvent,
-                    dateHappened: formData.dateHappened.toISOString(),
-                    type: formData.type,
-                    level: parseInt(formData.level),
-                    description: formData.description,
-                    solution: formData.solution,
-                    note: formData.note,
-                    status: formData.status,
-                    studentJoin: studentsJoin.map(student => ({
-                        studentId: {
-                            _id: student.id,
-                            name: student.name,
-                            studentCode: student.studentCode,
-                            gender: student.gender
-                        }
-                    }))
-                };
-                
-                handleBackWithData(updatedEventData);
+                // Sau khi chỉnh sửa thành công, luôn trở về trang danh sách sự kiện y tế
+                if (studentId) {
+                    // Nếu có studentId, quay về danh sách sự kiện của học sinh đó
+                    navigate(`/nurse/medical-events/${studentId}`);
+                } else {
+                    // Nếu không có studentId, quay về danh sách sự kiện tổng quát
+                    navigate('/nurse/medical-events');
+                }
             } else {
                 toast.error(response.message || 'Lỗi khi cập nhật sự kiện y tế');
             }
@@ -240,22 +227,20 @@ const MedicalEventEditPage = () => {
     };    const handleBack = () => {
         const previousPath = location.state?.from;
         
-        if (studentId) {
-            // Nếu có studentId, kiểm tra từ đâu đến
-            if (previousPath && previousPath.includes('/detail/')) {
-                // Từ trang chi tiết, quay về chi tiết
-                navigate(previousPath);
-            } else {
-                // Từ trang danh sách hoặc không rõ, quay về danh sách
-                navigate(`/nurse/medical-events/${studentId}`);
-            }
+        // Nếu người dùng đến từ trang chi tiết, quay về trang chi tiết với dữ liệu
+        if (previousPath && previousPath.includes('/detail/')) {
+            navigate(previousPath, {
+                state: {
+                    eventData: medicalEvent
+                }
+            });
         } else {
-            // Không có studentId, kiểm tra từ đâu đến
-            if (previousPath && previousPath.includes('/detail/')) {
-                // Từ trang chi tiết, quay về chi tiết
-                navigate(previousPath);
+            // Nếu không, quay về trang danh sách sự kiện y tế
+            if (studentId) {
+                // Nếu có studentId, quay về danh sách sự kiện của học sinh đó
+                navigate(`/nurse/medical-events/${studentId}`);
             } else {
-                // Từ trang danh sách hoặc không rõ, quay về danh sách
+                // Nếu không có studentId, quay về danh sách sự kiện tổng quát
                 navigate('/nurse/medical-events');
             }
         }
@@ -642,7 +627,7 @@ const MedicalEventEditPage = () => {
                                     {searchStatus === 'not-found' && searchStudentCode.trim() && (
                                         <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                                             <Typography variant="body2">
-                                                ✗ Không tìm thấy học sinh với mã "{searchStudentCode.trim()}"
+                                                Không tìm thấy học sinh với mã "{searchStudentCode.trim()}"
                                             </Typography>
                                             <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
                                                 Vui lòng kiểm tra lại mã học sinh
