@@ -1,93 +1,178 @@
-
 import { createBrowserRouter } from 'react-router';
 import LandingPage from '../pages/LandingPage';
 import LoginPage from '../components/auth/LoginPage';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import RoleProtectedRoute from '../components/common/RoleProtectedRoute';
+
+// Nurse components
 import NurseLayout from '../components/layouts/NurseLayout';
 import StudentsPage from '../pages/nurse/StudentsPage';
 import HealthProfilesPage from '../pages/nurse/HealthProfilesPage';
 import AddHealthProfilePage from '../pages/nurse/AddHealthProfilePage';
 import EditHealthProfilePage from '../pages/nurse/EditHealthProfilePage';
 import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
+
+// Layout components
 import AppLayout from '../components/layouts/AppLayout';
 import LandingLayout from '../components/layouts/LandingLayout';
+import ParentLayout from '../components/layouts/ParentLayout';
 
+// Parent pages (new structure)
+import ChildrenPage from '../pages/parent/ChildrenPage';
+import MedicalOrdersPage from '../pages/parent/MedicalOrdersPage';
+import AddChildPage from '../pages/parent/AddChildPage';
+import EditChildPage from '../pages/parent/EditChildPage';
+import ChildDetailPage from '../pages/parent/ChildDetailPage';
+import CreateMedicalOrderPage from '../pages/parent/CreateMedicalOrderPage';
+
+// Temporary placeholder component for unimplemented features
+const ComingSoonPage = ({ title = "Tính năng" }) => (
+  <div style={{
+    padding: '40px',
+    textAlign: 'center',
+    minHeight: '400px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}>
+    <h2>{title}</h2>
+    <p>Tính năng này đang được phát triển...</p>
+    <button onClick={() => window.history.back()}>← Quay lại</button>
+  </div>
+);
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <AppLayout />,
+  {
+    path: "/",
+    element: <AppLayout />,
+    children: [
+      // Nurse routes
+      {
+        path: 'nurse',
+        element: (
+          <RoleProtectedRoute allowedRoles={['nurse']}>
+            <NurseLayout />
+          </RoleProtectedRoute>
+        ),
         children: [
-            {
-                element: <LandingLayout />,
-                children: [
-                    {
-                        index: true,
-                        path: '/',
-                        element: <LandingPage />
-                    }
-                ]
-            },
-            {
-                path: 'login',
-                element: <LoginPage />,
-            },
-            {
-                path: 'nurse',
-                element: (
-                    <RoleProtectedRoute allowedRoles={["nurse"]}>
-                        <NurseLayout />
-                    </RoleProtectedRoute>
-                ),
-                children: [
-
-
-                    {
-                        path: 'students',
-                        element: <StudentsPage />,
-                    },
-                    // {
-                    //   path: 'health-profiles',
-                    //   element: <HealthProfilesPage />,
-                    //   path: 'health-profiles',          //   element: <HealthProfilesPage />,
-                    // },
-                    {
-                        path: 'health-profiles/:studentId',
-                        element: <HealthProfilesPage />,
-                    }, {
-                        path: 'health-profiles/:studentId/add',
-                        element: <AddHealthProfilePage />,
-                    },
-                    {
-                        path: 'health-profiles/:studentId/edit',
-                        element: <EditHealthProfilePage />,
-                    },
-                    {
-                        path: 'medication-history/:studentId',
-                        element: <MedicationHistoryPage />,
-                    },
-                    {
-                        path: 'health-profile/:studentId/details/:profileId',
-                        element: <div>Health Profile Details Page - Coming Soon</div>, // Placeholder
-                    },
-                    {
-                        path: 'medical-orders',
-                        element: <div>Medical Orders Page - Coming Soon</div>, // Placeholder
-                    },
-                    {
-                        path: 'reports',
-                        element: <div>Reports Page - Coming Soon</div>, // Placeholder
-                    },
-                    {
-                        path: 'settings',
-                        element: <div>Settings Page - Coming Soon</div>, // Placeholder
-                    },
-                ]
-            },
+          {
+            index: true,
+            element: <StudentsPage />
+          },
+          {
+            path: 'students',
+            element: <StudentsPage />
+          },
+          {
+            path: 'health-profiles/:studentId',
+            element: <HealthProfilesPage />
+          },
+          {
+            path: 'health-profiles/:studentId/add',
+            element: <AddHealthProfilePage />
+          },
+          {
+            path: 'health-profiles/:studentId/edit',
+            element: <EditHealthProfilePage />
+          },
+          {
+            path: 'medication-history/:studentId',
+            element: <MedicationHistoryPage />
+          },
+          {
+            path: 'health-profile/:studentId/details/:profileId',
+            element: <ComingSoonPage title="Chi tiết hồ sơ sức khỏe" />
+          },
+          {
+            path: 'medical-orders',
+            element: <ComingSoonPage title="Quản lý đơn thuốc" />
+          },
+          {
+            path: 'reports',
+            element: <ComingSoonPage title="Báo cáo" />
+          }
         ]
-    }
-]
-);
+      },      // Landing page
+      {
+        element: <LandingLayout />,
+        children: [
+          {
+            index: true,
+            element: <LandingPage />
+          }
+        ]
+      },
+
+      // Public routes
+      {
+        path: 'login',
+        element: <LoginPage />
+      },
+
+      // Admin routes (placeholder)
+      {
+        path: 'admin',
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ComingSoonPage title="Admin Dashboard" />
+          </ProtectedRoute>
+        )
+      },
+      // Parent routes
+      {
+        path: 'parent',
+        element: (
+          <ProtectedRoute>
+            <ParentLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          // Main Dashboard          // Children Management
+          {
+            path: 'children',
+            children: [
+              {
+                index: true,
+                element: <ChildrenPage />
+              },
+              {
+                path: 'add',
+                element: <AddChildPage />
+              },
+              {
+                path: ':id',
+                element: <ChildDetailPage />
+              },
+              {
+                path: ':id/edit',
+                element: <EditChildPage />
+              },
+            ]
+          },
+
+          // Medical Orders Management
+          {
+            path: 'medical-orders',
+            children: [
+              {
+                index: true,
+                element: <MedicalOrdersPage />
+              },
+              {
+                path: 'create',
+                element: <CreateMedicalOrderPage />
+              },
+              {
+                path: ':id',
+                element: <ComingSoonPage title="Chi tiết đơn thuốc" />
+              },
+            ]
+          },
+        ]
+      },
+    ]
+  }
+]);
 
 export default router;
