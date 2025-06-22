@@ -26,6 +26,10 @@ import {
     InputAdornment,
     Grid,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { vi } from 'date-fns/locale';
 import {
     Add as AddIcon,
     Edit as EditIcon,
@@ -58,7 +62,17 @@ const MedicalEventsPage = () => {
         dateFrom: searchParams.get('dateFrom') || '',
         dateTo: searchParams.get('dateTo') || '',
         status: searchParams.get('status') || ''
-    });    // State cho filter UI (tạm thời)
+    });    // State để quản lý date picker
+    const [dateFromValue, setDateFromValue] = useState(() => {
+        const dateFrom = searchParams.get('dateFrom');
+        return dateFrom ? new Date(dateFrom) : null;
+    });
+    const [dateToValue, setDateToValue] = useState(() => {
+        const dateTo = searchParams.get('dateTo');
+        return dateTo ? new Date(dateTo) : null;
+    });
+
+    // State cho filter UI (tạm thời)
     const [filters, setFilters] = useState({
         eventType: searchParams.get('eventType') || '',
         level: searchParams.get('level') || '',
@@ -74,10 +88,9 @@ const MedicalEventsPage = () => {
         page: 1,
         limit: 10,
         totalPages: 0
-    });
-
-    const [studentInfo, setStudentInfo] = useState(null);
-    const [loading, setLoading] = useState(true);// Sử dụng useEffect với dependency của query để load data khi thay đổi page/limit/search
+    });    const [studentInfo, setStudentInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [loadingStudentInfo, setLoadingStudentInfo] = useState(false);// Sử dụng useEffect với dependency của query để load data khi thay đổi page/limit/search
     useEffect(() => {
         if (studentId) {
             loadMedicalEvents();
@@ -210,18 +223,21 @@ const MedicalEventsPage = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const loadStudentInfo = async () => {
+    };    const loadStudentInfo = async () => {
         try {
             if (studentId) {
+                setLoadingStudentInfo(true);
                 const response = await studentsApi.getStudentById(studentId);
                 if (response.isSuccess && response.data) {
                     setStudentInfo(response.data);
+                } else {
+                    console.error('Failed to load student info:', response);
                 }
             }
         } catch (error) {
             console.error('Error loading student info:', error);
+        } finally {
+            setLoadingStudentInfo(false);
         }
     };
 
@@ -289,21 +305,24 @@ const MedicalEventsPage = () => {
             ...prev,
             level: value
         }));
-    };
-
-    const handleDateFromChange = (event) => {
-        const value = event.target.value;
+    };    // Xử lý thay đổi date picker
+    const handleDateFromChange = (newValue) => {
+        setDateFromValue(newValue);
+        // Format date để gửi cho API (YYYY-MM-DD)
+        const dateString = newValue ? newValue.toISOString().split('T')[0] : '';
         setFilters(prev => ({
             ...prev,
-            dateFrom: value
+            dateFrom: dateString
         }));
     };
 
-    const handleDateToChange = (event) => {
-        const value = event.target.value;
+    const handleDateToChange = (newValue) => {
+        setDateToValue(newValue);
+        // Format date để gửi cho API (YYYY-MM-DD)
+        const dateString = newValue ? newValue.toISOString().split('T')[0] : '';
         setFilters(prev => ({
             ...prev,
-            dateTo: value
+            dateTo: dateString
         }));
     };
 
@@ -315,6 +334,8 @@ const MedicalEventsPage = () => {
         }));
     };    const handleClearFilters = () => {
         setSearchInput('');
+        setDateFromValue(null);
+        setDateToValue(null);
         setFilters({
             eventType: '',
             level: '',
@@ -342,14 +363,8 @@ const MedicalEventsPage = () => {
             loadAllMedicalEvents();
         }
         toast.success('Đã làm mới dữ liệu');
-    };
-
-    const handleBack = () => {
-        if (studentId) {
-            navigate('/nurse/students');
-        } else {
-            navigate('/nurse');
-        }
+    };    const handleBack = () => {
+        navigate('/nurse/students');
     };
 
     const handleAddEvent = () => {
@@ -424,13 +439,13 @@ const MedicalEventsPage = () => {
         if (type === 'cấp cứu') return 'error';
         if (type === 'chấn thương') return 'error';
         if (type === 'bệnh') return 'warning';
-
+        return 'default';
     };    const getEventTypeLabel = (type) => {
         // Nếu type đã là tiếng Việt từ API, trả về trực tiếp
         if (type === 'cấp cứu' || type === 'chấn thương' || type === 'bệnh') {
             return type;
         }
-
+        return 'Không xác định';
     };const getLevelColor = (level) => {
         switch (level) {
             case 3:
@@ -470,30 +485,25 @@ const MedicalEventsPage = () => {
             return status;
         }
         return 'Đã xử lí'; // Giá trị mặc định
-    };
-
-    return (
-        <Container maxWidth="xl" sx={{ py: 3 }}>
+    };    return (
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
+            <Container maxWidth="xl" sx={{ py: 3 }}>
             {/* Header */}
             <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton onClick={handleBack} sx={{ mr: 2 }}>
                         <BackIcon />
                     </IconButton>
-                    <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />                    
+                    <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />                      
                     <Box>
                         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
                             {studentId ? 'Sự kiện y tế học sinh' : 'Quản lý sự kiện y tế'}
                         </Typography>
-                        <Typography variant="h6" color="text.secondary">
-                            {studentId ? (
-                                studentInfo ?
-                                    `${studentInfo.name} (Mã HS: ${studentInfo.studentCode})` :
-                                    'Đang tải thông tin...'
-                            ) : (
-                                'Danh sách tất cả sự kiện y tế trong hệ thống'
-                            )}
-                        </Typography>
+                        {!studentId && (
+                            <Typography variant="h6" color="text.secondary">
+                                Danh sách tất cả sự kiện y tế trong hệ thống
+                            </Typography>
+                        )}
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2 }}>
@@ -508,7 +518,8 @@ const MedicalEventsPage = () => {
                         onClick={handleAddEvent}
                     >
                         Tạo sự kiện mới
-                    </Button>                </Box>            
+                    </Button>                
+                </Box>            
             </Box>
 
             {/* Filters */}
@@ -582,48 +593,82 @@ const MedicalEventsPage = () => {
                                     <MenuItem value="Chờ xử lí" sx={{ fontSize: '14px' }}>Chờ xử lí</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>
-
-                        {/* Date From */}
+                        </Grid>                        {/* Date From */}
                         <Grid item xs={12} sm={6} md={1.5}>
-                            <TextField
-                                fullWidth
+                            <DatePicker
                                 label="Từ ngày"
-                                type="date"
-                                value={filters.dateFrom}
+                                value={dateFromValue}
                                 onChange={handleDateFromChange}
-                                size="small"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <CalendarIcon fontSize="small" />
-                                        </InputAdornment>
-                                    ),
+                                format="dd/MM/yyyy"
+                                slotProps={{
+                                    textField: {
+                                        size: 'small',
+                                        fullWidth: true,
+                                        InputProps: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <CalendarIcon fontSize="small" />
+                                                </InputAdornment>
+                                            ),
+                                        }
+                                    },
+                                    popper: {
+                                        sx: {
+                                            '& .MuiDayCalendar-weekDayLabel': {
+                                                '&:nth-of-type(1)': { '&::after': { content: '"T2"' } },
+                                                '&:nth-of-type(2)': { '&::after': { content: '"T3"' } },
+                                                '&:nth-of-type(3)': { '&::after': { content: '"T4"' } },
+                                                '&:nth-of-type(4)': { '&::after': { content: '"T5"' } },
+                                                '&:nth-of-type(5)': { '&::after': { content: '"T6"' } },
+                                                '&:nth-of-type(6)': { '&::after': { content: '"T7"' } },
+                                                '&:nth-of-type(7)': { '&::after': { content: '"CN"' } },
+                                                fontSize: 0,
+                                                '&::after': {
+                                                    fontSize: '0.875rem'
+                                                }
+                                            }
+                                        }
+                                    }
                                 }}
                             />
                         </Grid>
 
                         {/* Date To */}
                         <Grid item xs={12} sm={6} md={1.5}>
-                            <TextField
-                                fullWidth
+                            <DatePicker
                                 label="Đến ngày"
-                                type="date"
-                                value={filters.dateTo}
+                                value={dateToValue}
                                 onChange={handleDateToChange}
-                                size="small"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <CalendarIcon fontSize="small" />
-                                        </InputAdornment>
-                                    ),
+                                format="dd/MM/yyyy"
+                                slotProps={{
+                                    textField: {
+                                        size: 'small',
+                                        fullWidth: true,
+                                        InputProps: {
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <CalendarIcon fontSize="small" />
+                                                </InputAdornment>
+                                            ),
+                                        }
+                                    },
+                                    popper: {
+                                        sx: {
+                                            '& .MuiDayCalendar-weekDayLabel': {
+                                                '&:nth-of-type(1)': { '&::after': { content: '"T2"' } },
+                                                '&:nth-of-type(2)': { '&::after': { content: '"T3"' } },
+                                                '&:nth-of-type(3)': { '&::after': { content: '"T4"' } },
+                                                '&:nth-of-type(4)': { '&::after': { content: '"T5"' } },
+                                                '&:nth-of-type(5)': { '&::after': { content: '"T6"' } },
+                                                '&:nth-of-type(6)': { '&::after': { content: '"T7"' } },
+                                                '&:nth-of-type(7)': { '&::after': { content: '"CN"' } },
+                                                fontSize: 0,
+                                                '&::after': {
+                                                    fontSize: '0.875rem'
+                                                }
+                                            }
+                                        }
+                                    }
                                 }}
                             />
                         </Grid>
@@ -814,10 +859,11 @@ const MedicalEventsPage = () => {
                                 showLastButton
                             />
                         </Box>
-                    </CardContent>
+                    </CardContent>                
                 </Card>
             )}
         </Container>
+        </LocalizationProvider>
     );
 };
 

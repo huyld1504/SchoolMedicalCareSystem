@@ -134,11 +134,15 @@ const MedicalEventAddPage = () => {
                     toast.error(`Vui lòng điền ${message}`);
                     return;
                 }
+            }            // Kiểm tra ít nhất một học sinh tham gia (trừ khi có studentId và đang loading)
+            if (studentsJoin.length === 0 && !studentId) {
+                toast.error('Vui lòng thêm ít nhất một học sinh tham gia');
+                return;
             }
 
-            // Kiểm tra ít nhất một học sinh tham gia
-            if (studentsJoin.length === 0) {
-                toast.error('Vui lòng thêm ít nhất một học sinh tham gia');
+            // Nếu có studentId nhưng chưa có trong studentsJoin, thử load lại
+            if (studentId && studentsJoin.length === 0) {
+                toast.warning('Đang tải thông tin học sinh, vui lòng thử lại sau giây lát...');
                 return;
             }
 
@@ -325,18 +329,9 @@ const MedicalEventAddPage = () => {
                         <Box>
                             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
                                 Tạo sự kiện y tế mới
-                            </Typography>
-                            {studentInfo ? (
+                            </Typography>                            {studentInfo && (
                                 <Typography variant="h6" color="text.secondary">
                                     Học sinh: {studentInfo.name} (Mã HS: {studentInfo.studentCode})
-                                </Typography>
-                            ) : studentId ? (
-                                <Typography variant="h6" color="text.secondary">
-                                    Đang tải thông tin học sinh...
-                                </Typography>
-                            ) : (
-                                <Typography variant="h6" color="text.secondary">
-                                    Tạo sự kiện y tế tổng quát
                                 </Typography>
                             )}
                         </Box>                
@@ -400,121 +395,108 @@ const MedicalEventAddPage = () => {
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'N/A'}</TableCell>
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>
                                                                 {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A'}
-                                                            </TableCell>
-                                                            <TableCell align="center" sx={{ py: 1 }}>
-                                                                {!studentId && ( // Chỉ cho phép xóa nếu không phải từ trang học sinh cụ thể
-                                                                    <IconButton 
-                                                                        size="small" 
-                                                                        color="error"
-                                                                        onClick={() => handleRemoveStudent(student.id)}
-                                                                    >
-                                                                        <DeleteIcon fontSize="small" />
-                                                                    </IconButton>
-                                                                )}
+                                                            </TableCell>                                                            <TableCell align="center" sx={{ py: 1 }}>
+                                                                <IconButton 
+                                                                    size="small" 
+                                                                    color="error"
+                                                                    onClick={() => handleRemoveStudent(student.id)}
+                                                                >
+                                                                    <DeleteIcon fontSize="small" />
+                                                                </IconButton>
                                                             </TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
                                             </Table>
                                         )}
-                                        
-                                        {/* Form thêm học sinh mới - chỉ hiển thị nếu không có studentId */}
-                                        {!studentId && (
-                                            <Box>
-                                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1 }}>
-                                                    <TextField
-                                                        size="small"
-                                                        label="Mã học sinh"
-                                                        value={searchStudentCode}
-                                                        onChange={(e) => {
-                                                            const newValue = e.target.value;
-                                                            setSearchStudentCode(newValue);
-                                                            
-                                                            if (searchTimeout) {
-                                                                clearTimeout(searchTimeout);
-                                                            }
-                                                            
-                                                            if (newValue.trim()) {
-                                                                const timeout = setTimeout(() => {
-                                                                    handleSearchStudent(newValue);
-                                                                }, 500);
-                                                                setSearchTimeout(timeout);
-                                                            } else {
-                                                                setFoundStudent(null);
-                                                                setSearchStatus('');
-                                                            }
-                                                        }}
-                                                        placeholder="Nhập mã học sinh để tìm kiếm..."
-                                                        sx={{ minWidth: 200 }}
-                                                        onKeyPress={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                handleAddStudent();
-                                                            }
-                                                        }}
-                                                    />
-                                                    <Button
-                                                        variant="outlined"
-                                                        size="small"
-                                                        startIcon={<AddIcon />}
-                                                        onClick={handleAddStudent}
-                                                        disabled={!foundStudent || searchStatus !== 'found'}
-                                                    >
-                                                        Thêm học sinh
-                                                    </Button>
-                                                </Box>
-                                                
-                                                {/* Hiển thị trạng thái tìm kiếm */}
-                                                {searchStatus === 'searching' && (
-                                                    <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                            <CircularProgress size={16} />
-                                                            Đang tìm kiếm học sinh...
-                                                        </Typography>
-                                                    </Box>
-                                                )}
-                                                
-                                                {/* Hiển thị thông tin học sinh tìm được */}
-                                                {searchStatus === 'found' && foundStudent && (
-                                                    <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                                            Tìm thấy học sinh:
-                                                        </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 3 }}>
-                                                            <Typography variant="body2">
-                                                                <strong>Tên:</strong> {foundStudent.name}
-                                                            </Typography>
-                                                            <Typography variant="body2">
-                                                                <strong>Mã HS:</strong> {foundStudent.studentCode}
-                                                            </Typography>
-                                                            <Typography variant="body2">
-                                                                <strong>Giới tính:</strong> {foundStudent.gender === 'male' ? 'Nam' : foundStudent.gender === 'female' ? 'Nữ' : 'N/A'}
-                                                            </Typography>
-                                                        </Box>
-                                                        <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
-                                                            Nhấn "Thêm học sinh" để thêm vào danh sách
-                                                        </Typography>
-                                                    </Box>
-                                                )}
-                                                
-                                                {/* Hiển thị khi không tìm thấy */}
-                                                {searchStatus === 'not-found' && searchStudentCode.trim() && (
-                                                    <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                        <Typography variant="body2">
-                                                            Không tìm thấy học sinh với mã "{searchStudentCode.trim()}"
-                                                        </Typography>
-                                                        <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
-                                                            Vui lòng kiểm tra lại mã học sinh
-                                                        </Typography>
-                                                    </Box>
-                                                )}
+                                          {/* Form thêm học sinh mới - luôn hiển thị */}
+                                        <Box>
+                                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1 }}>
+                                                <TextField
+                                                    size="small"
+                                                    label="Mã học sinh"
+                                                    value={searchStudentCode}
+                                                    onChange={(e) => {
+                                                        const newValue = e.target.value;
+                                                        setSearchStudentCode(newValue);
+                                                        
+                                                        if (searchTimeout) {
+                                                            clearTimeout(searchTimeout);
+                                                        }
+                                                        
+                                                        if (newValue.trim()) {
+                                                            const timeout = setTimeout(() => {
+                                                                handleSearchStudent(newValue);
+                                                            }, 500);
+                                                            setSearchTimeout(timeout);
+                                                        } else {
+                                                            setFoundStudent(null);
+                                                            setSearchStatus('');
+                                                        }
+                                                    }}
+                                                    placeholder="Nhập mã học sinh để tìm kiếm..."
+                                                    sx={{ minWidth: 200 }}
+                                                    onKeyPress={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            handleAddStudent();
+                                                        }
+                                                    }}
+                                                />
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    startIcon={<AddIcon />}
+                                                    onClick={handleAddStudent}
+                                                    disabled={!foundStudent || searchStatus !== 'found'}
+                                                >
+                                                    THÊM HỌC SINH
+                                                </Button>
                                             </Box>
-                                        )}
-                                        
-                                        {studentsJoin.length === 0 && (
-                                            <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic', mt: 1 }}>
-                                                Chưa có học sinh tham gia. Sử dụng form bên dưới để thêm học sinh.
-                                            </Typography>
-                                        )}
+                                            
+                                            {/* Hiển thị trạng thái tìm kiếm */}
+                                            {searchStatus === 'searching' && (
+                                                <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <CircularProgress size={16} />
+                                                        Đang tìm kiếm học sinh...
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                            
+                                            {/* Hiển thị thông tin học sinh tìm được */}
+                                            {searchStatus === 'found' && foundStudent && (
+                                                <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                                        Tìm thấy học sinh:
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', gap: 3 }}>
+                                                        <Typography variant="body2">
+                                                            <strong>Tên:</strong> {foundStudent.name}
+                                                        </Typography>
+                                                        <Typography variant="body2">
+                                                            <strong>Mã HS:</strong> {foundStudent.studentCode}
+                                                        </Typography>
+                                                        <Typography variant="body2">
+                                                            <strong>Giới tính:</strong> {foundStudent.gender === 'male' ? 'Nam' : foundStudent.gender === 'female' ? 'Nữ' : 'N/A'}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
+                                                        Nhấn "THÊM HỌC SINH" để thêm vào danh sách
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                              {/* Hiển thị khi không tìm thấy */}
+                                            {searchStatus === 'not-found' && searchStudentCode.trim() && (
+                                                <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                    <Typography variant="body2">
+                                                        Không tìm thấy học sinh với mã "{searchStudentCode.trim()}"
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
+                                                        Vui lòng kiểm tra lại mã học sinh
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                        </Box>
                                     </TableCell>
                                 </TableRow>
 
@@ -522,7 +504,8 @@ const MedicalEventAddPage = () => {
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Loại sự kiện: *
                                     </TableCell>
-                                    <TableCell>                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
+                                    <TableCell>                                        
+                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
                                             <InputLabel>Loại sự kiện</InputLabel>
                                             <Select
                                                 value={formData.type}
@@ -541,7 +524,8 @@ const MedicalEventAddPage = () => {
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Mức độ: *
                                     </TableCell>
-                                    <TableCell>                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
+                                    <TableCell>                                        
+                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
                                             <InputLabel>Mức độ</InputLabel>
                                             <Select
                                                 value={formData.level}
@@ -560,7 +544,8 @@ const MedicalEventAddPage = () => {
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Mô tả chi tiết: *
                                     </TableCell>
-                                    <TableCell sx={{ maxWidth: '500px' }}>                                        <TextField
+                                    <TableCell sx={{ maxWidth: '500px' }}>                                        
+                                        <TextField
                                             multiline
                                             rows={4}
                                             value={formData.description}
@@ -575,7 +560,8 @@ const MedicalEventAddPage = () => {
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Giải pháp/Điều trị: *
                                     </TableCell>
-                                    <TableCell sx={{ maxWidth: '500px' }}>                                        <TextField
+                                    <TableCell sx={{ maxWidth: '500px' }}>                                        
+                                        <TextField
                                             multiline
                                             rows={3}
                                             value={formData.solution}
@@ -584,7 +570,8 @@ const MedicalEventAddPage = () => {
                                             placeholder="Nhập giải pháp điều trị..."
                                         />
                                     </TableCell>
-                                </TableRow>                                {/* Ghi chú - không bắt buộc */}
+                                </TableRow>                                
+                                {/* Ghi chú - không bắt buộc */}
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Ghi chú:

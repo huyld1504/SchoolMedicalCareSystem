@@ -442,26 +442,13 @@ const MedicalEventEditPage = () => {
                             <BackIcon />
                         </IconButton>
                         <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />                   
-                    <Box>
-                        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                    <Box>                        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
                             Chỉnh sửa sự kiện y tế
-                        </Typography>
+                        </Typography>                        
                         {/* Chỉ hiển thị thông tin học sinh nếu có dữ liệu thực tế */}
-                        {studentInfo ? (
+                        {studentInfo && (
                             <Typography variant="h6" color="text.secondary">
                                 Học sinh: {studentInfo.name} (Mã HS: {studentInfo.studentCode})
-                            </Typography>
-                        ) : studentId ? (
-                            <Typography variant="h6" color="text.secondary">
-                                Đang tải thông tin học sinh...
-                            </Typography>
-                        ) : medicalEvent && medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 ? (
-                            <Typography variant="h6" color="text.secondary">
-                                Sự kiện có học sinh tham gia
-                            </Typography>
-                        ) : (
-                            <Typography variant="h6" color="text.secondary">
-                                Sự kiện y tế tổng quát
                             </Typography>
                         )}
                     </Box>                
@@ -626,7 +613,7 @@ const MedicalEventEditPage = () => {
                                     {/* Hiển thị khi không tìm thấy */}
                                     {searchStatus === 'not-found' && searchStudentCode.trim() && (
                                         <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                            <Typography variant="body2">
+                                            <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                                                 Không tìm thấy học sinh với mã "{searchStudentCode.trim()}"
                                             </Typography>
                                             <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
@@ -722,44 +709,23 @@ const MedicalEventEditPage = () => {
                                         error={!formData.solution || !formData.solution.trim()}
                                     />
                                 </TableCell>
+                            </TableRow>                            
+                            {/* Trường ghi chú*/}
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
+                                    Ghi chú:
+                                </TableCell>
+                                <TableCell sx={{ maxWidth: '500px' }}>
+                                    <TextField
+                                        multiline
+                                        rows={2}
+                                        value={formData.note}
+                                        onChange={(e) => handleInputChange('note', e.target.value)}
+                                        fullWidth
+                                        placeholder="Nhập ghi chú bổ sung..."
+                                    />
+                                </TableCell>
                             </TableRow>
-
-                            {/* Chỉ hiển thị trường note nếu có dữ liệu hoặc đang được nhập */}
-                            {(hasValue(medicalEvent.note) || hasValue(formData.note)) && (
-                                <TableRow>
-                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                                        Ghi chú:
-                                    </TableCell>
-                                    <TableCell sx={{ maxWidth: '500px' }}>
-                                        <TextField
-                                            multiline
-                                            rows={2}
-                                            value={formData.note}
-                                            onChange={(e) => handleInputChange('note', e.target.value)}
-                                            fullWidth
-                                            placeholder="Nhập ghi chú bổ sung..."
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            )}
-
-                            {/* Nút thêm trường ghi chú nếu chưa có */}
-                            {!hasValue(medicalEvent.note) && !hasValue(formData.note) && (
-                                <TableRow>
-                                    <TableCell colSpan={2} sx={{ textAlign: 'center', py: 1 }}>                                        
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            onClick={() => {
-                                                handleInputChange('note', '');
-                                            }}
-                                            sx={{ fontSize: '0.875rem' }}
-                                        >
-                                            + Thêm ghi chú
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            )}                              
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                     Trạng thái: *
@@ -780,7 +746,8 @@ const MedicalEventEditPage = () => {
                                 </TableCell>
                             </TableRow>
                         </TableBody>
-                    </Table>{/* Note about required fields */}
+                    </Table>
+                    {/* Note about required fields */}
                     <Box sx={{ mt: 3, p: 2, bgcolor: 'warning.light', borderRadius: 1 }}>
                         <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
                             * Các trường bắt buộc phải điền đầy đủ
