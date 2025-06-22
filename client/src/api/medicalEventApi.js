@@ -4,7 +4,7 @@ const medicalEventAPI = {
     // Tạo mới sự kiện y tế
     create: async (data) => await callAPI('POST', `/medical-events/create`, data),    // Lấy danh sách sự kiện y tế theo học sinh với pagination
     getEventsByStudentId: async (studentId, query = {}) => await callAPI('GET', `/medical-events/student/${studentId}?page=${query.page ? query.page : 1}&limit=${query.limit ? query.limit : 10}${query.level ? `&level=${query.level}` : ''}${query.status ? `&status=${encodeURIComponent(query.status)}` : ''}${query.dateFrom ? `&dateFrom=${query.dateFrom}` : ''}${query.dateTo ? `&dateTo=${query.dateTo}` : ''}${query.eventType ? `&eventType=${encodeURIComponent(query.eventType)}` : ''}${query.keyword ? `&keyword=${encodeURIComponent(query.keyword)}` : ''}`),
-      // Lấy chi tiết sự kiện y tế theo ID
+    // Lấy chi tiết sự kiện y tế theo ID
     getEventById: async (eventId) => await callAPI('GET', `/medical-events/get/${eventId}`),
     
     // Cập nhật sự kiện y tế

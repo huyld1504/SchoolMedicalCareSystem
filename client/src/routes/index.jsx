@@ -13,6 +13,7 @@ import MedicationHistoryPage from '../pages/nurse/MedicationHistoryPage';
 import MedicalEventsPage from '../pages/nurse/MedicalEventsPage';
 import MedicalEventDetailPage from '../pages/nurse/MedicalEventDetailPage';
 import MedicalEventEditPage from '../pages/nurse/MedicalEventEditPage';
+import MedicalEventAddPage from '../pages/nurse/MedicalEventAddPage';
 
 
 // Layout components
@@ -84,22 +85,20 @@ const router = createBrowserRouter([
           {
             path: 'medical-events/detail/:eventId',
             element: <MedicalEventDetailPage />,
-          },
-          {
+          },          {
             path: 'medical-events/add',
-            element: <div>Add Medical Event Page (General) - Coming Soon</div>, // Placeholder
-          }, {
+            element: <MedicalEventAddPage />,
+          },{
             path: 'medical-events/:studentId',
             element: <MedicalEventsPage />,
           },
           {
             path: 'medical-events/:studentId/detail/:eventId',
             element: <MedicalEventDetailPage />,
-          },
-          {
+          },          {
             path: 'medical-events/:studentId/add',
-            element: <div>Add Medical Event Page - Coming Soon</div>, // Placeholder
-          }, {
+            element: <MedicalEventAddPage />,
+          },{
             path: 'medical-events/edit/:eventId',
             element: <MedicalEventEditPage />,
           },
