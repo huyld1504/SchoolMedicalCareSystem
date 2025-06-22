@@ -19,11 +19,17 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
+
+// THAY ĐỔI MỚI 1: Import các thành phần Date Picker
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs'; // Import dayjs để xử lý đối tượng ngày tháng
+
 import medicalOrderApi from '../../api/medicalOrderApi';
 
 // Constants
 const DEFAULT_PAGINATION = { total: 0, page: 1, totalPages: 0, limit: 10 };
-// THAY ĐỔI 1: Xóa studentName khỏi đây
 const DEFAULT_FILTERS = { status: '', startDate: '', endDate: '' };
 
 const STATUS_OPTIONS = [
@@ -83,7 +89,6 @@ const useFilters = (searchParams) => {
         const endDateFromUrl = searchParams.get('endDate');
 
         setFilters({
-            // THAY ĐỔI 2: Xóa dòng studentName khỏi đây
             status: searchParams.get('status') || '',
             startDate: startDateFromUrl ? startDateFromUrl.substring(0, 10) : '',
             endDate: endDateFromUrl ? endDateFromUrl.substring(0, 10) : '',
@@ -150,10 +155,23 @@ const useMedicalOrders = (searchParams) => {
 };
 
 // Components
+// THAY ĐỔI MỚI 2: Cập nhật component FilterAccordion để sử dụng DatePicker
 const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }) => {
     const hasActiveFilters = useMemo(() => {
         return Object.values(filters).some(value => value !== '');
     }, [filters]);
+
+    // Hàm này giúp DatePicker giao tiếp với hook `useFilters` mà không cần thay đổi hook.
+    // Nó tạo ra một đối tượng `event` giả để `onFilterChange` có thể xử lý.
+    const handleDateChange = (name, newValue) => {
+        const fakeEvent = {
+            target: {
+                name: name,
+                value: newValue ? newValue.format('YYYY-MM-DD') : ''
+            }
+        };
+        onFilterChange(fakeEvent);
+    };
 
     return (
         <Accordion defaultExpanded sx={{ mb: 3, boxShadow: 1 }}>
@@ -177,76 +195,81 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
                 </Box>
             </AccordionSummary>
             <AccordionDetails>
-                {/* THAY ĐỔI 4: Xóa ô Tên học sinh và sắp xếp lại Grid */}
-                <Grid container spacing={3} alignItems="end">
-                    <Grid item xs={12} sm={6} md={4}>
-                        <FormControl fullWidth size="small" disabled={loading} sx={{ width: '180px' }}>
-                            <InputLabel>Trạng thái</InputLabel>
-                            <Select
-                                label="Trạng thái"
-                                name="status"
-                                value={filters.status}
-                                onChange={onFilterChange}
-                            >
-                                {STATUS_OPTIONS.map(option => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    
-                    <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            fullWidth
-                            type="date"
-                            name="startDate"
-                            label="Từ ngày"
-                            value={filters.startDate}
-                            onChange={onFilterChange}
-                            size="small"
-                            disabled={loading}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    
-                    <Grid item xs={12} sm={6} md={4}>
-                        <TextField
-                            fullWidth
-                            type="date"
-                            name="endDate"
-                            label="Đến ngày"
-                            value={filters.endDate}
-                            onChange={onFilterChange}
-                            size="small"
-                            disabled={loading}
-                            InputLabelProps={{ shrink: true }}
-                            inputProps={{ min: filters.startDate }}
-                        />
-                    </Grid>
-                    
-                    <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<ClearIcon />}
-                                onClick={onClear}
-                                disabled={loading || !hasActiveFilters}
-                            >
-                                Xóa bộ lọc
-                            </Button>
-                            <Button
-                                variant="contained"
-                                startIcon={<SearchIcon />}
-                                onClick={onSearch}
+                {/* Bọc các DatePicker trong LocalizationProvider */}
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid item xs={12} sm={6} md={3} sx={{ width: '200px' }}>
+                            <FormControl fullWidth size="small" disabled={loading}>
+                                <InputLabel>Trạng thái</InputLabel>
+                                <Select
+                                    label="Trạng thái"
+                                    name="status"
+                                    value={filters.status}
+                                    onChange={onFilterChange}
+                                >
+                                    {STATUS_OPTIONS.map(option => (
+                                        <MenuItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        
+                        <Grid item xs={12} sm={6} md={3}>
+                            <DatePicker
+                                label="Từ ngày"
+                                value={filters.startDate ? dayjs(filters.startDate) : null}
+                                onChange={(newValue) => handleDateChange('startDate', newValue)}
                                 disabled={loading}
-                            >
-                                Tìm kiếm
-                            </Button>
-                        </Box>
+                                slotProps={{
+                                    textField: {
+                                        size: 'small',
+                                        fullWidth: true,
+                                    },
+                                }}
+                            />
+                        </Grid>
+                        
+                        <Grid item xs={12} sm={6} md={3}>
+                            <DatePicker
+                                label="Đến ngày"
+                                value={filters.endDate ? dayjs(filters.endDate) : null}
+                                onChange={(newValue) => handleDateChange('endDate', newValue)}
+                                disabled={loading}
+                                // Đảm bảo ngày kết thúc không thể trước ngày bắt đầu
+                                minDate={filters.startDate ? dayjs(filters.startDate) : null}
+                                slotProps={{
+                                    textField: {
+                                        size: 'small',
+                                        fullWidth: true,
+                                    },
+                                }}
+                            />
+                        </Grid>
+                        
+                        <Grid item xs={12} sm={12} md={3}>
+                            <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end'}, gap: 2, width: '100%' }}>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<ClearIcon />}
+                                    onClick={onClear}
+                                    disabled={loading || !hasActiveFilters}
+                                >
+                                    Xóa lọc
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<SearchIcon />}
+                                    onClick={onSearch}
+                                    disabled={loading}
+                                >
+                                    Tìm kiếm
+                                </Button>
+                            </Box>
+                        </Grid>
                     </Grid>
-                </Grid>
+                </LocalizationProvider>
             </AccordionDetails>
         </Accordion>
     );
@@ -419,7 +442,6 @@ const MedicalOrdersPage = () => {
     const handleSearch = useCallback(() => {
         const { startDate, endDate } = filters;
         
-        // THAY ĐỔI 3: Xóa studentName khỏi đây
         const newParams = cleanObject({
             status: filters.status,
             startDate: formatDateToISO(startDate, 'start'),
