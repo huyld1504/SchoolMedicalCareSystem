@@ -27,6 +27,8 @@ import AddChildPage from '../pages/parent/AddChildPage';
 import EditChildPage from '../pages/parent/EditChildPage';
 import ChildDetailPage from '../pages/parent/ChildDetailPage';
 import CreateMedicalOrderPage from '../pages/parent/CreateMedicalOrderPage';
+import MedicalOrderDetailPage from '../pages/parent/MedicalOrderDetailPage';
+import ParentMedicalEventDetailPage from '../pages/parent/MedicalEventDetailPage';
 
 const router = createBrowserRouter([
   {
@@ -132,9 +134,10 @@ const router = createBrowserRouter([
           <RoleProtectedRoute allowedRoles={["parent"]}>
             <ParentLayout />
           </RoleProtectedRoute>
-        ),
-        children: [
-          // Main Dashboard          // Children Management
+        ), children: [
+          // Main Dashboard
+
+          // Children Management
           {
             path: 'children',
             children: [
@@ -149,10 +152,13 @@ const router = createBrowserRouter([
               {
                 path: ':id',
                 element: <ChildDetailPage />
-              },
-              {
+              }, {
                 path: ':id/edit',
                 element: <EditChildPage />
+              },
+              {
+                path: ':id/medical-events/:eventId',
+                element: <ParentMedicalEventDetailPage />
               },
             ]
           },
@@ -171,7 +177,7 @@ const router = createBrowserRouter([
               },
               {
                 path: ':id',
-                element: <div>Medical Order Detail Page - Coming Soon</div>, // Placeholder
+                element: <MedicalOrderDetailPage />
               },
             ]
           },

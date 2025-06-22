@@ -103,6 +103,7 @@ const MedicalOrdersPage = () => {
             const childrenResponse = await childApi.getAllChildren();
             const childrenData = extractArrayFromResponse(childrenResponse, 'children');
             setChildren(childrenData);
+            console.log('Children data:', childrenData);
         } catch (error) {
             console.error('Error loading initial data:', error);
             setChildren([]);
@@ -120,11 +121,12 @@ const MedicalOrdersPage = () => {
                 childId: query.childId || undefined,
             };
 
-            const response = await medicalOrderApi.getMyOrders(params); console.log('Orders response:', response);
+            const response = await medicalOrderApi.getMyOrders(params);
+            console.log('Orders response:', response);
 
             // Extract data using helper functions
-            const ordersData = extractArrayFromResponse(response, 'orders');
-            const paginationData = extractPaginationFromResponse(response, {
+            const ordersData = extractArrayFromResponse(response.data.records, 'orders');
+            const paginationData = extractPaginationFromResponse(response.data.records, {
                 page: query.page,
                 limit: query.limit
             });
@@ -477,7 +479,7 @@ const MedicalOrdersPage = () => {
                                                             </Typography>
                                                         </Box>
                                                     </TableCell>
-                                                    <TableCell>{getChildName(order.ChildId)}</TableCell>
+                                                    <TableCell>{order.ChildId.name}</TableCell>
                                                     <TableCell>{formatDate(order.createdAt)}</TableCell>
                                                     <TableCell>{formatDate(order.startDate)}</TableCell>
                                                     <TableCell>{formatDate(order.endDate)}</TableCell>

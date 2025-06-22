@@ -33,12 +33,17 @@ import {
     MedicalInformation,
     Visibility,
     Warning,
-    AccessibleForward
+    AccessibleForward,
+    MedicalServices,
+    Add,
+    Event,
+    Medication
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { childApi } from '../../api/childApi';
 import healthProfileAPI from '../../api/healthProfileApi';
+import medicalEventAPI from '../../api/medicalEventApi';
 import HealthProfileDetailModal from './HealthProfileDetailModal';
 
 const ChildDetailPage = () => {
@@ -47,10 +52,10 @@ const ChildDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); const [child, setChild] = useState({});
     const [healthProfiles, setHealthProfiles] = useState([]);
+    const [medicalEvents, setMedicalEvents] = useState([]);
+    const [medicalEventsLoading, setMedicalEventsLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedProfileId, setSelectedProfileId] = useState(null);
-
-    useEffect(() => {
+    const [selectedProfileId, setSelectedProfileId] = useState(null); useEffect(() => {
         const loadData = async () => {
             try {
                 const response = await healthProfileAPI.getByChildId(id);
@@ -64,6 +69,9 @@ const ChildDetailPage = () => {
                     setChild(childResponse.data || childResponse);
                     setHealthProfiles([]);
                 }
+
+                // Load medical events
+                await loadMedicalEvents();
             } catch (err) {
                 setError('Không thể tải thông tin con em');
                 toast.error('❌ Có lỗi xảy ra khi tải dữ liệu');
@@ -75,6 +83,25 @@ const ChildDetailPage = () => {
         loadData();
     }, [id]);
 
+    const loadMedicalEvents = async () => {
+        try {
+            setMedicalEventsLoading(true);
+            const response = await medicalEventAPI.getEventsByStudentId(id, {
+                page: 1,
+                limit: 10
+            });
+            if (response && response.data && response.data.records) {
+                setMedicalEvents(response.data.records);
+                console.log("Medical Events:", response.data.records);
+            }
+        } catch (err) {
+            console.error('Error loading medical events:', err);
+            setMedicalEvents([]);
+        } finally {
+            setMedicalEventsLoading(false);
+        }
+    };
+
     const handleViewProfile = (profileId) => {
         setSelectedProfileId(profileId);
         setModalOpen(true);
@@ -83,12 +110,23 @@ const ChildDetailPage = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setSelectedProfileId(null);
-    };
-
-    const hasHealthNotes = (profile) => {
+    }; const hasHealthNotes = (profile) => {
         return (profile.allergies && profile.allergies !== '1') ||
             (profile.chronicDiseases && profile.chronicDiseases !== '1') ||
             (profile.devicesSupport && profile.devicesSupport !== '1');
+    };
+
+    const getEventLevelColor = (level) => {
+        switch (level) {
+            case 3:
+                return 'error';
+            case 2:
+                return 'warning';
+            case 1:
+                return 'success';
+            default:
+                return 'default';
+        }
     };
 
     if (loading) {
@@ -125,8 +163,7 @@ const ChildDetailPage = () => {
                     mb: 4,
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     color: 'white'
-                }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                }}>                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <IconButton
                             onClick={() => navigate('/parent/children')}
                             sx={{ mr: 2, color: 'white' }}
@@ -136,7 +173,7 @@ const ChildDetailPage = () => {
                         <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mr: 2, width: 56, height: 56 }}>
                             {child.name?.charAt(0)}
                         </Avatar>
-                        <Box>
+                        <Box sx={{ flex: 1 }}>
                             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
                                 {child.name}
                             </Typography>
@@ -144,7 +181,23 @@ const ChildDetailPage = () => {
                                 Thông tin chi tiết và hồ sơ sức khỏe
                             </Typography>
                         </Box>
-                    </Box>                </Paper>
+                        <Button
+                            variant="contained"
+                            startIcon={<Medication />}
+                            onClick={() => navigate(`/parent/medical-orders/create?childId=${id}`)}
+                            sx={{
+                                bgcolor: 'rgba(255,255,255,0.2)',
+                                color: 'white',
+                                '&:hover': {
+                                    bgcolor: 'rgba(255,255,255,0.3)'
+                                },
+                                backdropFilter: 'blur(8px)',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            Gửi thuốc
+                        </Button>
+                    </Box></Paper>
 
                 {/* Child Basic Information - Compact Card at Top */}
                 <Card elevation={3} sx={{ mb: 3 }}>
@@ -189,9 +242,7 @@ const ChildDetailPage = () => {
                                         sx={{ mt: 0.5 }}
                                     />
                                 </Box>
-                            </Box>
-
-                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                            </Box>                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                                 <Button
                                     variant="outlined"
                                     startIcon={<Edit />}
@@ -320,8 +371,120 @@ const ChildDetailPage = () => {
                                         ))}
                                     </TableBody>
                                 </Table>
+                            </TableContainer>)}                    </CardContent>
+                </Card>
+
+                {/* Medical Events Section */}
+                <Card elevation={3} sx={{ mt: 4 }}>
+                    <CardContent sx={{ p: 3 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <MedicalServices sx={{ fontSize: 32, color: '#2196f3', mr: 2 }} />
+                                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#2196f3' }}>
+                                    Sự kiện y tế
+                                </Typography>
+                                <Badge badgeContent={medicalEvents.length} color="primary" sx={{ ml: 2 }} />
+                            </Box>
+                        </Box>
+
+                        {medicalEventsLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : medicalEvents.length === 0 ? (
+                            <Box sx={{
+                                textAlign: 'center',
+                                py: 6,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: 2
+                            }}>
+                                <Event sx={{ fontSize: 64, color: 'text.secondary' }} />
+                                <Typography variant="h6" color="text.secondary">
+                                    Chưa có sự kiện y tế
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Các sự kiện y tế của con em sẽ được hiển thị tại đây
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <TableContainer component={Paper} variant="outlined">
+                                <Table>                                    <TableHead>
+                                    <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>STT</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Ngày xảy ra</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Loại sự kiện</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Mức độ</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Triệu chứng</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Trạng thái</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Thao tác</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                    <TableBody>
+                                        {medicalEvents.map((event, index) => (
+                                            <TableRow
+                                                key={event._id}
+                                                sx={{
+                                                    '&:hover': { bgcolor: '#f9f9f9' }
+                                                }}
+                                            >
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>
+                                                    {new Date(event.date || event.createdAt).toLocaleDateString('vi-VN')}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        label={event.type || 'Khác'}
+                                                        size="small"
+                                                        variant="outlined"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        label={event.level === 1 ? 'Nhẹ'
+                                                            : event.level === 2 ? 'Trung bình' : 'Khẩn cấp'
+                                                        }
+                                                        color={getEventLevelColor(event.level)}
+                                                        size="small"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Typography variant="body2" sx={{ maxWidth: 200 }}>
+                                                        {event.description || 'N/A'}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Typography variant="body2" sx={{ maxWidth: 200 }}>
+                                                        {event.note || 'N/A'}
+                                                    </Typography>
+                                                </TableCell>                                                <TableCell>
+                                                    <Chip
+                                                        label={event.status}
+                                                        color={event.status === 'resolved' ? 'success' :
+                                                            event.status === 'ongoing' ? 'warning' :
+                                                                event.status === 'pending' ? 'error' : 'default'}
+                                                        size="small"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant="outlined"
+                                                        size="small"
+                                                        startIcon={<Visibility />}
+                                                        onClick={() => navigate(`/parent/children/${child._id}/medical-events/${event._id}`)}
+                                                    >
+                                                        Chi tiết
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             </TableContainer>
-                        )}                    </CardContent>
+                        )}
+                    </CardContent>
                 </Card>
             </Container>
 

@@ -36,7 +36,8 @@ import {
     ChildCare as ChildCareIcon,
     LocalHospital as HospitalIcon,
     HealthAndSafety as HealthIcon,
-    Person as PersonIcon
+    Person as PersonIcon,
+    Medication as MedicationIcon
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
@@ -240,19 +241,19 @@ const ChildrenPage = () => {
                                     Tìm kiếm
                                 </Button>
                                 <Tooltip title="Làm mới">
-                                    <IconButton 
-                                    onClick={() => {
-                                        setSearchInput('');
-                                        setQuery({
-                                            page: 1,
-                                            limit: 10,
-                                            keyword: '',
-                                            gender: ''
-                                        });
-                                        setSearchParams({});
-                                        handleRefresh;
-                                    }}
-                                    color="primary">
+                                    <IconButton
+                                        onClick={() => {
+                                            setSearchInput('');
+                                            setQuery({
+                                                page: 1,
+                                                limit: 10,
+                                                keyword: '',
+                                                gender: ''
+                                            });
+                                            setSearchParams({});
+                                            handleRefresh;
+                                        }}
+                                        color="primary">
                                         <RefreshIcon />
                                     </IconButton>
                                 </Tooltip>
@@ -310,8 +311,7 @@ const ChildrenPage = () => {
                                                     <TableCell>{calculateAge(child.birthdate)} tuổi</TableCell>
                                                     <TableCell>{getGenderChip(child.gender)}</TableCell>
                                                     <TableCell>{formatDate(child.birthdate)}</TableCell>
-                                                    <TableCell>{child.medicalConverageId || 'Chưa có'}</TableCell>
-                                                    <TableCell align="center">
+                                                    <TableCell>{child.medicalConverageId || 'Chưa có'}</TableCell>                                                    <TableCell align="center">
                                                         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                                                             <Tooltip title="Xem chi tiết">
                                                                 <IconButton
@@ -320,6 +320,21 @@ const ChildrenPage = () => {
                                                                     onClick={() => handleViewChild(child)}
                                                                 >
                                                                     <ViewIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title="Gửi thuốc">
+                                                                <IconButton
+                                                                    size="small"
+                                                                    color="success"
+                                                                    onClick={() => handleCreateOrder(child)}
+                                                                    sx={{
+                                                                        color: '#4caf50',
+                                                                        '&:hover': {
+                                                                            bgcolor: 'rgba(76, 175, 80, 0.1)'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <MedicationIcon />
                                                                 </IconButton>
                                                             </Tooltip>
                                                             {/* <Tooltip title="Chỉnh sửa">
