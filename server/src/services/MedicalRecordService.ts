@@ -124,6 +124,7 @@ class MedicalRecordService {
     filter.medicalOrderId = medicalOrderId;
 
     const medicalRecords = await MedicalRecord.find(filter)
+      .populate("userId", "name")
       .lean()
       .skip(queryBuilder.getSkip())
       .limit(queryBuilder.getLimit())

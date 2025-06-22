@@ -44,7 +44,8 @@ import {
     Download as DownloadIcon,
     Print as PrintIcon,
     Person as PersonIcon,
-    Medication as MedicationIcon
+    Medication as MedicationIcon,
+    MedicalServices as MedicalServicesIcon
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
@@ -202,6 +203,10 @@ const StudentsPage = () => {
 
     const handleViewMedicationHistory = (student) => {
         navigate(`/nurse/medication-history/${student._id}`);
+    };
+
+    const handleViewMedicalEvents = (student) => {
+        navigate(`/nurse/medical-events/${student._id}`);
     };
 
     const formatDate = (dateString) => {
@@ -455,14 +460,22 @@ const StudentsPage = () => {
                                                                 >
                                                                     <PersonIcon />
                                                                 </IconButton>
-                                                            </Tooltip>
-                                                            <Tooltip title="Lịch sử dùng thuốc">
+                                                            </Tooltip>                                                            <Tooltip title="Lịch sử dùng thuốc">
                                                                 <IconButton
                                                                     size="small"
                                                                     color="warning"
                                                                     onClick={() => handleViewMedicationHistory(student)}
                                                                 >
                                                                     <MedicationIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title="Sự kiện y tế">
+                                                                <IconButton
+                                                                    size="small"
+                                                                    color="error"
+                                                                    onClick={() => handleViewMedicalEvents(student)}
+                                                                >
+                                                                    <MedicalServicesIcon />
                                                                 </IconButton>
                                                             </Tooltip>
                                                         </Box>

@@ -3,7 +3,7 @@ import { IReq, IRes } from "./common/types";
 import MedicalEventService from "@src/services/MedicalEventService";
 import { ApiResponse } from "@src/common/util/util.api-response";
 import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
-import { createMedicalEventSchema } from "@src/schemas/medicalEvent.schema";
+import { createMedicalEventSchema, updateMedicalEventSchema } from "@src/schemas/medicalEvent.schema";
 import { MedicalEventQueryBuilder } from "@src/payload/request/filter/medicalEvent.request";
 import ChildService from "@src/services/ChildService";
 import roleService from "@src/services/RoleService";
@@ -80,14 +80,14 @@ async function getByStudentId(req: IReq, res: IRes) {
 }
 
 async function updateById(req: IReq, res: IRes) {
-  const eventId = req.params.eventId as string;
-  const { error, value } = createMedicalEventSchema.validate(req.body);
+  const eventId = req.params.id as string;
+  const { error, value } = updateMedicalEventSchema.validate(req.body);
 
   if (error) {
     throw new ValidationError(error.details[0].message);
   }
 
-  const updatedEvent = await MedicalEventService.updateMedicalEvent(eventId, value);
+  const updatedEvent: any = await MedicalEventService.updateMedicalEvent(eventId, value);
 
   if (!updatedEvent) {
     throw new ValidationError("Medical event not found.");

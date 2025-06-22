@@ -6,26 +6,38 @@ import { authUtils } from '../../utils/authUtil';
 
 export default function AppLayout() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  // Check if user is authenticated and redirect accordingly
-  const currentPath = window.location.pathname;
+  const navigate = useNavigate();  // Check if user is authenticated and redirect accordingly
   useEffect(() => {
     const authenticateUser = async () => {
-      const user = await authUtils.isAuthenticated();
-      const pathName = window.location.pathname;
-      if (user) {
-        dispatch(setUser({ user }));
-        
-        if (['/login', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
-          navigate(currentPath === '/login' ? '/nurse/students' : currentPath);
+      try {
+        const user = await authUtils.isAuthenticated();
+        const pathName = window.location.pathname;
+        if (user) {
+          dispatch(setUser({ user }));
+          // If user is authenticated and on login page, redirect to main page
+          if (['/login', '/password/forgot', '/password/reset', '/signup', '/'].some(p => pathName.startsWith(p))) {
+            if (user.role === 'nurse') {
+              navigate('/nurse/students');
+            } else if (user.role === 'parent') {
+              navigate('/parent/children');
+            } else {
+              navigate(-1);
+            }
+          }
         } else {
-          navigate('/login');
+          // If user is not authenticated and not on public pages, redirect to login
+          if (!['/login', '/', '/password/forgot', '/password/reset', '/signup'].some(p => pathName.startsWith(p))) {
+            navigate('/login');
+          }
         }
+      } catch (error) {
+        console.error('Authentication error:', error);
+        // Don't redirect on authentication errors, let user stay on current page
       }
     };
     authenticateUser();
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate]); 
+  
   return (
     <Outlet />
   );

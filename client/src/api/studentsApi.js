@@ -1,5 +1,4 @@
 import { callAPI } from './axiosClient';
-import { sampleStudents, sampleStats } from '../data/sampleData';
 
 // Students API endpoints
 const studentsApi = {

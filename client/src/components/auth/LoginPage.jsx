@@ -51,8 +51,7 @@ const LoginPage = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      setIsLogin(true);
-      try {
+      setIsLogin(true); try {
         await new Promise(resolve => setTimeout(resolve, 1000));
         const response = await authApi.login(values);
         if (response.isSuccess) {
@@ -63,8 +62,13 @@ const LoginPage = () => {
           localStorage.setItem("refreshToken", refreshToken);
           dispatch(setUser({ user }));
           toast.success(response.message);
-        } if (response.data.role === 'nurse') {
-          navigate('/nurse/students');
+
+          // Navigate based on role
+          if (response.data.role === 'nurse') {
+            navigate('/nurse/students');
+          } else if (response.data.role === 'parent') {
+            navigate('/parent/children');
+          }
         }
         setIsLogin(false);
       } catch (error) {

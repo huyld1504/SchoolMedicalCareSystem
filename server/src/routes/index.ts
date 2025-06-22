@@ -11,6 +11,7 @@ import UserRoutes from "./UserRoutes";
 import HealthProfileRoutes from "./HealthProfileRoutes";
 import MedicalEventRoutes from "./MedicalEventRoutes";
 import MedicalOrderRoutes from "./MedicalOrderRoutes";
+import VaccinationRoutes from "./VaccinationRoutes";
 
 /******************************************************************************
                                 Setup
@@ -87,7 +88,7 @@ healthProfileRouter.get(
 );
 healthProfileRouter.get(
   Paths.HealthProfile.GetByID,
-  [transform(), auth(), authRoles(["nurse"])],
+  [transform(), auth(), authRoles(["nurse", "parent"])],
   HealthProfileRoutes.getById
 );
 healthProfileRouter.put(
@@ -169,6 +170,80 @@ medicalOrderRouter.put(
   [transform(), auth(), authRoles(["nurse"])],
   MedicalOrderRoutes.additionalMedicalDetails
 );
+
+/******************************************************************************
+                                Vaccination routes
+******************************************************************************/
+const vaccinationCampaignRouter = Router();
+const vaccinationParticipationRouter = Router();
+
+// Vaccination Campaign routes (Admin functions)
+vaccinationCampaignRouter.post(
+  Paths.VaccinationCampaign.Create,
+  [transform(), auth(), authRoles(["admin"])],
+  VaccinationRoutes.createCampaign
+);
+vaccinationCampaignRouter.put(
+  Paths.VaccinationCampaign.Update,
+  [transform(), auth(), authRoles(["admin"])],
+  VaccinationRoutes.updateCampaign
+);
+vaccinationCampaignRouter.get(
+  Paths.VaccinationCampaign.GetAll,
+  [transform(), auth(), authRoles(["admin", "nurse"])],
+  VaccinationRoutes.getAllCampaigns
+);
+vaccinationCampaignRouter.get(
+  Paths.VaccinationCampaign.GetById,
+  [transform(), auth(), authRoles(["admin", "nurse"])],
+  VaccinationRoutes.getCampaignById
+);
+vaccinationCampaignRouter.post(
+  Paths.VaccinationCampaign.AddStudents,
+  [transform(), auth(), authRoles(["admin"])],
+  VaccinationRoutes.addStudentsToCampaign
+);
+vaccinationCampaignRouter.get(
+  Paths.VaccinationCampaign.GetParticipations,
+  [transform(), auth(), authRoles(["admin", "nurse"])],
+  VaccinationRoutes.getCampaignParticipations
+);
+vaccinationCampaignRouter.get(
+  Paths.VaccinationCampaign.Search,
+  [transform(), auth(), authRoles(["admin", "nurse"])],
+  VaccinationRoutes.searchCampaigns
+);
+
+// Vaccination Participation routes
+vaccinationParticipationRouter.put(
+  Paths.VaccinationParticipation.ParentConsent,
+  [transform(), auth(), authRoles(["parent"])],
+  VaccinationRoutes.parentConsent
+);
+vaccinationParticipationRouter.put(
+  Paths.VaccinationParticipation.RecordVaccination,
+  [transform(), auth(), authRoles(["nurse"])],
+  VaccinationRoutes.recordVaccination
+);
+vaccinationParticipationRouter.get(
+  Paths.VaccinationParticipation.GetParentParticipations,
+  [transform(), auth(), authRoles(["parent"])],
+  VaccinationRoutes.getParentParticipations
+);
+vaccinationParticipationRouter.get(
+  Paths.VaccinationParticipation.Search,
+  [transform(), auth(), authRoles(["admin", "nurse"])],
+  VaccinationRoutes.searchParticipations
+);
+vaccinationParticipationRouter.get(
+  Paths.VaccinationParticipation.SearchParent,
+  [transform(), auth(), authRoles(["parent"])],
+  VaccinationRoutes.searchParentParticipations
+);
+
+// Add routers to API
+apiRouter.use(Paths.VaccinationCampaign.Base, vaccinationCampaignRouter);
+apiRouter.use(Paths.VaccinationParticipation.Base, vaccinationParticipationRouter);
 
 /******************************************************************************
                                 Index routes
