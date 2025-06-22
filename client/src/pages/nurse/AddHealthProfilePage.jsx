@@ -71,7 +71,7 @@ const DynamicChipInput = ({ formik, fieldName, label, placeholder, icon, color }
                     sx={{ minWidth: 'auto', px: 2, bgcolor: `${color}.main`, '&:hover': { bgcolor: `${color}.dark` } }}
                 >
                     <AddIcon />
-                </Button>   
+                </Button>
             </Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 40, alignItems: 'center' }}>
                 {items.length > 0 ? (
@@ -93,7 +93,7 @@ const StudentInfoSidebar = ({ student }) => {
     const genderText = student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A';
 
     return (
-        <Card variant="outlined" sx={{ position: 'sticky', top: 24, width: '220px', height: '100%' }}>
+        <Card variant="outlined" sx={{ position: 'sticky', top: 24, width: '300px', height: '50%' }}>
             <CardContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
                     <Avatar sx={{ width: 80, height: 80, mb: 2, bgcolor: 'primary.main', fontSize: '2.5rem' }}>
@@ -144,15 +144,48 @@ const HealthProfileForm = ({ formik, saving, onCancel }) => (
                 </Grid>
 
                 <SectionHeader icon="⚕️" title="Tiền sử bệnh & Dị ứng" />
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}><DynamicChipInput formik={formik} fieldName="allergies" label="Dị ứng" placeholder="Nhập dị ứng..." icon={<WarningIcon />} color="warning" /></Grid>
-                    <Grid item xs={12} md={4}><DynamicChipInput formik={formik} fieldName="chronicDiseases" label="Bệnh mãn tính" placeholder="Nhập bệnh mãn tính..." icon={<LocalHospitalIcon />} color="error" /></Grid>
-                    <Grid item xs={12} md={4}><DynamicChipInput formik={formik} fieldName="devicesSupport" label="Thiết bị hỗ trợ" placeholder="Nhập thiết bị hỗ trợ..." icon={<AccessibleForwardIcon />} color="info" /></Grid>
-                </Grid>
+
+                {/* Dị ứng */}
+                <Box sx={{ mb: 4 }}>
+                    <DynamicChipInput
+                        formik={formik}
+                        fieldName="allergies"
+                        label="Dị ứng"
+                        placeholder="Nhập dị ứng..."
+                        icon={<WarningIcon />}
+                        color="warning"
+                    />
+                </Box>
+
+                {/* Bệnh mãn tính */}
+                <Box sx={{ mb: 4 }}>
+                    <DynamicChipInput
+                        formik={formik}
+                        fieldName="chronicDiseases"
+                        label="Bệnh mãn tính"
+                        placeholder="Nhập bệnh mãn tính..."
+                        icon={<LocalHospitalIcon />}
+                        color="error"
+                    />
+                </Box>
+
+                {/* Thiết bị hỗ trợ */}
+                <Box sx={{ mb: 2 }}>
+                    <DynamicChipInput
+                        formik={formik}
+                        fieldName="devicesSupport"
+                        label="Thiết bị hỗ trợ"
+                        placeholder="Nhập thiết bị hỗ trợ..."
+                        icon={<AccessibleForwardIcon />}
+                        color="info"
+                    />
+                </Box>
+
+
             </CardContent>
 
             <Divider />
-            
+
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                     <Button variant="text" onClick={onCancel} disabled={saving}>Hủy bỏ</Button>

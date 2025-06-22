@@ -475,7 +475,7 @@ const StudentsPage = () => {
                             </TableContainer>
 
                             {/* Pagination component được sửa giống HealthProfilesPage */}
-                            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box sx={{ p: 2, display: 'flex', justifyContent: 'end', alignItems: 'center' }}>
                                
                                 
                                 <Pagination

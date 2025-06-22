@@ -103,7 +103,7 @@ const StudentInfoSidebar = ({ student }) => {
     if (!student) return null;
     const genderText = student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A';
     return (
-        <Card variant="outlined" sx={{ position: 'sticky', top: 24, width: '220px', height: '100%' }}>
+        <Card variant="outlined" sx={{ position: 'sticky', top: 24, width: '300px', height: '50%' }}>
             <CardContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
                     <Avatar sx={{ width: 80, height: 80, mb: 2, bgcolor: 'primary.main', fontSize: '2.5rem' }}>
@@ -156,22 +156,54 @@ const HealthProfileForm = ({ formik, saving, onCancel }) => (
 
                 <SectionHeader icon="📏" title="Thông số cơ thể" />
                 <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6} md={3 }><TextField fullWidth id="height" name="height" label="Chiều cao (cm)" type="number" {...formik.getFieldProps('height')} error={formik.touched.height && Boolean(formik.errors.height)} helperText={formik.touched.height && formik.errors.height} /></Grid>
+                    <Grid item xs={12} sm={6} md={3}><TextField fullWidth id="height" name="height" label="Chiều cao (cm)" type="number" {...formik.getFieldProps('height')} error={formik.touched.height && Boolean(formik.errors.height)} helperText={formik.touched.height && formik.errors.height} /></Grid>
                     <Grid item xs={12} sm={6} md={3}><TextField fullWidth id="weight" name="weight" label="Cân nặng (kg)" type="number" {...formik.getFieldProps('weight')} error={formik.touched.weight && Boolean(formik.errors.weight)} helperText={formik.touched.weight && formik.errors.weight} /></Grid>
                     <Grid item xs={12} sm={6} md={3}><FormControl fullWidth error={formik.touched.bloodType && Boolean(formik.errors.bloodType)}><InputLabel>Nhóm máu</InputLabel><Select label="Nhóm máu" name="bloodType" {...formik.getFieldProps('bloodType')}><MenuItem value=""><em>Chọn</em></MenuItem>{bloodTypes.map((type) => (<MenuItem key={type} value={type}>{type}</MenuItem>))}</Select></FormControl></Grid>
                     <Grid item xs={12} sm={6} md={3}><TextField fullWidth id="vision" name="vision" label="Tình trạng thị lực" {...formik.getFieldProps('vision')} error={formik.touched.vision && Boolean(formik.errors.vision)} helperText={formik.touched.vision && formik.errors.vision} placeholder="VD: 9/10" /></Grid>
                 </Grid>
 
                 <SectionHeader icon="⚕️" title="Tiền sử bệnh & Dị ứng" />
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}><DynamicChipInput formik={formik} fieldName="allergies" label="Dị ứng" placeholder="Nhập dị ứng..." icon={<WarningIcon />} color="warning" /></Grid>
-                    <Grid item xs={12} md={4}><DynamicChipInput formik={formik} fieldName="chronicDiseases" label="Bệnh mãn tính" placeholder="Nhập bệnh mãn tính..." icon={<LocalHospitalIcon />} color="error" /></Grid>
-                    <Grid item xs={12} md={4}><DynamicChipInput formik={formik} fieldName="devicesSupport" label="Thiết bị hỗ trợ" placeholder="Nhập thiết bị hỗ trợ..." icon={<AccessibleForwardIcon />} color="info" /></Grid>
-                </Grid>
+
+                {/* Dị ứng */}
+                <Box sx={{ mb: 4 }}>
+                    <DynamicChipInput
+                        formik={formik}
+                        fieldName="allergies"
+                        label="Dị ứng"
+                        placeholder="Nhập dị ứng..."
+                        icon={<WarningIcon />}
+                        color="warning"
+                    />
+                </Box>
+
+                {/* Bệnh mãn tính */}
+                <Box sx={{ mb: 4 }}>
+                    <DynamicChipInput
+                        formik={formik}
+                        fieldName="chronicDiseases"
+                        label="Bệnh mãn tính"
+                        placeholder="Nhập bệnh mãn tính..."
+                        icon={<LocalHospitalIcon />}
+                        color="error"
+                    />
+                </Box>
+
+                {/* Thiết bị hỗ trợ */}
+                <Box sx={{ mb: 2 }}>
+                    <DynamicChipInput
+                        formik={formik}
+                        fieldName="devicesSupport"
+                        label="Thiết bị hỗ trợ"
+                        placeholder="Nhập thiết bị hỗ trợ..."
+                        icon={<AccessibleForwardIcon />}
+                        color="info"
+                    />
+                </Box>
+
             </CardContent>
 
             <Divider />
-            
+
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                     <Button variant="text" onClick={onCancel} disabled={saving}>Hủy bỏ</Button>
@@ -279,7 +311,7 @@ const EditHealthProfilePage = () => {
     }, [loadData]);
 
     const handleBack = () => navigate(`/nurse/health-profiles/${studentId}`);
-    
+
     if (loading) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><CircularProgress /></Box>;
     }

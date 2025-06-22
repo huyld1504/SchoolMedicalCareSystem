@@ -208,7 +208,7 @@ const NurseLayout = () => {
                         color: 'text.primary',
                         fontWeight: 600
                     }}>
-                        {menuItems.find(item => item.active)?.text || 'Dashboard'}
+                      
                     </Typography>
 
                     {/* Notifications */}

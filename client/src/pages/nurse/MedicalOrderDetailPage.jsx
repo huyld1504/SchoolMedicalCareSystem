@@ -20,7 +20,7 @@ import medicalOrderApi from '../../api/medicalOrderApi';
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
     approved: { label: 'Đã duyệt', color: 'success' },
-    
+
 };
 
 const initialNewMedicineState = {
@@ -44,10 +44,10 @@ const MedicalOrderDetailPage = () => {
     const [isEditingStatus, setIsEditingStatus] = useState(false);
     const [newStatus, setNewStatus] = useState('');
     const [usageHistory, setUsageHistory] = useState([]);
-    
+
     const [isAddRecordModalOpen, setAddRecordModalOpen] = useState(false);
     const [selectionForRecord, setSelectionForRecord] = useState({});
-    
+
     const [isRefillModalOpen, setIsRefillModalOpen] = useState(false);
     const [refillData, setRefillData] = useState({ detail: null, additionalQuantity: 10 });
     const [isAddNewModalOpen, setIsAddNewModalOpen] = useState(false);
@@ -62,11 +62,15 @@ const MedicalOrderDetailPage = () => {
             const [detailsResponse, historyResponse] = await Promise.all([
                 medicalOrderApi.getDetail(orderId),
                 medicalOrderApi.getRecord(orderId)
+                
+                
             ]);
+             console.log("[DEBUG] Kết quả từ medicalOrderApi.getRecord:", historyResponse);
 
             if (detailsResponse.isSuccess && detailsResponse.data) {
                 setOrderData(detailsResponse.data);
                 setNewStatus(detailsResponse.data.order.status);
+
             } else {
                 setError('Không tìm thấy thông tin đơn thuốc.');
             }
@@ -160,7 +164,7 @@ const MedicalOrderDetailPage = () => {
             }
         }));
     };
-    
+
     const handleSubmitRecord = async () => {
         const itemsToRecord = Object.values(selectionForRecord)
             .filter(item => item.quantity > 0)
@@ -195,12 +199,12 @@ const MedicalOrderDetailPage = () => {
         setIsRefillModalOpen(true);
     };
     const handleCloseRefillModal = () => setIsRefillModalOpen(false);
-    
+
     const handleSubmitRefill = async () => {
         setIsUpdating(true);
         try {
             const { detail, additionalQuantity } = refillData;
-            
+
             const payload = {
                 medicalOrderDetails: [{
                     _id: detail._id,
@@ -244,7 +248,7 @@ const MedicalOrderDetailPage = () => {
         }
         if (!newMedicine.dosage || !newMedicine.dosage.trim()) {
             toast.warn('Vui lòng nhập liều lượng.');
-            return; 
+            return;
         }
 
         setIsUpdating(true);
@@ -256,14 +260,14 @@ const MedicalOrderDetailPage = () => {
                 time: newMedicine.time,
                 quantity: newMedicine.quantity,
             };
-    
+
             // Chỉ thêm trường 'note' vào payload nếu nó không rỗng
             if (newMedicine.note && newMedicine.note.trim() !== '') {
                 medicineDataForPayload.note = newMedicine.note;
             }
 
             const payload = { medicalOrderDetails: [medicineDataForPayload] };
-            
+
             await medicalOrderApi.additionalDetail(orderId, payload);
             toast.success(`Đã thêm thuốc mới: ${newMedicine.medicineName}.`);
             handleCloseAddNewModal();
@@ -275,7 +279,7 @@ const MedicalOrderDetailPage = () => {
             setIsUpdating(false);
         }
     };
-    
+
     const handleBack = () => navigate(-1);
     const handlePrint = () => window.print();
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString('vi-VN');
@@ -297,11 +301,11 @@ const MedicalOrderDetailPage = () => {
         if (!Array.isArray(timeArray) || timeArray.length === 0) return 'N/A';
         return timeArray.map(t => (typeof t === 'string' && t.length > 0 ? t.charAt(0).toUpperCase() + t.slice(1) : t)).join(', ');
     };
-    
+
     if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}><CircularProgress /></Box>; }
     if (error) { return <Container maxWidth="lg" sx={{ py: 3 }}><Alert severity="error">{error}</Alert></Container>; }
     if (!orderData || !orderData.order || !orderData.details) { return <Container maxWidth="lg" sx={{ py: 3 }}><Alert severity="info">Không có dữ liệu.</Alert></Container>; }
-    
+
     const { order: medicalOrder, details: medicalOrderDetails } = orderData;
     const currentStatusInfo = statusMap[medicalOrder.status] || { label: medicalOrder.status, color: 'default' };
     const numSelected = Object.keys(selectionForRecord).length;
@@ -316,11 +320,11 @@ const MedicalOrderDetailPage = () => {
                     <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn thuốc</Typography>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems="center">
-                  
+
                     {medicalOrder.status === 'pending' && (
                         <>
                             <Button variant="contained" color="success" startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <ApproveIcon />} onClick={() => handleUpdateStatus('approved')} disabled={isUpdating}>Duyệt</Button>
-                            
+
                         </>
                     )}
                 </Stack>
@@ -356,7 +360,7 @@ const MedicalOrderDetailPage = () => {
                     </Grid>
                 </CardContent>
             </Card>
-            
+
             <Card sx={{ mb: 3 }}>
                 <CardContent sx={{ p: 0 }}>
                     <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -380,7 +384,7 @@ const MedicalOrderDetailPage = () => {
                                     <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
-                                   
+
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -444,8 +448,8 @@ const MedicalOrderDetailPage = () => {
                     </CardContent>
                 </Card>
             )}
-            
-            <Dialog open={isAddRecordModalOpen} onClose={handleCloseAddRecordModal} fullWidth maxWidth="sm">
+
+            <Dialog open={isAddRecordModalOpen} onClose={handleCloseAddRecordModal} fullWidth maxWidth="xl" >
                 <DialogTitle>Ghi nhận sử dụng thuốc hàng loạt</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ mt: 1 }}>
@@ -479,7 +483,12 @@ const MedicalOrderDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={isAddNewModalOpen} onClose={handleCloseAddNewModal}>
+            <Dialog open={isAddNewModalOpen} onClose={handleCloseAddNewModal} sx={{
+                '& .MuiDialog-paper': {
+                    width: '35%', // hoặc '1000px', '90vw'
+                    maxWidth: 'none'
+                }
+            }}>
                 <DialogTitle>Thêm thuốc mới vào đơn</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ pt: 1 }}>

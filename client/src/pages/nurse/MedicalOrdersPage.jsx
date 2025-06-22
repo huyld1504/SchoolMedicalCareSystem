@@ -544,7 +544,7 @@ const MedicalOrdersPage = () => {
 
             {/* Pagination */}
             {!loading && paginationInfo.totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
                     <Pagination 
                         count={paginationInfo.totalPages} 
                         page={paginationInfo.page} 
