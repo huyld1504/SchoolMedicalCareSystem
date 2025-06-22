@@ -430,6 +430,7 @@ const MedicalOrderDetailPage = () => {
                                         <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
                                         <TableCell align="center" sx={{ fontWeight: 'bold' }}>Số lượng đã dùng</TableCell>
                                         <TableCell sx={{ fontWeight: 'bold' }}>Thời gian</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Y tá cho uống </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -439,6 +440,7 @@ const MedicalOrderDetailPage = () => {
                                                 <TableCell>{item.name || 'Không rõ tên thuốc'}</TableCell>
                                                 <TableCell align="center">{item.quantity}</TableCell>
                                                 <TableCell>{new Date(record.createdAt || Date.now()).toLocaleString('vi-VN')}</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold' }}>{item.userId?.name}</TableCell>
                                             </TableRow>
                                         ))
                                     ))}
