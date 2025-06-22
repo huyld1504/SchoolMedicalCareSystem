@@ -460,15 +460,7 @@ const StudentsPage = () => {
                                                                 >
                                                                     <PersonIcon />
                                                                 </IconButton>
-                                                            </Tooltip>                                                            <Tooltip title="Lịch sử dùng thuốc">
-                                                                <IconButton
-                                                                    size="small"
-                                                                    color="warning"
-                                                                    onClick={() => handleViewMedicationHistory(student)}
-                                                                >
-                                                                    <MedicationIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
+                                                            </Tooltip>                                                            
                                                             <Tooltip title="Sự kiện y tế">
                                                                 <IconButton
                                                                     size="small"
