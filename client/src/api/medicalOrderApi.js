@@ -1,54 +1,46 @@
-import { callAPI } from "./axiosClient";
+import { callAPI } from './axiosClient';
 
-const medicalOrderAPI = {
-    // Lấy danh sách đơn thuốc của parent với pagination và filter
-    getMyOrders: async (params = {}) => {
-        const queryString = new URLSearchParams({
-            page: params.page || 1,
-            limit: params.limit || 10,
-            ...(params.keyword && { keyword: params.keyword }),
-            ...(params.status && { status: params.status }),
-            ...(params.childId && { childId: params.childId }),
-        }).toString();
+const medicalOrderApi = {
+    /**
+     * Thêm một đơn thuốc mới.
+     * Endpoint: POST /api/medical-orders/add
+     * @param {object} orderData - Dữ liệu đơn thuốc, bao gồm { medicalOrder, medicalOrderDetails }.
+     */
+    addRecord: async (OrderId,addData) => await callAPI('POST', `/medical-orders/${OrderId}/add-record`, addData),
+    updateStatus: async (orderId, status) => await callAPI('PUT', `/medical-orders/update-status/${orderId}`, { status }),
+    getRecord: async (orderId) => await callAPI('GET', `/medical-orders/${orderId}/records`),
+    additionalDetail : async (orderId, additionalData) => await callAPI('PUT', `/medical-orders/${orderId}/additional-details`, additionalData),
 
-        return await callAPI('GET', `/medical-orders?${queryString}`);
-    },
 
-    // Lấy danh sách đơn thuốc theo child ID
-    getOrdersByChildId: async (childId, params = {}) => {
-        const queryString = new URLSearchParams({
-            page: params.page || 1,
-            limit: params.limit || 10,
-            ...(params.status && { status: params.status }),
-        }).toString();
+    /**
+     * Lấy chi tiết một đơn thuốc bằng ID của nó.
+     * (Giả định endpoint: GET /api/medical-orders/:orderId)
+     * @param {string} orderId - ID của đơn thuốc cần lấy.
+     */
+    
+  getMedicalOrder: async (query) => {
+    const params = new URLSearchParams(query);
+    const queryString = params.toString();
+    return await callAPI('GET', `/medical-orders?${queryString}`);
+},
 
-        return await callAPI('GET', `/medical-orders?childId=${childId}&${queryString}`);
-    },
+    /**
+     * Lấy danh sách đơn thuốc của một học sinh (có phân trang).
+     * (Giả định endpoint: GET /api/medical-orders/child/:childId)
+     * @param {string} childId - ID của học sinh.
+     * @param {object} query - Các tham số truy vấn, ví dụ: { page: 1, limit: 10 }.
+     */
+    getDetail: async (OrderId) => 
+        await callAPI('GET', `/medical-orders/${OrderId}`),
 
-    // Lấy danh sách đơn thuốc (backward compatibility)
-    getMedicalOrders: async (params = {}) => await callAPI('GET', '/medical-orders', params),
-
-    // Lấy đơn thuốc theo child ID (backward compatibility)
-    getMedicalOrdersByChild: async (childId, params = {}) => await callAPI('GET', `/medical-orders`, { ...params, childId }),
-
-    // Tạo đơn thuốc/chỉ định y tế mới
-    createMedicalOrder: async (orderData) => await callAPI('POST', '/medical-orders/add', orderData),
-
-    // Lấy chi tiết đơn thuốc
-    getMedicalOrderById: async (orderId) => await callAPI('GET', `/medical-orders/${orderId}`),
-
-    // Cập nhật trạng thái đơn thuốc
-    updateMedicalOrderStatus: async (orderId, status) => await callAPI('PUT', `/medical-orders/update-status/${orderId}`, { status }),
-
-    // Lấy records của một medical order
-    getMedicalOrderRecords: async (orderId, params = {}) => await callAPI('GET', `/medical-orders/${orderId}/records`, params),
-
-    // Thêm medical record cho một order
-    addMedicalRecord: async (orderId, recordData) => await callAPI('POST', `/medical-orders/${orderId}/add-record`, recordData),
-
-    // Hủy đơn thuốc
-    cancelMedicalOrder: async (orderId, reason) => await callAPI('PUT', `/medical-orders/${orderId}/cancel`, { reason }),
+    /**
+     * Cập nhật thông tin một đơn thuốc.
+     * (Giả định endpoint: PUT /api/medical-orders/update/:orderId)
+     * @param {string} orderId - ID của đơn thuốc cần cập nhật.
+     */
+    
+   
 };
 
-export const medicalOrderApi = medicalOrderAPI;
-export default medicalOrderAPI;
+export default medicalOrderApi;
+
