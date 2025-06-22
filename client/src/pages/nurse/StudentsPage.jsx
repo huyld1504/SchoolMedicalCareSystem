@@ -460,15 +460,7 @@ const StudentsPage = () => {
                                                                 >
                                                                     <PersonIcon />
                                                                 </IconButton>
-                                                            </Tooltip>                                                            <Tooltip title="Lịch sử dùng thuốc">
-                                                                <IconButton
-                                                                    size="small"
-                                                                    color="warning"
-                                                                    onClick={() => handleViewMedicationHistory(student)}
-                                                                >
-                                                                    <MedicationIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
+                                                            </Tooltip>                                                            
                                                             <Tooltip title="Sự kiện y tế">
                                                                 <IconButton
                                                                     size="small"
@@ -488,7 +480,7 @@ const StudentsPage = () => {
                             </TableContainer>
 
                             {/* Pagination component được sửa giống HealthProfilesPage */}
-                            <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box sx={{ p: 2, display: 'flex', justifyContent: 'end', alignItems: 'center' }}>
                                
                                 
                                 <Pagination

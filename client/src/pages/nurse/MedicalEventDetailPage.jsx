@@ -36,11 +36,11 @@ const MedicalEventDetailPage = () => {
     const [medicalEvent, setMedicalEvent] = useState(null);
     const [studentInfo, setStudentInfo] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);    useEffect(() => {
+    const [error, setError] = useState(null); useEffect(() => {
         // Kiểm tra xem có dữ liệu được truyền qua state không
         const eventDataFromState = location.state?.eventData;
         const isUpdated = location.state?.updated;
-        
+
         if (eventDataFromState) {
             console.log('Using event data from navigation state:', eventDataFromState);
             setMedicalEvent(eventDataFromState);
@@ -66,7 +66,7 @@ const MedicalEventDetailPage = () => {
                 loadStudentInfo();
             }
         }
-    }, [eventId, studentId, location.state]);    const loadMedicalEventDetail = async () => {
+    }, [eventId, studentId, location.state]); const loadMedicalEventDetail = async () => {
         try {
             setLoading(true);
             setError(null);
@@ -88,7 +88,7 @@ const MedicalEventDetailPage = () => {
         } finally {
             setLoading(false);
         }
-    };const loadStudentInfo = async () => {
+    }; const loadStudentInfo = async () => {
         try {
             if (studentId) {
                 const response = await studentsApi.getStudentById(studentId);
@@ -119,19 +119,19 @@ const MedicalEventDetailPage = () => {
         } else {
             navigate('/nurse/medical-events');
         }
-    };    const handleEdit = () => {
+    }; const handleEdit = () => {
         console.log('Navigating to edit page with event data:', medicalEvent);
-        
+
         if (studentId) {
             navigate(`/nurse/medical-events/${studentId}/edit/${eventId}`, {
-                state: { 
+                state: {
                     eventData: medicalEvent,
                     from: `/nurse/medical-events/${studentId}/detail/${eventId}`
                 }
             });
         } else {
             navigate(`/nurse/medical-events/edit/${eventId}`, {
-                state: { 
+                state: {
                     eventData: medicalEvent,
                     from: `/nurse/medical-events/detail/${eventId}`
                 }
@@ -149,7 +149,7 @@ const MedicalEventDetailPage = () => {
             minute: '2-digit',
             second: '2-digit'
         });
-    };    const getDisplayValue = (value) => {
+    }; const getDisplayValue = (value) => {
         if (value === null || value === undefined) return 'Không có thông tin';
         if (value === '') return 'Không có thông tin';
         return value;
@@ -172,7 +172,7 @@ const MedicalEventDetailPage = () => {
             default:
                 return '#757575'; // Xám
         }
-    };    const getLevelLabel = (level) => {
+    }; const getLevelLabel = (level) => {
         switch (level) {
             case 3:
                 return 'Khẩn cấp';
@@ -183,7 +183,7 @@ const MedicalEventDetailPage = () => {
             default:
                 return 'Không xác định';
         }
-    };    const getStatusColor = (status) => {
+    }; const getStatusColor = (status) => {
         switch (status) {
             case 'Đã xử lí':
                 return '#2e7d32'; // Xanh lá
@@ -240,13 +240,13 @@ const MedicalEventDetailPage = () => {
                     <IconButton onClick={handleBack} sx={{ mr: 2 }}>
                         <BackIcon />
                     </IconButton>
-                    <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />                    
+                    <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
                     <Box>
                         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
                             Chi tiết sự kiện y tế
                         </Typography>
                     </Box>
-                </Box>                
+                </Box>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button
                         variant="contained"
@@ -256,7 +256,7 @@ const MedicalEventDetailPage = () => {
                         Chỉnh sửa
                     </Button>
                 </Box>
-            </Box>            
+            </Box>
             {/* Content */}
             <Card>
                 <CardContent>
@@ -300,7 +300,7 @@ const MedicalEventDetailPage = () => {
                                         </Table>
                                     </TableCell>
                                 </TableRow>
-                            )}                            
+                            )}
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Loại sự kiện:</TableCell>
                                 <TableCell>
@@ -383,15 +383,15 @@ const MedicalEventDetailPage = () => {
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
-                            )}                            
+                            )}
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Trạng thái:</TableCell>
                                 <TableCell>
                                     <Chip
                                         label={getStatusLabel(medicalEvent.status)}
-                                        sx={{ 
-                                            fontSize: '0.95rem', 
-                                            px: 2, 
+                                        sx={{
+                                            fontSize: '0.95rem',
+                                            px: 2,
                                             py: 1,
                                             backgroundColor: getStatusColor(medicalEvent.status),
                                             color: 'white',

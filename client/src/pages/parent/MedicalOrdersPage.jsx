@@ -51,7 +51,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
-import { medicalOrderApi } from '../../api/medicalOrderApi';
+import medicalOrderApi from '../../api/medicalOrderApi';
 import { childApi } from '../../api/childApi';
 import ParentLayout from '../../components/layouts/ParentLayout';
 import { extractArrayFromResponse, extractPaginationFromResponse } from '../../utils/apiResponseHelper';

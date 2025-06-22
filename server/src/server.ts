@@ -41,7 +41,7 @@ if (ENV.NodeEnv === NodeEnvs.Production) {
 }
 
 // data connection
-const mongoConnection = new MongoConnection("mongodb://127.0.0.1:27017/SMNS");
+const mongoConnection = new MongoConnection(process.env.MONGO_URI as string);
 mongoConnection.connect(() => {
   logger.info("MongoDB connection established");
 });
