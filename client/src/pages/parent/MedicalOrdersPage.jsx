@@ -48,7 +48,8 @@ import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
     Warning as WarningIcon,
-    Clear as ClearIcon
+    Clear as ClearIcon,
+    ThumbUp
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
@@ -337,7 +338,7 @@ const MedicalOrdersPage = () => {
     const getStatusText = (status) => {
         switch (status) {
             case 'pending': return 'Đang xử lý';
-            case 'approved': return 'Đã duyệt';
+            case 'approved': return 'Đã duyệt'
             case 'completed': return 'Hoàn thành';
             case 'cancelled': return 'Đã hủy';
             default: return 'Không xác định';
@@ -347,7 +348,7 @@ const MedicalOrdersPage = () => {
     const getStatusIcon = (status) => {
         switch (status) {
             case 'pending': return <ScheduleIcon />;
-            case 'approved': return <WarningIcon />;
+            case 'approved': return <ThumbUp />;
             case 'completed': return <CheckCircleIcon />;
             case 'cancelled': return <CancelIcon />;
             default: return <HospitalIcon />;

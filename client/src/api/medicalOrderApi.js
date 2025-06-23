@@ -10,6 +10,7 @@ const medicalOrderApi = {
     updateStatus: async (orderId, status) => await callAPI('PUT', `/medical-orders/update-status/${orderId}`, { status }),
     getRecord: async (orderId) => await callAPI('GET', `/medical-orders/${orderId}/records`),
     additionalDetail: async (orderId, additionalData) => await callAPI('PUT', `/medical-orders/${orderId}/additional-details`, additionalData),
+    createOrder: async (orderData) => await callAPI('POST', '/medical-orders/add', orderData),
 
 
     /**

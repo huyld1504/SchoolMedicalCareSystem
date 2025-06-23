@@ -151,7 +151,7 @@ const CreateMedicalOrderPage = () => {
         }
 
         try {
-            await medicalOrderApi.addRecord(formData);
+            await medicalOrderApi.createOrder(formData);
             toast.success('✅ Đã tạo đơn thuốc thành công!');
             navigate(`/parent/children`);
         } catch (err) {

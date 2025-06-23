@@ -30,7 +30,8 @@ import {
   Cancel as CancelIcon,
   Warning as WarningIcon,
   Inventory as StockIcon,
-  CalendarToday as CalendarIcon
+  CalendarToday as CalendarIcon,
+  ThumbUp
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
@@ -139,46 +140,31 @@ const MedicalOrderDetailPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending':
-        return '#ed6c02'; // Orange
-      case 'approved':
-        return '#2196f3'; // Blue
-      case 'completed':
-        return '#2e7d32'; // Green
-      case 'cancelled':
-        return '#d32f2f'; // Red
-      default:
-        return '#757575'; // Grey
+      case 'pending': return '#ff9100';
+      case 'approved': return '#00b0ff';
+      case 'completed': return '#4caf50';
+      case 'cancelled': return '#f44336';
+      default: return 'default';
     }
   };
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'pending':
-        return 'Đang xử lý';
-      case 'approved':
-        return 'Đã duyệt';
-      case 'completed':
-        return 'Hoàn thành';
-      case 'cancelled':
-        return 'Đã hủy';
-      default:
-        return 'Không xác định';
+      case 'pending': return 'Đang xử lý';
+      case 'approved': return 'Đã duyệt'
+      case 'completed': return 'Hoàn thành';
+      case 'cancelled': return 'Đã hủy';
+      default: return 'Không xác định';
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'pending':
-        return <ScheduleIcon />;
-      case 'approved':
-        return <WarningIcon />;
-      case 'completed':
-        return <CheckCircleIcon />;
-      case 'cancelled':
-        return <CancelIcon />;
-      default:
-        return <OrderIcon />;
+      case 'pending': return <ScheduleIcon />;
+      case 'approved': return <ThumbUp />;
+      case 'completed': return <CheckCircleIcon />;
+      case 'cancelled': return <CancelIcon />;
+      default: return <HospitalIcon />;
     }
   };
   if (loading) {
