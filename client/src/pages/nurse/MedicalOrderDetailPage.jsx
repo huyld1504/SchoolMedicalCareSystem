@@ -61,10 +61,9 @@ const MedicalOrderDetailPage = () => {
         try {
             const [detailsResponse, historyResponse] = await Promise.all([
                 medicalOrderApi.getDetail(orderId),
-                medicalOrderApi.getRecord(orderId)
-                
-                
+                medicalOrderApi.getRecord(orderId)              
             ]);
+            console.log("[DEBUG] Kết quả từ medicalOrderApi.getDetail:", detailsResponse);
              console.log("[DEBUG] Kết quả từ medicalOrderApi.getRecord:", historyResponse);
 
             if (detailsResponse.isSuccess && detailsResponse.data) {
@@ -440,7 +439,7 @@ const MedicalOrderDetailPage = () => {
                                                 <TableCell>{item.name || 'Không rõ tên thuốc'}</TableCell>
                                                 <TableCell align="center">{item.quantity}</TableCell>
                                                 <TableCell>{new Date(record.createdAt || Date.now()).toLocaleString('vi-VN')}</TableCell>
-                                                <TableCell sx={{ fontWeight: 'bold' }}>{item.userId?.name}</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name}</TableCell>
                                             </TableRow>
                                         ))
                                     ))}
