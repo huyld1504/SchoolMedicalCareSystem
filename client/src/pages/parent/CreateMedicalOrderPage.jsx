@@ -388,16 +388,6 @@ const CreateMedicalOrderPage = () => {
                                                     <MenuItem value="Sáng-Chiều">Sáng - Chiều (2 lần/ngày)</MenuItem>
                                                     <MenuItem value="Trưa-Chiều">Trưa - Chiều (2 lần/ngày)</MenuItem>
                                                     <MenuItem value="Sáng-Trưa-Chiều">Sáng - Trưa - Chiều (3 lần/ngày)</MenuItem>
-                                                    <MenuItem value="6 tiếng 1 lần">Cách 6 tiếng (4 lần/ngày)</MenuItem>
-                                                    <MenuItem value="8 tiếng 1 lần">Cách 8 tiếng (3 lần/ngày)</MenuItem>
-                                                    <MenuItem value="12 tiếng 1 lần">Cách 12 tiếng (2 lần/ngày)</MenuItem>
-                                                    <MenuItem value="Trước ăn 30 phút">Trước ăn 30 phút</MenuItem>
-                                                    <MenuItem value="Sau ăn 30 phút">Sau ăn 30 phút</MenuItem>
-                                                    <MenuItem value="Cùng bữa ăn">Cùng bữa ăn</MenuItem>
-                                                    <MenuItem value="Khi đói">Khi đói</MenuItem>
-                                                    <MenuItem value="Trước khi ngủ">Trước khi ngủ</MenuItem>
-                                                    <MenuItem value="Khi cần thiết">Khi cần thiết</MenuItem>
-                                                    <MenuItem value="Theo chỉ định bác sĩ">Theo chỉ định bác sĩ</MenuItem>
                                                 </TextField>
                                             </Grid>
                                             <Grid item xs={12}>
