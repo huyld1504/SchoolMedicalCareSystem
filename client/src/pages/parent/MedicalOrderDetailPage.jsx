@@ -17,7 +17,8 @@ import {
   TableRow,
   Grid,
   Avatar,
-  Paper
+  Paper,
+  TableHead
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -33,11 +34,27 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
-import { medicalOrderApi } from '../../api/medicalOrderApi';
+import medicalOrderApi from '../../api/medicalOrderApi';
+import { childApi } from '../../api/childApi';
 
 const MedicalOrderDetailPage = () => {
   const navigate = useNavigate();
-  const { id: orderId } = useParams();
+  const params = useParams();
+  const location = window.location;
+
+  // Try multiple ways to extract orderId
+  let orderId = params.id || params.orderId;
+
+  // Fallback: extract from URL path manually
+  if (!orderId) {
+    const pathSegments = location.pathname.split('/');
+    const orderIndex = pathSegments.indexOf('medical-orders');
+    if (orderIndex !== -1 && pathSegments[orderIndex + 1]) {
+      orderId = pathSegments[orderIndex + 1];
+    }
+  }
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [medicalOrder, setMedicalOrder] = useState(null);
@@ -48,19 +65,19 @@ const MedicalOrderDetailPage = () => {
     const loadMedicalOrder = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        console.log('Loading medical order detail for orderId:', orderId);
-        const response = await medicalOrderApi.getMedicalOrderById(orderId);
+        setError(null); console.log('Loading medical order detail for orderId:', orderId);
+        const response = await medicalOrderApi.getDetail(orderId);
 
         if (response && response.isSuccess && response.data) {
-          setMedicalOrder(response.data.order);
-          setOrderDetails(response.data.details || []);
-          console.log('Medical order data:', response.data);
+          const orderData = response.data.order || response.data;
+          const detailsData = response.data.details || [];
+
+          setMedicalOrder(orderData);
+          setOrderDetails(detailsData);
 
           // Load child info if we have ChildId
-          if (response.data.order.ChildId) {
-            await loadChildInfo(response.data.order.ChildId);
+          if (orderData.ChildId) {
+            await loadChildInfo(orderData.ChildId);
           }
         } else {
           setError('Không tìm thấy thông tin đơn thuốc');
@@ -72,12 +89,8 @@ const MedicalOrderDetailPage = () => {
       } finally {
         setLoading(false);
       }
-    };
-
-    const loadChildInfo = async (childId) => {
+    }; const loadChildInfo = async (childId) => {
       try {
-        // Import childApi to get child information
-        const { childApi } = await import('../../api/childApi');
         const childResponse = await childApi.getChildById(childId);
         if (childResponse && childResponse.data) {
           setChildInfo(childResponse.data);
@@ -86,10 +99,11 @@ const MedicalOrderDetailPage = () => {
         console.error('Error loading child info:', err);
         // Don't show error for child info as it's supplementary
       }
-    };
-
-    if (orderId) {
+    }; if (orderId && orderId.trim() !== '') {
       loadMedicalOrder();
+    } else {
+      setError('Không tìm thấy ID đơn thuốc trong URL. Vui lòng kiểm tra lại đường dẫn.');
+      setLoading(false);
     }
   }, [orderId]);
 
@@ -167,12 +181,14 @@ const MedicalOrderDetailPage = () => {
         return <OrderIcon />;
     }
   };
-
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ py: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8 }}>
           <CircularProgress />
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Đang tải đơn thuốc {orderId}...
+          </Typography>
         </Box>
       </Container>
     );
@@ -188,10 +204,10 @@ const MedicalOrderDetailPage = () => {
           <Typography variant="h4" component="h1">
             Chi tiết đơn thuốc
           </Typography>
-        </Box>
-        <Alert severity="error">
+        </Box>        <Alert severity="error" sx={{ mb: 2 }}>
           {error || 'Không tìm thấy đơn thuốc'}
         </Alert>
+        <TestRouteParams />
       </Container>
     );
   }
@@ -322,41 +338,70 @@ const MedicalOrderDetailPage = () => {
                     </TableCell>
                   </TableRow>
                 </TableBody>
-              </Table>
-
-              {/* Medicine Details Section */}
+              </Table>              {/* Medicine Details Section */}
               {orderDetails && orderDetails.length > 0 && (
                 <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, display: 'flex', alignItems: 'center' }}>
                     <MedicalIcon sx={{ mr: 1, color: 'primary.main' }} />
                     Chi tiết thuốc ({orderDetails.length} loại)
                   </Typography>
-                  <Divider sx={{ mb: 2 }} />
 
-                  <Table sx={{ '& .MuiTableCell-root': { fontSize: '0.95rem', py: 2 } }}>
-                    <TableBody>
-                      {orderDetails.map((detail, index) => (
-                        <React.Fragment key={detail._id}>
-                          <TableRow sx={{ bgcolor: index % 2 === 0 ? 'grey.50' : 'white' }}>
-                            <TableCell colSpan={2} sx={{ fontWeight: 600, fontSize: '1rem', color: 'primary.main' }}>
-                              Thuốc #{index + 1}: {detail.medicineName}
+                  {/* Mỗi detail thuốc là một section riêng biệt */}
+                  {orderDetails.map((detail, index) => (
+                    <Box key={detail._id} sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: 'grey.50' }}>
+                      {/* Tiêu đề thuốc */}
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main', display: 'flex', alignItems: 'center' }}>
+                        <Box
+                          sx={{
+                            bgcolor: 'primary.main',
+                            color: 'white',
+                            borderRadius: '50%',
+                            width: 24,
+                            height: 24,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            mr: 2
+                          }}
+                        >
+                          {index + 1}
+                        </Box>
+                        {detail.medicineName}
+                      </Typography>
+
+                      {/* Bảng thông tin thuốc - tất cả trên một hàng */}
+                      <Table sx={{ '& .MuiTableCell-root': { fontSize: '0.9rem', py: 1.5, border: '1px solid #e0e0e0' } }}>
+                        <TableHead>
+                          <TableRow sx={{ bgcolor: 'primary.light' }}>
+                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Liều lượng</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Loại</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Thời gian uống</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Số lượng</TableCell>
+                            {detail.note && <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Ghi chú</TableCell>}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow sx={{ bgcolor: 'white' }}>
+                            <TableCell sx={{ textAlign: 'center', fontWeight: 500 }}>
+                              <Typography variant="body2" sx={{ color: 'text.primary' }}>
+                                {detail.dosage}
+                              </Typography>
                             </TableCell>
-                          </TableRow>
-                          <TableRow sx={{ bgcolor: index % 2 === 0 ? 'grey.50' : 'white' }}>
-                            <TableCell sx={{ fontWeight: 500, width: '30%', pl: 4 }}>Liều lượng:</TableCell>
-                            <TableCell>{detail.dosage}</TableCell>
-                          </TableRow>
-                          <TableRow sx={{ bgcolor: index % 2 === 0 ? 'grey.50' : 'white' }}>
-                            <TableCell sx={{ fontWeight: 500, pl: 4 }}>Loại:</TableCell>
-                            <TableCell>{detail.type}</TableCell>
-                          </TableRow>
-                          <TableRow sx={{ bgcolor: index % 2 === 0 ? 'grey.50' : 'white' }}>
-                            <TableCell sx={{ fontWeight: 500, pl: 4 }}>Thời gian uống:</TableCell>
-                            <TableCell>{detail.time}</TableCell>
-                          </TableRow>
-                          <TableRow sx={{ bgcolor: index % 2 === 0 ? 'grey.50' : 'white' }}>
-                            <TableCell sx={{ fontWeight: 500, pl: 4 }}>Số lượng:</TableCell>
-                            <TableCell>
+                            <TableCell sx={{ textAlign: 'center' }}>
+                              <Chip
+                                label={detail.type}
+                                size="small"
+                                sx={{ bgcolor: 'info.light', color: 'info.contrastText', fontWeight: 500 }}
+                              />
+                            </TableCell>
+                            <TableCell sx={{ textAlign: 'center', fontWeight: 500 }}>
+                              <Typography variant="body2" sx={{ color: 'text.primary' }}>
+                                {detail.time}
+                              </Typography>
+                            </TableCell>
+                            <TableCell sx={{ textAlign: 'center' }}>
                               <Chip
                                 label={`${detail.quantity} ${detail.type}`}
                                 color="primary"
@@ -364,67 +409,23 @@ const MedicalOrderDetailPage = () => {
                                 sx={{ fontWeight: 600 }}
                               />
                             </TableCell>
-                          </TableRow>
-                          {detail.note && (
-                            <TableRow sx={{ bgcolor: index % 2 === 0 ? 'grey.50' : 'white' }}>
-                              <TableCell sx={{ fontWeight: 500, pl: 4 }}>Ghi chú:</TableCell>
-                              <TableCell>
+                            {detail.note && (
+                              <TableCell sx={{ textAlign: 'center', maxWidth: 200 }}>
                                 <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
                                   {detail.note}
                                 </Typography>
                               </TableCell>
-                            </TableRow>
-                          )}
-                          {index < orderDetails.length - 1 && (
-                            <TableRow>
-                              <TableCell colSpan={2} sx={{ py: 1, borderBottom: '2px solid #e0e0e0' }} />
-                            </TableRow>
-                          )}                        </React.Fragment>
-                      ))}
-                    </TableBody>
-                  </Table>
+                            )}
+                          </TableRow>
+                        </TableBody>
+                      </Table>                    </Box>
+                  ))}
                 </Box>
               )}
             </CardContent>
           </Card>
-        </Grid>
-
-        {/* Side Information */}
+        </Grid>        {/* Side Information */}
         <Grid item xs={12} md={4}>
-          {/* Parent Information */}
-          {medicalOrder.ChildId?.userId && (
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <PersonIcon sx={{ fontSize: 24, color: '#9c27b0', mr: 1 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#9c27b0' }}>
-                    Thông tin phụ huynh
-                  </Typography>
-                </Box>
-
-                <Typography variant="body2" color="text.secondary">
-                  Họ tên:
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                  {medicalOrder.ChildId.userId.name || 'N/A'}
-                </Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                  Email:
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                  {medicalOrder.ChildId.userId.email || 'N/A'}
-                </Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                  Số điện thoại:
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {medicalOrder.ChildId.userId.phone || 'N/A'}
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Timeline Information */}
           <Card>

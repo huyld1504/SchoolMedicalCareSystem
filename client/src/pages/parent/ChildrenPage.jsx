@@ -146,7 +146,7 @@ const ChildrenPage = () => {
     };
 
     const handleCreateOrder = (child) => {
-        navigate(`/parent/medical-orders/create?childId=${child._id}`);
+        navigate(`/parent/medical-orders/add?childId=${child._id}`);
     };
 
     const formatDate = (dateString) => {

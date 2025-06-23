@@ -25,7 +25,7 @@ import {
 import { useNavigate, useSearchParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import  medicalOrderApi  from '../../api/medicalOrderApi';
+import medicalOrderApi from '../../api/medicalOrderApi';
 import { childApi } from '../../api/childApi';
 
 const CreateMedicalOrderPage = () => {
@@ -40,7 +40,7 @@ const CreateMedicalOrderPage = () => {
             ChildId: childId,
             startDate: new Date().toISOString().split('T')[0],
             endDate: '',
-            note: ''
+            note: 'None'
         },
         medicalOrderDetails: [
             {
@@ -48,7 +48,7 @@ const CreateMedicalOrderPage = () => {
                 dosage: '',
                 type: 'viên',
                 time: '',
-                note: '',
+                note: 'None',
                 quantity: 1
             }
         ]
@@ -151,7 +151,7 @@ const CreateMedicalOrderPage = () => {
         }
 
         try {
-            await medicalOrderApi.createMedicalOrder(formData);
+            await medicalOrderApi.addRecord(formData);
             toast.success('✅ Đã tạo đơn thuốc thành công!');
             navigate(`/parent/children`);
         } catch (err) {
@@ -261,10 +261,9 @@ const CreateMedicalOrderPage = () => {
                                         name="note"
                                         value={formData.medicalOrder.note}
                                         onChange={handleMedicalOrderChange}
-                                        required
                                         multiline
                                         rows={3}
-                                        placeholder="Ghi chú về đơn thuốc (nếu có)..."
+                                        placeholder="Ghi chú về đơn thuốc..."
                                     />
                                 </Grid>
                             </Grid>

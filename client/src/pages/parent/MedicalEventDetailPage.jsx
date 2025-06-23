@@ -21,29 +21,53 @@ import {
   MedicalServices as MedicalIcon,
   Event as EventIcon,
 } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalEventAPI from '../../api/medicalEventApi';
 
 const MedicalEventDetailPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { eventId, id: childId } = useParams();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [medicalEvent, setMedicalEvent] = useState(null);
 
+  // Check if data was passed via state
+  const passedEventData = location.state?.eventData;
+  const passedChildData = location.state?.childData;
+  console.log('📦 Passed event data:', passedEventData)
+  console.log('📦 Passed child data:', passedChildData);
   useEffect(() => {
     const loadMedicalEvent = async () => {
       try {
         setLoading(true);
-        setError(null);
 
-        console.log('Loading medical event detail for eventId:', eventId);
-        const response = await medicalEventAPI.getEventById(eventId);
+        // If data was passed via state, use it instead of API call
+        if (passedEventData) {
+          console.log('📦 Using passed event data:', passedEventData);
+          setMedicalEvent(passedEventData);
+          setLoading(false);
+          return;
+        }
 
-        if (response && response.data) {
-          setMedicalEvent(response.data);
+        // Only call API if no data passed and we have eventId
+        if (!eventId) {
+          setError('Không tìm thấy ID sự kiện y tế');
+          setLoading(false);
+          return;
+        }
+
+        console.log('🔄 Fetching event data from API...');
+        // Fallback to API call if no data passed
+        const response = await medicalEventAPI.getEventsByStudentId(eventId, {
+          page: 1,
+          limit: 10
+        });
+        if (response && response.data && response.data.records && response.data.records) {
+          setMedicalEvent(response.data.records);
+          console.log("Medical Events:", response.data.records);
         } else {
           setError('Không tìm thấy thông tin sự kiện y tế');
         }
@@ -56,13 +80,31 @@ const MedicalEventDetailPage = () => {
       }
     };
 
-    if (eventId) {
+    // Only load if we have either passed data or eventId
+    if (passedEventData || eventId) {
       loadMedicalEvent();
+    } else {
+      setError('Không tìm thấy thông tin sự kiện y tế');
+      setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, passedEventData]);
 
+  // Debug logs
+  useEffect(() => { }, [eventId, childId, passedEventData, passedChildData, location.state]);
   const handleBack = () => {
-    navigate(childId ? `/parent/children/${childId}` : '/parent/children');
+    // If we have child data, navigate back with state preserved
+    if (passedChildData && passedChildData._id) {
+      navigate(`/parent/children/${passedChildData._id}`, {
+        state: {
+          preserveData: true,
+          fromEventDetail: true
+        }
+      });
+    } else if (childId) {
+      navigate(`/parent/children/${childId}`);
+    } else {
+      navigate('/parent/children');
+    }
   };
 
   const formatDate = (dateString) => {
@@ -102,12 +144,12 @@ const MedicalEventDetailPage = () => {
 
   const getLevelLabel = (level) => {
     switch (level) {
-      case 3:
-        return 'Khẩn cấp';
-      case 2:
-        return 'Trung bình';
       case 1:
         return 'Nhẹ';
+      case 2:
+        return 'Trung bình';
+      case 3:
+        return 'Khẩn cấp';
       default:
         return 'Không xác định';
     }
@@ -131,6 +173,29 @@ const MedicalEventDetailPage = () => {
       return status;
     }
     return 'Đã xử lí'; // Giá trị mặc định
+  };
+
+  const getChildDisplayName = () => {
+    if (passedChildData && passedChildData.name) {
+      return passedChildData.name;
+    }
+    return 'N/A';
+  };
+
+  const getChildDisplayInfo = () => {
+    if (passedChildData) {
+      return {
+        name: passedChildData.name || 'N/A',
+        studentId: passedChildData.studentCode || 'N/A',
+        birthDate: passedChildData.birthdate || 'N/A'
+      };
+    }
+    return {
+      name: 'N/A',
+      studentId: 'N/A',
+      class: 'N/A',
+      birthDate: 'N/A'
+    };
   };
 
   if (loading) {
@@ -293,6 +358,27 @@ const MedicalEventDetailPage = () => {
                   />
                 </TableCell>
               </TableRow>
+
+              {/* Thông tin con em */}
+              {passedChildData && (
+                <>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Tên con em:</TableCell>
+                    <TableCell sx={{ fontSize: '1rem', fontWeight: 600, color: 'primary.main' }}>
+                      {getChildDisplayInfo().name}
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Mã học sinh:</TableCell>
+                    <TableCell sx={{ fontSize: '1rem' }}>
+                      {getChildDisplayInfo().studentId}
+                    </TableCell>
+                  </TableRow>
+
+                  <Divider sx={{ my: 2 }} />
+                </>
+              )}
             </TableBody>
           </Table>
         </CardContent>

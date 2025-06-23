@@ -181,22 +181,6 @@ const ChildDetailPage = () => {
                                 Thông tin chi tiết và hồ sơ sức khỏe
                             </Typography>
                         </Box>
-                        <Button
-                            variant="contained"
-                            startIcon={<Medication />}
-                            onClick={() => navigate(`/parent/medical-orders/create?childId=${id}`)}
-                            sx={{
-                                bgcolor: 'rgba(255,255,255,0.2)',
-                                color: 'white',
-                                '&:hover': {
-                                    bgcolor: 'rgba(255,255,255,0.3)'
-                                },
-                                backdropFilter: 'blur(8px)',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            Gửi thuốc
-                        </Button>
                     </Box></Paper>
 
                 {/* Child Basic Information - Compact Card at Top */}
@@ -243,14 +227,14 @@ const ChildDetailPage = () => {
                                     />
                                 </Box>
                             </Box>                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                                <Button
+                                {/* <Button
                                     variant="outlined"
                                     startIcon={<Edit />}
                                     onClick={() => navigate(`/parent/children/${id}/edit`)}
                                     size="small"
                                 >
                                     Chỉnh sửa
-                                </Button>
+                                </Button> */}
                             </Box>
                         </Box>
                     </CardContent>
@@ -467,13 +451,20 @@ const ChildDetailPage = () => {
                                                                 event.status === 'pending' ? 'error' : 'default'}
                                                         size="small"
                                                     />
-                                                </TableCell>
-                                                <TableCell>
+                                                </TableCell>                                                <TableCell>
                                                     <Button
                                                         variant="outlined"
                                                         size="small"
                                                         startIcon={<Visibility />}
-                                                        onClick={() => navigate(`/parent/children/${child._id}/medical-events/${event._id}`)}
+                                                        onClick={() => navigate(
+                                                            `/parent/children/${child._id}/medical-events/${event._id}`,
+                                                            {
+                                                                state: {
+                                                                    eventData: event,
+                                                                    childData: child
+                                                                }
+                                                            }
+                                                        )}
                                                     >
                                                         Chi tiết
                                                     </Button>

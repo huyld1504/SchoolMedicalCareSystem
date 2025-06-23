@@ -47,7 +47,8 @@ import {
     Schedule as ScheduleIcon,
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
-    Warning as WarningIcon
+    Warning as WarningIcon,
+    Clear as ClearIcon
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
@@ -82,65 +83,96 @@ const MedicalOrdersPage = () => {
     const [loading, setLoading] = useState(true);
     const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [stats, setStats] = useState({
-        total: 0,
-        pending: 0,
-        approved: 0,
-        completed: 0,
-        cancelled: 0
-    });
-
-    useEffect(() => {
+    const [dialogOpen, setDialogOpen] = useState(false); useEffect(() => {
         loadInitialData();
     }, []);
 
     useEffect(() => {
         loadOrders();
-    }, [query.page, query.limit, query.keyword, query.status, query.childId]); const loadInitialData = async () => {
+    }, [query.page, query.limit, query.keyword, query.status, query.childId]);
+
+    // Sync searchInput with URL params on component mount
+    useEffect(() => {
+        const keyword = searchParams.get('keyword') || '';
+        setSearchInput(keyword);
+        setQuery(prev => ({
+            ...prev,
+            keyword: keyword,
+            status: searchParams.get('status') || '',
+            childId: searchParams.get('childId') || ''
+        }));
+    }, [searchParams]); const loadInitialData = async () => {
         try {
             // Load children list for filter
             const childrenResponse = await childApi.getAllChildren();
-            const childrenData = extractArrayFromResponse(childrenResponse, 'children');
+            console.log('📦 Children response:', childrenResponse);
+
+            // Handle different response structures for children
+            let childrenData = [];
+            if (childrenResponse && childrenResponse.data && childrenResponse.data.records) {
+                childrenData = childrenResponse.data.records;
+            }
+
             setChildren(childrenData);
-            console.log('Children data:', childrenData);
+            console.log('👶 Children data:', childrenData);
         } catch (error) {
             console.error('Error loading initial data:', error);
             setChildren([]);
         }
-    };
-
-    const loadOrders = async () => {
+    }; const loadOrders = async () => {
         try {
             setLoading(true);
             const params = {
                 page: query.page,
                 limit: query.limit,
-                keyword: query.keyword || undefined,
-                status: query.status || undefined,
-                childId: query.childId || undefined,
+                keyword: query.keyword || "",
+                status: query.status || "",
+                childId: query.childId || "",
             };
 
-            const response = await medicalOrderApi.getMyOrders(params);
-            console.log('Orders response:', response);
+            console.log('🔍 Loading orders with params:', params);
+            const response = await medicalOrderApi.getMedicalOrder(params);
+            console.log('📦 Orders response:', response);
 
-            // Extract data using helper functions
-            const ordersData = extractArrayFromResponse(response.data.records, 'orders');
-            const paginationData = extractPaginationFromResponse(response.data.records, {
+            // Handle different response structures
+            let ordersData = [];
+            let paginationData = {
+                total: 0,
                 page: query.page,
-                limit: query.limit
-            });
+                limit: query.limit,
+                totalPages: 0
+            };
 
+            if (response && response.data) {
+                // Try different possible response structures
+                if (response.data.records) {
+                    ordersData = response.data.records || [];
+                    paginationData = {
+                        total: response.data.total || ordersData.length,
+                        page: response.data.page || query.page,
+                        limit: response.data.limit || query.limit,
+                        totalPages: response.data.totalPages || Math.ceil((response.data.total || ordersData.length) / query.limit)
+                    };
+                } else if (Array.isArray(response.data)) {
+                    ordersData = response.data;
+                    paginationData = {
+                        total: ordersData.length,
+                        page: query.page,
+                        limit: query.limit,
+                        totalPages: Math.ceil(ordersData.length / query.limit)
+                    };
+                } else {
+                    ordersData = response.data.orders || response.data.data || [];
+                    paginationData = {
+                        total: response.data.total || ordersData.length,
+                        page: response.data.page || query.page,
+                        limit: response.data.limit || query.limit,
+                        totalPages: response.data.totalPages || Math.ceil((response.data.total || ordersData.length) / query.limit)
+                    };
+                }
+            }
             setOrders(ordersData);
             setPaginationInfo(paginationData);
-
-            // Calculate stats
-            const stats = ordersData.reduce((acc, order) => {
-                acc.total += 1;
-                acc[order.status] = (acc[order.status] || 0) + 1;
-                return acc;
-            }, { total: 0, pending: 0, approved: 0, completed: 0, cancelled: 0 });
-            setStats(stats);
 
         } catch (error) {
             console.error('Error loading orders:', error);
@@ -149,23 +181,55 @@ const MedicalOrdersPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }; const handleSearch = () => {
+        const trimmedSearch = searchInput.trim();
 
-    const handleSearch = () => {
         setQuery(prev => ({
             ...prev,
-            keyword: searchInput,
+            keyword: trimmedSearch,
             page: 1
-        }));
+        }));        // Update URL params
+        const newParams = new URLSearchParams();
+        if (trimmedSearch) {
+            newParams.set('keyword', trimmedSearch);
+        }
+        if (query.status) {
+            newParams.set('status', query.status);
+        }
+        if (query.childId) {
+            newParams.set('childId', query.childId);
+        }
+
+        setSearchParams(newParams);
+
+        console.log('🔍 Search triggered with params:', {
+            keyword: trimmedSearch,
+            status: query.status,
+            childId: query.childId
+        });
+    }; const handleClearSearch = () => {
+        setSearchInput('');
+
+        const updatedQuery = {
+            ...query,
+            keyword: '',
+            page: 1
+        };
+
+        setQuery(updatedQuery);
 
         // Update URL params
-        const newParams = new URLSearchParams(searchParams);
-        if (searchInput) {
-            newParams.set('keyword', searchInput);
-        } else {
-            newParams.delete('keyword');
+        const newParams = new URLSearchParams();
+        if (updatedQuery.status) {
+            newParams.set('status', updatedQuery.status);
         }
+        if (updatedQuery.childId) {
+            newParams.set('childId', updatedQuery.childId);
+        }
+
         setSearchParams(newParams);
+
+        console.log('🧹 Search cleared');
     };
 
     const handleSearchKeyPress = (event) => {
@@ -179,27 +243,76 @@ const MedicalOrdersPage = () => {
             ...prev,
             page: newPage
         }));
-    };
+    }; const handleStatusChange = (event) => {
+        const newStatus = event.target.value;
 
-    const handleStatusChange = (event) => {
-        setQuery(prev => ({
-            ...prev,
-            status: event.target.value,
+        const updatedQuery = {
+            ...query,
+            status: newStatus,
             page: 1
-        }));
+        };
+
+        setQuery(updatedQuery);
+
+        // Update URL params
+        const newParams = new URLSearchParams();
+        if (updatedQuery.keyword) {
+            newParams.set('keyword', updatedQuery.keyword);
+        }
+        if (newStatus) {
+            newParams.set('status', newStatus);
+        }
+        if (updatedQuery.childId) {
+            newParams.set('childId', updatedQuery.childId);
+        }
+
+        setSearchParams(newParams);
+
+        console.log('🔄 Status filter changed:', newStatus);
     };
 
     const handleChildChange = (event) => {
-        setQuery(prev => ({
-            ...prev,
-            childId: event.target.value,
+        const newChildId = event.target.value;
+
+        const updatedQuery = {
+            ...query,
+            childId: newChildId,
             page: 1
-        }));
+        };
+
+        setQuery(updatedQuery);
+
+        // Update URL params
+        const newParams = new URLSearchParams();
+        if (updatedQuery.keyword) {
+            newParams.set('keyword', updatedQuery.keyword);
+        }
+        if (updatedQuery.status) {
+            newParams.set('status', updatedQuery.status);
+        }
+        if (newChildId) {
+            newParams.set('childId', newChildId);
+        }
+
+        setSearchParams(newParams);
+
+        console.log('🔄 Child filter changed:', newChildId);
     };
 
     const handleRefresh = () => {
         loadOrders();
         toast.success('Đã làm mới danh sách');
+
+        const updatedQuery = {
+            ...query,
+            page: 1,
+            keyword: '',
+            status: '',
+            childId: ''
+        };
+        setQuery(updatedQuery);
+        const newParams = new URLSearchParams();
+        setSearchParams(newParams);
     };
 
     const handleViewOrder = (order) => {
@@ -246,35 +359,6 @@ const MedicalOrdersPage = () => {
         return child ? child.name : 'N/A';
     };
 
-    const StatCard = ({ title, value, icon, color, status }) => (
-        <Card
-            sx={{
-                height: '100%',
-                background: `linear-gradient(135deg, ${color}15 0%, ${color}25 100%)`,
-                cursor: 'pointer',
-                '&:hover': { transform: 'translateY(-2px)', boxShadow: 4 },
-                transition: 'all 0.3s ease'
-            }}
-            onClick={() => setQuery(prev => ({ ...prev, status, page: 1 }))}
-        >
-            <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box>
-                        <Typography color="text.secondary" gutterBottom variant="h6">
-                            {title}
-                        </Typography>
-                        <Typography variant="h4" component="div" sx={{ color, fontWeight: 'bold' }}>
-                            {value}
-                        </Typography>
-                    </Box>
-                    <Avatar sx={{ bgcolor: color, width: 56, height: 56 }}>
-                        {icon}
-                    </Avatar>
-                </Box>
-            </CardContent>
-        </Card>
-    );
-
     return (
         <>
             <Container maxWidth="xl">
@@ -288,65 +372,7 @@ const MedicalOrdersPage = () => {
                             Theo dõi và quản lý các đơn thuốc của con em
                         </Typography>
                     </Box>
-
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => navigate('/parent/medical-orders/create')}
-                        sx={{ height: 'fit-content' }}
-                    >
-                        Tạo đơn thuốc
-                    </Button>
                 </Box>
-
-                {/* Statistics Cards */}
-                <Grid container spacing={3} sx={{ mb: 4 }}>
-                    <Grid item xs={12} sm={6} md={2.4}>
-                        <StatCard
-                            title="Tổng đơn"
-                            value={stats.total}
-                            icon={<HospitalIcon />}
-                            color="#1976d2"
-                            status=""
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={2.4}>
-                        <StatCard
-                            title="Chờ xử lý"
-                            value={stats.pending}
-                            icon={<ScheduleIcon />}
-                            color="#ed6c02"
-                            status="pending"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={2.4}>
-                        <StatCard
-                            title="Đã duyệt"
-                            value={stats.approved}
-                            icon={<WarningIcon />}
-                            color="#2196f3"
-                            status="approved"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={2.4}>
-                        <StatCard
-                            title="Hoàn thành"
-                            value={stats.completed}
-                            icon={<CheckCircleIcon />}
-                            color="#2e7d32"
-                            status="completed"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={2.4}>
-                        <StatCard
-                            title="Đã hủy"
-                            value={stats.cancelled}
-                            icon={<CancelIcon />}
-                            color="#d32f2f"
-                            status="cancelled"
-                        />
-                    </Grid>
-                </Grid>
 
                 {/* Orders Table */}
                 <Card>
@@ -356,12 +382,11 @@ const MedicalOrdersPage = () => {
                             <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
                                 Danh sách đơn thuốc
                             </Typography>
-
                             {/* Filters */}
                             <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={12} md={4}>
+                                <Grid item xs={12} md={3}>
                                     <TextField
-                                        placeholder="Tìm kiếm đơn thuốc..."
+                                        placeholder="Tìm kiếm theo mã đơn, ghi chú..."
                                         value={searchInput}
                                         onChange={(e) => setSearchInput(e.target.value)}
                                         onKeyPress={handleSearchKeyPress}
@@ -370,19 +395,43 @@ const MedicalOrdersPage = () => {
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
-                                                    <SearchIcon />
+                                                    <SearchIcon color="action" />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: searchInput && (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={handleClearSearch}
+                                                        sx={{ color: 'text.secondary' }}
+                                                    >
+                                                        <ClearIcon fontSize="small" />
+                                                    </IconButton>
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: 2,
+                                                '&:hover fieldset': {
+                                                    borderColor: 'primary.main',
+                                                },
+                                            }
+                                        }}
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={2}>
+                                <Grid item xs={12} md={3}>
                                     <FormControl size="small" fullWidth>
                                         <InputLabel>Trạng thái</InputLabel>
                                         <Select
                                             value={query.status}
                                             label="Trạng thái"
                                             onChange={handleStatusChange}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                                '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                                                '& .MuiSelect-select': { minWidth: '100px' }
+                                            }}
                                         >
                                             <MenuItem value="">Tất cả</MenuItem>
                                             <MenuItem value="pending">Đang xử lý</MenuItem>
@@ -399,6 +448,11 @@ const MedicalOrdersPage = () => {
                                             value={query.childId}
                                             label="Con em"
                                             onChange={handleChildChange}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                                '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                                                '& .MuiSelect-select': { minWidth: '100px' }
+                                            }}
                                         >
                                             <MenuItem value="">Tất cả</MenuItem>
                                             {children.map((child) => (
@@ -410,16 +464,27 @@ const MedicalOrdersPage = () => {
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} md={3}>
-                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                                         <Button
-                                            variant="outlined"
+                                            variant="contained"
                                             onClick={handleSearch}
                                             startIcon={<SearchIcon />}
+                                            sx={{ minWidth: 100 }}
                                         >
                                             Tìm kiếm
                                         </Button>
-                                        <Tooltip title="Làm mới">
-                                            <IconButton onClick={handleRefresh} color="primary">
+                                        <Tooltip title="Làm mới danh sách">
+                                            <IconButton
+                                                onClick={handleRefresh}
+                                                color="primary"
+                                                sx={{
+                                                    border: '1px solid',
+                                                    borderColor: 'primary.main',
+                                                    '&:hover': {
+                                                        backgroundColor: 'primary.light'
+                                                    }
+                                                }}
+                                            >
                                                 <RefreshIcon />
                                             </IconButton>
                                         </Tooltip>
@@ -479,7 +544,12 @@ const MedicalOrdersPage = () => {
                                                             </Typography>
                                                         </Box>
                                                     </TableCell>
-                                                    <TableCell>{order.ChildId.name}</TableCell>
+                                                    <TableCell>
+                                                        {typeof order.ChildId === 'object' && order.ChildId?.name
+                                                            ? order.ChildId.name
+                                                            : getChildName(order.ChildId)
+                                                        }
+                                                    </TableCell>
                                                     <TableCell>{formatDate(order.createdAt)}</TableCell>
                                                     <TableCell>{formatDate(order.startDate)}</TableCell>
                                                     <TableCell>{formatDate(order.endDate)}</TableCell>
