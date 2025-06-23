@@ -16,6 +16,7 @@ import {
 import { useParams, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalOrderApi from '../../api/medicalOrderApi';
+import { formattedDate } from '../../utils/date.utils';
 
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
@@ -438,7 +439,7 @@ const MedicalOrderDetailPage = () => {
                                             <TableRow key={`${record._id}-${item._id}`}>
                                                 <TableCell>{item.name || 'Không rõ tên thuốc'}</TableCell>
                                                 <TableCell align="center">{item.quantity}</TableCell>
-                                                <TableCell>{new Date(record.createdAt || Date.now()).toLocaleString('vi-VN')}</TableCell>
+                                                <TableCell>{formattedDate(item.createdAt).toLocaleString('vi-VN')}</TableCell>
                                                 <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name}</TableCell>
                                             </TableRow>
                                         ))
