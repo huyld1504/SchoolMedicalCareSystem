@@ -1,3 +1,4 @@
+import { refreshToken } from './../common/libs/lib.jwt';
 import { BaseRepository } from "@src/common/base/base.repository";
 import { FilterOptions, PaginationOptions, PaginationResult, SortOptions } from "@src/common/interfaces/mongo.interface";
 import { VaccinationParticipation, IVaccinationParticipation } from "@src/models/VaccinationParticipation";
@@ -250,7 +251,26 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       filter.vaccinationStatus = filters.vaccinationStatus as any;
     }
 
-    return this.paginate(filter, options, sort);
+    const [records, total] = await Promise.all([
+      VaccinationParticipation.find(filter)
+        .populate('campaign', 'vaccineName vaccineType startDate status') // Chỉ lấy các trường cần thiết
+        .populate('student', 'name studentCode') // Chỉ lấy các trường cần thiết
+        .populate('createdBy', 'name email') // Chỉ lấy các trường cần thiết
+        .populate('vaccinatedNurse', 'name email') // Chỉ lấy các trường cần thiết
+        .skip((options.page - 1) * options.limit)
+        .limit(options.limit || 10)
+        .sort(sort || { createdAt: -1 })
+        .exec(),
+      VaccinationParticipation.countDocuments(filter).exec(),
+    ]);
+
+    return {
+      records,
+      total,
+      page: options.page,
+      limit: options.limit,
+      totalPages: Math.ceil(total / options.limit)
+    };
   }
 
   /**

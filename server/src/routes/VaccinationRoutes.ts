@@ -234,7 +234,7 @@ async function getCampaignParticipations(req: IReq, res: IRes) {
   const userRole = await getUserRole(req);
   const { campaignId } = req.params;
   const { page, limit, parentConsent, vaccinationStatus, sortBy, sortOrder } = value;
-  const options = { page, limit };
+  const options = { page, limit: limit || 10 }; // Default limit to 10 if not provided
   const sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 } as any;
 
   const participations = await VaccinationService.getCampaignParticipations(
