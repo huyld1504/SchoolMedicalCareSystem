@@ -10,6 +10,7 @@ import { userSchema } from "./common/util/validation";
 import { ApiResponse } from "@src/common/util/util.api-response";
 import { ValidationError } from "@src/common/util/util.route-errors";
 import { addUserSchema } from "@src/schemas/user.schema";
+import { UserQueryBuilder } from "@src/payload/request/filter/user.request";
 
 /******************************************************************************
                                 Constants
@@ -69,12 +70,8 @@ async function delete_(req: IReq, res: IRes) {
 }
 
 async function getUsersWithPagination(req: IReq, res: IRes) {
-  const { page, limit } = req.query;
-  const options = {
-    page: Number(page) || 1,
-    limit: Number(limit) || 10,
-  };
-  const users = await UserService.getUsersWithPagination(options);
+  const queryBuilder = new UserQueryBuilder(req.query);
+  const users = await UserService.getUsersWithPagination(queryBuilder);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
     "Users retrieved successfully",

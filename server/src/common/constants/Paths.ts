@@ -13,7 +13,7 @@ export default {
     Add: "/add",
     Update: "/update",
     Delete: "/delete/:id",
-    Pagination: "/pagination",
+    Pagination: "/",
     Search: "/search",
   },
   Tests: {
@@ -41,7 +41,7 @@ export default {
     GetByID: "/get/:id",
     UpdateById: "/update/:id",
     Search: "/search",
-    GetByChildId: "/child/:childId"
+    GetByChildId: "/child/:childId",
   },
   MedicalEvent: {
     Base: "/medical-events",
@@ -50,7 +50,7 @@ export default {
     GetById: "/get/:id",
     Create: "/create",
     Update: "/update/:id",
-    Delete: "/delete/:id"
+    Delete: "/delete/:id",
   },
   MedicalOrder: {
     Base: "/medical-orders",
@@ -63,7 +63,8 @@ export default {
     AddRecord: "/:id/add-record",
     GetRecords: "/:id/records",
     AdditionalDetails: "/:id/additional-details",
-  }, VaccinationCampaign: {
+  },
+  VaccinationCampaign: {
     Base: "/vaccination-campaigns",
     Create: "/create",
     Update: "/update/:campaignId",

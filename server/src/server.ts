@@ -41,7 +41,7 @@ if (ENV.NodeEnv === NodeEnvs.Production) {
 }
 
 // data connection
-const mongoConnection = new MongoConnection(process.env.MONGO_URI as string);
+const mongoConnection = new MongoConnection(process.env.MONGO_URI);
 mongoConnection.connect(() => {
   logger.info("MongoDB connection established");
 });

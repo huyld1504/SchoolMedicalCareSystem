@@ -56,39 +56,39 @@ const schema = new Schema({
  * 
  * Performance: Enables $text queries với relevance scoring
  */
-schema.index({
-  vaccineName: 'text',
-  vaccineType: 'text',
-  targetAudience: 'text'
-}, {
-  name: 'vaccination_campaign_text_search',
-  weights: {
-    vaccineName: 10,    // Vaccine name là quan trọng nhất
-    vaccineType: 5,     // Vaccine type quan trọng thứ hai
-    targetAudience: 3   // Target audience ít quan trọng hơn
-  }
-});
+// schema.index({
+//   vaccineName: 'text',
+//   vaccineType: 'text',
+//   targetAudience: 'text'
+// }, {
+//   name: 'vaccination_campaign_text_search',
+//   weights: {
+//     vaccineName: 10,    // Vaccine name là quan trọng nhất
+//     vaccineType: 5,     // Vaccine type quan trọng thứ hai
+//     targetAudience: 3   // Target audience ít quan trọng hơn
+//   }
+// });
 
-/**
- * 📊 COMPOUND INDEXES - Query optimization cho common access patterns
- */
+// /**
+//  * 📊 COMPOUND INDEXES - Query optimization cho common access patterns
+//  */
 
-// Index cho nurse role filtering (chỉ xem planned/ongoing campaigns)
-// Query pattern: { status: { $in: ["planned", "ongoing"] }, startDate: { $gte: date } }
-schema.index({ status: 1, startDate: -1 }, {
-  name: 'status_startdate_compound'
-});
+// // Index cho nurse role filtering (chỉ xem planned/ongoing campaigns)
+// // Query pattern: { status: { $in: ["planned", "ongoing"] }, startDate: { $gte: date } }
+// schema.index({ status: 1, startDate: -1 }, {
+//   name: 'status_startdate_compound'
+// });
 
-// Index cho admin view campaigns by creator và status
-// Query pattern: { createdBy: ObjectId, status: "planned" }
-schema.index({ createdBy: 1, status: 1 }, {
-  name: 'creator_status_compound'
-});
+// // Index cho admin view campaigns by creator và status
+// // Query pattern: { createdBy: ObjectId, status: "planned" }
+// schema.index({ createdBy: 1, status: 1 }, {
+//   name: 'creator_status_compound'
+// });
 
-// Index cho date range queries
-// Query pattern: { startDate: { $gte: startDate, $lte: endDate } }
-schema.index({ startDate: 1 }, {
-  name: 'startdate_single'
-});
+// // Index cho date range queries
+// // Query pattern: { startDate: { $gte: startDate, $lte: endDate } }
+// schema.index({ startDate: 1 }, {
+//   name: 'startdate_single'
+// });
 
 export const VaccinationCampaign: IVaccinationCampaignModel = model<IVaccinationCampaign, IVaccinationCampaignModel>("VaccinationCampaign", schema);

@@ -49,12 +49,13 @@ async function get(req: IReq, res: IRes) {
 async function updateStatus(req: IReq, res: IRes) {
   const id: string = req.params.id as string;
   const status: string = req.body.status as string;
+  const note: string = req.body.note as string;
 
   if (!id || !status) {
     throw new ValidationError("ID and status are required");
   }
 
-  await medicalOrderService.updateStatus(id, status);
+  await medicalOrderService.updateStatus(id, status, note);
   res
     .status(HttpStatusCodes.OK)
     .json(

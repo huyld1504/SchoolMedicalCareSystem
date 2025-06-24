@@ -18,6 +18,7 @@ import {
   IRegisterRequest,
 } from "@src/payload/request/user.request";
 import { IRole, Role } from "@src/models/Role";
+import { UserQueryBuilder } from "@src/payload/request/filter/user.request";
 
 /******************************************************************************
                                 Constants
@@ -65,10 +66,26 @@ class UserService {
     return this.userRepo.delete_(id);
   }
   async getUsersWithPagination(
-    options: PaginationOptions,
-    filters?: any
+    queryBuilder: UserQueryBuilder
   ): Promise<PaginationResult<IUser>> {
-    return this.userRepo.paginate(filters || {}, options);
+    const filter = await queryBuilder.buildFilter();
+    const query = User.find(filter)
+      .lean()
+      .skip(queryBuilder.getSkip())
+      .limit(queryBuilder.getLimit())
+      .sort(queryBuilder.getSort());
+
+    const [users, totalCount] = await Promise.all([
+      query.exec(),
+      User.countDocuments(filter),
+    ]);
+    return {
+      records: users,
+      total: totalCount,
+      page: queryBuilder.getPage(),
+      limit: queryBuilder.getLimit(),
+      totalPages: Math.ceil(totalCount / queryBuilder.getLimit()),
+    };
   }
   async searchUsers(
     query: string,
