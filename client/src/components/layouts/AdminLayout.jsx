@@ -43,7 +43,7 @@ import { clearUser } from "../../store/authSlice";
 
 const drawerWidth = 280;
 
-const NurseLayout = () => {
+const AdminLayout = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -56,16 +56,16 @@ const NurseLayout = () => {
   const { user } = useSelector((state) => state.auth);
   const menuItems = [
     {
-      text: "Quản lý học sinh",
+      text: "Quản lý tài khoản",
       icon: <PeopleIcon />,
-      path: "/nurse/students",
-      active: location.pathname === "/nurse/students",
+      path: "/admin/users",
+      active: location.pathname === "/admin/users",
     },
     {
-      text: "Yêu cầu y tế",
+      text: "Quản lí tiêm chủng",
       icon: <AssignmentIcon />,
-      path: "/nurse/medical-orders",
-      active: location.pathname === "/nurse/medical-events",
+      path: "/admin/vaccinations",
+      active: location.pathname === "/admin/vaccinations",
     },
     {
       text: "Sự kiện y tế",
@@ -316,4 +316,4 @@ const NurseLayout = () => {
   );
 };
 
-export default NurseLayout;
+export default AdminLayout;
