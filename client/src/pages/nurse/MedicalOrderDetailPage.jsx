@@ -55,7 +55,6 @@ const MedicalOrderDetailPage = () => {
     const [isAddNewModalOpen, setIsAddNewModalOpen] = useState(false);
     const [newMedicine, setNewMedicine] = useState(initialNewMedicineState);
 
-    // MỚI: State cho Dialog từ chối
     const [isRejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
 
@@ -70,8 +69,6 @@ const MedicalOrderDetailPage = () => {
                 medicalOrderApi.getDetail(orderId),
                 medicalOrderApi.getRecord(orderId)
             ]);
-            console.log("[DEBUG] Kết quả từ medicalOrderApi.getDetail:", detailsResponse);
-            console.log("[DEBUG] Kết quả từ medicalOrderApi.getRecord:", historyResponse);
 
             if (detailsResponse.isSuccess && detailsResponse.data) {
                 setOrderData(detailsResponse.data);
@@ -98,13 +95,12 @@ const MedicalOrderDetailPage = () => {
     }, [loadData]);
 
     // --- HANDLERS ---
-    // THAY ĐỔI: Chỉnh sửa hàm để có thể nhận payload là object
     const handleUpdateStatus = useCallback(async (payload) => {
         setIsUpdating(true);
         try {
             await medicalOrderApi.updateStatus(orderId, payload);
-            const statusLabel = typeof payload === 'string' ? payload : payload.status;
-            toast.success(`Cập nhật trạng thái thành "${statusMap[statusLabel]?.label || statusLabel}" thành công!`);
+            const statusLabel = statusMap[payload.status]?.label || payload.status;
+            toast.success(`Cập nhật trạng thái thành "${statusLabel}" thành công!`);
             setIsEditingStatus(false);
             await loadData();
         } catch (err) {
@@ -115,7 +111,6 @@ const MedicalOrderDetailPage = () => {
         }
     }, [orderId, loadData]);
 
-    // MỚI: Handler cho việc từ chối đơn thuốc
     const handleRejectOrder = async () => {
         if (!rejectionReason.trim()) {
             toast.warn('Vui lòng nhập lý do từ chối.');
@@ -124,11 +119,10 @@ const MedicalOrderDetailPage = () => {
 
         const payload = {
             status: 'canceled',
-            note: rejectionReason, // Giả sử API của bạn nhận trường này
+            note: rejectionReason,
         };
-        // Gọi hàm cập nhật chung
+        
         await handleUpdateStatus(payload);
-        // Đóng modal sau khi xử lý xong
         handleCloseRejectModal();
     };
 
@@ -225,18 +219,16 @@ const MedicalOrderDetailPage = () => {
     };
     const handleCloseRefillModal = () => setIsRefillModalOpen(false);
 
-    // MỚI: Handlers cho dialog từ chối
     const handleOpenRejectModal = () => setRejectModalOpen(true);
     const handleCloseRejectModal = () => {
         setRejectModalOpen(false);
-        setRejectionReason(''); // Reset lý do khi đóng
+        setRejectionReason('');
     };
 
     const handleSubmitRefill = async () => {
         setIsUpdating(true);
         try {
             const { detail, additionalQuantity } = refillData;
-
             const payload = {
                 medicalOrderDetails: [{
                     _id: detail._id,
@@ -248,7 +240,6 @@ const MedicalOrderDetailPage = () => {
                     quantity: detail.quantity + additionalQuantity,
                 }]
             };
-
             await medicalOrderApi.additionalDetail(orderId, payload);
             toast.success(`Đã bổ sung ${additionalQuantity} viên ${detail.medicineName}.`);
             handleCloseRefillModal();
@@ -309,7 +300,6 @@ const MedicalOrderDetailPage = () => {
     };
 
     const handleBack = () => navigate(-1);
-    const handlePrint = () => window.print();
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString('vi-VN');
     const formatTime = (timeData) => {
         if (!timeData) return 'N/A';
@@ -348,7 +338,6 @@ const MedicalOrderDetailPage = () => {
                     <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn thuốc</Typography>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems="center">
-                    {/* THAY ĐỔI: Thêm nút từ chối */}
                     {medicalOrder.status === 'pending' && (
                         <>
                             <Button
@@ -375,12 +364,12 @@ const MedicalOrderDetailPage = () => {
             </Box>
 
             <Card sx={{ mb: 3 }}>
-                {/* ... (Phần còn lại của Card thông tin chung không đổi) ... */}
                 <CardContent>
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
                     <Grid container spacing={2} sx={{ mt: 1, alignItems: 'center' }}>
                         <Grid item xs={12} sm={4}><Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography></Grid>
                         <Grid item xs={12} sm={4}><Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography></Grid>
+                        <Grid item xs={12} sm={4}><Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || '—'}</Typography></Grid>
                         <Grid item xs={12} sm={4}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Typography><strong>Trạng thái:</strong></Typography>
@@ -407,15 +396,20 @@ const MedicalOrderDetailPage = () => {
             </Card>
 
             <Card sx={{ mb: 3 }}>
-                {/* ... (Phần còn lại của Card danh sách thuốc không đổi) ... */}
                 <CardContent sx={{ p: 0 }}>
                     <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
                         <Stack direction="row" spacing={1}>
                             {medicalOrder.status === 'approved' && (
-                                <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>Cho uống thuốc  ({numSelected})</Button>
+                                <>
+                                    <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
+                                        Cho uống thuốc ({numSelected})
+                                    </Button>
+                                    <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>
+                                        Thêm thuốc mới
+                                    </Button>
+                                </>
                             )}
-                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>Thêm thuốc mới</Button>
                         </Stack>
                     </Box>
                     <TableContainer>
@@ -430,7 +424,9 @@ const MedicalOrderDetailPage = () => {
                                     <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
-
+                                    {medicalOrder.status === 'approved' && (
+                                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
+                                    )}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -449,13 +445,15 @@ const MedicalOrderDetailPage = () => {
                                             <TableCell align="center">{detail.quantity}</TableCell>
                                             <TableCell>{formatTime(detail.time)}</TableCell>
                                             <TableCell>{detail.note || '—'}</TableCell>
-                                            <TableCell align="center">
-                                                {detail.quantity <= 2 && (
-                                                    <Tooltip title="Bổ sung số lượng">
-                                                        <IconButton color="primary" size="small" onClick={() => handleOpenRefillModal(detail)}><RefillIcon /></IconButton>
-                                                    </Tooltip>
-                                                )}
-                                            </TableCell>
+                                            {medicalOrder.status === 'approved' && (
+                                                <TableCell align="center">
+                                                    {detail.quantity <= 2 && (
+                                                        <Tooltip title="Bổ sung số lượng">
+                                                            <IconButton color="primary" size="small" onClick={() => handleOpenRefillModal(detail)}><RefillIcon /></IconButton>
+                                                        </Tooltip>
+                                                    )}
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     );
                                 })}
@@ -465,11 +463,14 @@ const MedicalOrderDetailPage = () => {
                 </CardContent>
             </Card>
 
+            {/* THAY ĐỔI: Khôi phục lại đầy đủ phần Lịch sử sử dụng thuốc */}
             {usageHistory && usageHistory.length > 0 && (
                 <Card>
-                    {/* ... (Phần còn lại của Card lịch sử sử dụng không đổi) ... */}
                     <CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}><HistoryIcon sx={{ mr: 1, color: 'primary.main' }} /><Typography variant="h6" sx={{ fontWeight: 600 }}>Lịch sử sử dụng thuốc</Typography></Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            <Typography variant="h6" sx={{ fontWeight: 600 }}>Lịch sử sử dụng thuốc</Typography>
+                        </Box>
                         <TableContainer>
                             <Table size="normal">
                                 <TableHead>
@@ -498,7 +499,7 @@ const MedicalOrderDetailPage = () => {
                 </Card>
             )}
 
-            {/* ... (Dialogs hiện có không đổi) ... */}
+            {/* Các Dialogs không đổi */}
             <Dialog open={isAddRecordModalOpen} onClose={handleCloseAddRecordModal} PaperProps={{ sx: { width: '35%' } }}>
                 <DialogTitle>Ghi nhận sử dụng thuốc</DialogTitle>
                 <DialogContent>
@@ -507,25 +508,15 @@ const MedicalOrderDetailPage = () => {
                             Object.values(selectionForRecord).map(({ detail, quantity }) => (
                                 <Box key={detail._id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                     <Typography sx={{ flexGrow: 1 }}>{detail.medicineName}</Typography>
-                                    <TextField
-                                        label="SL đã dùng" type="number" size="small" variant="outlined"
-                                        value={quantity}
-                                        onChange={(e) => handleQuantityChangeInModal(detail._id, e.target.value)}
-                                        inputProps={{ min: 1, max: detail.quantity }}
-                                        sx={{ width: '120px' }}
-                                    />
+                                    <TextField label="SL đã dùng" type="number" size="small" variant="outlined" value={quantity} onChange={(e) => handleQuantityChangeInModal(detail._id, e.target.value)} inputProps={{ min: 1, max: detail.quantity }} sx={{ width: '120px' }} />
                                 </Box>
                             ))
-                        ) : (
-                            <Typography>Không có thuốc nào được chọn.</Typography>
-                        )}
+                        ) : (<Typography>Không có thuốc nào được chọn.</Typography>)}
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAddRecordModal} disabled={isUpdating}>Hủy</Button>
-                    <Button onClick={handleSubmitRecord} variant="contained" disabled={isUpdating || numSelected === 0}>
-                        {isUpdating ? <CircularProgress size={24} /> : 'Xác nhận tất cả'}
-                    </Button>
+                    <Button onClick={handleSubmitRecord} variant="contained" disabled={isUpdating || numSelected === 0}>{isUpdating ? <CircularProgress size={24} /> : 'Xác nhận tất cả'}</Button>
                 </DialogActions>
             </Dialog>
 
@@ -558,12 +549,11 @@ const MedicalOrderDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* MỚI: Dialog để nhập lý do từ chối */}
             <Dialog open={isRejectModalOpen} onClose={handleCloseRejectModal} fullWidth maxWidth="sm">
                 <DialogTitle>Lý do từ chối đơn thuốc</DialogTitle>
                 <DialogContent>
                     <DialogContentText sx={{ mb: 2 }}>
-                        Vui lòng nhập lý do từ chối. Lý do này sẽ được ghi lại trong hệ thống.
+                        Vui lòng nhập lý do từ chối.
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -589,11 +579,10 @@ const MedicalOrderDetailPage = () => {
                         color="error"
                         disabled={isUpdating || !rejectionReason.trim()}
                     >
-                        {isUpdating ? <CircularProgress size={24} /> : ' Từ chối'}
+                        {isUpdating ? <CircularProgress size={24} /> : 'Xác nhận Từ chối'}
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </Container>
     );
 };
