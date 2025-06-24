@@ -89,12 +89,22 @@ class MedicalOrderService {
     };
   }
 
-  async updateStatus(medicalOrderId: string, status: string): Promise<void> {
+  async updateStatus(
+    medicalOrderId: string,
+    status: string,
+    note: string
+  ): Promise<void> {
     const medicalOrder = await MedicalOrder.findById(medicalOrderId);
     if (!medicalOrder) {
       throw new ApplicationError("Medical order not found");
     }
     medicalOrder.status = status;
+    if (status === "canceled") {
+      if (!note) {
+        throw new ApplicationError("Note is required for canceling the order");
+      }
+      medicalOrder.note = note;
+    }
     await medicalOrder.save();
   }
 
