@@ -10,19 +10,29 @@ export abstract class BaseQueryBuilder {
     this.rawQuery = query;
 
     this.page = this.parsePage(query.page);
-    this.paging = this.parsePaging(query.paging);
+    // Hỗ trợ cả 'paging' và 'limit' parameters
+    this.paging = this.parsePaging(query.paging || query.limit);
     this.sort = this.parseSort(query.sort);
     this.keyword = this.parseKeyword(query.keyword);
   }
 
   protected parsePage(value: any): number {
+    // Nếu không có value hoặc value rỗng -> default = 1
+    if (value === undefined || value === null || value === '') {
+      return 1;
+    }
     const page = parseInt(value);
     return !isNaN(page) && page > 0 ? page : 1;
   }
 
   protected parsePaging(value: any): number {
+    // Nếu không có value hoặc value rỗng -> default = 10
+    if (value === undefined || value === null || value === '') {
+      return 10;
+    }
     const paging = parseInt(value);
-    return !isNaN(paging) && paging > 0 ? paging : 10;
+    // Giới hạn max = 100 để tránh overload
+    return !isNaN(paging) && paging > 0 ? Math.min(paging, 100) : 10;
   }
 
   protected parseSort(value?: string): Record<string, 1 | -1> {
