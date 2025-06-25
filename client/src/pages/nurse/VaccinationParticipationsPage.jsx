@@ -70,8 +70,7 @@ const VaccinationParticipationsPage = () => {
     keyword: '',
     consentStatus: '',
     vaccinationStatus: '',
-    vaccinationDate: '',
-    studentName: ''
+    vaccinationDate: ''
   });
 
   // State cho pagination
@@ -100,7 +99,7 @@ const VaccinationParticipationsPage = () => {
   // Load participations khi query thay đổi
   useEffect(() => {
     loadParticipations();
-  }, [campaignId, query.page, query.limit, query.keyword, query.consentStatus, query.vaccinationStatus, query.vaccinationDate, query.studentName]); const loadParticipations = async () => {
+  }, [campaignId, query.page, query.limit, query.keyword, query.consentStatus, query.vaccinationStatus, query.vaccinationDate]); const loadParticipations = async () => {
     try {
       setLoading(true);
 
@@ -216,8 +215,7 @@ const VaccinationParticipationsPage = () => {
       keyword: '',
       consentStatus: '',
       vaccinationStatus: '',
-      vaccinationDate: '',
-      studentName: ''
+      vaccinationDate: ''
     });
   };
 
@@ -303,30 +301,13 @@ const VaccinationParticipationsPage = () => {
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Grid container spacing={2} alignItems="center">
-              {/* <Grid item xs={12} md={3}>
+              {/* <Grid item xs={12} md={2}>
                 <TextField
                   fullWidth
-                  placeholder="Tìm kiếm theo tên học sinh..."
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  onKeyPress={handleKeyPress}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
+                  placeholder="Tên học sinh"
+                  value={query.keyword}
+                  onChange={(e) => handleFilterChange('keyword', e.target.value)}
                 />
-              </Grid> */}
-              {/* <Grid item xs={12} md={1}>
-                <Button
-                  variant="contained"
-                  onClick={handleSearchSubmit}
-                  fullWidth
-                >
-                  Tìm
-                </Button>
               </Grid> */}
               <Grid item xs={12} md={2}>
                 <FormControl fullWidth>
@@ -369,14 +350,7 @@ const VaccinationParticipationsPage = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={2}>
-                <TextField
-                  fullWidth
-                  placeholder="Tên học sinh"
-                  value={query.studentName}
-                  onChange={(e) => handleFilterChange('studentName', e.target.value)}
-                />
-              </Grid>
+
               <Grid item xs={12} md={1}>
                 <Button
                   variant="outlined"
@@ -468,9 +442,10 @@ const VaccinationParticipationsPage = () => {
                           <TableCell>
                             <Typography variant="body2" sx={{
                               maxWidth: 150,
-                              overflow: 'hidden',
+                              overflow: 'initial',
                               textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                              whiteSpace: 'nowrap',
+                              title: participation.parentNote || 'Không có ghi chú'
                             }}>
                               {participation.parentNote || 'Không có ghi chú'}
                             </Typography>

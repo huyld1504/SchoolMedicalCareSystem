@@ -61,8 +61,7 @@ const VaccinationCampaignsPage = () => {
     keyword: '',
     status: '',
     startDateFrom: '',
-    endDateTo: '',
-    vaccineName: ''
+    startDateTo: ''
   });
 
   // State cho pagination
@@ -80,7 +79,7 @@ const VaccinationCampaignsPage = () => {
   const [dateToValue, setDateToValue] = useState(null);// Load campaigns khi query thay đổi
   useEffect(() => {
     loadCampaigns();
-  }, [query.page, query.limit, query.keyword, query.status, query.startDateFrom, query.endDateTo, query.vaccineName]); const loadCampaigns = async () => {
+  }, [query.page, query.limit, query.keyword, query.status, query.startDateFrom, query.startDateTo]); const loadCampaigns = async () => {
     try {
       setLoading(true);
       console.log('Campaign search query:', query);
@@ -171,29 +170,6 @@ const VaccinationCampaignsPage = () => {
       page: 1 // Reset về page 1 khi filter thay đổi
     }));
   };
-
-  // Date picker handlers
-  const handleDateFromChange = (newValue) => {
-    setDateFromValue(newValue);
-    // Format date để gửi cho API (YYYY-MM-DD)
-    const dateString = newValue ? newValue.toISOString().split('T')[0] : '';
-    setQuery(prev => ({
-      ...prev,
-      startDateFrom: dateString,
-      page: 1
-    }));
-  };
-
-  const handleDateToChange = (newValue) => {
-    setDateToValue(newValue);
-    // Format date để gửi cho API (YYYY-MM-DD)
-    const dateString = newValue ? newValue.toISOString().split('T')[0] : '';
-    setQuery(prev => ({
-      ...prev,
-      endDateTo: dateString,
-      page: 1
-    }));
-  };
   const handleFilterClear = () => {
     setSearchInput('');
     setDateFromValue(null);
@@ -204,8 +180,7 @@ const VaccinationCampaignsPage = () => {
       keyword: '',
       status: '',
       startDateFrom: '',
-      endDateTo: '',
-      vaccineName: ''
+      startDateTo: '',
     });
   };
 
@@ -250,34 +225,18 @@ const VaccinationCampaignsPage = () => {
               </Typography>
             </Box>
           </Box>
-        </Box>        {/* Search and Filters */}
+        </Box>
+        {/* Search and Filters */}
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
                 <TextField
                   fullWidth
-                  placeholder="Tìm kiếm theo tên vaccine..."
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  onKeyPress={handleKeyPress}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
+                  placeholder="Tên vaccine, mô tả, v.v."
+                  value={query.keyword}
+                  onChange={(e) => handleFilterChange('keyword', e.target.value)}
                 />
-              </Grid>
-              <Grid item xs={12} md={1}>
-                <Button
-                  variant="contained"
-                  onClick={handleSearchSubmit}
-                  fullWidth
-                >
-                  Tìm
-                </Button>
               </Grid>
               <Grid item xs={12} md={2}>
                 <FormControl fullWidth>
@@ -300,15 +259,8 @@ const VaccinationCampaignsPage = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={2}>
-                <TextField
-                  fullWidth
-                  placeholder="Tên vaccine"
-                  value={query.vaccineName}
-                  onChange={(e) => handleFilterChange('vaccineName', e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} md={2}>
+
+              {/* <Grid item xs={12} md={2}>
                 <DatePicker
                   label="Từ ngày"
                   value={query.startDateFrom ? new Date(query.startDateFrom) : null}
@@ -319,11 +271,11 @@ const VaccinationCampaignsPage = () => {
               <Grid item xs={12} md={1}>
                 <DatePicker
                   label="Đến ngày"
-                  value={query.endDateTo ? new Date(query.endDateTo) : null}
-                  onChange={(date) => handleFilterChange('endDateTo', date ? date.toISOString() : '')}
+                  value={query.startDateTo ? new Date(query.startDateTo) : null}
+                  onChange={(date) => handleFilterChange('startDateTo', date ? date.toISOString() : '')}
                   renderInput={(params) => <TextField {...params} fullWidth size="small" />}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} md={1}>
                 <Button
                   variant="outlined"
