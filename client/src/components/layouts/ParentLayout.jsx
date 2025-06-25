@@ -64,7 +64,7 @@ const ParentLayout = () => {
             active: location.pathname.startsWith('/parent/children')
         },
         {
-            text: 'Đơn thuốc',
+            text: 'Đơn gửi thuốc',
             icon: <MedicalServices />,
             path: '/parent/medical-orders',
             active: location.pathname.startsWith('/parent/medical-orders')

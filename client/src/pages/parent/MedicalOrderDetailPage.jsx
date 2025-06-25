@@ -151,7 +151,7 @@ const MedicalOrderDetailPage = () => {
   const getStatusLabel = (status) => {
     switch (status) {
       case 'pending': return 'Đang xử lý';
-      case 'approved': return 'Đã duyệt'
+      case 'approved': return 'Đã duyệt';
       case 'completed': return 'Hoàn thành';
       case 'cancelled': return 'Đã hủy';
       default: return 'Không xác định';

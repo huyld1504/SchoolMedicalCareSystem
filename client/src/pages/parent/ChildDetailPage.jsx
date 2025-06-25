@@ -45,6 +45,7 @@ import { childApi } from '../../api/childApi';
 import healthProfileAPI from '../../api/healthProfileApi';
 import medicalEventAPI from '../../api/medicalEventApi';
 import HealthProfileDetailModal from './HealthProfileDetailModal';
+import { removeBrackets, processHealthDataForDisplay } from '../../utils/string.utils';
 
 const ChildDetailPage = () => {
     const navigate = useNavigate();
@@ -61,7 +62,11 @@ const ChildDetailPage = () => {
                 const response = await healthProfileAPI.getByChildId(id);
                 console.log("res", response);
                 if (response && response.data && response.data.records && response.data.records.length > 0) {
-                    setHealthProfiles(response.data.records);
+                    // Xử lý data để loại bỏ dấu ngoặc vuông khi hiển thị
+                    const processedProfiles = response.data.records.map(profile =>
+                        processHealthDataForDisplay(profile)
+                    );
+                    setHealthProfiles(processedProfiles);
                     setChild(response.data.records[0].studentId);
                 } else {
                     // If no health profiles, try to get child info directly
@@ -111,9 +116,14 @@ const ChildDetailPage = () => {
         setModalOpen(false);
         setSelectedProfileId(null);
     }; const hasHealthNotes = (profile) => {
-        return (profile.allergies && profile.allergies !== '1') ||
-            (profile.chronicDiseases && profile.chronicDiseases !== '1') ||
-            (profile.devicesSupport && profile.devicesSupport !== '1');
+        // Xử lý data để loại bỏ dấu ngoặc vuông khi kiểm tra
+        const processedProfile = processHealthDataForDisplay(profile);
+
+        console.log('Processed profile for display:', processedProfile);
+
+        return (processedProfile.allergies && processedProfile.allergies !== '1' && processedProfile.allergies.trim() !== '') ||
+            (processedProfile.chronicDiseases && processedProfile.chronicDiseases !== '1' && processedProfile.chronicDiseases.trim() !== '') ||
+            (processedProfile.devicesSupport && processedProfile.devicesSupport !== '1' && processedProfile.devicesSupport.trim() !== '');
     };
 
     const getEventLevelColor = (level) => {

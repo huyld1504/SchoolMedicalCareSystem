@@ -370,7 +370,7 @@ const MedicalOrdersPage = () => {
                             Quản lý đơn thuốc
                         </Typography>
                         <Typography variant="h6" color="text.secondary">
-                            Theo dõi và quản lý các đơn thuốc của con em
+                            Theo dõi và quản lý các đơn gửi thuốc của con em
                         </Typography>
                     </Box>
                 </Box>
@@ -381,7 +381,7 @@ const MedicalOrdersPage = () => {
                         {/* Table Header */}
                         <Box sx={{ mb: 3 }}>
                             <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
-                                Danh sách đơn thuốc
+                                Danh sách đơn gửi thuốc
                             </Typography>
                             {/* Filters */}
                             <Grid container spacing={2} alignItems="center">
