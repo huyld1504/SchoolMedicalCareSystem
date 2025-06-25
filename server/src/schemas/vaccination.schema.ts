@@ -6,6 +6,7 @@ export const createCampaignSchema = Joi.object({
   vaccineType: Joi.string().min(2).max(100).required(),
   targetAudience: Joi.string().min(5).max(200).required(),
   startDate: Joi.date().iso().min('now').required(),
+  endDate: Joi.date().iso().min(Joi.ref('startDate')).required(),
 });
 
 // Schema cho cập nhật chiến dịch tiêm chủng
@@ -14,6 +15,11 @@ export const updateCampaignSchema = Joi.object({
   vaccineType: Joi.string().min(2).max(100).optional(),
   targetAudience: Joi.string().min(5).max(200).optional(),
   startDate: Joi.date().iso().optional(),
+  endDate: Joi.date().iso().when('startDate', {
+    is: Joi.exist(),
+    then: Joi.date().iso().min(Joi.ref('startDate')),
+    otherwise: Joi.date().iso().optional(),
+  }),
   status: Joi.string()
     .valid('planned', 'ongoing', 'completed', 'cancelled')
     .optional(),
@@ -65,14 +71,14 @@ export const campaignQuerySchema = Joi.object({
   keyword: Joi.string().max(100).allow('').optional().messages({
     'string.max': 'Keyword cannot be longer than 100 characters',
   }),
-  
-  // Date range filters
+    // Date range filters
   startDateFrom: Joi.date().iso().allow('').optional(),
   startDateTo: Joi.date().iso().allow('').optional(),
-  
-  // Legacy support
+  endDateFrom: Joi.date().iso().allow('').optional(),
+  endDateTo: Joi.date().iso().allow('').optional(),
+    // Legacy support
   sortBy: Joi.string()
-    .valid('startDate', 'createdAt', 'status')
+    .valid('startDate', 'endDate', 'createdAt', 'status')
     .allow('')
     .optional(),
   sortOrder: Joi.string().valid('asc', 'desc').allow('').optional(),

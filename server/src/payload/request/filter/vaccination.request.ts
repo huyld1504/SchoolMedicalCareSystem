@@ -4,12 +4,16 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
   public status?: string;
   public startDateFrom?: Date;
   public startDateTo?: Date;
+  public endDateFrom?: Date;
+  public endDateTo?: Date;
 
   constructor(query: any) {
     super(query);
     this.status = this.parseStatus(query.status);
     this.startDateFrom = this.parseDate(query.startDateFrom);
     this.startDateTo = this.parseDate(query.startDateTo);
+    this.endDateFrom = this.parseDate(query.endDateFrom);
+    this.endDateTo = this.parseDate(query.endDateTo);
   }
   protected parseStatus(value?: string): string | undefined {
     const validStatuses = ['planned', 'ongoing', 'completed', 'cancelled'];
@@ -31,9 +35,7 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
 
     // Keyword search được handle ở repository level với aggregation
     // để có thể search trong related collections (creator info)
-    // Không cần thêm vào filter ở đây
-
-    // Filter by start date range
+    // Không cần thêm vào filter ở đây    // Filter by start date range
     if (this.startDateFrom || this.startDateTo) {
       filter.startDate = {};
       if (this.startDateFrom) {
@@ -41,6 +43,17 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
       }
       if (this.startDateTo) {
         filter.startDate.$lte = this.startDateTo;
+      }
+    }
+
+    // Filter by end date range
+    if (this.endDateFrom || this.endDateTo) {
+      filter.endDate = {};
+      if (this.endDateFrom) {
+        filter.endDate.$gte = this.endDateFrom;
+      }
+      if (this.endDateTo) {
+        filter.endDate.$lte = this.endDateTo;
       }
     }
 
