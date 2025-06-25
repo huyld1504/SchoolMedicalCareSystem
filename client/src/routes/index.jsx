@@ -33,7 +33,11 @@ import CreateMedicalOrderPage from "../pages/parent/CreateMedicalOrderPage";
 import ParentMedicalOrderDetailPage from "../pages/parent/MedicalOrderDetailPage";
 import ParentMedicalEventDetailPage from "../pages/parent/MedicalEventDetailPage";
 import AdminLayout from "../components/layouts/AdminLayout";
+
+//Admin pages
 import AccountManager from "../pages/admin/AccountManager";
+import VaccinationManager from "../pages/admin/VaccinationManager";
+
 
 const router = createBrowserRouter([
   {
@@ -233,6 +237,10 @@ const router = createBrowserRouter([
           {
             path: "users",
             element: <AccountManager />,
+          },
+          {
+            path: "vaccinations",
+            element: <VaccinationManager />,
           },
         ],
       },
