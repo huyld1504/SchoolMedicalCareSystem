@@ -1,5 +1,7 @@
+import { refreshToken } from './../common/libs/lib.jwt';
 import { BaseRepository } from "@src/common/base/base.repository";
 import { FilterOptions, PaginationOptions, PaginationResult, SortOptions } from "@src/common/interfaces/mongo.interface";
+import { ApplicationError } from "@src/common/util/util.route-errors";
 import { VaccinationParticipation, IVaccinationParticipation } from "@src/models/VaccinationParticipation";
 import { VaccinationParticipationQueryBuilder } from "@src/payload/request/filter/vaccination.request";
 import { Types } from "mongoose";
@@ -104,18 +106,21 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       totalPages: Math.ceil(total / options.limit)
     };
   }
-
   /**
-   * Update parent consent
+   * Update parent consent with validation
    * Chức năng: Cập nhật đồng ý của phụ huynh cho học sinh
+   * Business Rules:
+   * - Nếu phụ huynh TỪCHỐI (denied): BẮT BUỘC phải có lý do trong parentNote
+   * - Nếu phụ huynh ĐỒNG Ý (approved): parentNote là tùy chọn
+   * 
    * Tối ưu hóa:
    * - Sử dụng compound indexes cho trường parentConsent và vaccinationStatus
    * @param participationId - ID của tham gia
    * @param parentId - ID của phụ huynh
    * @param consent - Trạng thái đồng ý (approved, denied)
-   * @param note - Ghi chú từ phụ huynh (nếu có)
+   * @param note - Ghi chú từ phụ huynh (BẮT BUỘC nếu consent = 'denied')
    * @return Promise<IVaccinationParticipation | null>
-   * @throws Error nếu participation không tồn tại hoặc phụ huynh không phải là người cập nhật
+   * @throws Error nếu participation không tồn tại, phụ huynh không có quyền, hoặc thiếu lý do từ chối
    */
   async updateParentConsent(
     participationId: string,
@@ -123,35 +128,51 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
     consent: 'approved' | 'denied',
     note?: string
   ): Promise<IVaccinationParticipation | null> {
+    // 🚨 BUSINESS RULE VALIDATION
+    if (consent === 'denied' && (!note || note.trim().length === 0)) {
+      throw new ApplicationError("Lý do từ chối là bắt buộc khi phụ huynh không đồng ý tiêm chủng");
+    }
+
     // Kiểm tra quyền: chỉ parent của student mới được cập nhật
     const participation = await VaccinationParticipation.findById(participationId)
       .populate('student')
       .exec();
 
     if (!participation) {
-      throw new Error("Participation not found");
+      throw new ApplicationError("Không tìm thấy thông tin tham gia tiêm chủng");
     }
 
     if ((participation.student as any).userId.toString() !== parentId) {
-      throw new Error("You can only update consent for your own children");
+      throw new ApplicationError("Bạn chỉ có thể cập nhật đồng ý cho con em của mình");
     }
 
-    return this.update(participationId, {
+    // Prepare update data
+    const updateData: Partial<IVaccinationParticipation> = {
       parentConsent: consent,
-      parentNote: note,
       parentConsentDate: new Date(),
       vaccinationStatus: consent === 'denied' ? 'cancelled' : 'scheduled'
-    });
-  }
-  /**
-   * Record vaccination (nurse function)
+    };
+
+    // Add parent note if provided (required for denied, optional for approved)
+    if (note && note.trim().length > 0) {
+      updateData.parentNote = note.trim();
+    }
+
+    return this.update(participationId, updateData);
+  }  /**
+   * Record vaccination (nurse function) with enhanced validation
    * Chức năng: Ghi nhận kết quả tiêm chủng của học sinh
+   * Business Rules:
+   * - nurseNote là TÙY CHỌN cho tất cả trường hợp (completed, missed, cancelled)
+   * - Nếu có nurseNote thì phải có nội dung có nghĩa (không được chỉ space)
+   * - Status 'completed' yêu cầu vaccinationDate và vaccinatedNurse
+   * 
    * Tối ưu hóa:
    * - Sử dụng compound indexes cho trường vaccinationStatus và vaccinatedNurse
-   * @param participationId - ID của tham giation
+   * @param participationId - ID của tham gia
    * @param nurseId - ID của y tá thực hiện tiêm
    * @param status - Trạng thái tiêm chủng (completed, missed, cancelled)
-   * @param note - Ghi chú từ y tá (nếu có)
+   * @param note - Ghi chú từ y tá (TÙY CHỌN - có thể để trống)
    * @return Promise<IVaccinationParticipation | null>
    * @throws Error nếu participation không tồn tại hoặc đã được tiêm chủng  
    */
@@ -161,14 +182,18 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
     status: 'completed' | 'missed' | 'cancelled',
     note?: string
   ): Promise<IVaccinationParticipation | null> {
+    // Prepare base update data
     const updateData: Partial<IVaccinationParticipation> = {
       vaccinationStatus: status,
-      nurseNote: note
     };
 
+    // Add nurse note only if provided and has meaningful content
+    if (note && note.trim().length > 0) {
+      updateData.nurseNote = note.trim();
+    }    // For completed vaccination, record date and nurse automatically
     if (status === 'completed') {
-      updateData.vaccinationDate = new Date();
-      updateData.vaccinatedNurse = new Types.ObjectId(nurseId);
+      updateData.vaccinationDate = new Date(); // Tự động lưu ngày hiện tại
+      updateData.vaccinatedNurse = new Types.ObjectId(nurseId); // Lưu ID y tá thực hiện
     }
 
     return this.update(participationId, updateData);
@@ -250,7 +275,26 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       filter.vaccinationStatus = filters.vaccinationStatus as any;
     }
 
-    return this.paginate(filter, options, sort);
+    const [records, total] = await Promise.all([
+      VaccinationParticipation.find(filter)
+        .populate('campaign', 'vaccineName vaccineType startDate status') // Chỉ lấy các trường cần thiết
+        .populate('student', 'name studentCode') // Chỉ lấy các trường cần thiết
+        .populate('createdBy', 'name email') // Chỉ lấy các trường cần thiết
+        .populate('vaccinatedNurse', 'name email') // Chỉ lấy các trường cần thiết
+        .skip((options.page - 1) * options.limit)
+        .limit(options.limit || 10)
+        .sort(sort || { createdAt: -1 })
+        .exec(),
+      VaccinationParticipation.countDocuments(filter).exec(),
+    ]);
+
+    return {
+      records,
+      total,
+      page: options.page,
+      limit: options.limit,
+      totalPages: Math.ceil(total / options.limit)
+    };
   }
 
   /**
@@ -320,8 +364,8 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       limit: options.limit,
       totalPages: Math.ceil(total / options.limit)
     };
-  }  
-  
+  }
+
   // ============================================================================
   //                        SEARCH METHODS - OPTIMIZED WITH INDEXES
   // ============================================================================

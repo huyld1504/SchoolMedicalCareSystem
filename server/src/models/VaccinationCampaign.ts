@@ -5,9 +5,9 @@ export interface IVaccinationCampaign extends Document {
   vaccineName: string;
   vaccineType: string;
   // Đối tượng tiêm
-  targetAudience: string; // Ví dụ: "Học sinh lớp 1-3", "Toàn bộ học sinh", "Học sinh từ 6-12 tuổi"
-  // Thời gian bắt đầu
+  targetAudience: string; // Ví dụ: "Học sinh lớp 1-3", "Toàn bộ học sinh", "Học sinh từ 6-12 tuổi"  // Thời gian bắt đầu và kết thúc
   startDate: Date;
+  endDate: Date;
   // Trạng thái chiến dịch
   status: 'planned' | 'ongoing' | 'completed' | 'cancelled';
   // Người tạo
@@ -21,9 +21,9 @@ const schema = new Schema({
   vaccineName: { type: String, required: true }, // Tên vaccine cụ thể
   vaccineType: { type: String, required: true }, // Loại vaccine (phòng bệnh gì)
   // Đối tượng tiêm
-  targetAudience: { type: String, required: true },
-  // Thời gian bắt đầu
+  targetAudience: { type: String, required: true },  // Thời gian bắt đầu và kết thúc
   startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
   // Trạng thái chiến dịch
   status: {
     type: String,

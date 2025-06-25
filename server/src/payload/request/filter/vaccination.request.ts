@@ -4,21 +4,24 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
   public status?: string;
   public startDateFrom?: Date;
   public startDateTo?: Date;
+  public endDateFrom?: Date;
+  public endDateTo?: Date;
 
   constructor(query: any) {
     super(query);
     this.status = this.parseStatus(query.status);
     this.startDateFrom = this.parseDate(query.startDateFrom);
     this.startDateTo = this.parseDate(query.startDateTo);
+    this.endDateFrom = this.parseDate(query.endDateFrom);
+    this.endDateTo = this.parseDate(query.endDateTo);
   }
-
   protected parseStatus(value?: string): string | undefined {
     const validStatuses = ['planned', 'ongoing', 'completed', 'cancelled'];
-    return value && validStatuses.includes(value) ? value : undefined;
+    return value && value.trim() && validStatuses.includes(value) ? value : undefined;
   }
 
   protected parseDate(value?: string): Date | undefined {
-    if (!value) return undefined;
+    if (!value || !value.trim()) return undefined;
     const date = new Date(value);
     return isNaN(date.getTime()) ? undefined : date;
   }
@@ -32,9 +35,7 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
 
     // Keyword search được handle ở repository level với aggregation
     // để có thể search trong related collections (creator info)
-    // Không cần thêm vào filter ở đây
-
-    // Filter by start date range
+    // Không cần thêm vào filter ở đây    // Filter by start date range
     if (this.startDateFrom || this.startDateTo) {
       filter.startDate = {};
       if (this.startDateFrom) {
@@ -42,6 +43,17 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
       }
       if (this.startDateTo) {
         filter.startDate.$lte = this.startDateTo;
+      }
+    }
+
+    // Filter by end date range
+    if (this.endDateFrom || this.endDateTo) {
+      filter.endDate = {};
+      if (this.endDateFrom) {
+        filter.endDate.$gte = this.endDateFrom;
+      }
+      if (this.endDateTo) {
+        filter.endDate.$lte = this.endDateTo;
       }
     }
 
@@ -79,27 +91,25 @@ export class VaccinationParticipationQueryBuilder extends BaseQueryBuilder {
   public consentDateTo?: Date;
   public vaccinationDateFrom?: Date;
   public vaccinationDateTo?: Date;
-
   constructor(query: any) {
     super(query);
     this.parentConsent = this.parseParentConsent(query.parentConsent);
     this.vaccinationStatus = this.parseVaccinationStatus(query.vaccinationStatus);
-    this.campaignId = query.campaignId;
-    this.studentId = query.studentId;
+    this.campaignId = query.campaignId && query.campaignId.trim() ? query.campaignId : undefined;
+    this.studentId = query.studentId && query.studentId.trim() ? query.studentId : undefined;
     this.consentDateFrom = this.parseDate(query.consentDateFrom);
     this.consentDateTo = this.parseDate(query.consentDateTo);
     this.vaccinationDateFrom = this.parseDate(query.vaccinationDateFrom);
     this.vaccinationDateTo = this.parseDate(query.vaccinationDateTo);
   }
-
   protected parseParentConsent(value?: string): string | undefined {
     const validConsents = ['pending', 'approved', 'denied'];
-    return value && validConsents.includes(value) ? value : undefined;
+    return value && value.trim() && validConsents.includes(value) ? value : undefined;
   }
 
   protected parseVaccinationStatus(value?: string): string | undefined {
     const validStatuses = ['scheduled', 'completed', 'missed', 'cancelled'];
-    return value && validStatuses.includes(value) ? value : undefined;
+    return value && value.trim() && validStatuses.includes(value) ? value : undefined;
   }
 
   protected parseDate(value?: string): Date | undefined {
