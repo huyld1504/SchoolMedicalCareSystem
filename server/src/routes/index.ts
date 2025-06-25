@@ -226,11 +226,6 @@ vaccinationParticipationRouter.put(
   VaccinationRoutes.recordVaccination
 );
 vaccinationParticipationRouter.get(
-  Paths.VaccinationParticipation.GetParentParticipations,
-  [transform(), auth(), authRoles(["parent"])],
-  VaccinationRoutes.getParentParticipations
-);
-vaccinationParticipationRouter.get(
   Paths.VaccinationParticipation.Search,
   [transform(), auth(), authRoles(["admin", "nurse"])],
   VaccinationRoutes.searchParticipations

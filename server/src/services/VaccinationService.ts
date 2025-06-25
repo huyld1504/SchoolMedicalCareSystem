@@ -265,23 +265,6 @@ class VaccinationService {
   }
 
   /**
-   * Get parent participations
-   */
-  async getParentParticipations(
-    parentId: string,
-    filters: { parentConsent?: string; vaccinationStatus?: string; },
-    options: PaginationOptions,
-    sort?: SortOptions
-  ): Promise<PaginationResult<IVaccinationParticipation>> {
-    return this.participationRepo.getParticipationsByParentWithFilters(
-      parentId,
-      filters,
-      options,
-      sort
-    );
-  }
-
-  /**
    * Search campaigns with advanced filters
    */
   async searchCampaigns(

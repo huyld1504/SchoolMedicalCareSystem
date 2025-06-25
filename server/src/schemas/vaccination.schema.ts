@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 // Schema cho tạo chiến dịch tiêm chủng
 export const createCampaignSchema = Joi.object({
@@ -24,21 +24,17 @@ export const addStudentsToCampaignSchema = Joi.object({
   studentIds: Joi.array().items(Joi.string().required()).min(1).required(),
 });
 
-// Schema cho phụ huynh đồng ý/từ chối
+// Schema cho phụ huynh đồng ý/từ chối với business rules validation
 export const parentConsentSchema = Joi.object({
   consent: Joi.string().valid('approved', 'denied').required(),
-  note: Joi.string().max(500).optional(),
+  note: Joi.string().max(500).allow('').optional(), // Cho phép empty string
 });
 
-// Schema cho y tá ghi nhận kết quả tiêm
+// Schema cho y tá ghi nhận kết quả tiêm với business rules
 export const nurseRecordSchema = Joi.object({
   status: Joi.string().valid('completed', 'missed', 'cancelled').required(),
-  vaccinationDate: Joi.date().iso().when('status', {
-    is: 'completed',
-    then: Joi.required(),
-    otherwise: Joi.optional(),
-  }),
-  note: Joi.string().max(500).optional(),
+  // vaccinationDate không nhận từ frontend - tự động set ở backend
+  note: Joi.string().max(500).allow('').optional(), // Cho phép empty string
 });
 
 // Schema cho query parameters của vaccination campaigns

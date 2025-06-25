@@ -298,9 +298,8 @@ async function recordVaccination(req: IReq, res: IRes) {
   if (!req.user) {
     throw new ValidationError("User authentication required");
   }
-
   const { participationId } = req.params;
-  const { status, vaccinationDate, note } = value;
+  const { status, note } = value; // vaccinationDate sẽ được tự động set ở repository
 
   await VaccinationService.recordVaccination(
     participationId as string,
@@ -312,39 +311,6 @@ async function recordVaccination(req: IReq, res: IRes) {
   const response = new ApiResponse(
     HttpStatusCodes.OK,
     "Vaccination result recorded successfully"
-  );
-  res.status(HttpStatusCodes.OK).json(response);
-}
-
-/**
- * Lấy danh sách tham gia của phụ huynh (Parent only)
- */
-async function getParentParticipations(req: IReq, res: IRes) {
-  const { error, value } = participationQuerySchema.validate(req.query);
-
-  if (error) {
-    throw new ValidationError(error.details[0].message);
-  }
-
-  if (!req.user) {
-    throw new ValidationError("User authentication required");
-  }
-
-  const { page, limit, parentConsent, vaccinationStatus, sortBy, sortOrder } = value;
-  const options = { page, limit };
-  const sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 } as any;
-
-  const participations = await VaccinationService.getParentParticipations(
-    req.user.id.toString(),
-    { parentConsent, vaccinationStatus },
-    options,
-    sort
-  );
-
-  const response = new ApiResponse(
-    HttpStatusCodes.OK,
-    "Parent participations retrieved successfully",
-    participations
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
@@ -421,7 +387,6 @@ export default {
   getCampaignParticipations,
   parentConsent,
   recordVaccination,
-  getParentParticipations,
   searchParticipations,
   searchParentParticipations,
 } as const;
