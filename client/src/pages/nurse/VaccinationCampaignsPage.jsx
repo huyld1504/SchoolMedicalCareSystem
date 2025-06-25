@@ -109,9 +109,9 @@ const VaccinationCampaignsPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'success';
-      case 'upcoming': return 'warning';
-      case 'completed': return 'info';
+      case 'planned': return 'warning';
+      case 'ongoing': return 'info';
+      case 'completed': return 'success';
       case 'cancelled': return 'error';
       default: return 'default';
     }
@@ -119,8 +119,8 @@ const VaccinationCampaignsPage = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'active': return 'Đang diễn ra';
-      case 'upcoming': return 'Sắp diễn ra';
+      case 'planned': return 'Sắp diễn ra';
+      case 'ongoing': return 'Đang diễn ra';
       case 'completed': return 'Đã hoàn thành';
       case 'cancelled': return 'Đã hủy';
       default: return status;
@@ -297,16 +297,19 @@ const VaccinationCampaignsPage = () => {
           </DialogTitle>
           <DialogContent>
             {selectedCampaign && (
-              <Grid container spacing={3} sx={{ mt: 1 }}>
+              <Grid container spacing={5} sx={{ mt: 1 }}>
                 <Grid item xs={12} md={6}>
                   <Typography variant="subtitle2" gutterBottom>Tên vaccine</Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.vaccineName}</Typography>
+
+                  <Typography variant="subtitle2" gutterBottom>Loại vaccine</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.vaccineType}</Typography>
 
                   <Typography variant="subtitle2" gutterBottom>Ngày bắt đầu</Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.startDate)}</Typography>
 
                   <Typography variant="subtitle2" gutterBottom>Ngày kết thúc</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.endDate)}</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign?.endDate)}</Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Typography variant="subtitle2" gutterBottom>Trạng thái</Typography>
@@ -317,6 +320,9 @@ const VaccinationCampaignsPage = () => {
                       size="small"
                     />
                   </Box>
+
+                  <Typography variant="subtitle2" gutterBottom>Đối tượng tiêm</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.targetAudience}</Typography>
 
                   <Typography variant="subtitle2" gutterBottom>Ngày tạo</Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.createdAt)}</Typography>
