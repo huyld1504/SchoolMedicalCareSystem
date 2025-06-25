@@ -120,10 +120,10 @@ const FilterPopover = () => {
 
           <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
             <Button variant="outlined" onClick={handleClearFilters}>
-              Clear
+              Đặt lại
             </Button>
             <Button variant="contained" onClick={handleApplyFilters}>
-              Apply
+              Áp dụng
             </Button>
           </Box>
         </Box>

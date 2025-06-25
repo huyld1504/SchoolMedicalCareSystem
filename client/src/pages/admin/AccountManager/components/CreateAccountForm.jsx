@@ -1,22 +1,20 @@
-import React, { useState } from "react";
 import {
-  Box,
+  Alert,
   Button,
-  TextField,
+  CircularProgress,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
-  Checkbox,
-  FormControlLabel,
-  Typography,
-  CircularProgress,
-  Alert,
   Paper,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { useQueryRoles } from "../../../../hooks/query/queryRole";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useState } from "react";
 import userApi from "../../../../api/userApi";
+import { useQueryRoles } from "../../../../hooks/query/queryRole";
+
 
 const initialState = {
   name: "",
