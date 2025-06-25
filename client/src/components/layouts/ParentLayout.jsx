@@ -35,7 +35,8 @@ import {
     ChildCare,
     MedicalServices,
     HealthAndSafety,
-    Person
+    Person,
+    Vaccines as VaccinesIcon
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet, useLocation } from 'react-router';
@@ -68,6 +69,12 @@ const ParentLayout = () => {
             icon: <MedicalServices />,
             path: '/parent/medical-orders',
             active: location.pathname.startsWith('/parent/medical-orders')
+        },
+        {
+            text: 'Thông báo tiêm chủng',
+            icon: <VaccinesIcon />,
+            path: '/parent/vaccination-notifications',
+            active: location.pathname.startsWith('/parent/vaccination-notifications')
         }
     ];
 
