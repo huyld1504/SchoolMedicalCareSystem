@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import CampaignTable from "./components/CampaignTable";
-import CreateCampaignForm from "./components/CreateCampaignForm";
 import {
   Button,
   Dialog,
@@ -31,23 +30,13 @@ const VaccinationCampaigns = () => {
         </Typography>
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ mb: 2 }}
-        onClick={handleOpen}
-        startIcon={<AddIcon />}
-      >
-        Tạo chiến dịch mới
-      </Button>
+    
 
       <CampaignTable />
 
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>Tạo chiến dịch tiêm chủng mới</DialogTitle>
-        <DialogContent>
-          <CreateCampaignForm onSuccess={handleClose} />
-        </DialogContent>
+      
         <DialogActions>
           <Button onClick={handleClose}>Đóng</Button>
         </DialogActions>

@@ -39,13 +39,12 @@ import {
   FilterList as FilterIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
+  Info as InfoIcon,
+  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { vi } from 'date-fns/locale';
-import dayjs from 'dayjs';
+
 import vaccinationCampaignApi from "../../../../api/vaccinationCampaignApi";
+import { formatnoTime } from '../../../../utils/date.utils';
 
 const DetailView = ({ campaign }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,15 +60,18 @@ const DetailView = ({ campaign }) => {
     vaccinationDateFrom: null,
     vaccinationDateTo: null,
   });
+
   // Query for participants from campaign
   const { data: participationsResponse, isLoading: participationsLoading } = useQuery({
     queryKey: ["campaign-participations", campaign._id],
     queryFn: () => vaccinationCampaignApi.GetAllParticipationsInCampaign(campaign._id),
     enabled: !!campaign._id,
   });
+
   // Get the participations data from the response
   const participationsData = participationsResponse?.data?.records || [];
-  const totalParticipants = participationsData.length;
+  const totalParticipants = participationsResponse?.data?.total;
+  const completedCount = participationsData.filter(p => p.vaccinationStatus === 'completed').length;
 
   // Apply filters and search locally
   const filteredParticipations = participationsData.filter(participant => {
@@ -77,10 +79,10 @@ const DetailView = ({ campaign }) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       const studentInfo = participant.student;
-      const studentName = `${studentInfo?.firstName || ''} ${studentInfo?.lastName || ''}`.toLowerCase();
-      const studentClass = studentInfo?.class?.toLowerCase() || '';
+      const studentName = studentInfo?.name?.toLowerCase() || '';
+      const studentCode = studentInfo?.studentCode?.toLowerCase() || '';
 
-      if (!studentName.includes(searchLower) && !studentClass.includes(searchLower)) {
+      if (!studentName.includes(searchLower) && !studentCode.includes(searchLower)) {
         return false;
       }
     }
@@ -95,31 +97,6 @@ const DetailView = ({ campaign }) => {
       return false;
     }
 
-    // Date filters
-    if (filters.consentDateFrom && participant.consentDate) {
-      const consentDate = new Date(participant.consentDate);
-      const fromDate = new Date(filters.consentDateFrom);
-      if (consentDate < fromDate) return false;
-    }
-
-    if (filters.consentDateTo && participant.consentDate) {
-      const consentDate = new Date(participant.consentDate);
-      const toDate = new Date(filters.consentDateTo);
-      if (consentDate > toDate) return false;
-    }
-
-    if (filters.vaccinationDateFrom && participant.vaccinationDate) {
-      const vacDate = new Date(participant.vaccinationDate);
-      const fromDate = new Date(filters.vaccinationDateFrom);
-      if (vacDate < fromDate) return false;
-    }
-
-    if (filters.vaccinationDateTo && participant.vaccinationDate) {
-      const vacDate = new Date(participant.vaccinationDate);
-      const toDate = new Date(filters.vaccinationDateTo);
-      if (vacDate > toDate) return false;
-    }
-
     return true;
   });
 
@@ -127,10 +104,12 @@ const DetailView = ({ campaign }) => {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(filteredParticipations.length / itemsPerPage);
   const startIndex = (participationPage - 1) * itemsPerPage;
-  const paginatedParticipations = filteredParticipations.slice(startIndex, startIndex + itemsPerPage);// Handle searchmap
+  const paginatedParticipations = filteredParticipations.slice(startIndex, startIndex + itemsPerPage);
+
+  // Event handlers
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setParticipationPage(1); // Reset to first page when searching
+    setParticipationPage(1);
   };
 
   const handleClearSearch = () => {
@@ -142,13 +121,12 @@ const DetailView = ({ campaign }) => {
     setParticipationPage(value);
   };
 
-  // Handle filters
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({
       ...prev,
       [filterName]: value
     }));
-    setParticipationPage(1); // Reset to first page when filtering
+    setParticipationPage(1);
   };
 
   const handleClearFilters = () => {
@@ -167,10 +145,10 @@ const DetailView = ({ campaign }) => {
     value !== '' && value !== null
   );
 
-  // Status color mapping
+  // Utility functions
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'active':
+      case 'ongoing':
       case 'đang hoạt động':
         return 'success';
       case 'completed':
@@ -190,7 +168,6 @@ const DetailView = ({ campaign }) => {
     }
   };
 
-  // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -205,7 +182,6 @@ const DetailView = ({ campaign }) => {
     }
   };
 
-  // Format datetime
   const formatDateTime = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -216,515 +192,474 @@ const DetailView = ({ campaign }) => {
   };
 
   return (
-    <Grid container spacing={3}>
-      {/* Basic Information */}
-      <Grid item xs={12}>
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <DescriptionIcon color="primary" />
-              Thông tin cơ bản
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3, maxWidth: '100%' }}>
+      {/* Header Section - Tên chiến dịch */}
+      <Box sx={{ mb: 4, textAlign: 'center', maxWidth: '100%' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          {campaign.vaccineName || 'Chiến dịch tiêm chủng'}
+        </Typography>
+        <Chip
+          label={campaign.status || 'N/A'}
+          color={getStatusColor(campaign.status)}
+          size="large"
+          sx={{ fontSize: '1rem', px: 2, py: 1 }}
+        />
+      </Box>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Tên vaccine
-                </Typography>
-                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' }}>
-                  {campaign.vaccineName || 'N/A'}
-                </Typography>
-              </Grid>
+      <Grid container spacing={3}>
+        
 
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Loại vaccine
+        {/* Row 2: Thông tin chiến dịch (full width) */}
+        <Grid item xs={12}>
+          <Card sx={{ width: '1010px' }}>
+            <CardContent sx={{ width: '100%' }}>
+              {/* Header chính */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <DescriptionIcon color="primary" />
+                  Thông tin chiến dịch
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {campaign.vaccineType || 'N/A'}
-                </Typography>
-              </Grid>
+              </Box>
+              
+              <Divider sx={{ mb: 3 }} />
 
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Đối tượng mục tiêu
+              {/* Section 1: Thông tin cơ bản */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>
+                  Thông tin cơ bản
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {campaign.targetAudience || 'N/A'}
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Ngày bắt đầu
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {formatDate(campaign.startDate)}
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Trạng thái
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  <Chip
-                    label={campaign.status || 'N/A'}
-                    color={getStatusColor(campaign.status)}
-                    size="medium"
-                  />
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* Container cho 3 cards */}
-      <Grid item xs={12}>
-        <Box sx={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr', // 3 columns đều nhau
-          gap: 3,
-          width: '100%',
-          '@media (max-width: 900px)': {
-            gridTemplateColumns: '1fr' // 1 column trên mobile
-          }
-        }}>
-          {/* Schedule Card - 40% width */}
-          <Card sx={{
-            flexBasis: '40%',
-            minWidth: '300px',
-            flexGrow: 1,
-            height: 'fit-content'
-          }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CalendarIcon color="primary" />
-                Lịch trình
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Ngày bắt đầu
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    {formatDate(campaign.startDate)}
-                  </Typography>
-                </Grid>
-
-                {campaign.schedule && campaign.schedule.length > 0 && (
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                      Lịch chi tiết
-                    </Typography>
-                    <List dense>
-                      {campaign.schedule.map((scheduleItem, index) => (
-                        <ListItem key={index} divider>
-                          <ListItemText
-                            primary={`${formatDateTime(scheduleItem.date)}`}
-                            secondary={scheduleItem.note || 'Không có ghi chú'}
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Loại vaccine
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                        {campaign.vaccineType || 'N/A'}
+                      </Typography>
+                    </Box>
                   </Grid>
-                )}
-              </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Đối tượng mục tiêu
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                        {campaign.targetAudience || 'N/A'}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Ngày bắt đầu
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                        {formatnoTime(campaign.startDate)}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Ngày kết thúc
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                        {formatnoTime(campaign.endDate)}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Người tạo
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                        {campaign.createdBy?.name || 'N/A'}
+                      </Typography>
+                     
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Section 2: Lịch trình */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CalendarIcon color="primary" fontSize="small" />
+                  Lịch trình
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Ngày bắt đầu
+                      </Typography>
+                      <Typography variant="body1">
+                        {formatDate(campaign.startDate)}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {campaign.endDate && (
+                    <Grid item xs={12} sm={6}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Ngày kết thúc
+                        </Typography>
+                        <Typography variant="body1">
+                          {formatDate(campaign.endDate)}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+
+                  {campaign.schedule && campaign.schedule.length > 0 && (
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                        Lịch chi tiết
+                      </Typography>
+                      <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
+                        <List dense>
+                          {campaign.schedule.map((scheduleItem, index) => (
+                            <ListItem key={index} divider>
+                              <ListItemText
+                                primary={`${formatDateTime(scheduleItem.date)}`}
+                                secondary={scheduleItem.note || 'Không có ghi chú'}
+                              />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Box>
+                    </Grid>
+                  )}
+                </Grid>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Section 3: Thông tin bổ sung */}
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <InfoIcon color="primary" fontSize="small" />
+                  Thông tin bổ sung
+                </Typography>
+
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Ngày tạo
+                      </Typography>
+                      <Typography variant="body2">
+                        {formatDateTime(campaign.createdAt)}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Cập nhật lần cuối
+                      </Typography>
+                      <Typography variant="body2">
+                        {formatDateTime(campaign.updatedAt)}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {campaign.notes && (
+                    <Grid item xs={12}>
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Ghi chú
+                        </Typography>
+                        <Typography variant="body2" sx={{ 
+                          mt: 1, 
+                          p: 2, 
+                          backgroundColor: 'grey.50', 
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'grey.200'
+                        }}>
+                          {campaign.notes}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+
+                  {campaign.description && (
+                    <Grid item xs={12}>
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Mô tả
+                        </Typography>
+                        <Typography variant="body2" sx={{ 
+                          mt: 1, 
+                          p: 2, 
+                          backgroundColor: 'grey.50', 
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'grey.200'
+                        }}>
+                          {campaign.description}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                </Grid>
+              </Box>
             </CardContent>
           </Card>
+        </Grid>
 
-          {/* Status Card - 30% width */}
-          <Card sx={{
-            flexBasis: '30%',
-            minWidth: '250px',
-            flexGrow: 1,
-            height: 'fit-content'
-          }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Trạng thái chiến dịch
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
+        {/* Row 3: Danh sách tham gia (full width) */}
+        <Grid item xs={12}>
+          <Card sx={{ width: '1010px' }}>
+            <CardContent sx={{ width: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <GroupIcon color="primary" />
+                  Danh sách tham gia
+                  {totalParticipants > 0 && (
+                    <Chip
+                      label={`${filteredParticipations.length}/${totalParticipants} người`}
+                      color="primary"
+                      size="small"
+                      sx={{ ml: 1 }}
+                    />
+                  )}
+                </Typography>
+              </Box>
+              
+              <Divider sx={{ mb: 3 }} />
 
-              <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Chip
-                  label={campaign.status || 'N/A'}
-                  color={getStatusColor(campaign.status)}
-                  size="large"
-                  sx={{ fontSize: '1rem', py: 2 }}
+              {/* Search và Filter */}
+              <Box sx={{ mb: 3 }}>
+                {/* Search Box */}
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Tìm kiếm theo tên hoặc mã học sinh..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  sx={{ mb: 2 }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon color="action" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: searchTerm && (
+                      <InputAdornment position="end">
+                        <IconButton size="small" onClick={handleClearSearch}>
+                          <ClearIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
-              </Box>
 
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="text.secondary" align="center">
-                    Số lượng tham gia
-                  </Typography>
-                  <Typography variant="h4" align="center" color="primary">
-                    {campaign.participantCount || 0}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="text.secondary" align="center">
-                    Đã hoàn thành
-                  </Typography>
-                  <Typography variant="h4" align="center" color="success.main">
-                    {campaign.completedCount || 0}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-
-          {/* Metadata Card - 30% width */}
-          <Card sx={{
-            flexBasis: '30%',
-            minWidth: '250px',
-            flexGrow: 1,
-            height: 'fit-content'
-          }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Thông tin khác
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Người tạo
-                </Typography>
-                <Typography variant="body2" fontWeight="bold">
-                  {campaign.createdBy?.name || 'N/A'}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {campaign.createdBy?.email || ''}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Ngày tạo
-                </Typography>
-                <Typography variant="body2">
-                  {formatDateTime(campaign.createdAt)}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Cập nhật lần cuối
-                </Typography>
-                <Typography variant="body2">
-                  {formatDateTime(campaign.updatedAt)}
-                </Typography>
-              </Box>
-
-              {campaign.notes && (
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Ghi chú
-                  </Typography>
-                  <Typography variant="body2">
-                    {campaign.notes}
-                  </Typography>
+                {/* Filter Controls */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<FilterIcon />}
+                    endIcon={showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    onClick={() => setShowFilters(!showFilters)}
+                  >
+                    Bộ lọc
+                  </Button>
+                  {hasActiveFilters && (
+                    <Chip
+                      label="Có bộ lọc đang áp dụng"
+                      color="primary"
+                      size="small"
+                      onDelete={handleClearFilters}
+                    />
+                  )}
                 </Box>
+
+                <Collapse in={showFilters}>
+                  <Card variant="outlined" sx={{ p: 2 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6} md={4} sx={{ width: '300px' }}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Đồng ý phụ huynh</InputLabel>
+                          <Select
+                            value={filters.parentConsent}
+                            label="Đồng ý phụ huynh"
+                            onChange={(e) => handleFilterChange('parentConsent', e.target.value)}
+                          >
+                            <MenuItem value="">Tất cả</MenuItem>
+                            <MenuItem value="pending">Chờ xử lý</MenuItem>
+                            <MenuItem value="approved">Đã đồng ý</MenuItem>
+                            <MenuItem value="denied">Từ chối</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6} md={4} sx={{ width: '300px' }}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Trạng thái tiêm</InputLabel>
+                          <Select
+                            value={filters.vaccinationStatus}
+                            label="Trạng thái tiêm"
+                            onChange={(e) => handleFilterChange('vaccinationStatus', e.target.value)}
+                          >
+                            <MenuItem value="">Tất cả</MenuItem>
+                            <MenuItem value="scheduled">Đã lên lịch</MenuItem>
+                            <MenuItem value="completed">Đã tiêm</MenuItem>
+                            <MenuItem value="missed">Bỏ lỡ</MenuItem>
+                            <MenuItem value="cancelled">Đã hủy</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6} md={4}>
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={handleClearFilters}
+                          disabled={!hasActiveFilters}
+                          fullWidth
+                        >
+                          Xóa bộ lọc
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                </Collapse>
+              </Box>
+
+              {/* Participants Table */}
+              {participationsLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <>
+                  <TableContainer component={Paper} variant="outlined" sx={{ mb: 2, width: '100%' }}>
+                    <Table sx={{ width: '100%' }}>
+                      <TableHead>
+                        <TableRow sx={{ backgroundColor: 'grey.50' }}>
+                          <TableCell sx={{ fontWeight: 'bold' }}>Học sinh</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>Đồng ý PH</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>Trạng thái tiêm</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>Ngày tiêm</TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {paginatedParticipations.length > 0 ? (
+                          paginatedParticipations.map((participant, index) => {
+                            const studentInfo = participant.student;
+                            return (
+                              <TableRow key={participant._id || index} hover>
+                                <TableCell>
+                                  <Box>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 'medium' }}>
+                                      {studentInfo?.name || 'N/A'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      Mã HS: {studentInfo?.studentCode || 'N/A'}
+                                    </Typography>
+                                  </Box>
+                                </TableCell>
+
+                                <TableCell>
+                                  <Chip
+                                    label={
+                                      participant.parentConsent === 'approved' ? 'Đã đồng ý' :
+                                      participant.parentConsent === 'pending' ? 'Chờ xử lý' :
+                                      participant.parentConsent === 'denied' ? 'Từ chối' :
+                                      'Chưa rõ'
+                                    }
+                                    color={
+                                      participant.parentConsent === 'approved' ? 'success' :
+                                      participant.parentConsent === 'pending' ? 'warning' :
+                                      participant.parentConsent === 'denied' ? 'error' :
+                                      'default'
+                                    }
+                                    size="small"
+                                  />
+                                </TableCell>
+
+                                <TableCell>
+                                  <Chip
+                                    label={
+                                      participant.vaccinationStatus === 'completed' ? 'Đã tiêm' :
+                                      participant.vaccinationStatus === 'scheduled' ? 'Đã lên lịch' :
+                                      participant.vaccinationStatus === 'missed' ? 'Bỏ lỡ' :
+                                      participant.vaccinationStatus === 'cancelled' ? 'Đã hủy' :
+                                      participant.vaccinationStatus || 'Chưa rõ'
+                                    }
+                                    color={
+                                      participant.vaccinationStatus === 'completed' ? 'success' :
+                                      participant.vaccinationStatus === 'scheduled' ? 'info' :
+                                      participant.vaccinationStatus === 'missed' ? 'warning' :
+                                      participant.vaccinationStatus === 'cancelled' ? 'error' :
+                                      'default'
+                                    }
+                                    size="small"
+                                  />
+                                </TableCell>
+
+                                <TableCell>
+                                  <Typography variant="body2">
+                                    {participant.vaccinationDate ? formatDate(participant.vaccinationDate) : 'Chưa tiêm'}
+                                  </Typography>
+                                </TableCell>
+
+                                <TableCell>
+                                  <Typography variant="body2" color="text.secondary">
+                                    {participant.notes || 'Không có'}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                              <Typography color="text.secondary" variant="h6">
+                                {searchTerm || hasActiveFilters ? 'Không tìm thấy kết quả phù hợp' : 'Chưa có người tham gia'}
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                      <Pagination
+                        count={totalPages}
+                        page={participationPage}
+                        onChange={handleParticipationPageChange}
+                        color="primary"
+                        showFirstButton
+                        showLastButton
+                      />
+                    </Box>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
-        </Box>
+        </Grid>
       </Grid>
-
-      {/* Participants */}      {/* Participants List */}
-      <Grid item xs={12}>
-        <Card>
-          <CardContent>            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <GroupIcon color="primary" />
-            Danh sách tham gia
-            {totalParticipants > 0 && (
-              <Chip
-                label={`${filteredParticipations.length}/${totalParticipants} người`}
-                color="primary"
-                size="small"
-              />
-            )}
-          </Typography>
-            <Divider sx={{ mb: 2 }} />            {/* Search Box */}
-            <Box sx={{ mb: 2 }}>
-              <TextField
-                fullWidth
-                placeholder="Tìm kiếm theo tên học sinh, lớp..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                  endAdornment: searchTerm && (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleClearSearch} size="small">
-                        <ClearIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-
-            {/* Filter Controls */}
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<FilterIcon />}
-                  endIcon={showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  Bộ lọc nâng cao
-                </Button>
-                {hasActiveFilters && (
-                  <Chip
-                    label="Có bộ lọc"
-                    color="primary"
-                    size="small"
-                    onDelete={handleClearFilters}
-                  />
-                )}
-              </Box>
-
-              <Collapse in={showFilters}>
-                <Card variant="outlined" sx={{ p: 2, mt: 1 }}>
-                  <Grid container spacing={2}>
-                    {/* Parent Consent Filter */}
-                    <Grid item xs={12} sm={6} md={3}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Đồng ý của phụ huynh</InputLabel>
-                        <Select
-                          value={filters.parentConsent}
-                          label="Đồng ý của phụ huynh"
-                          onChange={(e) => handleFilterChange('parentConsent', e.target.value)}
-                        >
-                          <MenuItem value="">Tất cả</MenuItem>
-                          <MenuItem value="pending">Chờ xử lý</MenuItem>
-                          <MenuItem value="approved">Đã đồng ý</MenuItem>
-                          <MenuItem value="denied">Từ chối</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-
-                    {/* Vaccination Status Filter */}
-                    <Grid item xs={12} sm={6} md={3}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Trạng thái tiêm</InputLabel>
-                        <Select
-                          value={filters.vaccinationStatus}
-                          label="Trạng thái tiêm"
-                          onChange={(e) => handleFilterChange('vaccinationStatus', e.target.value)}
-                        >
-                          <MenuItem value="">Tất cả</MenuItem>
-                          <MenuItem value="scheduled">Đã lên lịch</MenuItem>
-                          <MenuItem value="completed">Đã tiêm</MenuItem>
-                          <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                          <MenuItem value="cancelled">Đã hủy</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-
-                    {/* Consent Date From */}
-                    <Grid item xs={12} sm={6} md={3}>
-                      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-                        <DatePicker
-                          label="Ngày đồng ý từ"
-                          value={filters.consentDateFrom}
-                          onChange={(date) => handleFilterChange('consentDateFrom', date)}
-                          slotProps={{
-                            textField: {
-                              size: 'small',
-                              fullWidth: true,
-                            }
-                          }}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-
-                    {/* Consent Date To */}
-                    <Grid item xs={12} sm={6} md={3}>
-                      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-                        <DatePicker
-                          label="Ngày đồng ý đến"
-                          value={filters.consentDateTo}
-                          onChange={(date) => handleFilterChange('consentDateTo', date)}
-                          slotProps={{
-                            textField: {
-                              size: 'small',
-                              fullWidth: true,
-                            }
-                          }}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-
-                    {/* Vaccination Date From */}
-                    <Grid item xs={12} sm={6} md={3}>
-                      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-                        <DatePicker
-                          label="Ngày tiêm từ"
-                          value={filters.vaccinationDateFrom}
-                          onChange={(date) => handleFilterChange('vaccinationDateFrom', date)}
-                          slotProps={{
-                            textField: {
-                              size: 'small',
-                              fullWidth: true,
-                            }
-                          }}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-
-                    {/* Vaccination Date To */}
-                    <Grid item xs={12} sm={6} md={3}>
-                      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-                        <DatePicker
-                          label="Ngày tiêm đến"
-                          value={filters.vaccinationDateTo}
-                          onChange={(date) => handleFilterChange('vaccinationDateTo', date)}
-                          slotProps={{
-                            textField: {
-                              size: 'small',
-                              fullWidth: true,
-                            }
-                          }}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-
-                    {/* Clear Filters Button */}
-                    <Grid item xs={12} sm={6} md={6}>
-                      <Button
-                        variant="text"
-                        size="small"
-                        onClick={handleClearFilters}
-                        disabled={!hasActiveFilters}
-                      >
-                        Xóa tất cả bộ lọc
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Card>
-              </Collapse>
-            </Box>
-
-            {/* Participants Table */}
-            {participationsLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <>
-                <TableContainer component={Paper} variant="outlined">
-                  <Table>                    <TableHead>
-                    <TableRow>
-                      <TableCell>Họ tên</TableCell>
-                      <TableCell>Lớp</TableCell>
-                      <TableCell>Ngày sinh</TableCell>
-                      <TableCell>Đồng ý PH</TableCell>
-                      <TableCell>Trạng thái tiêm</TableCell>
-                      <TableCell>Ngày tiêm</TableCell>
-                      <TableCell>Ghi chú</TableCell>
-                    </TableRow>
-                  </TableHead>                    <TableBody>
-                      {paginatedParticipations.length > 0 ? (
-                        paginatedParticipations.map((participant, index) => {
-                          const studentInfo = participant.student;
-                          return (
-                            <TableRow key={participant._id || index}>
-                              <TableCell>
-                                <Typography variant="subtitle2">
-                                  {studentInfo ? `${studentInfo.firstName || ''} ${studentInfo.lastName || ''}`.trim() : 'N/A'}
-                                </Typography>
-                              </TableCell>
-                              <TableCell>{studentInfo?.class || 'N/A'}</TableCell>
-                              <TableCell>{formatDate(studentInfo?.dateOfBirth)}</TableCell>
-                              <TableCell>
-                                <Chip
-                                  label={
-                                    participant.parentConsent === 'approved' ? 'Đã đồng ý' :
-                                      participant.parentConsent === 'pending' ? 'Chờ xử lý' :
-                                        participant.parentConsent === 'denied' ? 'Từ chối' :
-                                          'Chưa rõ'
-                                  }
-                                  color={
-                                    participant.parentConsent === 'approved' ? 'success' :
-                                      participant.parentConsent === 'pending' ? 'warning' :
-                                        participant.parentConsent === 'denied' ? 'error' :
-                                          'default'
-                                  }
-                                  size="small"
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <Chip
-                                  label={
-                                    participant.vaccinationStatus === 'completed' ? 'Đã tiêm' :
-                                      participant.vaccinationStatus === 'scheduled' ? 'Đã lên lịch' :
-                                        participant.vaccinationStatus === 'missed' ? 'Bỏ lỡ' :
-                                          participant.vaccinationStatus === 'cancelled' ? 'Đã hủy' :
-                                            participant.vaccinationStatus || 'Chưa rõ'
-                                  }
-                                  color={
-                                    participant.vaccinationStatus === 'completed' ? 'success' :
-                                      participant.vaccinationStatus === 'scheduled' ? 'info' :
-                                        participant.vaccinationStatus === 'missed' ? 'warning' :
-                                          participant.vaccinationStatus === 'cancelled' ? 'error' :
-                                            'default'
-                                  }
-                                  size="small"
-                                />
-                              </TableCell>
-                              <TableCell>
-                                {participant.vaccinationDate ?
-                                  formatDate(participant.vaccinationDate) :
-                                  'Chưa tiêm'
-                                }
-                              </TableCell>
-                              <TableCell>{participant.notes || 'Không có'}</TableCell>
-                            </TableRow>
-                          );
-                        })
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} align="center">
-                            <Typography color="text.secondary">
-                              {searchTerm || hasActiveFilters ? 'Không tìm thấy kết quả phù hợp' : 'Chưa có người tham gia'}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>                {/* Pagination */}
-                {totalPages > 1 && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <Pagination
-                      count={totalPages}
-                      page={participationPage}
-                      onChange={handleParticipationPageChange}
-                      color="primary"
-                    />
-                  </Box>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+    </Box>
   );
 };
 

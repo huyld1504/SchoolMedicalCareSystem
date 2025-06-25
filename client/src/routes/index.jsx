@@ -36,6 +36,9 @@ import AdminLayout from "../components/layouts/AdminLayout";
 
 //Admin pages
 import AccountManager from "../pages/admin/AccountManager";
+import VaccinationCampaigns from "../pages/admin/VaccinationCampaigns";
+import VaccinationCampaignDetail from "../pages/admin/VaccinationCampaignDetail";
+import EditCampaign from "../pages/admin/VaccinationCampaigns/EditCampaign";
 
 const router = createBrowserRouter([
   {
@@ -234,6 +237,22 @@ const router = createBrowserRouter([
           {
             path: "users",
             element: <AccountManager />,
+          },
+           {
+            path: "vaccination-campaigns",
+            children: [
+              {
+                index: true,
+                element: <VaccinationCampaigns />,
+              },
+              {
+                path: ":campaignId",
+                element: <VaccinationCampaignDetail />,
+              }, {
+                path: "edit/:campaignId",
+                element: <EditCampaign />,
+              },
+            ],
           },
         ],
       },

@@ -65,6 +65,8 @@ const EditCampaign = () => {
       navigate(`/admin/vaccination-campaigns/${campaignId}`, {
         replace: true,
       });
+
+
     },
     onError: (error) => {
       console.error('Error updating campaign:', error);
@@ -139,7 +141,7 @@ const EditCampaign = () => {
     updateMutation.mutate(submitData);
   };
   const handleCancel = () => {
-    navigate(`/admin/vaccination-campaigns/${campaignId}`);
+    navigate(`/admin/vaccination-campaigns`);
   };
 
   if (isLoading) {
@@ -177,7 +179,7 @@ const EditCampaign = () => {
           onClick={handleCancel}
           sx={{ mr: 2 }}
         >
-          Quay lại
+       
         </Button>
         <Typography variant="h4" component="h1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <EditIcon color="primary" />

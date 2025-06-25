@@ -56,9 +56,31 @@ const CampaignTable = () => {
       state: { campaignData: campaign }
     });
   };
-  // Status color mapping
+
+  // ✅ Hàm chuyển đổi status sang tiếng Việt
+  const getStatusText = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'ongoing':
+      case 'active':
+        return 'Đang hoạt động';
+      case 'completed':
+        return 'Hoàn thành';
+      case 'cancelled':
+        return 'Đã hủy';
+      case 'pending':
+        return 'Chờ xử lý';
+      case 'planned':
+      case 'planning':
+        return 'Đã lên kế hoạch';
+      default:
+        return status || 'Không xác định';
+    }
+  };
+
+  // Status color mapping - đã cập nhật
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
+      case 'ongoing':
       case 'active':
       case 'đang hoạt động':
         return 'success';
@@ -72,6 +94,7 @@ const CampaignTable = () => {
       case 'chờ xử lý':
         return 'warning';
       case 'planned':
+      case 'planning':
       case 'đã lên kế hoạch':
         return 'info';
       default:
@@ -104,6 +127,7 @@ const CampaignTable = () => {
       </Typography>
     );
   }
+
   const campaigns = data?.data?.records || [];
   const total = data?.data?.total || 0;
   const page = data?.data?.page || 1;
@@ -127,10 +151,11 @@ const CampaignTable = () => {
         }}
       >
         <Typography variant="body2" color="text.secondary">
-          Showing {campaigns.length} of {total} campaigns
-        </Typography>        {(params.keyword || params.status || params.startDateFrom || params.startDateTo) && (
+          Hiển thị {campaigns.length} trong tổng số {total} chiến dịch
+        </Typography>
+        {(params.keyword || params.status || params.startDateFrom || params.startDateTo) && (
           <Chip
-            label="Filters applied"
+            label="Đã áp dụng bộ lọc"
             color="primary"
             size="small"
             variant="outlined"
@@ -141,82 +166,76 @@ const CampaignTable = () => {
       {/* Table */}
       <Paper>
         <TableContainer>
-          <Table>            <TableHead>
-            <TableRow>
-              <TableCell>Tên vaccine</TableCell>
-              <TableCell>Loại vaccine</TableCell>
-              <TableCell>Đối tượng</TableCell>
-              <TableCell>Ngày bắt đầu</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Người tạo</TableCell>
-              <TableCell>Ngày tạo</TableCell>
-              <TableCell align="center">Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-            <TableBody>              {campaigns.length === 0 ? (
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={8} align="center">
-                  Không có chiến dịch tiêm chủng nào.
-                </TableCell>
+                <TableCell>Tên vaccine</TableCell>
+                <TableCell>Loại vaccine</TableCell>
+                <TableCell>Đối tượng</TableCell>
+                <TableCell>Ngày bắt đầu</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Người tạo</TableCell>
+                <TableCell>Ngày tạo</TableCell>
+                <TableCell align="center">Thao tác</TableCell>
               </TableRow>
-            ) : (
-              campaigns.map((campaign) => (
-                <TableRow key={campaign._id} hover>
-                  <TableCell>
-                    <Typography variant="subtitle2" fontWeight="bold">
-                      {campaign.vaccineName || 'N/A'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{campaign.vaccineType || 'N/A'}</TableCell>
-                  <TableCell>
-                    <Typography variant="body2" noWrap sx={{ maxWidth: 200 }}>
-                      {campaign.targetAudience || 'N/A'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{formatDate(campaign.startDate)}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={campaign.status || 'N/A'}
-                      color={getStatusColor(campaign.status)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {campaign.createdBy?.name || 'N/A'}
-                    </Typography>
-
-                  </TableCell>
-                  <TableCell>{formatDate(campaign.createdAt)}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="Xem chi tiết">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleViewDetail(campaign)}
-                      >
-                        <ViewIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Chỉnh sửa">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleEdit(campaign)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Xóa">
-                      <IconButton
-                        size="small"
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
+            </TableHead>
+            <TableBody>
+              {campaigns.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center">
+                    Không có chiến dịch tiêm chủng nào.
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              ) : (
+                campaigns.map((campaign) => (
+                  <TableRow key={campaign._id} hover>
+                    <TableCell>
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        {campaign.vaccineName || 'N/A'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{campaign.vaccineType || 'N/A'}</TableCell>
+                    <TableCell>
+                      <Typography variant="body2" noWrap sx={{ maxWidth: 200 }}>
+                        {campaign.targetAudience || 'N/A'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{formatDate(campaign.startDate)}</TableCell>
+                    <TableCell>
+                      {/* ✅ Sử dụng getStatusText để hiển thị tiếng Việt */}
+                      <Chip
+                        label={getStatusText(campaign.status)}
+                        color={getStatusColor(campaign.status)}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {campaign.createdBy?.name || 'N/A'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{formatDate(campaign.createdAt)}</TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="Xem chi tiết">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleViewDetail(campaign)}
+                        >
+                          <ViewIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Chỉnh sửa">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleEdit(campaign)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

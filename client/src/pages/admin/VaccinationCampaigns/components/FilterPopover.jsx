@@ -7,9 +7,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField,
   Typography,
   Divider,
+  Alert,
 } from "@mui/material";
 import { FilterList as FilterIcon } from "@mui/icons-material";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -26,6 +26,7 @@ const FilterPopover = () => {
   const params = useQueryParams();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+
   // Initialize filter state from URL params
   const [filters, setFilters] = useState({
     status: params.status || "",
@@ -33,12 +34,23 @@ const FilterPopover = () => {
     startDateTo: params.startDateTo || "",
   });
 
-  // Date picker states
+  // Date picker states with error handling
   const [dateFromValue, setDateFromValue] = useState(() => {
-    return params.startDateFrom ? new Date(params.startDateFrom) : null;
+    try {
+      return params.startDateFrom ? new Date(params.startDateFrom) : null;
+    } catch (error) {
+      console.warn('Invalid startDateFrom:', params.startDateFrom);
+      return null;
+    }
   });
+
   const [dateToValue, setDateToValue] = useState(() => {
-    return params.startDateTo ? new Date(params.startDateTo) : null;
+    try {
+      return params.startDateTo ? new Date(params.startDateTo) : null;
+    } catch (error) {
+      console.warn('Invalid startDateTo:', params.startDateTo);
+      return null;
+    }
   });
 
   const handleClick = (event) => {
@@ -55,19 +67,33 @@ const FilterPopover = () => {
       [filterName]: value
     }));
   };
+
   const handleDateFromChange = (date) => {
     setDateFromValue(date);
     const dateString = date ? dayjs(date).format('YYYY-MM-DD') : '';
     handleFilterChange('startDateFrom', dateString);
+    
+    // Validation: Reset end date if start date is after end date
+    if (date && dateToValue && dayjs(date).isAfter(dateToValue)) {
+      setDateToValue(null);
+      handleFilterChange('startDateTo', '');
+    }
   };
 
   const handleDateToChange = (date) => {
     setDateToValue(date);
     const dateString = date ? dayjs(date).format('YYYY-MM-DD') : '';
     handleFilterChange('startDateTo', dateString);
+    
+    // Validation: Reset start date if end date is before start date
+    if (date && dateFromValue && dayjs(date).isBefore(dateFromValue)) {
+      setDateFromValue(null);
+      handleFilterChange('startDateFrom', '');
+    }
   };
+
   const applyFilters = () => {
-    // Chỉ gửi các filters có giá trị
+    // Only send filters with values
     const filteredParams = {};
 
     if (filters.status) {
@@ -90,6 +116,7 @@ const FilterPopover = () => {
     navigate({ search: newQuery });
     handleClose();
   };
+
   const clearFilters = () => {
     setFilters({
       status: "",
@@ -109,6 +136,7 @@ const FilterPopover = () => {
   };
 
   const open = Boolean(anchorEl);
+  const hasActiveFilters = filters.status || filters.startDateFrom || filters.startDateTo;
 
   return (
     <>
@@ -116,9 +144,11 @@ const FilterPopover = () => {
         variant="outlined"
         startIcon={<FilterIcon />}
         onClick={handleClick}
+        color={hasActiveFilters ? "primary" : "inherit"}
       >
-        Bộ lọc
+        Bộ lọc {hasActiveFilters && `(${Object.values(filters).filter(Boolean).length})`}
       </Button>
+      
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -127,8 +157,12 @@ const FilterPopover = () => {
           vertical: 'bottom',
           horizontal: 'left',
         }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
       >
-        <Box sx={{ p: 3, minWidth: 300 }}>
+        <Box sx={{ p: 3, minWidth: 320 }}>
           <Typography variant="h6" gutterBottom>
             Bộ lọc tìm kiếm
           </Typography>
@@ -150,12 +184,26 @@ const FilterPopover = () => {
             </Select>
           </FormControl>
 
-          {/* Date From Filter */}
+          {/* Date Filters */}
           <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
             <DatePicker
               label="Từ ngày"
               value={dateFromValue}
               onChange={handleDateFromChange}
+              maxDate={dateToValue || undefined}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  sx: { mb: 2 }
+                }
+              }}
+            />
+            
+            <DatePicker
+              label="Đến ngày"
+              value={dateToValue}
+              onChange={handleDateToChange}
+              minDate={dateFromValue || undefined}
               slotProps={{
                 textField: {
                   fullWidth: true,
@@ -165,26 +213,18 @@ const FilterPopover = () => {
             />
           </LocalizationProvider>
 
-          {/* Date To Filter */}
-          <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-            <DatePicker
-              label="Đến ngày"
-              value={dateToValue}
-              onChange={handleDateToChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  sx: { mb: 2 }
-                }
-              }}
-            />
-          </LocalizationProvider>
+          {/* Validation Warning */}
+          {dateFromValue && dateToValue && dayjs(dateFromValue).isAfter(dateToValue) && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              Ngày bắt đầu không thể sau ngày kết thúc
+            </Alert>
+          )}
 
           <Divider sx={{ my: 2 }} />
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-            <Button onClick={clearFilters} variant="text">
+            <Button onClick={clearFilters} variant="text" disabled={!hasActiveFilters}>
               Xóa bộ lọc
             </Button>
             <Button onClick={applyFilters} variant="contained">

@@ -6,7 +6,7 @@ import {
   IconButton,
 } from '@mui/material';
 import {
-  ArrowBack as BackIcon,
+  ArrowBack as ArrowBackIcon,  // ✅ Đổi tên giống EditCampaign
   Vaccines as VaccineIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -22,9 +22,14 @@ const DetailHeader = ({
   return (
     <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <IconButton onClick={onBack} sx={{ mr: 1 }}>
-          <BackIcon />
-        </IconButton>
+        {/* ✅ Chỉnh thành Button với startIcon giống EditCampaign */}
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={onBack}
+          sx={{ mr: 2 }}
+        >
+          
+        </Button>
         <Box>
           <Typography variant="h4" component="h1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0 }}>
             <VaccineIcon color="primary" />
@@ -42,14 +47,6 @@ const DetailHeader = ({
           onClick={onEdit}
         >
           Chỉnh sửa
-        </Button>
-        <Button
-          variant="outlined"
-          color="error"
-          startIcon={<DeleteIcon />}
-          onClick={onDelete}
-        >
-          Xóa
         </Button>
       </Box>
     </Box>
