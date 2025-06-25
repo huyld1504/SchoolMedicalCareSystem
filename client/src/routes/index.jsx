@@ -18,6 +18,10 @@ import MedicalEventDetailPage from "../pages/nurse/MedicalEventDetailPage";
 import MedicalEventEditPage from "../pages/nurse/MedicalEventEditPage";
 import MedicalEventAddPage from "../pages/nurse/MedicalEventAddPage";
 
+// Vaccination components
+import VaccinationCampaignsPage from "../pages/nurse/VaccinationCampaignsPage";
+import VaccinationParticipationsPage from "../pages/nurse/VaccinationParticipationsPage";
+
 // Layout components
 import AppLayout from "../components/layouts/AppLayout";
 import LandingLayout from "../components/layouts/LandingLayout";
@@ -42,12 +46,11 @@ const router = createBrowserRouter([
     children: [
       {
         element: <LandingLayout />,
-        children: [
-          {
-            index: true,
-            path: "/",
-            element: <LandingPage />,
-          },
+        children: [{
+          index: true,
+          path: "/",
+          element: <LandingPage />,
+        },
         ],
       },
       {
@@ -139,6 +142,13 @@ const router = createBrowserRouter([
           {
             path: "settings",
             element: <div>Settings Page - Coming Soon</div>, // Placeholder
+          }, {
+            path: "vaccination-campaigns",
+            element: <VaccinationCampaignsPage />,
+          },
+          {
+            path: "vaccination-campaigns/:campaignId/participations",
+            element: <VaccinationParticipationsPage />,
           },
         ],
       },
@@ -213,8 +223,7 @@ const router = createBrowserRouter([
           {
             path: "medical-orders",
             element: <ParentMedicalOrdersPage />, // Placeholder
-          },
-          {
+          }, {
             path: "medical-orders/add",
             element: <CreateMedicalOrderPage />, // Placeholder
           },
