@@ -25,17 +25,20 @@ import {
   Tooltip,
   Alert,
   Pagination,
-  InputAdornment
+  InputAdornment, FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   Vaccines as VaccinesIcon,
   Visibility as ViewIcon,
-  Edit as EditIcon,
-  Search as SearchIcon,
+  Edit as EditIcon, Search as SearchIcon,
   Add as AddIcon,
-  FilterList as FilterIcon,
   Assignment as AssignmentIcon,
-  Timeline as TimelineIcon
+  Timeline as TimelineIcon,
+  Clear as ClearIcon,
+  DateRange as DateRangeIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
@@ -48,38 +51,73 @@ const VaccinationCampaignsPage = () => {
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [page, setPage] = useState(1); const [totalPages, setTotalPages] = useState(1);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  // Load campaigns
+
+  // State cho query gọi API (theo pattern của các trang nurse khác)
+  const [query, setQuery] = useState({
+    page: 1,
+    limit: 10,
+    keyword: '',
+    status: '',
+    startDateFrom: '',
+    endDateTo: '',
+    vaccineName: ''
+  });
+
+  // State cho pagination
+  const [paginationInfo, setPaginationInfo] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0
+  });
+  // State cho search input
+  const [searchInput, setSearchInput] = useState('');
+
+  // State riêng cho date picker
+  const [dateFromValue, setDateFromValue] = useState(null);
+  const [dateToValue, setDateToValue] = useState(null);// Load campaigns khi query thay đổi
   useEffect(() => {
     loadCampaigns();
-  }, [page, searchTerm]);
-
-  const loadCampaigns = async () => {
+  }, [query.page, query.limit, query.keyword, query.status, query.startDateFrom, query.endDateTo, query.vaccineName]); const loadCampaigns = async () => {
     try {
       setLoading(true);
-      const params = {
-        ...(searchTerm && { keyword: searchTerm })
-      };
+      console.log('Campaign search query:', query);
 
-      const response = await vaccinationApi.campaigns.search(params);
+      const response = await vaccinationApi.campaigns.search(query);
       console.log(response)
 
       if (response?.isSuccess) {
         setCampaigns(response?.data?.records || []);
-        setTotalPages(response?.data?.totalPages || 1);
+        setPaginationInfo({
+          total: response?.data?.total || 0,
+          page: response?.data?.page || 1,
+          limit: response?.data?.limit || 10,
+          totalPages: response?.data?.totalPages || 0
+        });
         console.log(response?.data?.records)
         console.log('campaign ne: ', campaigns)
       } else {
         setCampaigns([]);
+        setPaginationInfo({
+          total: 0,
+          page: 1,
+          limit: 10,
+          totalPages: 0
+        });
         toast.error('Không thể tải danh sách chiến dịch');
       }
     } catch (error) {
       console.error('Error loading campaigns:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
       setCampaigns([]);
+      setPaginationInfo({
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0
+      });
     } finally {
       setLoading(false);
     }
@@ -96,10 +134,79 @@ const VaccinationCampaignsPage = () => {
       console.error('Error loading campaign details:', error);
       toast.error('Không thể tải thông tin chi tiết chiến dịch');
     }
+  }; const handleViewParticipations = (campaign) => {
+    navigate(`/nurse/vaccination-campaigns/${campaign._id}/participations`);
   };
 
-  const handleViewParticipations = (campaign) => {
-    navigate(`/nurse/vaccination-campaigns/${campaign._id}/participations`);
+  // Search handlers
+  const handleSearchChange = (event) => {
+    setSearchInput(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setQuery(prev => ({
+      ...prev,
+      keyword: searchInput,
+      page: 1 // Reset về page 1 khi search
+    }));
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearchSubmit();
+    }
+  };
+
+  // Pagination handlers
+  const handlePageChange = (event, newPage) => {
+    setQuery(prev => ({
+      ...prev,
+      page: newPage
+    }));
+  };  // Filter handlers
+  const handleFilterChange = (field, value) => {
+    setQuery(prev => ({
+      ...prev,
+      [field]: value,
+      page: 1 // Reset về page 1 khi filter thay đổi
+    }));
+  };
+
+  // Date picker handlers
+  const handleDateFromChange = (newValue) => {
+    setDateFromValue(newValue);
+    // Format date để gửi cho API (YYYY-MM-DD)
+    const dateString = newValue ? newValue.toISOString().split('T')[0] : '';
+    setQuery(prev => ({
+      ...prev,
+      startDateFrom: dateString,
+      page: 1
+    }));
+  };
+
+  const handleDateToChange = (newValue) => {
+    setDateToValue(newValue);
+    // Format date để gửi cho API (YYYY-MM-DD)
+    const dateString = newValue ? newValue.toISOString().split('T')[0] : '';
+    setQuery(prev => ({
+      ...prev,
+      endDateTo: dateString,
+      page: 1
+    }));
+  };
+  const handleFilterClear = () => {
+    setSearchInput('');
+    setDateFromValue(null);
+    setDateToValue(null);
+    setQuery({
+      page: 1,
+      limit: 10,
+      keyword: '',
+      status: '',
+      startDateFrom: '',
+      endDateTo: '',
+      vaccineName: ''
+    });
   };
 
   const formatDate = (dateString) => {
@@ -143,18 +250,17 @@ const VaccinationCampaignsPage = () => {
               </Typography>
             </Box>
           </Box>
-        </Box>
-
-        {/* Search and Filters */}
+        </Box>        {/* Search and Filters */}
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
-                  placeholder="Tìm kiếm theo tên vaccine hoặc mô tả..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Tìm kiếm theo tên vaccine..."
+                  value={searchInput}
+                  onChange={handleSearchChange}
+                  onKeyPress={handleKeyPress}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -164,16 +270,70 @@ const VaccinationCampaignsPage = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<FilterIcon />}
-                    onClick={() => toast.info('Tính năng lọc đang được phát triển')}
+              <Grid item xs={12} md={1}>
+                <Button
+                  variant="contained"
+                  onClick={handleSearchSubmit}
+                  fullWidth
+                >
+                  Tìm
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <FormControl fullWidth>
+                  <InputLabel>Trạng thái</InputLabel>
+                  <Select
+                    value={query.status}
+                    label="Trạng thái"
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                    sx={{
+                      '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                      '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                      '& .MuiSelect-select': { minWidth: '100px' }
+                    }}
                   >
-                    Lọc
-                  </Button>
-                </Box>
+                    <MenuItem value="">Tất cả</MenuItem>
+                    <MenuItem value="planned">Sắp diễn ra</MenuItem>
+                    <MenuItem value="ongoing">Đang diễn ra</MenuItem>
+                    <MenuItem value="completed">Đã hoàn thành</MenuItem>
+                    <MenuItem value="cancelled">Đã hủy</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <TextField
+                  fullWidth
+                  placeholder="Tên vaccine"
+                  value={query.vaccineName}
+                  onChange={(e) => handleFilterChange('vaccineName', e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  label="Từ ngày"
+                  value={query.startDateFrom ? new Date(query.startDateFrom) : null}
+                  onChange={(date) => handleFilterChange('startDateFrom', date ? date.toISOString() : '')}
+                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                />
+              </Grid>
+              <Grid item xs={12} md={1}>
+                <DatePicker
+                  label="Đến ngày"
+                  value={query.endDateTo ? new Date(query.endDateTo) : null}
+                  onChange={(date) => handleFilterChange('endDateTo', date ? date.toISOString() : '')}
+                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                />
+              </Grid>
+              <Grid item xs={12} md={1}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  startIcon={<ClearIcon />}
+                  onClick={handleFilterClear}
+                  fullWidth
+                >
+                  Xóa
+                </Button>
               </Grid>
             </Grid>
           </CardContent>
@@ -269,14 +429,12 @@ const VaccinationCampaignsPage = () => {
                       ))}
                     </TableBody>
                   </Table>
-                </TableContainer>
-
-                {/* Pagination */}
+                </TableContainer>                {/* Pagination */}
                 <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
                   <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(e, newPage) => setPage(newPage)}
+                    count={paginationInfo.totalPages}
+                    page={paginationInfo.page}
+                    onChange={handlePageChange}
                     color="primary"
                     showFirstButton
                     showLastButton
@@ -347,9 +505,7 @@ const VaccinationCampaignsPage = () => {
                 onClick={() => handleViewParticipations(selectedCampaign)}
               >
                 Xem danh sách tham gia
-              </Button>
-            )}
-          </DialogActions>
+              </Button>)}          </DialogActions>
         </Dialog>
       </Container>
     </LocalizationProvider>
