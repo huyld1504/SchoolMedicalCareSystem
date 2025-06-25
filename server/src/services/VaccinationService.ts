@@ -17,24 +17,24 @@ class VaccinationService {
   async createCampaign(
     campaignData: Partial<IVaccinationCampaign>,
     adminId: string
-  ): Promise<IVaccinationCampaign> {
-    const newCampaign = await this.campaignRepo.create({
+  ): Promise<void> {
+    await this.campaignRepo.create({
       ...campaignData,
       createdBy: new Types.ObjectId(adminId),
       status: "planned"
     } as IVaccinationCampaign);
 
-    return newCampaign;
   }
 
   /**
    * 2. Thay đổi thông tin chiến dịch (Admin only)
-   */  async updateCampaign(
+   */
+  async updateCampaign(
     campaignId: string,
     updateData: Partial<IVaccinationCampaign>,
     adminId: string
-  ): Promise<IVaccinationCampaign | null> {
-    return this.campaignRepo.updateCampaign(campaignId, updateData, adminId);
+  ): Promise<void> {
+    await this.campaignRepo.updateCampaign(campaignId, updateData, adminId);
   }
 
   /**
