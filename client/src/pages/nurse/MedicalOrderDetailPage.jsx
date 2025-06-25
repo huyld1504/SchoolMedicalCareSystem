@@ -370,27 +370,7 @@ const MedicalOrderDetailPage = () => {
                         <Grid item xs={12} sm={4}><Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography></Grid>
                         <Grid item xs={12} sm={4}><Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography></Grid>
                         <Grid item xs={12} sm={4}><Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || '—'}</Typography></Grid>
-                        <Grid item xs={12} sm={4}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Typography><strong>Trạng thái:</strong></Typography>
-                                {isEditingStatus ? (
-                                    <Stack direction="row" spacing={1} alignItems="center">
-                                        <FormControl size="small">
-                                            <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)} disabled={isUpdating}>
-                                                {Object.keys(statusMap).map(key => (<MenuItem key={key} value={key}>{statusMap[key].label}</MenuItem>))}
-                                            </Select>
-                                        </FormControl>
-                                        <IconButton color="success" onClick={handleSaveStatus} disabled={isUpdating}>{isUpdating ? <CircularProgress size={22} /> : <SaveIcon />}</IconButton>
-                                        <IconButton onClick={() => setIsEditingStatus(false)} disabled={isUpdating}><CancelIcon /></IconButton>
-                                    </Stack>
-                                ) : (
-                                    <>
-                                        <Chip label={currentStatusInfo.label} color={currentStatusInfo.color} size="small" />
-                                        <Tooltip title="Chỉnh sửa trạng thái"><IconButton size="small" onClick={() => setIsEditingStatus(true)}><EditIcon fontSize="small" /></IconButton></Tooltip>
-                                    </>
-                                )}
-                            </Box>
-                        </Grid>
+                      
                     </Grid>
                 </CardContent>
             </Card>
@@ -424,9 +404,7 @@ const MedicalOrderDetailPage = () => {
                                     <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
-                                    {medicalOrder.status === 'approved' && (
-                                        <TableCell align="center" sx={{ fontWeight: 'bold' }}>Hành động</TableCell>
-                                    )}
+                                   
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -445,15 +423,7 @@ const MedicalOrderDetailPage = () => {
                                             <TableCell align="center">{detail.quantity}</TableCell>
                                             <TableCell>{formatTime(detail.time)}</TableCell>
                                             <TableCell>{detail.note || '—'}</TableCell>
-                                            {medicalOrder.status === 'approved' && (
-                                                <TableCell align="center">
-                                                    {detail.quantity <= 2 && (
-                                                        <Tooltip title="Bổ sung số lượng">
-                                                            <IconButton color="primary" size="small" onClick={() => handleOpenRefillModal(detail)}><RefillIcon /></IconButton>
-                                                        </Tooltip>
-                                                    )}
-                                                </TableCell>
-                                            )}
+                                            
                                         </TableRow>
                                     );
                                 })}

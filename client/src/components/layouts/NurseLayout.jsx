@@ -62,7 +62,7 @@ const NurseLayout = () => {
             active: location.pathname === '/nurse/students'
         },
         {
-            text: 'Yêu cầu y tế',
+            text: 'Xem đơn gửi thuốc ',
             icon: <AssignmentIcon />,
             path: '/nurse/medical-orders',
             active: location.pathname === '/nurse/medical-events'
