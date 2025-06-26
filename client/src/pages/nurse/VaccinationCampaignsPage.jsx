@@ -260,7 +260,7 @@ const VaccinationCampaignsPage = () => {
                 </FormControl>
               </Grid>
 
-              {/* <Grid item xs={12} md={2}>
+              <Grid item xs={12} md={2}>
                 <DatePicker
                   label="Từ ngày"
                   value={query.startDateFrom ? new Date(query.startDateFrom) : null}
@@ -275,7 +275,7 @@ const VaccinationCampaignsPage = () => {
                   onChange={(date) => handleFilterChange('startDateTo', date ? date.toISOString() : '')}
                   renderInput={(params) => <TextField {...params} fullWidth size="small" />}
                 />
-              </Grid> */}
+              </Grid>
               <Grid item xs={12} md={1}>
                 <Button
                   variant="outlined"

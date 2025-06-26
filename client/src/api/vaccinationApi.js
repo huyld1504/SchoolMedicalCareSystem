@@ -33,8 +33,9 @@ const vaccinationApi = {
 
     // Tìm kiếm chiến dịch
     search: async (query = {}) => {
-      return await callAPI('GET', `/vaccination-campaigns/search?page=${query.page ? query.page : 1}&limit=${query.limit ? query.limit : 10}${query.status && query.status !== 'all' && query.status.trim() ? `&status=${encodeURIComponent(query.status)}` : ''}${query.startDate ? `&startDate=${query.startDate}` : ''}${query.endDate ? `&endDate=${query.endDate}` : ''}${query.vaccineName && query.vaccineName.trim() ? `&vaccineName=${encodeURIComponent(query.vaccineName.trim())}` : ''}${query.keyword && query.keyword.trim() ? `&keyword=${encodeURIComponent(query.keyword.trim())}` : ''}`);
-    }
+      return await callAPI('GET', `/vaccination-campaigns/search?page=${query.page ? query.page : 1}&limit=${query.limit ? query.limit : 10}${query.status && query.status !== 'all' && query.status.trim() ? `&status=${encodeURIComponent(query.status)}` : ''}${query.startDateFrom ? `&startDateFrom=${query.startDateFrom}` : ''}${query.startDateTo ? `&startDateTo=${query.startDateTo}` : ''}${query.vaccineName && query.vaccineName.trim() ? `&vaccineName=${encodeURIComponent(query.vaccineName.trim())}` : ''}${query.keyword && query.keyword.trim() ? `&keyword=${encodeURIComponent(query.keyword.trim())}` : ''}`);
+    },
+
   },
 
   // Vaccination Participation APIs
