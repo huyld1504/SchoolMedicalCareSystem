@@ -11,13 +11,11 @@ import {
   Alert,
   CircularProgress,
   Chip,
-  Divider,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
-  Paper
+  IconButton
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -25,9 +23,7 @@ import {
   Person as PersonIcon,
   Event as EventIcon,
   CheckCircle as ApproveIcon,
-  Cancel as DenyIcon,
-  Info as InfoIcon,
-  Refresh as RefreshIcon
+  Cancel as DenyIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router';
@@ -56,7 +52,6 @@ const VaccinationNotificationDetailPage = () => {
       setLoading(false);
     } else {
       // Nếu không có, sẽ cần implement API để lấy chi tiết theo ID
-      // Hiện tại backend chưa có endpoint này nên sẽ redirect về danh sách
       toast.error('Không tìm thấy thông tin thông báo');
       navigate('/parent/vaccination-notifications');
     }
@@ -64,16 +59,6 @@ const VaccinationNotificationDetailPage = () => {
 
   const handleBack = () => {
     navigate('/parent/vaccination-notifications');
-  };
-
-  const handleRefresh = () => {
-    if (location.state?.notificationData) {
-      // Cập nhật lại dữ liệu từ state
-      setNotification(location.state.notificationData);
-      toast.success('Đã làm mới thông tin thông báo');
-    } else {
-      toast.info('Không có dữ liệu để làm mới');
-    }
   };
 
   const handleOpenConsentDialog = (type) => {
@@ -95,15 +80,13 @@ const VaccinationNotificationDetailPage = () => {
       return;
     }
 
+    
     try {
       setSaving(true);
 
-      // Chỉ gửi trường note khi có giá trị (không rỗng)
       const requestData = {
         consent: consentType
       };
-      
-      // Chỉ thêm note vào request khi có giá trị
       if (consentNote && consentNote.trim()) {
         requestData.note = consentNote.trim();
       }
@@ -111,18 +94,13 @@ const VaccinationNotificationDetailPage = () => {
       const response = await vaccinationApi.updateParentConsent(notification._id, requestData);
 
       if (response.isSuccess) {
-        const isChangingDecision = notification.parentConsent !== 'pending';
-        const actionText = isChangingDecision 
-          ? `thay đổi quyết định thành ${consentType === 'approved' ? 'đồng ý' : 'từ chối'}`
-          : `${consentType === 'approved' ? 'đồng ý' : 'từ chối'}`;
-        
-        toast.success(`Đã ${actionText} tiêm chủng cho con`);
-        
+        toast.success(`Đã ${consentType === 'approved' ? 'đồng ý' : 'từ chối'} tiêm chủng cho con`);
+
         // Cập nhật thông tin notification
         setNotification(prev => ({
           ...prev,
           parentConsent: consentType,
-          parentNote: consentNote?.trim() || prev.parentNote, // Chỉ cập nhật note khi có giá trị
+          parentNote: consentNote?.trim() || '',
           parentConsentDate: new Date().toISOString(),
           vaccinationStatus: consentType === 'denied' ? 'cancelled' : prev.vaccinationStatus
         }));
@@ -145,13 +123,6 @@ const VaccinationNotificationDetailPage = () => {
     const startDate = new Date(notification.campaign.startDate);
     const currentDate = new Date();
     return currentDate >= startDate;
-  };
-
-  // Check if parent can change decision
-  const canChangeDecision = () => {
-    return !isCampaignStarted() && 
-           notification.parentConsent !== 'pending' && 
-           notification.vaccinationStatus !== 'completed';
   };
 
   // Format date
@@ -254,67 +225,48 @@ const VaccinationNotificationDetailPage = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Container maxWidth={false} sx={{ py: 3, px: 0 }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', maxWidth: '1600px', mx: 'auto' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton onClick={handleBack} sx={{ mr: 2 }}>
             <BackIcon />
           </IconButton>
-          <VaccineIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
+          <VaccineIcon sx={{ mr: 2, color: 'primary.main', fontSize: 40 }} />
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, color: 'primary.main', fontSize: '2.5rem' }}>
               Chi tiết thông báo tiêm chủng
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
+            <Typography variant="subtitle1" color="text.secondary" sx={{ fontSize: '1.2rem' }}>
               Thông tin chi tiết và phản hồi về chiến dịch tiêm chủng
             </Typography>
           </Box>
         </Box>
-        
-        {/* Nút làm mới */}
-        <Box>
-          <Button
-            variant="contained"
-            startIcon={<RefreshIcon />}
-            onClick={handleRefresh}
-            sx={{
-              backgroundColor: 'primary.main',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'primary.dark',
-              },
-              boxShadow: 2
-            }}
-          >
-            Làm mới
-          </Button>
-        </Box>
       </Box>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={4} sx={{ maxWidth: '1400px', mx: 'auto', justifyContent: 'center' }}>
         {/* Bảng thông tin tổng hợp */}
         <Grid item xs={12}>
-          <Card sx={{ boxShadow: 3 }}>
-            <CardContent sx={{ p: 4 }}>
-              <Grid container spacing={3}>
-                {/* Cột 1: Thông tin vaccine */}
-                <Grid item xs={12} lg={4}>
-                  <Box sx={{ bgcolor: 'primary.50', p: 3, borderRadius: 3, height: '100%', border: '2px solid', borderColor: 'primary.200', minHeight: '350px' }}>
+          <Card sx={{ boxShadow: 4, borderRadius: 5, p: 2, transform: 'scale(1.08)', transition: 'transform 0.2s', maxWidth: '100%' }}>
+            <CardContent sx={{ p: 5 }}>
+              <Grid container spacing={4} alignItems="stretch">
+                {/* Cột 1: Thông tin chiến dịch */}
+                <Grid item xs={12} md={4} lg={4} xl={4}>
+                  <Box sx={{ bgcolor: 'primary.50', p: 4, borderRadius: 4, height: '100%', border: '2.5px solid', borderColor: 'primary.200', minHeight: '400px', fontSize: '1.1rem' }}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2.5, color: 'primary.main', display: 'flex', alignItems: 'center', fontSize: '1.1rem' }}>
                       <VaccineIcon sx={{ mr: 1, fontSize: 22 }} />
-                      Thông tin vaccine
+                      Thông tin chiến dịch
                     </Typography>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                        Tên vaccine
+                        Tên chiến dịch
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '1rem' }}>
                         {notification.campaign?.vaccineName || 'N/A'}
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Loại vaccine
@@ -323,7 +275,7 @@ const VaccinationNotificationDetailPage = () => {
                         {notification.campaign?.vaccineType || 'N/A'}
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Đối tượng tiêm
@@ -332,7 +284,7 @@ const VaccinationNotificationDetailPage = () => {
                         {notification.campaign?.targetAudience || 'N/A'}
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Ngày bắt đầu
@@ -341,10 +293,10 @@ const VaccinationNotificationDetailPage = () => {
                         {formatDate(notification.campaign?.startDate)}
                       </Typography>
                     </Box>
-                    
+
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                        Trạng thái chiến dịch
+                        Trạng thái
                       </Typography>
                       <Chip
                         label={notification.campaign?.status === 'planned' ? 'Đã lên kế hoạch' : notification.campaign?.status || 'N/A'}
@@ -358,13 +310,13 @@ const VaccinationNotificationDetailPage = () => {
                 </Grid>
 
                 {/* Cột 2: Thông tin học sinh */}
-                <Grid item xs={12} lg={4}>
-                  <Box sx={{ bgcolor: 'success.50', p: 3, borderRadius: 3, height: '100%', border: '2px solid', borderColor: 'success.200', minHeight: '350px' }}>
+                <Grid item xs={12} md={4} lg={4} xl={4}>
+                  <Box sx={{ bgcolor: 'success.50', p: 4, borderRadius: 4, height: '100%', border: '2.5px solid', borderColor: 'success.200', minHeight: '400px', fontSize: '1.1rem' }}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2.5, color: 'success.main', display: 'flex', alignItems: 'center', fontSize: '1.1rem' }}>
                       <PersonIcon sx={{ mr: 1, fontSize: 22 }} />
                       Thông tin học sinh
                     </Typography>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Họ và tên
@@ -373,7 +325,7 @@ const VaccinationNotificationDetailPage = () => {
                         {notification.student?.name || 'N/A'}
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Mã học sinh
@@ -382,7 +334,7 @@ const VaccinationNotificationDetailPage = () => {
                         {notification.student?.studentCode || 'N/A'}
                       </Typography>
                     </Box>
-                    
+
                     <Box sx={{ mb: 2.5 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Ngày sinh
@@ -391,75 +343,98 @@ const VaccinationNotificationDetailPage = () => {
                         {formatDate(notification.student?.dateOfBirth || notification.student?.birthdate) || 'Chưa có'}
                       </Typography>
                     </Box>
-                    
+
                     <Box>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Giới tính
                       </Typography>
                       <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                        {notification.student?.gender === 'male' ? 'Nam' : 
-                         notification.student?.gender === 'female' ? 'Nữ' : 'N/A'}
+                        {notification.student?.gender === 'male' ? 'Nam' :
+                          notification.student?.gender === 'female' ? 'Nữ' : 'N/A'}
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
 
                 {/* Cột 3: Trạng thái và phản hồi */}
-                <Grid item xs={12} lg={4}>
-                  <Box sx={{ bgcolor: 'warning.50', p: 3, borderRadius: 3, height: '100%', border: '2px solid', borderColor: 'warning.200', minHeight: '350px' }}>
+                <Grid item xs={12} md={4} lg={4} xl={4}>
+                  <Box sx={{ bgcolor: 'warning.50', p: 4, borderRadius: 4, height: '100%', border: '2.5px solid', borderColor: 'warning.200', minHeight: '400px', fontSize: '1.1rem' }}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'warning.main', display: 'flex', alignItems: 'center', fontSize: '1.1rem' }}>
                       <EventIcon sx={{ mr: 1, fontSize: 20 }} />
                       Trạng thái và phản hồi
                     </Typography>
-                    
+
                     <Box sx={{ mb: 1.5 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.8rem' }}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Trạng thái tiêm chủng
                       </Typography>
                       <Chip
                         label={getVaccinationStatusLabel(notification.vaccinationStatus)}
                         sx={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.95rem',
                           fontWeight: 600,
                           color: 'white',
                           backgroundColor: getVaccinationStatusColor(notification.vaccinationStatus),
-                          minWidth: '90px',
-                          height: '26px'
+                          minWidth: '110px',
+                          height: '34px'
                         }}
                       />
                     </Box>
-                    
+
                     {notification.parentConsentDate && (
                       <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.8rem' }}>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                           Ngày phản hồi
                         </Typography>
-                        <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
+                        <Typography variant="body1" sx={{ fontSize: '1.1rem', fontWeight: 500 }}>
                           {formatDateTime(notification.parentConsentDate)}
                         </Typography>
                       </Box>
                     )}
-                    
+
                     <Box sx={{ mb: 1.5 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.8rem' }}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         Phản hồi của phụ huynh
                       </Typography>
                       <Chip
                         label={getConsentLabel(notification.parentConsent)}
                         sx={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.95rem',
                           fontWeight: 600,
                           color: 'white',
                           backgroundColor: getConsentColor(notification.parentConsent),
-                          minWidth: '90px',
-                          height: '26px'
+                          minWidth: '110px',
+                          height: '34px'
                         }}
                       />
+                      {notification.parentNote && (
+                        <Box sx={{ mt: 1.5, width: '100%' }}>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 500, fontSize: '0.85rem', mb: 0.5, ml: 0.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            {notification.parentConsent === 'denied' ? 'Lý do từ chối của phụ huynh' : 'Ghi chú của phụ huynh'}
+                          </Typography>
+                          <Box
+                            sx={{
+                              bgcolor: 'white',
+                              borderRadius: 2,
+                              border: '1.5px solid',
+                              borderColor: 'grey.300',
+                              p: 1.5,
+                              minHeight: 32,
+                              fontSize: '0.8rem',
+                              wordBreak: 'break-word',
+                              width: '100%',
+                              whiteSpace: 'pre-line'
+                            }}
+                          >
+                            {notification.parentNote.replace(/(.{36})/g, '$1\n')}
+                          </Box>
+                        </Box>
+                      )}
                     </Box>
-                    
+
                     {notification.vaccinationDate && (
                       <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.8rem' }}>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                           Ngày tiêm
                         </Typography>
                         <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
@@ -467,7 +442,7 @@ const VaccinationNotificationDetailPage = () => {
                         </Typography>
                       </Box>
                     )}
-                    
+
                     {notification.vaccinatedNurse && (
                       <Box sx={{ mb: 1.5 }}>
                         <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
@@ -475,7 +450,7 @@ const VaccinationNotificationDetailPage = () => {
                         </Typography>
                       </Box>
                     )}
-                    
+
                     {/* Nút hành động */}
                     {notification.parentConsent === 'pending' && (
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1.5 }}>
@@ -487,6 +462,7 @@ const VaccinationNotificationDetailPage = () => {
                           fullWidth
                           size="small"
                           sx={{ py: 0.8, fontSize: '0.8rem', fontWeight: 600 }}
+                          disabled={notification.parentConsent !== 'pending'}
                         >
                           Đồng ý
                         </Button>
@@ -498,149 +474,47 @@ const VaccinationNotificationDetailPage = () => {
                           fullWidth
                           size="small"
                           sx={{ py: 0.8, fontSize: '0.8rem', fontWeight: 600 }}
+                          disabled={notification.parentConsent !== 'pending'}
                         >
                           Từ chối
                         </Button>
                       </Box>
-                    )}
-                    
-                    {/* Nút thay đổi quyết định */}
-                    {canChangeDecision() && (
-                      <Box sx={{ mt: 1.5 }}>
-                        <Alert severity="warning" sx={{ mb: 1, fontSize: '0.7rem', py: 0.3 }}>
-                          Có thể thay đổi trước {formatDate(notification.campaign?.startDate)}
-                        </Alert>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
-                          {notification.parentConsent === 'approved' && (
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              startIcon={<DenyIcon />}
-                              onClick={() => handleOpenConsentDialog('denied')}
-                              fullWidth
-                              size="small"
-                              sx={{ py: 0.6, fontSize: '0.75rem', fontWeight: 500 }}
-                            >
-                              Thay đổi thành "Từ chối"
-                            </Button>
-                          )}
-                          {notification.parentConsent === 'denied' && (
-                            <Button
-                              variant="outlined"
-                              color="success"
-                              startIcon={<ApproveIcon />}
-                              onClick={() => handleOpenConsentDialog('approved')}
-                              fullWidth
-                              size="small"
-                              sx={{ py: 0.6, fontSize: '0.75rem', fontWeight: 500 }}
-                            >
-                              Thay đổi thành "Đồng ý"
-                            </Button>
-                          )}
-                        </Box>
-                      </Box>
-                    )}
-                    
-                    {/* Thông báo khi không thể thay đổi */}
-                    {isCampaignStarted() && notification.parentConsent !== 'pending' && (
-                      <Box sx={{ mt: 1.5 }}>
-                        <Alert severity="info" sx={{ fontSize: '0.7rem', py: 0.3 }}>
-                          Chiến dịch đã bắt đầu
-                        </Alert>
-                      </Box>
-                    )}
+                    )}                 
                   </Box>
                 </Grid>
               </Grid>
-
-              {/* Phần ghi chú */}
-              {(notification.parentNote || notification.nurseNote) && (
-                <Box sx={{ mt: 5, p: 4, bgcolor: 'grey.50', borderRadius: 3, border: '2px solid', borderColor: 'grey.200' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, color: 'text.primary', display: 'flex', alignItems: 'center', fontSize: '1.25rem' }}>
-                    📝 Ghi chú của phụ huynh
-                  </Typography>
-                  <Grid container spacing={4}>
-                    {notification.parentNote && (
-                      <Grid item xs={12} md={6}>
-                        <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid', borderColor: 'grey.300', minHeight: '120px' }}>
-                          <Typography variant="body1" sx={{ lineHeight: 1.7, fontSize: '1.1rem' }}>
-                            {notification.parentNote}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    )}
-                    {notification.nurseNote && (
-                      <Grid item xs={12} md={6}>
-                        <Box sx={{ p: 3, bgcolor: 'white', borderRadius: 2, border: '1px solid', borderColor: 'grey.300', minHeight: '120px' }}>
-                          <Typography variant="body1" sx={{ lineHeight: 1.7, fontSize: '1.1rem' }}>
-                            {notification.nurseNote}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Box>
-              )}
-
-
             </CardContent>
           </Card>
-        </Grid>
-
-        {/* Thông tin thêm */}
-        <Grid item xs={12}>
-          <Alert severity="info" icon={<InfoIcon />} sx={{ p: 3, fontSize: '0.95rem' }}>
-            <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-              <strong>Lưu ý:</strong> Sau khi bạn đồng ý cho con tiêm chủng, y tá trường học sẽ tiến hành tiêm theo 
-              lịch trình của chiến dịch. Nếu bạn từ chối, con sẽ không tham gia chiến dịch tiêm chủng này. 
-              Bạn có thể thay đổi quyết định trước khi chiến dịch bắt đầu.
-            </Typography>
-          </Alert>
-        </Grid>
+        </Grid>       
       </Grid>
 
       {/* Dialog xác nhận phản hồi */}
-      <Dialog open={consentDialogOpen} onClose={handleCloseConsentDialog} maxWidth="sm" fullWidth>
+      <Dialog open={consentDialogOpen && notification.parentConsent === 'pending'} onClose={handleCloseConsentDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {notification.parentConsent === 'pending' 
-            ? (consentType === 'approved' ? 'Xác nhận đồng ý tiêm chủng' : 'Xác nhận từ chối tiêm chủng')
-            : (consentType === 'approved' ? 'Thay đổi thành đồng ý tiêm chủng' : 'Thay đổi thành từ chối tiêm chủng')
-          }
+          {consentType === 'approved' ? 'Xác nhận đồng ý tiêm chủng' : 'Xác nhận từ chối tiêm chủng'}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ mb: 3 }}>
-            {notification.parentConsent === 'pending' ? (
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {consentType === 'approved' 
-                  ? `Bạn có chắc chắn muốn đồng ý cho con ${notification.student?.name} tham gia tiêm vaccine "${notification.campaign?.vaccineName}"?`
-                  : `Bạn có chắc chắn muốn từ chối cho con ${notification.student?.name} tham gia tiêm vaccine "${notification.campaign?.vaccineName}"?`
-                }
-              </Typography>
-            ) : (
-              <>
-                <Alert severity="warning" sx={{ mb: 2 }}>
-                  <Typography variant="body2">
-                    Bạn chỉ có thể thay đổi quyết định trước khi chiến dịch bắt đầu ({formatDate(notification.campaign?.startDate)}).
-                  </Typography>
-                </Alert>
-              </>
-            )}
-            
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {consentType === 'approved'
+                ? `Bạn có chắc chắn muốn đồng ý cho con ${notification.student?.name} tham gia tiêm vaccine "${notification.campaign?.vaccineName}"?`
+                : `Bạn có chắc chắn muốn từ chối cho con ${notification.student?.name} tham gia tiêm vaccine "${notification.campaign?.vaccineName}"?`}
+            </Typography>
             <TextField
               fullWidth
               multiline
               rows={3}
-              label={consentType === 'denied' ? "Lý do từ chối (bắt buộc)" : "Ghi chú (tùy chọn)"}
-              placeholder={consentType === 'denied' 
+              label={consentType === 'denied' ? "Lý do từ chối (bắt buộc)" : "Ghi chú (nếu có)"}
+              placeholder={consentType === 'denied'
                 ? "Vui lòng nhập lý do tại sao bạn từ chối cho con tiêm vaccine này..."
-                : "Nhập ghi chú của bạn về quyết định này..."
-              }
+                : "Nhập ghi chú của bạn về quyết định này..."}
               value={consentNote}
               onChange={(e) => setConsentNote(e.target.value)}
               variant="outlined"
               required={consentType === 'denied'}
               error={consentType === 'denied' && !consentNote.trim()}
               helperText={consentType === 'denied' && !consentNote.trim() ? "Vui lòng nhập lý do từ chối" : ""}
+              disabled={notification.parentConsent !== 'pending'}
             />
           </Box>
         </DialogContent>
@@ -648,18 +522,16 @@ const VaccinationNotificationDetailPage = () => {
           <Button onClick={handleCloseConsentDialog} color="inherit">
             Hủy
           </Button>
-          <Button 
-            onClick={handleSubmitConsent} 
+          <Button
+            onClick={handleSubmitConsent}
             variant="contained"
             color={consentType === 'approved' ? 'success' : 'error'}
-            disabled={saving || (consentType === 'denied' && !consentNote.trim())}
+            disabled={saving || (consentType === 'denied' && !consentNote.trim()) || notification.parentConsent !== 'pending'}
           >
             {saving ? (
               <CircularProgress size={24} />
             ) : (
-              notification.parentConsent === 'pending'
-                ? (consentType === 'approved' ? 'Xác nhận đồng ý' : 'Xác nhận từ chối')
-                : (consentType === 'approved' ? 'Xác nhận thay đổi thành đồng ý' : 'Xác nhận thay đổi thành từ chối')
+              consentType === 'approved' ? 'Xác nhận đồng ý' : 'Xác nhận từ chối'
             )}
           </Button>
         </DialogActions>
