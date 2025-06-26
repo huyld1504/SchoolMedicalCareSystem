@@ -239,7 +239,7 @@ const CampaignTable = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "end", p: 2 }}>
           <Pagination
             count={totalPages}
             page={page}
