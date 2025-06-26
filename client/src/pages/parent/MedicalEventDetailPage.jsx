@@ -94,7 +94,7 @@ const MedicalEventDetailPage = () => {
   const handleBack = () => {
     // If we have child data, navigate back with state preserved
     if (passedChildData && passedChildData._id) {
-      navigate(`/parent/children/${passedChildData._id}`, {
+      navigate(-1, {
         state: {
           preserveData: true,
           fromEventDetail: true

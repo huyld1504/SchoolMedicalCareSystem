@@ -32,6 +32,7 @@ import ChildDetailPage from "../pages/parent/ChildDetailPage";
 import CreateMedicalOrderPage from "../pages/parent/CreateMedicalOrderPage";
 import ParentMedicalOrderDetailPage from "../pages/parent/MedicalOrderDetailPage";
 import ParentMedicalEventDetailPage from "../pages/parent/MedicalEventDetailPage";
+import ParentMedicalEventsPage from "../pages/parent/MedicalEventsPage";
 import AdminLayout from "../components/layouts/AdminLayout";
 
 //Admin pages
@@ -217,10 +218,28 @@ const router = createBrowserRouter([
           {
             path: "medical-orders",
             element: <ParentMedicalOrdersPage />, // Placeholder
-          },
-          {
+          }, {
             path: "medical-orders/add",
             element: <CreateMedicalOrderPage />, // Placeholder
+          },
+          {
+            path: "medical-orders/add/:childId",
+            element: <CreateMedicalOrderPage />, // With pre-selected child
+          },
+
+          // Medical Events Management
+          {
+            path: "medical-events",
+            children: [
+              {
+                index: true,
+                element: <ParentMedicalEventsPage />,
+              },
+              {
+                path: ":eventId",
+                element: <ParentMedicalEventDetailPage />,
+              },
+            ],
           },
         ],
       },
