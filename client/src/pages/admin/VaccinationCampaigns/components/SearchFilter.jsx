@@ -42,7 +42,10 @@ const SearchFilter = () => {
       value={searchValue}
       onChange={(e) => setSearchValue(e.target.value)}
       onKeyPress={handleKeyPress}
-      sx={{ minWidth: 300 }}
+      size="medium"
+      sx={{ minWidth: 300 ,'& .MuiOutlinedInput-root': {
+          height: '40px', // Đặt chiều cao cố định
+        }}}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

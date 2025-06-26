@@ -579,7 +579,7 @@ const DetailView = ({ campaign }) => {
                                   <Chip
                                     label={
                                       participant.parentConsent === 'approved' ? 'Đã đồng ý' :
-                                      participant.parentConsent === 'pending' ? 'Chờ xử lý' :
+                                      participant.parentConsent === 'pending' ? 'Chờ phản hồi' :
                                       participant.parentConsent === 'denied' ? 'Từ chối' :
                                       'Chưa rõ'
                                     }

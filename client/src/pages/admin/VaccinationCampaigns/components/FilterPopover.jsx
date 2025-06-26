@@ -145,6 +145,12 @@ const FilterPopover = () => {
         startIcon={<FilterIcon />}
         onClick={handleClick}
         color={hasActiveFilters ? "primary" : "inherit"}
+         size="medium"
+         sx={{ 
+          height: '40px', // Cùng chiều cao với SearchFilter
+          minWidth: '120px',
+          fontWeight: 'normal'
+        }}
       >
         Bộ lọc {hasActiveFilters && `(${Object.values(filters).filter(Boolean).length})`}
       </Button>
@@ -162,7 +168,7 @@ const FilterPopover = () => {
           horizontal: 'left',
         }}
       >
-        <Box sx={{ p: 3, minWidth: 320 }}>
+        <Box sx={{ p: 3, minWidth: 500 }}>
           <Typography variant="h6" gutterBottom>
             Bộ lọc tìm kiếm
           </Typography>
