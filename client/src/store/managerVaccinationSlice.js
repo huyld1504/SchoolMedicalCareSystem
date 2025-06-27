@@ -23,6 +23,7 @@ const managerVaccinationSlice = createSlice({
     },
     clearIsOpen: (state) => {
       state.isOpen = false;
+      state.vaccination = null; 
     },
     setIsPreviewDrawerOpen: (state, action) => {
       state.isPreviewDrawerOpen = action.payload;

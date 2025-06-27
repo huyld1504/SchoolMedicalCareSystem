@@ -15,7 +15,9 @@ const VaccinationManager = () => {
   );
   const handleClose = () => {
     dispatch(clearIsOpen());
+    dispatch
   };
+  
   const handleOpen = () => {
     dispatch(setIsOpen(true));
   };
