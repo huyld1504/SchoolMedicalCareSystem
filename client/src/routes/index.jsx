@@ -43,6 +43,7 @@ import EditCampaign from "../pages/admin/VaccinationCampaigns/EditCampaign";
 // Parent vaccination pages
 import VaccinationNotificationsPage from "../pages/parent/VaccinationNotificationsPage";
 import VaccinationNotificationDetailPage from "../pages/parent/VaccinationNotificationDetailPage";
+import VaccinationManager from '../pages/admin/VaccinationManager';
 
 const router = createBrowserRouter([
   {
@@ -262,6 +263,10 @@ const router = createBrowserRouter([
               }, {
                 path: "edit/:campaignId",
                 element: <EditCampaign />,
+              },
+              {
+                path: "createCampaign",
+                element: <VaccinationManager />,
               },
             ],
           },

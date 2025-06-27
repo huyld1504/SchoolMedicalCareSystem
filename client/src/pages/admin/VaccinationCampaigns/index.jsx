@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CampaignTable from "./components/CampaignTable";
+import { useNavigate } from "react-router";
 import {
   Button,
   Dialog,
@@ -13,9 +14,10 @@ import { Add as AddIcon, Vaccines as VaccineIcon } from "@mui/icons-material";
 
 const VaccinationCampaigns = () => {
   const [open, setOpen] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+ const navigate = useNavigate();
+  const handleCreateCampaign = () => {
+    navigate("createCampaign");
+  };
 
   return (
     <Box>
@@ -29,16 +31,24 @@ const VaccinationCampaigns = () => {
           Quản lý tất cả các chiến dịch tiêm chủng trong hệ thống
         </Typography>
       </Box>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mb: 2 }}
+        onClick={handleCreateCampaign}
+        startIcon={<AddIcon />}
+      >
+        Tạo chiến dịch mới
+      </Button>
 
-    
 
       <CampaignTable />
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={open}  maxWidth="md" fullWidth>
         <DialogTitle>Tạo chiến dịch tiêm chủng mới</DialogTitle>
-      
+
         <DialogActions>
-          <Button onClick={handleClose}>Đóng</Button>
+        
         </DialogActions>
       </Dialog>
     </Box>
