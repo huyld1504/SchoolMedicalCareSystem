@@ -69,6 +69,9 @@ const LoginPage = () => {
           } else if (response.data.role === 'parent') {
             navigate('/parent/children');
           }
+          else if(response.data.role === 'admin') {
+            navigate('/admin/users');
+          }
         }
         setIsLogin(false);
       } catch (error) {

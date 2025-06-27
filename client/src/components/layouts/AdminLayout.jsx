@@ -35,6 +35,7 @@ import {
   MedicalServices,
   Report,
   Person,
+  Vaccines as VaccinesIcon,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Outlet, useLocation } from "react-router";
@@ -53,13 +54,18 @@ const AdminLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const { user } = useSelector((state) => state.auth);
-  const menuItems = [
+  const { user } = useSelector((state) => state.auth); const menuItems = [
     {
       text: "Quản lý tài khoản",
       icon: <PeopleIcon />,
       path: "/admin/users",
       active: location.pathname === "/admin/users",
+    },
+    {
+      text: "Chiến dịch tiêm chủng",
+      icon: <VaccinesIcon />,
+      path: "/admin/vaccination-campaigns",
+      active: location.pathname.includes("/admin/vaccination-campaigns"),
     },
     {
       text: "Quản lí tiêm chủng",
@@ -116,10 +122,9 @@ const AdminLayout = () => {
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Y tế Học đường
           </Typography>
-        </Box>
-        <Chip
+        </Box>        <Chip
           icon={<Person />}
-          label="Y tá trường học"
+          label="Quản trị viên"
           size="small"
           sx={{
             backgroundColor: "rgba(255,255,255,0.2)",
