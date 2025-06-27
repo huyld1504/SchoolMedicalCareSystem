@@ -37,11 +37,12 @@ import AdminLayout from "../components/layouts/AdminLayout";
 //Admin pages
 import AccountManager from "../pages/admin/AccountManager";
 import VaccinationManager from "../pages/admin/VaccinationManager";
-import AdminMedicalEventsPage from "../pages/admin/AdminMedicalEventsPage";
+
 
 // Parent vaccination pages
 import VaccinationNotificationsPage from "../pages/parent/VaccinationNotificationsPage";
 import VaccinationNotificationDetailPage from "../pages/parent/VaccinationNotificationDetailPage";
+import VaccinationManager from '../pages/admin/VaccinationManager';
 
 const router = createBrowserRouter([
   {
@@ -243,15 +244,30 @@ const router = createBrowserRouter([
           <RoleProtectedRoute allowedRoles={['admin']}>
             <AdminLayout />
           </RoleProtectedRoute>
-        ),
-        children: [
+        ), children: [
           {
             path: 'users',
             element: <AccountManager />,
           },
-          {
-            path: "vaccinations",
-            element: <VaccinationManager />,
+           {
+            path: "vaccination-campaigns",
+            children: [
+              {
+                index: true,
+                element: <VaccinationCampaigns />,
+              },
+              {
+                path: ":campaignId",
+                element: <VaccinationCampaignDetail />,
+              }, {
+                path: "edit/:campaignId",
+                element: <EditCampaign />,
+              },
+              {
+                path: "createCampaign",
+                element: <VaccinationManager />,
+              },
+            ],
           },
           
           // Medical Events Management
