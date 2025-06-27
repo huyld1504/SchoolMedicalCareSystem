@@ -37,7 +37,7 @@ import AdminLayout from "../components/layouts/AdminLayout";
 //Admin pages
 import AccountManager from "../pages/admin/AccountManager";
 import VaccinationManager from "../pages/admin/VaccinationManager";
-
+import AdminMedicalEventsPage from "../pages/admin/AdminMedicalEventsPage";
 
 // Parent vaccination pages
 import VaccinationNotificationsPage from "../pages/parent/VaccinationNotificationsPage";
@@ -253,6 +253,13 @@ const router = createBrowserRouter([
             path: "vaccinations",
             element: <VaccinationManager />,
           },
+          
+          // Medical Events Management
+          {
+            path: 'medical-events',
+            element: <AdminMedicalEventsPage />
+          },
+          
         ],
       },
       // Medical Orders Management
