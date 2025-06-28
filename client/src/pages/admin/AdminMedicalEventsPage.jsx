@@ -440,7 +440,6 @@ const AdminMedicalEventsPage = () => {
                 {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {/* Đã xóa nút back cho admin */}
                         <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
                         <Box>
                             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
@@ -457,7 +456,6 @@ const AdminMedicalEventsPage = () => {
                                 <RefreshIcon />
                             </IconButton>
                         </Tooltip>
-                        {/* Đã xóa nút back cho admin */}
                     </Box>
                 </Box>
 
@@ -510,7 +508,9 @@ const AdminMedicalEventsPage = () => {
                                         <MenuItem value="1" sx={{ fontSize: '14px' }}>Nhẹ</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>                        {/* Status filter */}
+                            </Grid>                        
+                            
+                            {/* Status filter */}
                             <Grid item xs={12} sm={6} md={2}>
                                 <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
                                     <InputLabel>Trạng thái</InputLabel>
@@ -532,7 +532,9 @@ const AdminMedicalEventsPage = () => {
                                         <MenuItem value="Chờ xử lí" sx={{ fontSize: '14px' }}>Chờ xử lí</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>                        {/* Date From */}
+                            </Grid>                        
+                            
+                            {/* Date From */}
                             <Grid item xs={12} sm={6} md={1.5}>
                                 <DatePicker
                                     label="Từ ngày"
@@ -673,19 +675,21 @@ const AdminMedicalEventsPage = () => {
                                 },
                                 scrollbarWidth: 'thin',
                                 msOverflowStyle: 'none',
+                                fontSize: '1.1rem' 
                             }}>
                                 <Table stickyHeader sx={{
                                     tableLayout: 'fixed',
-                                    width: '100%'
+                                    width: '100%',
+                                    fontSize: '1.1rem'
                                 }}>
                                     <TableHead>
                                         <TableRow sx={{ bgcolor: 'grey.50' }}>
-                                            <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">STT</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, width: '25%' }} align="center">Ngày sự kiện</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, width: '20%' }} align="center">Loại sự kiện</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, width: '15%' }} align="center">Mức độ</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, width: '20%' }} align="center">Trạng thái</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, width: '10%' }} align="center">Thao tác</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, width: '10%', fontSize: '1.1rem' }} align="center">STT</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, width: '25%', fontSize: '1.1rem' }} align="center">Ngày sự kiện</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, width: '20%', fontSize: '1.1rem' }} align="center">Loại sự kiện</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, width: '15%', fontSize: '1.1rem' }} align="center">Mức độ</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, width: '20%', fontSize: '1.1rem' }} align="center">Trạng thái</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, width: '15%', fontSize: '1.1rem' }} align="center">Thao tác</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -703,32 +707,33 @@ const AdminMedicalEventsPage = () => {
                                                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                                     },
                                                     cursor: 'pointer',
-                                                    height: '60px'
+                                                    height: '60px',
+                                                    fontSize: '1.1rem'
                                                 }}
                                             >
-                                                <TableCell align="center" sx={{ px: 1 }}>
+                                                <TableCell align="center" sx={{ px: 1, fontSize: '1.1rem' }}>
                                                     <Typography
                                                         variant="body2"
                                                         sx={{
                                                             fontWeight: 700,
                                                             color: '#1976d2',
-                                                            fontSize: '0.875rem'
+                                                            fontSize: '1.1rem'
                                                         }}
                                                     >
                                                         {/* Tính STT dựa trên page hiện tại */}
                                                         {(paginationInfo.page - 1) * paginationInfo.limit + index + 1}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ px: 2 }}>
-                                                    <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#424242', fontWeight: 700 }}>
+                                                <TableCell align="center" sx={{ px: 2, fontSize: '1.1rem' }}>
+                                                    <Typography variant="body2" sx={{ fontSize: '1.1rem', color: '#424242', fontWeight: 400 }}>
                                                         {formatDate(event.dateHappened || event.createdAt)}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ px: 1 }}>
+                                                <TableCell align="center" sx={{ px: 1, fontSize: '1.1rem' }}>
                                                     <Typography
                                                         variant="body2"
                                                         sx={{
-                                                            fontSize: '0.875rem',
+                                                            fontSize: '1.1rem',
                                                             color: '#424242',
                                                             fontWeight: 400
                                                         }}
@@ -736,11 +741,11 @@ const AdminMedicalEventsPage = () => {
                                                         {getEventTypeLabel(event.type)}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ px: 1 }}>
+                                                <TableCell align="center" sx={{ px: 1, fontSize: '1.1rem' }}>
                                                     <Typography
                                                         variant="body2"
                                                         sx={{
-                                                            fontSize: '0.875rem',
+                                                            fontSize: '1.1rem',
                                                             color: getLevelColor(event.level),
                                                             fontWeight: 700
                                                         }}
@@ -749,11 +754,11 @@ const AdminMedicalEventsPage = () => {
                                                     </Typography>
                                                 </TableCell>
 
-                                                <TableCell align="center" sx={{ px: 2 }}>
+                                                <TableCell align="center" sx={{ px: 2, fontSize: '1.1rem' }}>
                                                     <Typography
                                                         variant="body2"
                                                         sx={{
-                                                            fontSize: '0.875rem',
+                                                            fontSize: '1.1rem',
                                                             color: getStatusColor(event.status),
                                                             fontWeight: 700
                                                         }}
@@ -761,7 +766,7 @@ const AdminMedicalEventsPage = () => {
                                                         {getStatusLabel(event.status)}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell align="center">
+                                                <TableCell align="center" sx={{ fontSize: '1.1rem' }}>
                                                     <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                                                         <Tooltip title="Xem chi tiết">
                                                             <IconButton
@@ -772,7 +777,6 @@ const AdminMedicalEventsPage = () => {
                                                                 <ViewIcon fontSize="small" />
                                                             </IconButton>
                                                         </Tooltip>
-                                                        {/* Không hiển thị nút chỉnh sửa cho admin */}
                                                     </Box>
                                                 </TableCell>
                                             </TableRow>
