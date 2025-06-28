@@ -18,6 +18,10 @@ import MedicalOrdersPage from '../pages/nurse/MedicalOrdersPage';
 import MedicalOrderDetailPage from '../pages/nurse/MedicalOrderDetailPage';
 
 
+// Vaccination components
+import VaccinationCampaignsPage from "../pages/nurse/VaccinationCampaignsPage";
+import VaccinationParticipationsPage from "../pages/nurse/VaccinationParticipationsPage";
+
 // Layout components
 import AppLayout from '../components/layouts/AppLayout';
 import LandingLayout from '../components/layouts/LandingLayout';
@@ -55,10 +59,10 @@ const router = createBrowserRouter([
         element: <LandingLayout />,
         children: [{
           index: true,
-          path: '/',
-          element: <LandingPage />
-        }
-        ]
+          path: "/",
+          element: <LandingPage />,
+        },
+        ],
       },
       {
         path: 'login',
@@ -144,6 +148,13 @@ const router = createBrowserRouter([
           {
             path: 'settings',
             element: <div>Settings Page - Coming Soon</div>, // Placeholder
+          }, {
+            path: "vaccination-campaigns",
+            element: <VaccinationCampaignsPage />,
+          },
+          {
+            path: "vaccination-campaigns/:campaignId/participations",
+            element: <VaccinationParticipationsPage />,
           },
         ]
       },
