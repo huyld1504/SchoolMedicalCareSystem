@@ -5,7 +5,7 @@ const childAPI = {
     getAllChildren: async (params = {}) => {
         const queryString = new URLSearchParams({
             page: params.page || 1,
-            limit: params.limit || 10,
+            limit: params.limit || 11,
             ...(params.keyword && { keyword: params.keyword }),
             ...(params.gender && { gender: params.gender }),
         }).toString();
