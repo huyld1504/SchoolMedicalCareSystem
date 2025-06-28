@@ -250,7 +250,7 @@ const router = createBrowserRouter([
             path: 'users',
             element: <AccountManager />,
           },
-           {
+          {
             path: "vaccination-campaigns",
             children: [
               {
@@ -270,6 +270,41 @@ const router = createBrowserRouter([
               },
             ],
           },
+
+          // Admin có thể truy cập tất cả trang nurse
+          {
+            path: 'students',
+            element: <StudentsPage />,
+          },
+          {
+            path: 'health-profiles/:studentId',
+            element: <HealthProfilesPage />,
+          },
+
+          {
+            path: 'medical-events',
+            element: <MedicalEventsPage />,
+          },
+
+
+          {
+            path: 'medical-events/:studentId',
+            element: <MedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/:studentId/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+
+          {
+            path: 'medical-orders',
+            element: <MedicalOrdersPage />,
+          },
+          {
+            path: 'medical-orders/:orderId',
+            element: <MedicalOrderDetailPage />,
+          },
+
         ],
       },
       // Medical Orders Management

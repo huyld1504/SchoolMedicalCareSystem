@@ -68,17 +68,24 @@ const AdminLayout = () => {
       active: location.pathname.includes("/admin/vaccination-campaigns"),
     },
     {
-      text: "Quản lí tiêm chủng",
+      text: "Quản lý học sinh",
+      icon: <Person />,
+      path: "/admin/students",
+      active: location.pathname === "/admin/students",
+    },
+    {
+      text: "Quản lý đơn thuốc",
       icon: <AssignmentIcon />,
-      path: "/admin/vaccinations",
-      active: location.pathname === "/admin/vaccinations",
+      path: "/admin/medical-orders",
+      active: location.pathname.includes("/admin/medical-orders"),
     },
     {
       text: "Sự kiện y tế",
       icon: <MedicalServices />,
-      path: "/nurse/medical-events",
-      active: location.pathname.includes("/medical-events"),
+      path: "/admin/medical-events",
+      active: location.pathname.includes("/admin/medical-events"),
     },
+   
   ];
 
   const handleDrawerToggle = () => {

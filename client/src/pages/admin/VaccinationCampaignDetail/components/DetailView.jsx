@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react'; // Thêm useMemo
 import { useQuery } from "@tanstack/react-query";
 import {
   Box,
@@ -8,9 +8,6 @@ import {
   Chip,
   Divider,
   Grid,
-  List,
-  ListItem,
-  ListItemText,
   Table,
   TableBody,
   TableCell,
@@ -40,7 +37,6 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Info as InfoIcon,
-  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 
 import vaccinationCampaignApi from "../../../../api/vaccinationCampaignApi";
@@ -55,66 +51,100 @@ const DetailView = ({ campaign }) => {
   const [filters, setFilters] = useState({
     parentConsent: '',
     vaccinationStatus: '',
-    consentDateFrom: null,
-    consentDateTo: null,
-    vaccinationDateFrom: null,
-    vaccinationDateTo: null,
+    consentDateFrom: '',
+    consentDateTo: '',
+    vaccinationDateFrom: '',
+    vaccinationDateTo: '',
   });
 
-  // Query for participants from campaign
+  // **SỬA LỖI: Lấy toàn bộ data**
   const { data: participationsResponse, isLoading: participationsLoading } = useQuery({
-    queryKey: ["campaign-participations", campaign._id],
-    queryFn: () => vaccinationCampaignApi.GetAllParticipationsInCampaign(campaign._id),
+    queryKey: ["campaign-participations-all", campaign._id], // Bỏ participationPage
+    queryFn: () => vaccinationCampaignApi.GetAllParticipationsInCampaign(campaign._id, { 
+      page: 1,           // Luôn lấy trang 1
+      limit: 100,       // Lấy toàn bộ data
+    }),
     enabled: !!campaign._id,
   });
 
-  // Get the participations data from the response
-  const participationsData = participationsResponse?.data?.records || [];
-  const totalParticipants = participationsResponse?.data?.total;
-  const completedCount = participationsData.filter(p => p.vaccinationStatus === 'completed').length;
+  // **SỬA LỖI: Lấy toàn bộ dữ liệu từ API**
+  const allParticipationsData = participationsResponse?.data?.records || [];
+  const totalParticipants = allParticipationsData.length;
+  
+  console.log('Tổng số người:', totalParticipants);
+  console.log('Search term:', searchTerm);
 
-  // Apply filters and search locally
-  const filteredParticipations = participationsData.filter(participant => {
-    // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const studentInfo = participant.student;
-      const studentName = studentInfo?.name?.toLowerCase() || '';
-      const studentCode = studentInfo?.studentCode?.toLowerCase() || '';
+  // **SỬA LỖI: Client-side filtering với useMemo**
+  const filteredParticipations = useMemo(() => {
+    return allParticipationsData.filter(participant => {
+      // Search filter - tìm kiếm theo tên và mã học sinh
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        const studentInfo = participant.student;
+        const studentName = studentInfo?.name?.toLowerCase() || '';
+        const studentCode = studentInfo?.studentCode?.toLowerCase() || '';
 
-      if (!studentName.includes(searchLower) && !studentCode.includes(searchLower)) {
+        if (!studentName.includes(searchLower) && !studentCode.includes(searchLower)) {
+          return false;
+        }
+      }
+
+      // Parent consent filter
+      if (filters.parentConsent && participant.parentConsent !== filters.parentConsent) {
         return false;
       }
-    }
 
-    // Parent consent filter
-    if (filters.parentConsent && participant.parentConsent !== filters.parentConsent) {
-      return false;
-    }
+      // Vaccination status filter
+      if (filters.vaccinationStatus && participant.vaccinationStatus !== filters.vaccinationStatus) {
+        return false;
+      }
 
-    // Vaccination status filter
-    if (filters.vaccinationStatus && participant.vaccinationStatus !== filters.vaccinationStatus) {
-      return false;
-    }
+      // Date filters (nếu có dữ liệu date)
+      if (filters.consentDateFrom && participant.consentDate) {
+        const consentDate = new Date(participant.consentDate);
+        const fromDate = new Date(filters.consentDateFrom);
+        if (consentDate < fromDate) return false;
+      }
 
-    return true;
-  });
+      if (filters.consentDateTo && participant.consentDate) {
+        const consentDate = new Date(participant.consentDate);
+        const toDate = new Date(filters.consentDateTo);
+        if (consentDate > toDate) return false;
+      }
 
-  // Apply pagination locally
+      return true;
+    });
+  }, [allParticipationsData, searchTerm, filters]);
+
+  // **SỬA LỖI: Client-side pagination**
   const itemsPerPage = 10;
   const totalPages = Math.ceil(filteredParticipations.length / itemsPerPage);
   const startIndex = (participationPage - 1) * itemsPerPage;
   const paginatedParticipations = filteredParticipations.slice(startIndex, startIndex + itemsPerPage);
 
-  // Event handlers
+  console.log('Sau khi filter:', filteredParticipations.length);
+  console.log('Trang hiện tại:', participationPage, '/', totalPages);
+
+  // **SỬA LỖI: Reset trang khi search/filter thay đổi**
+  useEffect(() => {
+    setParticipationPage(1);
+  }, [searchTerm, filters]);
+
+  // **SỬA LỖI: Reset trang nếu vượt quá số trang hiện có**
+  useEffect(() => {
+    if (participationPage > totalPages && totalPages > 0) {
+      setParticipationPage(totalPages);
+    }
+  }, [totalPages, participationPage]);
+
+  // **SỬA LỖI: Event handlers**
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setParticipationPage(1);
+    // Reset sẽ được xử lý bởi useEffect
   };
 
   const handleClearSearch = () => {
     setSearchTerm('');
-    setParticipationPage(1);
   };
 
   const handleParticipationPageChange = (event, value) => {
@@ -126,26 +156,25 @@ const DetailView = ({ campaign }) => {
       ...prev,
       [filterName]: value
     }));
-    setParticipationPage(1);
+    // Reset sẽ được xử lý bởi useEffect
   };
 
   const handleClearFilters = () => {
     setFilters({
       parentConsent: '',
       vaccinationStatus: '',
-      consentDateFrom: null,
-      consentDateTo: null,
-      vaccinationDateFrom: null,
-      vaccinationDateTo: null,
+      consentDateFrom: '',
+      consentDateTo: '',
+      vaccinationDateFrom: '',
+      vaccinationDateTo: '',
     });
-    setParticipationPage(1);
   };
 
   const hasActiveFilters = Object.values(filters).some(value =>
     value !== '' && value !== null
   );
 
-  // Utility functions
+  // Utility functions (giữ nguyên)
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'ongoing':
@@ -201,12 +230,12 @@ const DetailView = ({ campaign }) => {
     }}>
       <Box sx={{ 
         width: '100%',
-        maxWidth: '1400px', // Giới hạn chiều rộng tối đa
-        px: { xs: 2, sm: 3, md: 4 }, // Responsive padding
-        mx: 'auto' // Căn giữa container
+        maxWidth: '1400px',
+        px: { xs: 2, sm: 3, md: 4 },
+        mx: 'auto'
       }}>
         <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-          {/* Header Section - Tên chiến dịch */}
+          {/* Header Section */}
           <Grid item xs={12}>
             <Box sx={{ mb: 4, textAlign: 'center' }}>
               <Typography variant="h4" component="h1" gutterBottom sx={{ 
@@ -228,11 +257,10 @@ const DetailView = ({ campaign }) => {
             </Box>
           </Grid>
 
-          {/* Row 2: Thông tin chiến dịch (full width) */}
+          {/* Thông tin chiến dịch - giữ nguyên */}
           <Grid item xs={12}>
             <Card sx={{ width: '1010px' }}>
               <CardContent sx={{ width: '100%' }}>
-                {/* Header chính */}
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <DescriptionIcon color="primary" />
@@ -242,7 +270,7 @@ const DetailView = ({ campaign }) => {
                 
                 <Divider sx={{ mb: 3 }} />
 
-                {/* Section 1: Thông tin cơ bản */}
+                {/* Thông tin cơ bản */}
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary' }}>
                     Thông tin cơ bản
@@ -300,7 +328,6 @@ const DetailView = ({ campaign }) => {
                         <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                           {campaign.createdBy?.name || 'N/A'}
                         </Typography>
-                       
                       </Box>
                     </Grid>
                   </Grid>
@@ -308,7 +335,7 @@ const DetailView = ({ campaign }) => {
 
                 <Divider sx={{ my: 3 }} />
 
-                {/* Section 2: Lịch trình */}
+                {/* Lịch trình */}
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CalendarIcon color="primary" fontSize="small" />
@@ -339,32 +366,12 @@ const DetailView = ({ campaign }) => {
                         </Box>
                       </Grid>
                     )}
-
-                    {campaign.schedule && campaign.schedule.length > 0 && (
-                      <Grid item xs={12}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                          Lịch chi tiết
-                        </Typography>
-                        <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
-                          <List dense>
-                            {campaign.schedule.map((scheduleItem, index) => (
-                              <ListItem key={index} divider>
-                                <ListItemText
-                                  primary={`${formatDateTime(scheduleItem.date)}`}
-                                  secondary={scheduleItem.note || 'Không có ghi chú'}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </Box>
-                      </Grid>
-                    )}
                   </Grid>
                 </Box>
 
                 <Divider sx={{ my: 3 }} />
 
-                {/* Section 3: Thông tin bổ sung */}
+                {/* Thông tin bổ sung */}
                 <Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                     <InfoIcon color="primary" fontSize="small" />
@@ -378,7 +385,7 @@ const DetailView = ({ campaign }) => {
                           Ngày tạo
                         </Typography>
                         <Typography variant="body2">
-                          {formatDateTime(campaign.createdAt)}
+                          {formatnoTime(campaign.createdAt)}
                         </Typography>
                       </Box>
                     </Grid>
@@ -389,7 +396,7 @@ const DetailView = ({ campaign }) => {
                           Cập nhật lần cuối
                         </Typography>
                         <Typography variant="body2">
-                          {formatDateTime(campaign.updatedAt)}
+                          {formatnoTime(campaign.updatedAt)}
                         </Typography>
                       </Box>
                     </Grid>
@@ -439,7 +446,7 @@ const DetailView = ({ campaign }) => {
             </Card>
           </Grid>
 
-          {/* Row 3: Danh sách tham gia (full width) */}
+          {/* **SỬA LỖI: Danh sách tham gia với client-side pagination** */}
           <Grid item xs={12}>
             <Card sx={{ width: '1010px' }}>
               <CardContent sx={{ width: '100%' }}>
@@ -449,7 +456,7 @@ const DetailView = ({ campaign }) => {
                     Danh sách tham gia
                     {totalParticipants > 0 && (
                       <Chip
-                        label={`${filteredParticipations.length}/${totalParticipants} người`}
+                        label={`${filteredParticipations.length}/${totalParticipants} người | Trang ${participationPage}/${totalPages}`}
                         color="primary"
                         size="small"
                         sx={{ ml: 1 }}
@@ -462,7 +469,6 @@ const DetailView = ({ campaign }) => {
 
                 {/* Search và Filter */}
                 <Box sx={{ mb: 3 }}>
-                  {/* Search Box */}
                   <TextField
                     fullWidth
                     size="small"
@@ -486,7 +492,6 @@ const DetailView = ({ campaign }) => {
                     }}
                   />
 
-                  {/* Filter Controls */}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                     <Button
                       variant="outlined"
@@ -510,7 +515,7 @@ const DetailView = ({ campaign }) => {
                   <Collapse in={showFilters}>
                     <Card variant="outlined" sx={{ p: 2 }}>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6} md={4} sx={{ width: '300px' }}>
+                        <Grid item xs={12} sm={6} md={4} sx={{width: '200px'}}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Đồng ý phụ huynh</InputLabel>
                             <Select
@@ -526,8 +531,8 @@ const DetailView = ({ campaign }) => {
                           </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} sm={6} md={4} sx={{ width: '300px' }}>
-                          <FormControl fullWidth size="small">
+                        <Grid item xs={12} sm={6} md={4}>
+                          <FormControl fullWidth size="small" sx={{width: '200px'}}>
                             <InputLabel>Trạng thái tiêm</InputLabel>
                             <Select
                               value={filters.vaccinationStatus}
@@ -559,7 +564,7 @@ const DetailView = ({ campaign }) => {
                   </Collapse>
                 </Box>
 
-                {/* Participants Table */}
+                {/* Table */}
                 {participationsLoading ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
                     <CircularProgress />
@@ -659,9 +664,9 @@ const DetailView = ({ campaign }) => {
                       </Table>
                     </TableContainer>
 
-                    {/* Pagination */}
+                    {/* **SỬA LỖI: Pagination sử dụng client-side data** */}
                     {totalPages > 1 && (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
                         <Pagination
                           count={totalPages}
                           page={participationPage}

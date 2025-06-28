@@ -15,14 +15,16 @@ const vaccinationCampaignApi = {
   },
   updateCampaign: async (id, data) => {
     return await callAPI("put", `vaccination-campaigns/update/${id}`, data);
-  }, GetAllParticipationsInCampaign: async (campaignId, params = {}) => {
+  },
+   GetAllParticipationsInCampaign: async (campaignId, params = {}) => {
     let query = "";
     if (Object.keys(params).length > 0) {
       const searchParams = new URLSearchParams(params).toString();
       query = `?${searchParams}`;
     }
     return await callAPI("get", `vaccination-campaigns/participations/${campaignId}${query}`);
-  }, SearchParticipationsForAdminAndNurse: async (params = {}) => {
+  }, 
+  SearchParticipationsForAdminAndNurse: async (params = {}) => {
     let query = "";
     if (Object.keys(params).length > 0) {
       const searchParams = new URLSearchParams(params).toString();
