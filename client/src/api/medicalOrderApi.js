@@ -7,7 +7,7 @@ const medicalOrderApi = {
      * @param {object} orderData - Dữ liệu đơn thuốc, bao gồm { medicalOrder, medicalOrderDetails }.
      */
     addRecord: async (OrderId, addData) => await callAPI('POST', `/medical-orders/${OrderId}/add-record`, addData),
-    updateStatus: async (orderId, status) => await callAPI('PUT', `/medical-orders/update-status/${orderId}`, { status }),
+    updateStatus: async (orderId, payload) => await callAPI('PUT', `/medical-orders/update-status/${orderId}`, payload),
     getRecord: async (orderId) => await callAPI('GET', `/medical-orders/${orderId}/records`),
     additionalDetail: async (orderId, additionalData) => await callAPI('PUT', `/medical-orders/${orderId}/additional-details`, additionalData),
     createOrder: async (orderData) => await callAPI('POST', '/medical-orders/add', orderData),

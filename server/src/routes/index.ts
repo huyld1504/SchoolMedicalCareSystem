@@ -108,17 +108,17 @@ medicalEventRouter.post(
 );
 medicalEventRouter.get(
   Paths.MedicalEvent.GetAll,
-  [transform(), auth(), authRoles(["nurse"])],
+  [transform(), auth(), authRoles(["nurse", "admin"])],
   MedicalEventRoutes.getAll
 );
 medicalEventRouter.get(
   Paths.MedicalEvent.GetByStudentId,
-  [transform(), auth(), authRoles(["nurse", "parent"])],
+  [transform(), auth(), authRoles(["nurse", "parent", "admin"])],
   MedicalEventRoutes.getByStudentId
 );
 medicalEventRouter.get(
   Paths.MedicalEvent.GetById,
-  [transform(), auth(), authRoles(["nurse"])],
+  [transform(), auth(), authRoles(["nurse", "admin"])],
   MedicalEventRoutes.getById
 );
 medicalEventRouter.put(

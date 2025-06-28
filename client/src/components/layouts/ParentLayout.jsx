@@ -35,7 +35,8 @@ import {
     ChildCare,
     MedicalServices,
     HealthAndSafety,
-    Person
+    Person,
+    Vaccines as VaccinesIcon
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Outlet, useLocation } from 'react-router';
@@ -54,9 +55,7 @@ const ParentLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { user } = useSelector((state) => state.auth);
-
-    const menuItems = [
+    const { user } = useSelector((state) => state.auth); const menuItems = [
         {
             text: 'Quản lý con em',
             icon: <ChildCare />,
@@ -68,6 +67,18 @@ const ParentLayout = () => {
             icon: <MedicalServices />,
             path: '/parent/medical-orders',
             active: location.pathname.startsWith('/parent/medical-orders')
+        },
+        {
+            text: 'Sự kiện y tế',
+            icon: <HealthAndSafety />,
+            path: '/parent/medical-events',
+            active: location.pathname.startsWith('/parent/medical-events')
+        },
+        {
+            text: 'Thông báo tiêm chủng',
+            icon: <VaccinesIcon />,
+            path: '/parent/vaccination-notifications',
+            active: location.pathname.startsWith('/parent/vaccination-notifications')
         }
     ];
 

@@ -48,6 +48,7 @@ import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
     Warning as WarningIcon,
+    History as HistoryIcon,
     Clear as ClearIcon,
     ThumbUp
 } from '@mui/icons-material';
@@ -82,9 +83,11 @@ const MedicalOrdersPage = () => {
     });
 
     const [loading, setLoading] = useState(true);
-    const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || '');
-    const [selectedOrder, setSelectedOrder] = useState(null);
-    const [dialogOpen, setDialogOpen] = useState(false); useEffect(() => {
+    const [searchInput, setSearchInput] = useState(searchParams.get('keyword') || ''); const [selectedOrder, setSelectedOrder] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [medicationHistoryDialogOpen, setMedicationHistoryDialogOpen] = useState(false);
+    const [medicationHistory, setMedicationHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false); useEffect(() => {
         loadInitialData();
     }, []);
 
@@ -314,10 +317,34 @@ const MedicalOrdersPage = () => {
         setQuery(updatedQuery);
         const newParams = new URLSearchParams();
         setSearchParams(newParams);
+    }; const handleViewOrder = (order) => {
+        navigate(`/parent/medical-orders/${order._id}`);
     };
 
-    const handleViewOrder = (order) => {
-        navigate(`/parent/medical-orders/${order._id}`);
+    const handleViewMedicationHistory = async (orderId) => {
+        try {
+            setHistoryLoading(true);
+            setMedicationHistoryDialogOpen(true);
+
+            const response = await medicalOrderApi.getRecord(orderId);
+            if (response.isSuccess && response.data) {
+                setMedicationHistory(response.data.records || []);
+            } else {
+                setMedicationHistory([]);
+                toast.info('Chưa có lịch sử uống thuốc cho đơn này');
+            }
+        } catch (error) {
+            console.error('Error loading medication history:', error);
+            toast.error('Lỗi khi tải lịch sử uống thuốc');
+            setMedicationHistory([]);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
+    const handleCloseMedicationHistoryDialog = () => {
+        setMedicationHistoryDialogOpen(false);
+        setMedicationHistory([]);
     };
 
     const formatDate = (dateString) => {
@@ -362,8 +389,7 @@ const MedicalOrdersPage = () => {
 
     return (
         <>
-            <Container maxWidth="xl">
-                {/* Header */}
+            <Container maxWidth="xl">                {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
@@ -372,6 +398,19 @@ const MedicalOrdersPage = () => {
                         <Typography variant="h6" color="text.secondary">
                             Theo dõi và quản lý các đơn gửi thuốc của con em
                         </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={() => navigate('/parent/medical-orders/add')}
+                            sx={{
+                                bgcolor: '#1976d2',
+                                '&:hover': { bgcolor: '#1565c0' }
+                            }}
+                        >
+                            Tạo đơn thuốc
+                        </Button>
                     </Box>
                 </Box>
 
@@ -570,8 +609,7 @@ const MedicalOrdersPage = () => {
                                                         }}>
                                                             {order.note || 'Không có ghi chú'}
                                                         </Typography>
-                                                    </TableCell>
-                                                    <TableCell align="center">
+                                                    </TableCell>                                                    <TableCell align="center">
                                                         <Tooltip title="Xem chi tiết">
                                                             <IconButton
                                                                 size="small"
@@ -579,6 +617,15 @@ const MedicalOrdersPage = () => {
                                                                 onClick={() => handleViewOrder(order)}
                                                             >
                                                                 <ViewIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                        <Tooltip title="Lịch sử uống thuốc">
+                                                            <IconButton
+                                                                size="small"
+                                                                color="info"
+                                                                onClick={() => handleViewMedicationHistory(order._id)}
+                                                            >
+                                                                <HistoryIcon />
                                                             </IconButton>
                                                         </Tooltip>
                                                     </TableCell>
@@ -615,10 +662,65 @@ const MedicalOrdersPage = () => {
                         right: 16,
                         display: { xs: 'flex', md: 'none' }
                     }}
-                    onClick={() => navigate('/parent/medical-orders/create')}
-                >
-                    <AddIcon />
+                    onClick={() => navigate('/parent/medical-orders/add')}
+                >                    <AddIcon />
                 </Fab>
+
+                {/* Medication History Dialog */}
+                <Dialog
+                    open={medicationHistoryDialogOpen}
+                    onClose={handleCloseMedicationHistoryDialog}
+                    maxWidth="lg"
+                    fullWidth
+                >
+                    <DialogTitle>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            Lịch sử uống thuốc
+                        </Box>
+                    </DialogTitle>
+                    <DialogContent>
+                        {historyLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : medicationHistory.length > 0 ? (
+                            <TableContainer component={Paper} variant="outlined">
+                                <Table>
+                                    <TableHead>
+                                        <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                                            <TableCell sx={{ fontWeight: 600 }}>Tên thuốc</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 600 }}>Số lượng đã dùng</TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>Thời gian</TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>Y tá cho uống</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {medicationHistory.map(record => (
+                                            record.items.map(item => (
+                                                <TableRow key={`${record._id}-${item._id}`}>
+                                                    <TableCell>{item.name || 'Không rõ tên thuốc'}</TableCell>
+                                                    <TableCell align="center">{item.quantity}</TableCell>
+                                                    <TableCell>{new Date(item.createdAt).toLocaleString('vi-VN')}</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name || 'N/A'}</TableCell>
+                                                </TableRow>
+                                            ))
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <Alert severity="info">
+                                Chưa có lịch sử uống thuốc cho đơn này
+                            </Alert>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseMedicationHistoryDialog}>
+                            Đóng
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Container>
         </>
     );

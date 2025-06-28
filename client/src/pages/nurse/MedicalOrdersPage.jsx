@@ -36,7 +36,7 @@ const STATUS_OPTIONS = [
     { value: '', label: 'Tất cả' },
     { value: 'pending', label: 'Chờ duyệt', color: 'warning' },
     { value: 'approved', label: 'Đã duyệt', color: 'info' },
-    
+     { value: 'canceled', label: 'Từ chối ', color: 'error' },
 ];
 
 // Utility functions
