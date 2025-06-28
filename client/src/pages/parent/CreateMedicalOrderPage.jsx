@@ -22,7 +22,7 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams, useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import medicalOrderApi from '../../api/medicalOrderApi';
@@ -30,19 +30,18 @@ import { childApi } from '../../api/childApi';
 
 const CreateMedicalOrderPage = () => {
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const childId = searchParams.get('childId');
+    const { childId } = useParams(); // Get childId from URL params
     const dispatch = useDispatch(); const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [child, setChild] = useState(null);
+    const [children, setChildren] = useState([]); // Add children list for dropdown
     const [formData, setFormData] = useState({
         medicalOrder: {
-            ChildId: childId,
+            ChildId: childId || '', // Set to childId if available, otherwise empty
             startDate: new Date().toISOString().split('T')[0],
             endDate: '',
             note: 'None'
-        },
-        medicalOrderDetails: [
+        }, medicalOrderDetails: [
             {
                 medicineName: '',
                 dosage: '',
@@ -52,33 +51,39 @@ const CreateMedicalOrderPage = () => {
                 quantity: 1
             }
         ]
-    }); useEffect(() => {
-        const loadChildData = async () => {
-            if (!childId) {
-                navigate('/parent/children');
-                return;
-            }
+    });
 
+    useEffect(() => {
+        const loadData = async () => {
             try {
-                const childData = await childApi.getChildById(childId);
-                setChild(childData.data || childData);
+                // Always load children list for dropdown
+                const childrenResponse = await childApi.getAllChildren();
+                if (childrenResponse && childrenResponse.data && childrenResponse.data.records) {
+                    setChildren(childrenResponse.data.records);
+                }
 
-                // Update formData with childId
-                setFormData(prev => ({
-                    ...prev,
-                    medicalOrder: {
-                        ...prev.medicalOrder,
-                        ChildId: childId
-                    }
-                }));
+                // If childId is provided, load specific child data
+                if (childId) {
+                    const childData = await childApi.getChildById(childId);
+                    setChild(childData.data || childData);
+
+                    // Update formData with childId
+                    setFormData(prev => ({
+                        ...prev,
+                        medicalOrder: {
+                            ...prev.medicalOrder,
+                            ChildId: childId
+                        }
+                    }));
+                }
             } catch (err) {
-                toast.error('Không thể tải thông tin con em');
-                navigate('/parent/children');
+                console.error('Error loading data:', err);
+                toast.error('Không thể tải dữ liệu');
             }
-        };
+        }; loadData();
+    }, [childId]);
 
-        loadChildData();
-    }, [childId, navigate]); const handleMedicalOrderChange = (e) => {
+    const handleMedicalOrderChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -87,6 +92,30 @@ const CreateMedicalOrderPage = () => {
                 [name]: value
             }
         }));
+    };
+
+    const handleChildChange = async (e) => {
+        const selectedChildId = e.target.value;
+        setFormData(prev => ({
+            ...prev,
+            medicalOrder: {
+                ...prev.medicalOrder,
+                ChildId: selectedChildId
+            }
+        }));
+
+        // Load specific child data when selected
+        if (selectedChildId) {
+            try {
+                const childData = await childApi.getChildById(selectedChildId);
+                setChild(childData.data || childData);
+            } catch (err) {
+                console.error('Error loading child data:', err);
+                toast.error('Không thể tải thông tin con em');
+            }
+        } else {
+            setChild(null);
+        }
     };
 
     const handleMedicalOrderDetailChange = (index, e) => {
@@ -128,10 +157,19 @@ const CreateMedicalOrderPage = () => {
                 medicalOrderDetails: prev.medicalOrderDetails.filter((_, i) => i !== index)
             }));
         }
-    }; const handleSubmit = async (e) => {
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
+        // Validate child selection
+        if (!formData.medicalOrder.ChildId) {
+            setError('Vui lòng chọn con em');
+            setLoading(false);
+            return;
+        }
 
         // Validate required fields
         if (!formData.medicalOrder.endDate) {
@@ -153,7 +191,8 @@ const CreateMedicalOrderPage = () => {
         try {
             await medicalOrderApi.createOrder(formData);
             toast.success('✅ Đã tạo đơn thuốc thành công!');
-            navigate(`/parent/children`);
+            // Navigate to medical orders page to see the created order
+            navigate('/parent/medical-orders');
         } catch (err) {
             console.error('Error creating medical order:', err);
             setError(err.response?.data?.message || err.message || 'Có lỗi xảy ra khi tạo đơn thuốc');
@@ -161,18 +200,22 @@ const CreateMedicalOrderPage = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    if (!child) {
+    };    // Show loading spinner only when:
+    // 1. childId is provided but child data is not loaded yet
+    // 2. children list is not loaded yet (for dropdown)
+    if ((childId && !child) || children.length === 0) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <CircularProgress />
             </Box>
         );
-    } return (
+    }
+
+    return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <Paper elevation={3} sx={{ p: 4 }}>
-                {/* Header */}                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                {/* Header */}
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <IconButton
                         onClick={() => navigate(`/parent/children`)}
                         sx={{ mr: 2 }}
@@ -182,41 +225,72 @@ const CreateMedicalOrderPage = () => {
                     <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                         Tạo đơn thuốc mới
                     </Typography>
-                </Box>                {/* Child Info */}
-                <Card sx={{ mb: 3, bgcolor: '#f8f9fa' }}>
-                    <CardContent>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                            Thông tin con em
-                        </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <Typography variant="body2" color="text.secondary">Họ tên:</Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                    {child?.name || 'N/A'}
-                                </Typography>
+                </Box>
+
+                {/* Child Selection - Only show if no childId from URL */}
+                {!childId && (
+                    <Card sx={{ mb: 3, bgcolor: '#e3f2fd' }}>
+                        <CardContent>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                                Chọn con em
+                            </Typography>
+                            <TextField
+                                select
+                                fullWidth
+                                label="Chọn con em"
+                                name="ChildId"
+                                value={formData.medicalOrder.ChildId}
+                                onChange={handleChildChange}
+                                required
+                                sx={{ bgcolor: 'white' }}
+                            >
+                                <MenuItem value="">-- Chọn con em --</MenuItem>
+                                {children.map((childOption) => (
+                                    <MenuItem key={childOption._id} value={childOption._id}>
+                                        {childOption.name} - {childOption.studentCode}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </CardContent>                    </Card>
+                )}
+
+                {/* Child Info - Only show if child is selected */}
+                {child && (
+                    <Card sx={{ mb: 3, bgcolor: '#f8f9fa' }}>
+                        <CardContent>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                Thông tin con em
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="body2" color="text.secondary">Họ tên:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                                        {child?.name || 'N/A'}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="body2" color="text.secondary">Ngày sinh:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                                        {child?.birthdate ? new Date(child.birthdate).toLocaleDateString('vi-VN') : 'N/A'}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="body2" color="text.secondary">Mã học sinh:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                                        {child?.studentCode || 'N/A'}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="body2" color="text.secondary">Giới tính:</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                                        {child?.gender === 'male' ? 'Nam' :
+                                            child?.gender === 'female' ? 'Nữ' : 'N/A'}
+                                    </Typography>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Typography variant="body2" color="text.secondary">Ngày sinh:</Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                    {child?.birthdate ? new Date(child.birthdate).toLocaleDateString('vi-VN') : 'N/A'}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Typography variant="body2" color="text.secondary">Mã học sinh:</Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                    {child?.studentCode || 'N/A'}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Typography variant="body2" color="text.secondary">Giới tính:</Typography>
-                                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                    {child?.gender === 'male' ? 'Nam' :
-                                        child?.gender === 'female' ? 'Nữ' : 'N/A'}
-                                </Typography>
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {error && (
                     <Alert severity="error" sx={{ mb: 3 }}>
@@ -407,13 +481,11 @@ const CreateMedicalOrderPage = () => {
                                 </Card>
                             ))}
                         </CardContent>
-                    </Card>
-
-                    {/* Submit Button */}
+                    </Card>                    {/* Submit Button */}
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
                         <Button
                             variant="outlined"
-                            onClick={() => navigate(`/parent/children/${childId}`)}
+                            onClick={() => navigate(childId ? `/parent/children` : '/parent/medical-orders')}
                         >
                             Hủy
                         </Button>
@@ -436,4 +508,4 @@ const CreateMedicalOrderPage = () => {
     );
 };
 
-export default CreateMedicalOrderPage; 
+export default CreateMedicalOrderPage;

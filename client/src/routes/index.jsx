@@ -18,6 +18,10 @@ import MedicalOrdersPage from '../pages/nurse/MedicalOrdersPage';
 import MedicalOrderDetailPage from '../pages/nurse/MedicalOrderDetailPage';
 
 
+// Vaccination components
+import VaccinationCampaignsPage from "../pages/nurse/VaccinationCampaignsPage";
+import VaccinationParticipationsPage from "../pages/nurse/VaccinationParticipationsPage";
+
 // Layout components
 import AppLayout from '../components/layouts/AppLayout';
 import LandingLayout from '../components/layouts/LandingLayout';
@@ -32,6 +36,7 @@ import ChildDetailPage from "../pages/parent/ChildDetailPage";
 import CreateMedicalOrderPage from "../pages/parent/CreateMedicalOrderPage";
 import ParentMedicalOrderDetailPage from "../pages/parent/MedicalOrderDetailPage";
 import ParentMedicalEventDetailPage from "../pages/parent/MedicalEventDetailPage";
+import ParentMedicalEventsPage from "../pages/parent/MedicalEventsPage";
 import AdminLayout from "../components/layouts/AdminLayout";
 
 //Admin pages
@@ -56,10 +61,10 @@ const router = createBrowserRouter([
         element: <LandingLayout />,
         children: [{
           index: true,
-          path: '/',
-          element: <LandingPage />
-        }
-        ]
+          path: "/",
+          element: <LandingPage />,
+        },
+        ],
       },
       {
         path: 'login',
@@ -145,6 +150,13 @@ const router = createBrowserRouter([
           {
             path: 'settings',
             element: <div>Settings Page - Coming Soon</div>, // Placeholder
+          }, {
+            path: "vaccination-campaigns",
+            element: <VaccinationCampaignsPage />,
+          },
+          {
+            path: "vaccination-campaigns/:campaignId/participations",
+            element: <VaccinationParticipationsPage />,
           },
         ]
       },
@@ -216,6 +228,28 @@ const router = createBrowserRouter([
           {
             path: 'medical-orders',
             element: <ParentMedicalOrdersPage />, // Placeholder
+          }, {
+            path: "medical-orders/add",
+            element: <CreateMedicalOrderPage />, // Placeholder
+          },
+          {
+            path: "medical-orders/add/:childId",
+            element: <CreateMedicalOrderPage />, // With pre-selected child
+          },
+
+          // Medical Events Management
+          {
+            path: "medical-events",
+            children: [
+              {
+                index: true,
+                element: <ParentMedicalEventsPage />,
+              },
+              {
+                path: ":eventId",
+                element: <ParentMedicalEventDetailPage />,
+              },
+            ],
           },
           {
             path: 'medical-orders/add',

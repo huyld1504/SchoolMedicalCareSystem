@@ -35,6 +35,7 @@ import {
   MedicalServices,
   Report,
   Person,
+  Vaccines as VaccinesIcon,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Outlet, useLocation } from "react-router";
@@ -53,27 +54,32 @@ const NurseLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
-    const { user } = useSelector((state) => state.auth);    
-    const menuItems = [      
-        {
-            text: 'Quản lý học sinh',
-            icon: <PeopleIcon />,
-            path: '/nurse/students',
-            active: location.pathname === '/nurse/students'
-        },
-        {
-            text: 'Xem đơn gửi thuốc ',
-            icon: <AssignmentIcon />,
-            path: '/nurse/medical-orders',
-            active: location.pathname === '/nurse/medical-events'
-        },
-        {
-            text: 'Sự kiện y tế',
-            icon: <MedicalServices />,
-            path: '/nurse/medical-events',
-            active: location.pathname.includes('/medical-events')
-        },        
-    ];
+  const { user } = useSelector((state) => state.auth); const menuItems = [
+    {
+      text: "Quản lý học sinh",
+      icon: <PeopleIcon />,
+      path: "/nurse/students",
+      active: location.pathname === "/nurse/students",
+    },
+    {
+      text: "Yêu cầu y tế",
+      icon: <AssignmentIcon />,
+      path: "/nurse/medical-orders",
+      active: location.pathname === "/nurse/medical-orders",
+    },
+    {
+      text: "Sự kiện y tế",
+      icon: <MedicalServices />,
+      path: "/nurse/medical-events",
+      active: location.pathname.includes("/medical-events"),
+    },
+    {
+      text: "Tiêm chủng",
+      icon: <VaccinesIcon />,
+      path: "/nurse/vaccination-campaigns",
+      active: location.pathname.includes("/vaccination"),
+    },
+  ];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

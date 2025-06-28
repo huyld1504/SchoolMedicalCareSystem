@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import healthProfileAPI from '../../api/healthProfileApi';
+import { removeBrackets, processHealthDataForDisplay } from '../../utils/string.utils';
 
 const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
   const [loading, setLoading] = useState(true);
@@ -38,11 +39,13 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
       if (!open || !profileId) return;
 
       try {
-        setLoading(true);
-        setError(null);
+        setLoading(true); setError(null);
         const profileResponse = await healthProfileAPI.getById(profileId);
         const profileData = profileResponse.data;
-        setProfile(profileData);
+
+        // Xử lý data để loại bỏ dấu ngoặc vuông khi hiển thị
+        const processedProfile = processHealthDataForDisplay(profileData);
+        setProfile(processedProfile);
 
       } catch (err) {
         console.error('Error loading data:', err);
@@ -82,18 +85,20 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
       return 'Ngày không hợp lệ';
     }
   };
-
-  // Hàm parse JSON data cho các field array
+  // Hàm parse JSON data cho các field array với xử lý dấu ngoặc vuông
   const parseHealthData = (data) => {
     if (!data || data === '1' || data === '') return [];
 
+    // Loại bỏ dấu ngoặc vuông trước khi xử lý
+    const cleanData = removeBrackets(data);
+
     try {
       // Nếu data là JSON string, parse nó
-      const parsed = JSON.parse(data);
+      const parsed = JSON.parse(cleanData);
       return Array.isArray(parsed) ? parsed : [];
     } catch {
       // Nếu không parse được, coi như string và split bằng dấu phẩy
-      return data.split(',').map(item => item.trim()).filter(item => item);
+      return cleanData.split(',').map(item => item.trim()).filter(item => item);
     }
   };
 
@@ -243,10 +248,8 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
           {/* Additional Health Information */}
           <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
             Thông tin sức khỏe bổ sung
-          </Typography>
-
-          <Grid container spacing={2}>            {(() => {
-            const allergiesData = parseHealthData(profile?.allergies);
+          </Typography>          <Grid container spacing={2}>            {(() => {
+            const allergiesData = parseHealthData(profile?.allergies?.deleteSpecical);
             return allergiesData.length > 0 && (
               <Grid item xs={12} md={4}>
                 <Box sx={{ p: 2, bgcolor: '#fff3e0', borderRadius: 1, border: '1px solid #ffcc02' }}>
@@ -271,7 +274,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
               </Grid>
             );
           })()}            {(() => {
-            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
+            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases?.deleteSpecical);
             return chronicDiseasesData.length > 0 && (
               <Grid item xs={12} md={4}>
                 <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, border: '1px solid #ffcdd2' }}>
@@ -296,7 +299,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
               </Grid>
             );
           })()}            {(() => {
-            const devicesSupportData = parseHealthData(profile?.devicesSupport);
+            const devicesSupportData = parseHealthData(profile?.devicesSupport?.deleteSpecical);
             return devicesSupportData.length > 0 && (
               <Grid item xs={12} md={4}>
                 <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #bbdefb' }}>
@@ -321,9 +324,9 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
               </Grid>
             );
           })()}            {(() => {
-            const allergiesData = parseHealthData(profile?.allergies);
-            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
-            const devicesSupportData = parseHealthData(profile?.devicesSupport);
+            const allergiesData = parseHealthData(profile?.allergies?.deleteSpecical);
+            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases?.deleteSpecical);
+            const devicesSupportData = parseHealthData(profile?.devicesSupport?.deleteSpecical);
 
             return allergiesData.length === 0 && chronicDiseasesData.length === 0 && devicesSupportData.length === 0 && (
               <Grid item xs={12}>
