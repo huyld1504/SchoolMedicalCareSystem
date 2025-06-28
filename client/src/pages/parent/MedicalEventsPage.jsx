@@ -39,6 +39,12 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalEventApi from '../../api/medicalEventApi';
 import { childApi } from '../../api/childApi';
+import {
+  getMedicalEventTypeColor,
+  getMedicalEventTypeLabel,
+  getMedicalEventLevelColor,
+  getMedicalEventLevelLabel
+} from '../../utils/colorUtils';
 
 const MedicalEventsPage = () => {
   const navigate = useNavigate();
@@ -50,8 +56,18 @@ const MedicalEventsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filter and pagination state
+  // Filter state (separate from applied search)
   const [filters, setFilters] = useState({
+    keyword: '',
+    type: '',
+    level: '',
+    childId: '',
+    page: 1,
+    limit: 10
+  });
+
+  // Applied search state (used for actual API calls)
+  const [appliedSearch, setAppliedSearch] = useState({
     keyword: searchParams.get('keyword') || '',
     type: searchParams.get('type') || '',
     level: searchParams.get('level') || '',
@@ -72,24 +88,39 @@ const MedicalEventsPage = () => {
     loadChildren();
   }, []);
 
-  // Load events when filters change
+  // Initialize filters from URL params on first load
+  useEffect(() => {
+    if (appliedSearch.keyword || appliedSearch.type || appliedSearch.level || appliedSearch.childId) {
+      // Copy appliedSearch to filters to show in form
+      setFilters({
+        keyword: appliedSearch.keyword,
+        type: appliedSearch.type,
+        level: appliedSearch.level,
+        childId: appliedSearch.childId,
+        page: appliedSearch.page,
+        limit: appliedSearch.limit
+      });
+    }
+  }, []); // Only run once on mount
+
+  // Load events when appliedSearch changes
   useEffect(() => {
     if (children.length > 0) {
       loadMedicalEvents();
     }
-  }, [filters, children]);
+  }, [appliedSearch, children]);
 
-  // Sync URL params with filters
+  // Sync URL params with appliedSearch
   useEffect(() => {
     const newParams = new URLSearchParams();
-    if (filters.keyword) newParams.set('keyword', filters.keyword);
-    if (filters.type) newParams.set('type', filters.type);
-    if (filters.level) newParams.set('level', filters.level);
-    if (filters.childId) newParams.set('childId', filters.childId);
-    if (filters.page > 1) newParams.set('page', filters.page.toString());
+    if (appliedSearch.keyword) newParams.set('keyword', appliedSearch.keyword);
+    if (appliedSearch.type) newParams.set('type', appliedSearch.type);
+    if (appliedSearch.level) newParams.set('level', appliedSearch.level);
+    if (appliedSearch.childId) newParams.set('childId', appliedSearch.childId);
+    if (appliedSearch.page > 1) newParams.set('page', appliedSearch.page.toString());
 
     setSearchParams(newParams);
-  }, [filters, setSearchParams]);
+  }, [appliedSearch, setSearchParams]);
 
   const loadChildren = async () => {
     try {
@@ -119,8 +150,8 @@ const MedicalEventsPage = () => {
       let allEvents = [];
 
       // If specific child is selected, load only that child's events
-      if (filters.childId) {
-        const childEvents = await loadEventsForChild(filters.childId);
+      if (appliedSearch.childId) {
+        const childEvents = await loadEventsForChild(appliedSearch.childId);
         allEvents = childEvents;
       } else {
         // Load events for all children
@@ -133,19 +164,19 @@ const MedicalEventsPage = () => {
       // Apply filters
       let filteredEvents = allEvents;
 
-      if (filters.keyword) {
+      if (appliedSearch.keyword) {
         filteredEvents = filteredEvents.filter(event =>
-          event.description?.toLowerCase().includes(filters.keyword.toLowerCase()) ||
-          event.type?.toLowerCase().includes(filters.keyword.toLowerCase())
+          event.description?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+          event.type?.toLowerCase().includes(appliedSearch.keyword.toLowerCase())
         );
       }
 
-      if (filters.type) {
-        filteredEvents = filteredEvents.filter(event => event.type === filters.type);
+      if (appliedSearch.type) {
+        filteredEvents = filteredEvents.filter(event => event.type === appliedSearch.type);
       }
 
-      if (filters.level) {
-        filteredEvents = filteredEvents.filter(event => event.level === parseInt(filters.level));
+      if (appliedSearch.level) {
+        filteredEvents = filteredEvents.filter(event => event.level === parseInt(appliedSearch.level));
       }
 
       // Sort by date (newest first)
@@ -153,15 +184,15 @@ const MedicalEventsPage = () => {
 
       // Client-side pagination
       const total = filteredEvents.length;
-      const totalPages = Math.ceil(total / filters.limit);
-      const startIndex = (filters.page - 1) * filters.limit;
-      const paginatedEvents = filteredEvents.slice(startIndex, startIndex + filters.limit);
+      const totalPages = Math.ceil(total / appliedSearch.limit);
+      const startIndex = (appliedSearch.page - 1) * appliedSearch.limit;
+      const paginatedEvents = filteredEvents.slice(startIndex, startIndex + appliedSearch.limit);
 
       setEvents(paginatedEvents);
       setPaginationInfo({
         total,
-        page: filters.page,
-        limit: filters.limit,
+        page: appliedSearch.page,
+        limit: appliedSearch.limit,
         totalPages
       });
 
@@ -203,28 +234,33 @@ const MedicalEventsPage = () => {
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
       ...prev,
-      [field]: value,
-      page: 1 // Reset to first page when filtering
+      [field]: value
     }));
   };
 
   const handlePageChange = (event, page) => {
-    setFilters(prev => ({ ...prev, page }));
+    setAppliedSearch(prev => ({ ...prev, page }));
   };
 
   const handleSearch = () => {
-    setFilters(prev => ({ ...prev, page: 1 }));
+    // Apply current filters to search and reset page
+    setAppliedSearch({
+      ...filters,
+      page: 1
+    });
   };
 
   const handleClearFilters = () => {
-    setFilters({
+    const clearedFilters = {
       keyword: '',
       type: '',
       level: '',
       childId: '',
       page: 1,
       limit: 10
-    });
+    };
+    setFilters(clearedFilters);
+    setAppliedSearch(clearedFilters);
   };
 
   const handleViewEvent = (event) => {
@@ -248,23 +284,19 @@ const MedicalEventsPage = () => {
   };
 
   const getTypeChip = (type) => {
-    const typeMap = {
-      'cấp cứu': { color: 'error', label: 'Cấp cứu' },
-      'chấn thương': { color: 'warning', label: 'Chấn thương' },
-      'bệnh': { color: 'info', label: 'Bệnh' },
-    };
-    const config = typeMap[type] || { color: 'default', label: type };
-    return <Chip label={config.label} color={config.color} size="small" />;
+    return <Chip
+      label={getMedicalEventTypeLabel(type)}
+      color={getMedicalEventTypeColor(type)}
+      size="small"
+    />;
   };
 
   const getLevelChip = (level) => {
-    const levelMap = {
-      1: { color: 'success', label: 'Nhẹ' },
-      2: { color: 'warning', label: 'Trung bình' },
-      3: { color: 'error', label: 'Khẩn cấp' }
-    };
-    const config = levelMap[level] || { color: 'default', label: 'N/A' };
-    return <Chip label={config.label} color={config.color} size="small" />;
+    return <Chip
+      label={getMedicalEventLevelLabel(level)}
+      color={getMedicalEventLevelColor(level)}
+      size="small"
+    />;
   };
 
   if (error) {
@@ -291,23 +323,6 @@ const MedicalEventsPage = () => {
           <Typography variant="h6" color="text.secondary">
             Theo dõi các sự kiện y tế của con em
           </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Tooltip title="Làm mới danh sách">
-            <IconButton
-              onClick={() => window.location.reload()}
-              color="primary"
-              sx={{
-                border: '1px solid',
-                borderColor: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.light'
-                }
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
         </Box>
       </Box>
 
@@ -428,7 +443,7 @@ const MedicalEventsPage = () => {
             <Box sx={{ textAlign: 'center', py: 6 }}>
               <EventIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
               <Typography variant="h6" color="text.secondary">
-                {filters.keyword || filters.type || filters.level || filters.childId
+                {appliedSearch.keyword || appliedSearch.type || appliedSearch.level || appliedSearch.childId
                   ? 'Không tìm thấy sự kiện nào phù hợp'
                   : 'Chưa có sự kiện y tế nào'
                 }
@@ -452,7 +467,7 @@ const MedicalEventsPage = () => {
                   <TableBody>
                     {events.map((event, index) => (
                       <TableRow key={event._id} hover>
-                        <TableCell>{(filters.page - 1) * filters.limit + index + 1}</TableCell>
+                        <TableCell>{(appliedSearch.page - 1) * appliedSearch.limit + index + 1}</TableCell>
                         <TableCell>{formatDate(event.dateHappened)}</TableCell>
                         <TableCell>
                           <Box>
@@ -501,7 +516,7 @@ const MedicalEventsPage = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
                   <Pagination
                     count={paginationInfo.totalPages}
-                    page={filters.page}
+                    page={appliedSearch.page}
                     onChange={handlePageChange}
                     color="primary"
                     size="large"
