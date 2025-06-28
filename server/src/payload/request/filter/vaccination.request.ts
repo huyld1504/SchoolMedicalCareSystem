@@ -21,7 +21,7 @@ export class VaccinationCampaignQueryBuilder extends BaseQueryBuilder {
   }
 
   protected parseDate(value?: string): Date | undefined {
-    if (!value || !value.trim()) return undefined;
+    if (!value) return undefined;
     const date = new Date(value);
     return isNaN(date.getTime()) ? undefined : date;
   }
