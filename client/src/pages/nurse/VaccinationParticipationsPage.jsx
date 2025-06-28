@@ -47,7 +47,7 @@ import {
   Clear as ClearIcon,
   DateRange as DateRangeIcon
 } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -59,18 +59,32 @@ import vaccinationApi from '../../api/vaccinationApi';
 const VaccinationParticipationsPage = () => {
   const navigate = useNavigate();
   const { campaignId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [campaign, setCampaign] = useState(null);
   const [participations, setParticipations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State cho query gọi API (theo pattern của các trang nurse khác)
-  const [query, setQuery] = useState({
-    page: 1,
-    limit: 20,
+  // Filter state (separate from applied search)
+  const [filters, setFilters] = useState({
     keyword: '',
     consentStatus: '',
     vaccinationStatus: '',
-    vaccinationDate: ''
+    vaccinationDateFrom: '',
+    vaccinationDateTo: '',
+    page: 1,
+    limit: 20
+  });
+
+  // Applied search state (used for actual API calls)
+  const [appliedSearch, setAppliedSearch] = useState({
+    keyword: searchParams.get('keyword') || '',
+    consentStatus: searchParams.get('consentStatus') || '',
+    vaccinationStatus: searchParams.get('vaccinationStatus') || '',
+    vaccinationDateFrom: searchParams.get('vaccinationDateFrom') || '',
+    vaccinationDateTo: searchParams.get('vaccinationDateTo') || '',
+    page: parseInt(searchParams.get('page')) || 1,
+    limit: 20
   });
 
   // State cho pagination
@@ -80,9 +94,6 @@ const VaccinationParticipationsPage = () => {
     limit: 20,
     totalPages: 0
   });
-
-  // State cho search input
-  const [searchInput, setSearchInput] = useState('');
 
   // Recording vaccination state
   const [recordingDialog, setRecordingDialog] = useState(false);
@@ -96,24 +107,110 @@ const VaccinationParticipationsPage = () => {
     loadCampaignDetails();
   }, [campaignId]);
 
-  // Load participations khi query thay đổi
+  // Initialize filters from URL params on first load
   useEffect(() => {
-    loadParticipations();
-  }, [campaignId, query.page, query.limit, query.keyword, query.consentStatus, query.vaccinationStatus, query.vaccinationDate]); const loadParticipations = async () => {
+    if (appliedSearch.keyword || appliedSearch.consentStatus || appliedSearch.vaccinationStatus || appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
+      // Copy appliedSearch to filters to show in form
+      setFilters({
+        keyword: appliedSearch.keyword,
+        consentStatus: appliedSearch.consentStatus,
+        vaccinationStatus: appliedSearch.vaccinationStatus,
+        vaccinationDateFrom: appliedSearch.vaccinationDateFrom,
+        vaccinationDateTo: appliedSearch.vaccinationDateTo,
+        page: appliedSearch.page,
+        limit: appliedSearch.limit
+      });
+    }
+  }, []); // Only run once on mount
+
+  // Load participations when appliedSearch changes
+  useEffect(() => {
+    if (campaignId) {
+      loadParticipations();
+    }
+  }, [campaignId, appliedSearch]);
+
+  // Sync URL params with appliedSearch
+  useEffect(() => {
+    const newParams = new URLSearchParams();
+    if (appliedSearch.keyword) newParams.set('keyword', appliedSearch.keyword);
+    if (appliedSearch.consentStatus) newParams.set('consentStatus', appliedSearch.consentStatus);
+    if (appliedSearch.vaccinationStatus) newParams.set('vaccinationStatus', appliedSearch.vaccinationStatus);
+    if (appliedSearch.vaccinationDateFrom) newParams.set('vaccinationDateFrom', appliedSearch.vaccinationDateFrom);
+    if (appliedSearch.vaccinationDateTo) newParams.set('vaccinationDateTo', appliedSearch.vaccinationDateTo);
+    if (appliedSearch.page > 1) newParams.set('page', appliedSearch.page.toString());
+
+    setSearchParams(newParams);
+  }, [appliedSearch, setSearchParams]);
+
+  const loadParticipations = async () => {
     try {
       setLoading(true);
 
-      console.log('Participation search query:', query);
+      console.log('Participation search query:', appliedSearch);
 
-      const response = await vaccinationApi.campaigns.getParticipations(campaignId, query);
+      // Create API query without keyword and vaccinationDate (handled client-side)
+      const apiQuery = {
+        page: 1, // Load all data for client-side filtering
+        limit: 99, // Large limit to get all data
+        consentStatus: appliedSearch.consentStatus,
+        vaccinationStatus: appliedSearch.vaccinationStatus
+        // vaccinationDate removed - handled client-side
+      };
+
+      const response = await vaccinationApi.campaigns.getParticipations(campaignId, apiQuery);
 
       if (response?.isSuccess) {
-        setParticipations(response?.data?.records || []);
+        let allParticipations = response?.data?.records || [];
+
+        // Apply keyword filter client-side (similar to MedicalEventsPage)
+        if (appliedSearch.keyword) {
+          allParticipations = allParticipations.filter(participation =>
+            participation.student?.name?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+            participation.student?.studentCode?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+            participation.parentNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+            participation.nurseNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase())
+          );
+        }
+
+        // Apply vaccination date filter client-side (date range)
+        if (appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
+          allParticipations = allParticipations.filter(participation => {
+            if (!participation.vaccinationDate) return false;
+            
+            const participationDate = new Date(participation.vaccinationDate);
+            let isValid = true;
+            
+            // Check from date
+            if (appliedSearch.vaccinationDateFrom) {
+              const fromDate = new Date(appliedSearch.vaccinationDateFrom);
+              fromDate.setHours(0, 0, 0, 0); // Start of day
+              isValid = isValid && participationDate >= fromDate;
+            }
+            
+            // Check to date
+            if (appliedSearch.vaccinationDateTo) {
+              const toDate = new Date(appliedSearch.vaccinationDateTo);
+              toDate.setHours(23, 59, 59, 999); // End of day
+              isValid = isValid && participationDate <= toDate;
+            }
+            
+            return isValid;
+          });
+        }
+
+        // Client-side pagination
+        const total = allParticipations.length;
+        const totalPages = Math.ceil(total / appliedSearch.limit);
+        const startIndex = (appliedSearch.page - 1) * appliedSearch.limit;
+        const paginatedParticipations = allParticipations.slice(startIndex, startIndex + appliedSearch.limit);
+
+        setParticipations(paginatedParticipations);
         setPaginationInfo({
-          total: response?.data?.total || 0,
-          page: response?.data?.page || 1,
-          limit: response?.data?.limit || 20,
-          totalPages: response?.data?.totalPages || 0
+          total,
+          page: appliedSearch.page,
+          limit: appliedSearch.limit,
+          totalPages
         });
       } else {
         setParticipations([]);
@@ -124,6 +221,7 @@ const VaccinationParticipationsPage = () => {
           totalPages: 0
         });
       }
+      console.log('Participations loaded:', response?.data?.records);
     } catch (error) {
       console.error('Error loading participations:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
@@ -179,52 +277,37 @@ const VaccinationParticipationsPage = () => {
     setRecordingDialog(true);
   };
 
-  // Search handlers
-  const handleSearchChange = (event) => {
-    setSearchInput(event.target.value);
-  };
-
-  const handleSearchSubmit = () => {
-    setQuery(prev => ({
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({
       ...prev,
-      keyword: searchInput,
-      page: 1 // Reset về page 1 khi search
+      [field]: value
     }));
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      handleSearchSubmit();
-    }
-  };
-
-  // Pagination handlers
   const handlePageChange = (event, newPage) => {
-    setQuery(prev => ({
-      ...prev,
-      page: newPage
-    }));
+    setAppliedSearch(prev => ({ ...prev, page: newPage }));
   };
 
-  // Filter handlers
-  const handleFilterClear = () => {
-    setSearchInput('');
-    setQuery({
-      page: 1,
-      limit: 20,
-      keyword: '',
-      consentStatus: '',
-      vaccinationStatus: '',
-      vaccinationDate: ''
+  const handleSearch = () => {
+    // Apply current filters to search and reset page
+    setAppliedSearch({
+      ...filters,
+      page: 1
     });
   };
 
-  const handleFilterChange = (field, value) => {
-    setQuery(prev => ({
-      ...prev,
-      [field]: value,
-      page: 1 // Reset to first page when filter changes
-    }));
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      keyword: '',
+      consentStatus: '',
+      vaccinationStatus: '',
+      vaccinationDateFrom: '',
+      vaccinationDateTo: '',
+      page: 1,
+      limit: 20
+    };
+    setFilters(clearedFilters);
+    setAppliedSearch(clearedFilters);
   };
 
   const formatDate = (dateString) => {
@@ -301,19 +384,20 @@ const VaccinationParticipationsPage = () => {
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Grid container spacing={2} alignItems="center">
-              {/* <Grid item xs={12} md={2}>
+              <Grid item xs={12} md={2}>
                 <TextField
                   fullWidth
-                  placeholder="Tên học sinh"
-                  value={query.keyword}
+                  placeholder="Tên, mã học sinh, ghi chú..."
+                  value={filters.keyword}
                   onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
-              </Grid> */}
+              </Grid>
               <Grid item xs={12} md={2}>
                 <FormControl fullWidth>
                   <InputLabel>Đồng ý PH</InputLabel>
                   <Select
-                    value={query.consentStatus}
+                    value={filters.consentStatus}
                     label="Đồng ý PH"
                     onChange={(e) => handleFilterChange('consentStatus', e.target.value)}
                     sx={{
@@ -333,7 +417,7 @@ const VaccinationParticipationsPage = () => {
                 <FormControl fullWidth>
                   <InputLabel>Trạng thái tiêm</InputLabel>
                   <Select
-                    value={query.vaccinationStatus}
+                    value={filters.vaccinationStatus}
                     label="Trạng thái tiêm"
                     onChange={(e) => handleFilterChange('vaccinationStatus', e.target.value)}
                     sx={{
@@ -350,16 +434,43 @@ const VaccinationParticipationsPage = () => {
                   </Select>
                 </FormControl>
               </Grid>
+              <Grid item xs={12} md={1.5}>
+                <DatePicker
+                  label="Từ ngày"
+                  value={filters.vaccinationDateFrom ? new Date(filters.vaccinationDateFrom) : null}
+                  onChange={(date) => handleFilterChange('vaccinationDateFrom', date ? date.toISOString() : '')}
+                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                />
+              </Grid>
+              <Grid item xs={12} md={1.5}>
+                <DatePicker
+                  label="Đến ngày"
+                  value={filters.vaccinationDateTo ? new Date(filters.vaccinationDateTo) : null}
+                  onChange={(date) => handleFilterChange('vaccinationDateTo', date ? date.toISOString() : '')}
+                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                />
+              </Grid>
 
+              <Grid item xs={12} md={1}>
+                <Button
+                  variant="contained"
+                  startIcon={<SearchIcon />}
+                  onClick={handleSearch}
+                  fullWidth
+                  sx={{ mr: 1 }}
+                >
+                  Tìm kiếm
+                </Button>
+              </Grid>
               <Grid item xs={12} md={1}>
                 <Button
                   variant="outlined"
                   color="error"
                   startIcon={<ClearIcon />}
-                  onClick={handleFilterClear}
+                  onClick={handleClearFilters}
                   fullWidth
                 >
-                  Xóa
+                  Xóa bộ lọc
                 </Button>
               </Grid>
             </Grid>
@@ -398,6 +509,7 @@ const VaccinationParticipationsPage = () => {
                         <TableCell sx={{ fontWeight: 600 }}>Trạng thái tiêm</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Ngày tiêm</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Ghi chú Phụ huynh</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Ghi chú Y tá</TableCell>
                         <TableCell sx={{ fontWeight: 600 }} align="center">Thao tác</TableCell>
                       </TableRow>
                     </TableHead>
@@ -448,6 +560,17 @@ const VaccinationParticipationsPage = () => {
                               title: participation.parentNote || 'Không có ghi chú'
                             }}>
                               {participation.parentNote || 'Không có ghi chú'}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{
+                              maxWidth: 150,
+                              overflow: 'initial',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              title: participation.nurseNote || 'Không có ghi chú'
+                            }}>
+                              {participation.nurseNote || 'Không có ghi chú'}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">

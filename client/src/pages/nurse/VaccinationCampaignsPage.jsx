@@ -40,7 +40,7 @@ import {
   Clear as ClearIcon,
   DateRange as DateRangeIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -49,19 +49,31 @@ import vaccinationApi from '../../api/vaccinationApi';
 
 const VaccinationCampaignsPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
-  // State cho query gọi API (theo pattern của các trang nurse khác)
-  const [query, setQuery] = useState({
-    page: 1,
-    limit: 10,
+  // Filter state (separate from applied search)
+  const [filters, setFilters] = useState({
     keyword: '',
     status: '',
     startDateFrom: '',
-    startDateTo: ''
+    startDateTo: '',
+    page: 1,
+    limit: 10
+  });
+
+  // Applied search state (used for actual API calls)
+  const [appliedSearch, setAppliedSearch] = useState({
+    keyword: searchParams.get('keyword') || '',
+    status: searchParams.get('status') || '',
+    startDateFrom: searchParams.get('startDateFrom') || '',
+    startDateTo: searchParams.get('startDateTo') || '',
+    page: parseInt(searchParams.get('page')) || 1,
+    limit: 10
   });
 
   // State cho pagination
@@ -71,20 +83,43 @@ const VaccinationCampaignsPage = () => {
     limit: 10,
     totalPages: 0
   });
-  // State cho search input
-  const [searchInput, setSearchInput] = useState('');
 
-  // State riêng cho date picker
-  const [dateFromValue, setDateFromValue] = useState(null);
-  const [dateToValue, setDateToValue] = useState(null);// Load campaigns khi query thay đổi
+  // Initialize filters from URL params on first load
+  useEffect(() => {
+    if (appliedSearch.keyword || appliedSearch.status || appliedSearch.startDateFrom || appliedSearch.startDateTo) {
+      // Copy appliedSearch to filters to show in form
+      setFilters({
+        keyword: appliedSearch.keyword,
+        status: appliedSearch.status,
+        startDateFrom: appliedSearch.startDateFrom,
+        startDateTo: appliedSearch.startDateTo,
+        page: appliedSearch.page,
+        limit: appliedSearch.limit
+      });
+    }
+  }, []); // Only run once on mount
+
+  // Load campaigns when appliedSearch changes
   useEffect(() => {
     loadCampaigns();
-  }, [query.page, query.limit, query.keyword, query.status, query.startDateFrom, query.startDateTo]); const loadCampaigns = async () => {
+  }, [appliedSearch]);
+
+  // Sync URL params with appliedSearch
+  useEffect(() => {
+    const newParams = new URLSearchParams();
+    if (appliedSearch.keyword) newParams.set('keyword', appliedSearch.keyword);
+    if (appliedSearch.status) newParams.set('status', appliedSearch.status);
+    if (appliedSearch.startDateFrom) newParams.set('startDateFrom', appliedSearch.startDateFrom);
+    if (appliedSearch.startDateTo) newParams.set('startDateTo', appliedSearch.startDateTo);
+    if (appliedSearch.page > 1) newParams.set('page', appliedSearch.page.toString());
+
+    setSearchParams(newParams);
+  }, [appliedSearch, setSearchParams]); const loadCampaigns = async () => {
     try {
       setLoading(true);
-      console.log('Campaign search query:', query);
+      console.log('Campaign search query:', appliedSearch);
 
-      const response = await vaccinationApi.campaigns.search(query);
+      const response = await vaccinationApi.campaigns.search(appliedSearch);
       console.log(response)
 
       if (response?.isSuccess) {
@@ -137,51 +172,36 @@ const VaccinationCampaignsPage = () => {
     navigate(`/nurse/vaccination-campaigns/${campaign._id}/participations`);
   };
 
-  // Search handlers
-  const handleSearchChange = (event) => {
-    setSearchInput(event.target.value);
-  };
-
-  const handleSearchSubmit = () => {
-    setQuery(prev => ({
-      ...prev,
-      keyword: searchInput,
-      page: 1 // Reset về page 1 khi search
-    }));
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      handleSearchSubmit();
-    }
-  };
-
-  // Pagination handlers
-  const handlePageChange = (event, newPage) => {
-    setQuery(prev => ({
-      ...prev,
-      page: newPage
-    }));
-  };  // Filter handlers
   const handleFilterChange = (field, value) => {
-    setQuery(prev => ({
+    setFilters(prev => ({
       ...prev,
-      [field]: value,
-      page: 1 // Reset về page 1 khi filter thay đổi
+      [field]: value
     }));
   };
-  const handleFilterClear = () => {
-    setSearchInput('');
-    setDateFromValue(null);
-    setDateToValue(null);
-    setQuery({
-      page: 1,
-      limit: 10,
+
+  const handlePageChange = (event, newPage) => {
+    setAppliedSearch(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleSearch = () => {
+    // Apply current filters to search and reset page
+    setAppliedSearch({
+      ...filters,
+      page: 1
+    });
+  };
+
+  const handleClearFilters = () => {
+    const clearedFilters = {
       keyword: '',
       status: '',
       startDateFrom: '',
       startDateTo: '',
-    });
+      page: 1,
+      limit: 10
+    };
+    setFilters(clearedFilters);
+    setAppliedSearch(clearedFilters);
   };
 
   const formatDate = (dateString) => {
@@ -234,15 +254,16 @@ const VaccinationCampaignsPage = () => {
                 <TextField
                   fullWidth
                   placeholder="Tên vaccine, mô tả, v.v."
-                  value={query.keyword}
+                  value={filters.keyword}
                   onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </Grid>
               <Grid item xs={12} md={2}>
                 <FormControl fullWidth>
                   <InputLabel>Trạng thái</InputLabel>
                   <Select
-                    value={query.status}
+                    value={filters.status}
                     label="Trạng thái"
                     onChange={(e) => handleFilterChange('status', e.target.value)}
                     sx={{
@@ -263,28 +284,39 @@ const VaccinationCampaignsPage = () => {
               <Grid item xs={12} md={2}>
                 <DatePicker
                   label="Từ ngày"
-                  value={query.startDateFrom ? new Date(query.startDateFrom) : null}
+                  value={filters.startDateFrom ? new Date(filters.startDateFrom) : null}
                   onChange={(date) => handleFilterChange('startDateFrom', date ? date.toISOString() : '')}
                   renderInput={(params) => <TextField {...params} fullWidth size="small" />}
                 />
               </Grid>
-              <Grid item xs={12} md={1}>
+              <Grid item xs={12} md={2}>
                 <DatePicker
                   label="Đến ngày"
-                  value={query.startDateTo ? new Date(query.startDateTo) : null}
+                  value={filters.startDateTo ? new Date(filters.startDateTo) : null}
                   onChange={(date) => handleFilterChange('startDateTo', date ? date.toISOString() : '')}
                   renderInput={(params) => <TextField {...params} fullWidth size="small" />}
                 />
               </Grid>
-              <Grid item xs={12} md={1}>
+              <Grid item xs={12} md={2}>
+                <Button
+                  variant="contained"
+                  startIcon={<SearchIcon />}
+                  onClick={handleSearch}
+                  fullWidth
+                  sx={{ mr: 1 }}
+                >
+                  Tìm kiếm
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={2}>
                 <Button
                   variant="outlined"
                   color="error"
                   startIcon={<ClearIcon />}
-                  onClick={handleFilterClear}
+                  onClick={handleClearFilters}
                   fullWidth
                 >
-                  Xóa
+                  Xóa bộ lọc
                 </Button>
               </Grid>
             </Grid>
