@@ -76,7 +76,7 @@ const AdminLayout = () => {
     {
       text: "Sự kiện y tế",
       icon: <MedicalServices />,
-      path: "/nurse/medical-events",
+      path: "/admin/medical-events",
       active: location.pathname.includes("/medical-events"),
     },
   ];

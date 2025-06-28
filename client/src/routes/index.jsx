@@ -39,6 +39,8 @@ import AccountManager from "../pages/admin/AccountManager";
 import VaccinationCampaigns from "../pages/admin/VaccinationCampaigns";
 import VaccinationCampaignDetail from "../pages/admin/VaccinationCampaignDetail";
 import EditCampaign from "../pages/admin/VaccinationCampaigns/EditCampaign";
+import AdminMedicalEventsPage from "../pages/admin/AdminMedicalEventsPage";
+import AdminMedicalEventDetailPage from "../pages/admin/AdminMedicalEventDetailPage";
 
 // Parent vaccination pages
 import VaccinationNotificationsPage from "../pages/parent/VaccinationNotificationsPage";
@@ -269,6 +271,14 @@ const router = createBrowserRouter([
                 element: <VaccinationManager />,
               },
             ],
+          },
+          {
+            path: 'medical-events',
+            element: <AdminMedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/detail/:eventId',
+            element: <AdminMedicalEventDetailPage />,
           },
         ],
       },
