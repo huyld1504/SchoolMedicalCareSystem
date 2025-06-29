@@ -38,8 +38,14 @@ export const parentConsentSchema = Joi.object({
 
 // Schema cho y tá ghi nhận kết quả tiêm với business rules
 export const nurseRecordSchema = Joi.object({
-  status: Joi.string().valid('completed', 'missed', 'cancelled').required(),
-  // vaccinationDate không nhận từ frontend - tự động set ở backend
+  status: Joi.string().valid('completed', 'missed', 'cancelled').required(),  vaccinationDate: Joi.date()
+    .when('status', {
+      is: 'completed',
+      then: Joi.required().messages({
+        'any.required': 'Vaccination date is required when status is completed',
+      }),
+      otherwise: Joi.optional(),
+    }),
   note: Joi.string().max(500).allow('').optional(), // Cho phép empty string
 });
 

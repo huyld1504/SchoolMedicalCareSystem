@@ -297,14 +297,14 @@ async function recordVaccination(req: IReq, res: IRes) {
 
   if (!req.user) {
     throw new ValidationError("User authentication required");
-  }
-  const { participationId } = req.params;
-  const { status, note } = value; // vaccinationDate sẽ được tự động set ở repository
+  }  const { participationId } = req.params;
+  const { status, vaccinationDate, note } = value;
 
   await VaccinationService.recordVaccination(
     participationId as string,
     req.user.id.toString(),
     status,
+    vaccinationDate,
     note
   );
 
