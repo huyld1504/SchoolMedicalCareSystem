@@ -417,30 +417,37 @@ const VaccinationNotificationsPage = () => {
               </Typography>
             </Box>
 
-            <TableContainer component={Paper} sx={{
-              maxHeight: 600,
-              overflowX: 'auto',
-              borderRadius: 2,
-              boxShadow: 2,
-              border: '1px solid #e0e0e0',
-              '&::-webkit-scrollbar': {
-                height: 8,
-                background: 'rgba(0,0,0,0.05)'
-              },
-              '&::-webkit-scrollbar-thumb': {
-                background: 'rgba(25, 118, 210, 0.2)',
-                borderRadius: 4
-              },
-            }}>
+            <TableContainer 
+              component={Paper} sx={{
+                maxHeight: 600,
+                overflowX: 'auto',
+                borderRadius: 2,
+                boxShadow: 2,
+                border: '1px solid #e0e0e0',
+                '&::-webkit-scrollbar': {
+                  width: 10, // tăng chiều rộng thanh trượt dọc
+                  height: 8,
+                  background: 'rgba(0,0,0,0.05)'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#bcd6ee', // màu xanh nhạt hơn, dễ nhìn
+                  borderRadius: 8,
+                  minHeight: 40, // tăng chiều dài tối thiểu của ruột
+                  border: '2px solid #f5f5f5', // tạo hiệu ứng padding
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: '#90caf9', // hover xanh đậm hơn
+                },
+              }}>
               <Table stickyHeader sx={{ minWidth: 1200, background: '#fff' }}>
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 600, width: '5%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">STT</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '12%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Ngày bắt đầu</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '14%', fontSize: '1rem' }} align="center">Họ và tên</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '10%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Mã học sinh</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '15%', fontSize: '1rem' }} align="center">Tên chiến dịch</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '14%', fontSize: '1rem' }} align="center">Loại vaccine</TableCell>
+                    <TableCell sx={{ fontWeight: 600, width: '12%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Ngày bắt đầu</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '9%', fontSize: '1rem' }} align="center">Trạng thái tiêm</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '9%', fontSize: '1rem' }} align="center">Trạng thái duyệt</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '12%', fontSize: '1rem' }} align="center">Thao tác</TableCell>
@@ -458,42 +465,38 @@ const VaccinationNotificationsPage = () => {
                       }}
                     >
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1, color: '#1976d2', fontWeight: 700 }}>{(paginationInfo.page - 1) * paginationInfo.limit + index + 1}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{formatDate(notification.campaign?.startDate)}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.name || 'N/A'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.studentCode || 'N/A'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineName || 'N/A'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineType || 'N/A'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{formatDate(notification.campaign?.startDate)}</TableCell>
                       <TableCell align="center" sx={{ py: 1 }}>
-                        <Chip
-                          label={getVaccinationStatusLabel(notification.vaccinationStatus)}
+                        <Typography
+                          variant="body2"
                           sx={{
-                            fontSize: '0.85rem',
+                            fontSize: '0.93rem',
                             fontWeight: 600,
-                            color: 'white',
-                            backgroundColor: getVaccinationStatusColor(notification.vaccinationStatus),
-                            px: 1.2,
-                            height: 28,
-                            borderRadius: 1.5,
+                            color: getVaccinationStatusColor(notification.vaccinationStatus),
                             whiteSpace: 'nowrap',
                             minWidth: 120
                           }}
-                        />
+                        >
+                          {getVaccinationStatusLabel(notification.vaccinationStatus)}
+                        </Typography>
                       </TableCell>
                       <TableCell align="center" sx={{ py: 1 }}>
-                        <Chip
-                          label={getConsentLabel(notification.parentConsent)}
+                        <Typography
+                          variant="body2"
                           sx={{
-                            fontSize: '0.85rem',
+                            fontSize: '0.93rem',
                             fontWeight: 600,
-                            color: 'white',
-                            backgroundColor: getConsentColor(notification.parentConsent),
-                            px: 1.2,
-                            height: 28,
-                            borderRadius: 1.5,
+                            color: getConsentColor(notification.parentConsent),
                             whiteSpace: 'nowrap',
                             minWidth: 120
                           }}
-                        />
+                        >
+                          {getConsentLabel(notification.parentConsent)}
+                        </Typography>
                       </TableCell>
                       <TableCell align="center" sx={{ py: 1 }}>
                         <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
