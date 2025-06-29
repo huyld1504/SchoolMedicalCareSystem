@@ -10,4 +10,4 @@ name = "javascript"
     "mongo",
     "jest",
     "vitest"
-  ]
+ ]
