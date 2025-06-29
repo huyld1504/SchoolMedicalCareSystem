@@ -313,42 +313,6 @@ const router = createBrowserRouter([
           },
         ],
       },
-      // Medical Orders Management
-      {
-        path: "medical-orders",
-        children: [
-          {
-            index: true,
-            element: <MedicalOrdersPage />,
-          },
-          {
-            path: "create",
-            element: <CreateMedicalOrderPage />,
-          },
-          {
-            path: ":id",
-            element: <div>Medical Order Detail Page - Coming Soon</div>, // Placeholder
-          },
-        ],
-      },
-    ],
-  },
-  // Medical Orders Management
-  {
-    path: "medical-orders",
-    children: [
-      {
-        index: true,
-        element: <MedicalOrdersPage />,
-      },
-      {
-        path: "create",
-        element: <CreateMedicalOrderPage />,
-      },
-      {
-        path: ":id",
-        element: <MedicalOrderDetailPage />,
-      },
     ],
   },
 ]);
