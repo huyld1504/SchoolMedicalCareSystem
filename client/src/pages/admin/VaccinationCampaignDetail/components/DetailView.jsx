@@ -61,8 +61,8 @@ const DetailView = ({ campaign }) => {
   const { data: participationsResponse, isLoading: participationsLoading } = useQuery({
     queryKey: ["campaign-participations-all", campaign._id], // Bỏ participationPage
     queryFn: () => vaccinationCampaignApi.GetAllParticipationsInCampaign(campaign._id, { 
-      page: 1,           // Luôn lấy trang 1
-      limit: 100,       // Lấy toàn bộ data
+      page: 1,           
+      limit: 100,       
     }),
     enabled: !!campaign._id,
   });
@@ -186,14 +186,32 @@ const DetailView = ({ campaign }) => {
       case 'cancelled':
       case 'đã hủy':
         return 'error';
-      case 'pending':
-      case 'chờ xử lý':
+      case 'planned':
+      case 'đang lên kế hoạch':
         return 'warning';
       case 'planned':
       case 'đã lên kế hoạch':
         return 'info';
       default:
         return 'default';
+    }
+  };
+  const getStatusText = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'ongoing':
+      case 'active':
+        return 'Đang hoạt động';
+      case 'completed':
+        return 'Hoàn thành';
+      case 'cancelled':
+        return 'Đã hủy';
+      case 'pending':
+        return 'Chờ xử lý';
+      case 'planned':
+      case 'planning':
+        return 'Đã lên kế hoạch';
+      default:
+        return status || 'Không xác định';
     }
   };
 
@@ -211,14 +229,7 @@ const DetailView = ({ campaign }) => {
     }
   };
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return 'N/A';
-    try {
-      return new Date(dateString).toLocaleString('vi-VN');
-    } catch (error) {
-      return 'N/A';
-    }
-  };
+ 
 
   return (
     <Box sx={{ 
@@ -249,7 +260,7 @@ const DetailView = ({ campaign }) => {
                 {campaign.vaccineType} - {campaign.targetAudience}
               </Typography>
               <Chip
-                label={campaign.status || 'N/A'}
+                label={getStatusText(campaign.status) || 'N/A'}
                 color={getStatusColor(campaign.status)}
                 size="large"
                 sx={{ fontSize: '1rem', px: 3, py: 1 }}
