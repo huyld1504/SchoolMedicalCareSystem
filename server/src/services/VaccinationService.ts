@@ -118,14 +118,14 @@ class VaccinationService {
       consent,
       note
     );
-  }
-  /**
+  }  /**
    * 7. Ghi nhận tiêm chủng (Nurse only)
    */
   async recordVaccination(
     participationId: string,
     nurseId: string,
     status: 'completed' | 'missed' | 'cancelled',
+    vaccinationDate?: Date,
     note?: string
   ): Promise<IVaccinationParticipation | null> {
     // Kiểm tra participation tồn tại và đã được approve
@@ -140,12 +140,11 @@ class VaccinationService {
 
     if (participation.vaccinationStatus === "completed") {
       throw new ApplicationError("This student has already been vaccinated");
-    }
-
-    return this.participationRepo.recordVaccination(
+    }    return this.participationRepo.recordVaccination(
       participationId,
       nurseId,
       status,
+      vaccinationDate,
       note
     );
   }
