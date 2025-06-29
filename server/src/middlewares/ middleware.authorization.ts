@@ -25,3 +25,17 @@ export const auth = (): Handler => {
     }
   };
 };
+
+export const isParent = (): Handler => {
+  return async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const { user } = req;
+      if (!user && user.role !== "parent") {
+        throw new AuthorizationError("Access denied");
+      }
+      next();
+    } catch (e: any) {
+      throw new AuthorizationError(e.message);
+    }
+  };
+}

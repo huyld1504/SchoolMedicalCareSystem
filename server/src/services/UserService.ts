@@ -13,6 +13,12 @@ import {
   PaginationOptions,
   PaginationResult,
 } from "@src/common/interfaces/mongo.interface";
+import {
+  IAddUserRequest,
+  IRegisterRequest,
+} from "@src/payload/request/user.request";
+import { IRole, Role } from "@src/models/Role";
+import { UserQueryBuilder } from "@src/payload/request/filter/user.request";
 
 /******************************************************************************
                                 Constants
@@ -28,8 +34,22 @@ class UserService {
   async getAll(): Promise<IUser[]> {
     return this.userRepo.getAll();
   }
-  async addOne(user: IUser): Promise<void> {
-    return this.userRepo.add(user);
+  async addOne(user: IAddUserRequest): Promise<void> {
+    const exists = await this.userRepo.findByEmail(user.email);
+
+    if (exists) {
+      throw new ApplicationError("Email already exists");
+    }
+    const existsRole = await Role.findById(user.roleId);
+    if (!existsRole) {
+      throw new ApplicationError("Role does not exist");
+    }
+    if (existsRole.name === "admin") {
+      throw new ApplicationError("You cannot create a user with admin role");
+    }
+    const saveUser = new User(user);
+    saveUser.roleId = existsRole.id;
+    await saveUser.save();
   }
   async updateOne(user: IUser): Promise<void> {
     const persists = await this.userRepo.persists(user.id);
@@ -46,10 +66,26 @@ class UserService {
     return this.userRepo.delete_(id);
   }
   async getUsersWithPagination(
-    options: PaginationOptions,
-    filters?: any
+    queryBuilder: UserQueryBuilder
   ): Promise<PaginationResult<IUser>> {
-    return this.userRepo.paginate(filters || {}, options);
+    const filter = await queryBuilder.buildFilter();
+    const query = User.find(filter)
+      .lean()
+      .skip(queryBuilder.getSkip())
+      .limit(queryBuilder.getLimit())
+      .sort(queryBuilder.getSort());
+
+    const [users, totalCount] = await Promise.all([
+      query.exec(),
+      User.countDocuments(filter),
+    ]);
+    return {
+      records: users,
+      total: totalCount,
+      page: queryBuilder.getPage(),
+      limit: queryBuilder.getLimit(),
+      totalPages: Math.ceil(totalCount / queryBuilder.getLimit()),
+    };
   }
   async searchUsers(
     query: string,
@@ -61,7 +97,10 @@ class UserService {
     email: string,
     password: string
   ): Promise<ILoginResponseDto | null> {
-    const user = await this.userRepo.findByEmail(email);
+    const user = await User.findOne({ email })
+      .select("id email password firstName lastName")
+      .populate<{ roleId: IRole }>("roleId", "name")
+      .exec();
     if (!user) {
       throw new ApplicationError("User or password is incorrect");
     }
@@ -71,7 +110,8 @@ class UserService {
     const payloadToken: Record<string, any> = {
       id: user.id,
       email: user.email,
-      name: user.firstName + " " + user.lastName,
+      name: user.name,
+      role: user.roleId ? user.roleId.name : "user",
     };
     const token: IToken = await signToken(payloadToken, {
       expiredAt: 1,
@@ -81,19 +121,22 @@ class UserService {
     const response: ILoginResponseDto = {
       email: user.email,
       id: user.id,
-      name: user.firstName + " " + user.lastName,
+      name: user.name,
       token: token.accessToken,
       refreshToken: token.refreshToken,
+      role: user.roleId ? user.roleId.name : "user",
     };
 
     return response;
   }
-  async register(user: IUser): Promise<void> {
+  async register(user: IRegisterRequest): Promise<void> {
     const exists = await this.userRepo.findByEmail(user.email);
     if (exists) {
       throw new ApplicationError("Email already exists");
     }
     const saveUser = new User(user);
+    const roleAdmin = await Role.findOne({ name: "admin" });
+    saveUser.roleId = roleAdmin ? roleAdmin.id : null;
     const result = await this.userRepo.add(saveUser);
     return result;
   }
