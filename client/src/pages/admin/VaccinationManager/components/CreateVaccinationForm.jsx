@@ -10,9 +10,10 @@ import {
   Select,
   Stack,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import vaccinationApi from  "../../../../api/vaccinationApi";
+import vaccinationApi from "../../../../api/vaccinationApi";
 import { useDispatch, useSelector } from "react-redux";
 import { da } from "date-fns/locale";
 
@@ -22,6 +23,7 @@ const initialState = {
   vaccineType: "",
   targetAudience: "",
   startDate: "",
+  endDate: "",
   status: "",
 };
 
@@ -48,6 +50,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           vaccineType: data.vaccineType,
           targetAudience: data.targetAudience,
           startDate: data.startDate,
+          endDate: data.endDate,
           status: data.status,
         };
         return vaccinationApi.updateVaccination(data._id, newData);
@@ -57,6 +60,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
         vaccineType: data.vaccineType,
         targetAudience: data.targetAudience,
         startDate: data.startDate,
+        endDate: data.endDate,
       };
       return vaccinationApi.createVaccination(newData);
     },
@@ -75,6 +79,9 @@ const CreateVaccinationForm = ({ onSuccess }) => {
     if (!form.vaccineType.trim()) return "Loại vắc xin là bắt buộc";
     if (!form.targetAudience.trim()) return "Đối tượng tiêm là bắt buộc";
     if (!form.startDate.trim()) return "Ngày bắt đầu là bắt buộc";
+    if (form.endDate && form.startDate && new Date(form.endDate) < new Date(form.startDate)) {
+      return "Ngày kết thúc phải sau ngày bắt đầu";
+    }
     return "";
   };
 
@@ -84,7 +91,10 @@ const CreateVaccinationForm = ({ onSuccess }) => {
   useEffect(() => {
     if (vaccination) {
       setForm(vaccination);
+    } else {
+      setForm(initialState); // Reset form khi không có vaccination (tạo mới)
     }
+    setError(""); // Clear error khi thay đổi mode
   }, [vaccination]);
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -130,6 +140,17 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           value={form.startDate}
           onChange={(e) => handleChange("startDate", e.target.value)}
           fullWidth
+        />
+        <TextField
+          label="Ngày kết thúc"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={form.endDate}
+          onChange={(e) => handleChange("endDate", e.target.value)}
+          fullWidth
+          inputProps={{
+            min: form.startDate || undefined
+          }}
         />
         {vaccination && (
           <FormControl fullWidth>

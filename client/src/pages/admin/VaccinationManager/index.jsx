@@ -6,7 +6,7 @@ import Table from "./components/Table";
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CreateVaccinationForm from "./components/CreateVaccinationForm";
 import { useDispatch, useSelector } from "react-redux";
-import { clearIsOpen, setIsOpen } from "../../../store/managerVaccinationSlice";
+import { clearIsOpen, setIsOpen, clearVaccination } from "../../../store/managerVaccinationSlice";
 
 const VaccinationManager = () => {
   const dispatch = useDispatch();
@@ -15,8 +15,10 @@ const VaccinationManager = () => {
   );
   const handleClose = () => {
     dispatch(clearIsOpen());
+    dispatch(clearVaccination()); // Clear vaccination data khi đóng dialog
   };
   const handleOpen = () => {
+    dispatch(clearVaccination()); // Clear vaccination data khi tạo mới
     dispatch(setIsOpen(true));
   };
   return (

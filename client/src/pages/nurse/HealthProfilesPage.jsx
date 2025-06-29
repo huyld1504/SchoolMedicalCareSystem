@@ -49,6 +49,7 @@ const formatArrayString = (jsonString) => {
 };
 
 const HealthProfilesPage = () => {
+    const { user } = useSelector((state) => state.auth);
     const { studentId } = useParams();
     const navigate = useNavigate();
 
@@ -107,7 +108,7 @@ const HealthProfilesPage = () => {
         toast.success('Đã làm mới dữ liệu');
     };
 
-    const handleBack = () => navigate('/nurse/students');
+    const handleBack = () => navigate(`/${user.role}/students`);
     const handleAddProfile = () => navigate(`/nurse/health-profiles/${studentId}/add`);
     const handleEditProfile = (profileId) => navigate(`/nurse/health-profiles/${studentId}/edit`);
     

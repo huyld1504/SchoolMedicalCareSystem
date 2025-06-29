@@ -20,6 +20,7 @@ const managerVaccinationSlice = createSlice({
     },
     setIsOpen: (state, action) => {
       state.isOpen = action.payload;
+      // Bỏ dòng state.vaccination = null; để không clear vaccination khi mở dialog
     },
     clearIsOpen: (state) => {
       state.isOpen = false;
@@ -44,6 +45,8 @@ export const {
   clearVaccination,
   setIsOpen,
   clearIsOpen,
+  setIsPreviewDrawerOpen,
+  clearIsPreviewDrawerOpen,
   setPreviewCampaignId,
   setIsPreviewOpen,
 } = managerVaccinationSlice.actions;

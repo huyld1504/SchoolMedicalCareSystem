@@ -27,10 +27,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs'; // Import dayjs để xử lý đối tượng ngày tháng
 
 import medicalOrderApi from '../../api/medicalOrderApi';
+import { useSelector } from 'react-redux';
 
 // Constants
 const DEFAULT_PAGINATION = { total: 0, page: 1, totalPages: 0, limit: 10 };
 const DEFAULT_FILTERS = { status: '', startDate: '', endDate: '' };
+
 
 const STATUS_OPTIONS = [
     { value: '', label: 'Tất cả' },
@@ -433,6 +435,7 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
 
 // Main component
 const MedicalOrdersPage = () => {
+    const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     
@@ -471,7 +474,7 @@ const MedicalOrdersPage = () => {
     }, [refetch]);
 
     const handleViewDetails = useCallback((orderId) => {
-        navigate(`/nurse/medical-orders/${orderId}`);
+        navigate(`/${user.role}/medical-orders/${orderId}`);
     }, [navigate]);
 
     if (error) {

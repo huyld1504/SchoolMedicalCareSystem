@@ -12,6 +12,7 @@ import {
   TablePagination,
   CircularProgress,
   Box,
+  Pagination,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import vaccinationApi from "../../../../api/vaccinationApi";
@@ -137,11 +138,9 @@ const Table = () => {
                   </Button>
                   <Button
                     size="small"
-                    onClick={async () => {
-                      await Promise.all([
-                        dispatch(setVaccination(row)),
-                        dispatch(setIsOpen(true)),
-                      ]);
+                    onClick={() => {
+                      dispatch(setVaccination(row));
+                      dispatch(setIsOpen(true));
                     }}
                   >
                     Sửa
@@ -152,14 +151,19 @@ const Table = () => {
           )}
         </TableBody>
 
-        <TablePagination
-          count={total}
-          page={page}
-          rowsPerPage={limit}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[10, 20, 50]}
-        />
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handleChangePage}
+              color="primary"
+              showFirstButton
+              showLastButton
+              
+            />
+          </Box>
+        )}
       </MuiTable>
       <CampaignPreviewDialog />
     </TableContainer>

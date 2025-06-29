@@ -283,15 +283,14 @@ const router = createBrowserRouter([
 
       // admin routes
       {
-        path: "admin",
+        path: 'admin',
         element: (
-          <RoleProtectedRoute allowedRoles={["admin"]}>
+          <RoleProtectedRoute allowedRoles={['admin']}>
             <AdminLayout />
           </RoleProtectedRoute>
-        ),
-        children: [
+        ), children: [
           {
-            path: "users",
+            path: 'users',
             element: <AccountManager />,
           },
           {
@@ -304,13 +303,81 @@ const router = createBrowserRouter([
               {
                 path: ":campaignId",
                 element: <VaccinationCampaignDetail />,
-              },
-              {
+              }, {
                 path: "edit/:campaignId",
                 element: <EditCampaign />,
               },
+              {
+                path: "createCampaign",
+                element: <VaccinationManager />,
+              },
             ],
           },
+
+          // Admin có thể truy cập tất cả trang nurse
+          {
+            path: 'students',
+            element: <StudentsPage />,
+          },
+          {
+            path: 'health-profiles',
+            element: <HealthProfilesPage />,
+          },
+          {
+            path: 'health-profiles/:studentId',
+            element: <HealthProfilesPage />,
+          },
+          {
+            path: 'health-profiles/:studentId/add',
+            element: <AddHealthProfilePage />,
+          },
+          {
+            path: 'health-profiles/:studentId/edit',
+            element: <EditHealthProfilePage />,
+          },
+
+          {
+            path: 'medical-events',
+            element: <MedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+          {
+            path: 'medical-events/add',
+            element: <MedicalEventAddPage />,
+          },
+          {
+            path: 'medical-events/:studentId',
+            element: <MedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/:studentId/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+          {
+            path: 'medical-events/:studentId/add',
+            element: <MedicalEventAddPage />,
+          },
+          {
+            path: 'medical-events/edit/:eventId',
+            element: <MedicalEventEditPage />,
+          },
+          {
+            path: 'medical-events/:studentId/edit/:eventId',
+            element: <MedicalEventEditPage />,
+          },
+
+          {
+            path: 'medical-orders',
+            element: <MedicalOrdersPage />,
+          },
+          {
+            path: 'medical-orders/:orderId',
+            element: <MedicalOrderDetailPage />,
+          },
+
         ],
       },
       // Medical Orders Management

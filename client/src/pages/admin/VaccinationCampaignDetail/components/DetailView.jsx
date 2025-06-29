@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Box,
@@ -52,6 +52,9 @@ const DetailView = ({ campaign }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [participationPage, setParticipationPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState("");
+  const fileInputRef = React.useRef();
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -63,17 +66,20 @@ const DetailView = ({ campaign }) => {
     vaccinationDateTo: null,
   });
 
-  // Query for participants from campaign
+  // Query for participants from campaign - LẤY TẤT CẢ DATA
   const {
     data: participationsResponse,
     isLoading: participationsLoading,
     refetch,
   } = useQuery({
-    queryKey: ["campaign-participations", campaign._id],
+    queryKey: ["campaign-participations-all", campaign._id],
     queryFn: () =>
-      vaccinationCampaignApi.GetAllParticipationsInCampaign(campaign._id),
+      vaccinationCampaignApi.GetAllParticipationsInCampaign(campaign._id, {
+        limit: 100,
+      }),
     enabled: !!campaign._id,
   });
+
   const handleImportExcel = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -99,53 +105,54 @@ const DetailView = ({ campaign }) => {
       e.target.value = "";
     }
   };
-  // Get the participations data from the response
-  const participationsData = participationsResponse?.data?.records || [];
-  const totalParticipants = participationsResponse?.data?.total;
-  const completedCount = participationsData.filter(
+
+  // Get ALL participations data
+  const allParticipationsData = participationsResponse?.data?.records || [];
+  const totalParticipants = participationsResponse?.data?.total || 0;
+
+  const completedCount = allParticipationsData.filter(
     (p) => p.vaccinationStatus === "completed"
   ).length;
 
-  // Apply filters and search locally
-  const filteredParticipations = participationsData.filter((participant) => {
-    // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const studentInfo = participant.student;
-      const studentName = studentInfo?.name?.toLowerCase() || "";
-      const studentCode = studentInfo?.studentCode?.toLowerCase() || "";
+  // Client-side filtering with useMemo for performance
+  const filteredParticipations = useMemo(() => {
+    return allParticipationsData.filter((participant) => {
+      // Search filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        const studentInfo = participant.student;
+        const studentName = studentInfo?.name?.toLowerCase() || "";
+        const studentCode = studentInfo?.studentCode?.toLowerCase() || "";
 
+        if (
+          !studentName.includes(searchLower) &&
+          !studentCode.includes(searchLower)
+        ) {
+          return false;
+        }
+      }
+
+      // Parent consent filter
       if (
-        !studentName.includes(searchLower) &&
-        !studentCode.includes(searchLower)
+        filters.parentConsent &&
+        participant.parentConsent !== filters.parentConsent
       ) {
         return false;
       }
-    }
 
-    // Parent consent filter
-    if (
-      filters.parentConsent &&
-      participant.parentConsent !== filters.parentConsent
-    ) {
-      return false;
-    }
+      // Vaccination status filter
+      if (
+        filters.vaccinationStatus &&
+        participant.vaccinationStatus !== filters.vaccinationStatus
+      ) {
+        return false;
+      }
 
-    // Vaccination status filter
-    if (
-      filters.vaccinationStatus &&
-      participant.vaccinationStatus !== filters.vaccinationStatus
-    ) {
-      return false;
-    }
+      return true;
+    });
+  }, [allParticipationsData, searchTerm, filters]);
 
-    return true;
-  });
-  const [importing, setImporting] = React.useState(false);
-  const [importMsg, setImportMsg] = React.useState("");
-  const fileInputRef = React.useRef();
-
-  // Apply pagination locally
+  // Client-side pagination
   const itemsPerPage = 10;
   const totalPages = Math.ceil(filteredParticipations.length / itemsPerPage);
   const startIndex = (participationPage - 1) * itemsPerPage;
@@ -154,15 +161,25 @@ const DetailView = ({ campaign }) => {
     startIndex + itemsPerPage
   );
 
+  // Reset page when search/filter changes
+  useEffect(() => {
+    setParticipationPage(1);
+  }, [searchTerm, filters]);
+
+  // Reset page if current page exceeds total pages
+  useEffect(() => {
+    if (participationPage > totalPages && totalPages > 0) {
+      setParticipationPage(totalPages);
+    }
+  }, [totalPages, participationPage]);
+
   // Event handlers
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-    setParticipationPage(1);
   };
 
   const handleClearSearch = () => {
     setSearchTerm("");
-    setParticipationPage(1);
   };
 
   const handleParticipationPageChange = (event, value) => {
@@ -174,7 +191,6 @@ const DetailView = ({ campaign }) => {
       ...prev,
       [filterName]: value,
     }));
-    setParticipationPage(1);
   };
 
   const handleClearFilters = () => {
@@ -186,7 +202,6 @@ const DetailView = ({ campaign }) => {
       vaccinationDateFrom: null,
       vaccinationDateTo: null,
     });
-    setParticipationPage(1);
   };
 
   const hasActiveFilters = Object.values(filters).some(
@@ -252,69 +267,64 @@ const DetailView = ({ campaign }) => {
       <Box
         sx={{
           width: "100%",
-          maxWidth: "1400px", // Giới hạn chiều rộng tối đa
-          px: { xs: 2, sm: 3, md: 4 }, // Responsive padding
-          mx: "auto", // Căn giữa container
+          maxWidth: "1400px",
+          px: { xs: 2, sm: 3, md: 4 },
+          mx: "auto",
         }}
       >
         <Grid container spacing={3} sx={{ justifyContent: "center" }}>
-          {/* Header Section - Tên chiến dịch */}
-          <Grid item xs={12}>
-            <Box sx={{ mb: 4, textAlign: "center" }}>
-              <Typography
-                variant="h4"
-                component="h1"
-                gutterBottom
-                sx={{
-                  fontWeight: "bold",
-                  color: "primary.main",
-                  mb: 1,
-                }}
-              >
-                {campaign.vaccineName || "Chiến dịch tiêm chủng"}
-              </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                {campaign.vaccineType} - {campaign.targetAudience}
-              </Typography>
-              <Chip
-                label={campaign.status || "N/A"}
-                color={getStatusColor(campaign.status)}
-                size="large"
-                sx={{ fontSize: "1rem", px: 3, py: 1 }}
-              />
-            </Box>
-          </Grid>
+          {/* === THAY ĐỔI: Khối Header đã được di chuyển vào Card bên dưới === */}
 
-          {/* Row 2: Thông tin chiến dịch (full width) */}
+          {/* Campaign Information */}
           <Grid item xs={12}>
-            <Card sx={{ width: "1010px" }}>
+            <Card sx={{ width: "100%", maxWidth: "1010px", mx: "auto" }}>
               <CardContent sx={{ width: "100%" }}>
-                {/* Header chính */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    mb: 2,
-                  }}
-                >
+                {/* === THAY ĐỔI: Thêm khối header vào đây === */}
+                <Box sx={{ mb: 3, textAlign: "center" }}>
                   <Typography
-                    variant="h6"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    variant="h4"
+                    component="h1"
+                    gutterBottom
+                    sx={{
+                      fontWeight: "bold",
+                      color: "primary.main",
+                      mb: 1,
+                    }}
                   >
-                    <DescriptionIcon color="primary" />
-                    Thông tin chiến dịch
+                    {campaign.vaccineName || "Chiến dịch tiêm chủng"}
                   </Typography>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    {campaign.vaccineType} - {campaign.targetAudience}
+                  </Typography>
+                  <Chip
+                    label={campaign.status || "N/A"}
+                    color={getStatusColor(campaign.status)}
+                    size="large"
+                    sx={{ fontSize: "1rem", px: 3, py: 1 }}
+                  />
                 </Box>
-
+                
+                {/* === THAY ĐỔI: Thêm Divider và bỏ tiêu đề "Thông tin chiến dịch" thừa === */}
                 <Divider sx={{ mb: 3 }} />
 
-                {/* Section 1: Thông tin cơ bản */}
+                {/* Basic Information */}
                 <Box sx={{ mb: 4 }}>
                   <Typography
                     variant="subtitle1"
-                    sx={{ fontWeight: "bold", mb: 2, color: "text.primary" }}
+                    sx={{
+                      fontWeight: "bold",
+                      mb: 2,
+                      color: "text.primary",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
                   >
+                    <DescriptionIcon color="primary" fontSize="small" />
                     Thông tin cơ bản
                   </Typography>
                   <Grid container spacing={3}>
@@ -377,7 +387,7 @@ const DetailView = ({ campaign }) => {
 
                 <Divider sx={{ my: 3 }} />
 
-                {/* Section 2: Lịch trình */}
+                {/* Schedule */}
                 <Box sx={{ mb: 4 }}>
                   <Typography
                     variant="subtitle1"
@@ -454,7 +464,7 @@ const DetailView = ({ campaign }) => {
 
                 <Divider sx={{ my: 3 }} />
 
-                {/* Section 3: Thông tin bổ sung */}
+                {/* Additional Information */}
                 <Box>
                   <Typography
                     variant="subtitle1"
@@ -551,9 +561,9 @@ const DetailView = ({ campaign }) => {
             </Card>
           </Grid>
 
-          {/* Row 3: Danh sách tham gia (full width) */}
+          {/* Participants List */}
           <Grid item xs={12}>
-            <Card sx={{ width: "1010px" }}>
+            <Card sx={{ width: "100%", maxWidth: "1010px", mx: "auto" }}>
               <CardContent sx={{ width: "100%" }}>
                 <Box
                   sx={{
@@ -571,7 +581,7 @@ const DetailView = ({ campaign }) => {
                     Danh sách tham gia
                     {totalParticipants > 0 && (
                       <Chip
-                        label={`${filteredParticipations.length}/${totalParticipants} người`}
+                        label={`${filteredParticipations.length}/${totalParticipants} người | Trang ${participationPage}/${totalPages}`}
                         color="primary"
                         size="small"
                         sx={{ ml: 1 }}
@@ -582,7 +592,7 @@ const DetailView = ({ campaign }) => {
 
                 <Divider sx={{ mb: 3 }} />
 
-                {/* Search và Filter */}
+                {/* Search and Filter */}
                 <Box sx={{ mb: 3 }}>
                   {/* Search Box */}
                   <TextField
@@ -609,78 +619,71 @@ const DetailView = ({ campaign }) => {
                   />
 
                   {/* Filter Controls */}
-                  <div>
-                    {" "}
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 2,
-                        mb: 2,
-                      }}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 2,
+                    }}
+                  >
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<FilterIcon />}
+                      endIcon={
+                        showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />
+                      }
+                      onClick={() => setShowFilters(!showFilters)}
                     >
-                      <Button
-                        variant="outlined"
+                      Bộ lọc
+                    </Button>
+                    {hasActiveFilters && (
+                      <Chip
+                        label="Có bộ lọc đang áp dụng"
+                        color="primary"
                         size="small"
-                        startIcon={<FilterIcon />}
-                        endIcon={
-                          showFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />
+                        onDelete={handleClearFilters}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Import Excel */}
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      disabled={importing}
+                      sx={{ mr: 2 }}
+                    >
+                      Import file Excel
+                      <input
+                        type="file"
+                        accept=".xlsx,.xls"
+                        hidden
+                        ref={fileInputRef}
+                        onChange={handleImportExcel}
+                      />
+                    </Button>
+                    {importing && <CircularProgress size={20} />}
+                    {importMsg && (
+                      <Typography
+                        color={
+                          importMsg.includes("thành công")
+                            ? "success.main"
+                            : "error.main"
                         }
-                        onClick={() => setShowFilters(!showFilters)}
+                        sx={{ ml: 2 }}
                       >
-                        Bộ lọc
-                      </Button>
-                      {hasActiveFilters && (
-                        <Chip
-                          label="Có bộ lọc đang áp dụng"
-                          color="primary"
-                          size="small"
-                          onDelete={handleClearFilters}
-                        />
-                      )}
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                      <Button
-                        variant="outlined"
-                        component="label"
-                        disabled={importing}
-                        sx={{ mr: 2 }}
-                      >
-                        Import file Excel
-                        <input
-                          type="file"
-                          accept=".xlsx,.xls"
-                          hidden
-                          ref={fileInputRef}
-                          onChange={handleImportExcel}
-                        />
-                      </Button>
-                      {importing && <CircularProgress size={20} />}
-                      {importMsg && (
-                        <Typography
-                          color={
-                            importMsg.includes("thành công")
-                              ? "success.main"
-                              : "error.main"
-                          }
-                          sx={{ ml: 2 }}
-                        >
-                          {importMsg}
-                        </Typography>
-                      )}
-                    </Box>
-                  </div>
+                        {importMsg}
+                      </Typography>
+                    )}
+                  </Box>
 
                   <Collapse in={showFilters}>
                     <Card variant="outlined" sx={{ p: 2 }}>
                       <Grid container spacing={2}>
-                        <Grid
-                          item
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          sx={{ width: "300px" }}
-                        >
+                        <Grid item xs={12} sm={6} md={4}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Đồng ý phụ huynh</InputLabel>
                             <Select
@@ -701,13 +704,7 @@ const DetailView = ({ campaign }) => {
                           </FormControl>
                         </Grid>
 
-                        <Grid
-                          item
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          sx={{ width: "300px" }}
-                        >
+                        <Grid item xs={12} sm={6} md={4}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Trạng thái tiêm</InputLabel>
                             <Select
@@ -757,7 +754,7 @@ const DetailView = ({ campaign }) => {
                       variant="outlined"
                       sx={{ mb: 2, width: "100%" }}
                     >
-                      <Table sx={{ width: "100%" }}>
+                      <Table sx={{ minWidth: 800 }}>
                         <TableHead>
                           <TableRow sx={{ backgroundColor: "grey.50" }}>
                             <TableCell sx={{ fontWeight: "bold" }}>
@@ -918,7 +915,7 @@ const DetailView = ({ campaign }) => {
                       <Box
                         sx={{
                           display: "flex",
-                          justifyContent: "center",
+                          justifyContent: "end",
                           mt: 3,
                         }}
                       >
