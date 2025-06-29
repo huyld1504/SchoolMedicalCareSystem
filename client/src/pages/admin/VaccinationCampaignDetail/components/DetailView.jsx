@@ -86,10 +86,10 @@ const DetailView = ({ campaign }) => {
         studentIds: studentIds,
       };
       const res = await vaccinationApi.addStudentToVaccination(
-        previewCampaignId,
+        campaign._id,
         data
       );
-      console.log("Import thành công:", res);
+
       setImportMsg("Import thành công!");
       refetch();
     } catch (err) {
