@@ -46,6 +46,19 @@ import healthProfileAPI from '../../api/healthProfileApi';
 import medicalEventAPI from '../../api/medicalEventApi';
 import HealthProfileDetailModal from './HealthProfileDetailModal';
 import { removeBrackets, processHealthDataForDisplay } from '../../utils/string.utils';
+import {
+    getMedicalEventLevelColor,
+    getMedicalEventLevelLabel,
+    getMedicalEventStatusColor,
+    getMedicalEventStatusLabel,
+    getMedicalEventTypeColor,
+    getMedicalEventTypeLabel,
+    getHealthNoteColor,
+    getHealthNoteLabel,
+    getStudentStatusColor,
+    getStudentStatusLabel,
+    getBloodTypeColor
+} from '../../utils/colorUtils';
 
 const ChildDetailPage = () => {
     const navigate = useNavigate();
@@ -127,16 +140,7 @@ const ChildDetailPage = () => {
     };
 
     const getEventLevelColor = (level) => {
-        switch (level) {
-            case 3:
-                return 'error';
-            case 2:
-                return 'warning';
-            case 1:
-                return 'success';
-            default:
-                return 'default';
-        }
+        return getMedicalEventLevelColor(level);
     };
 
     if (loading) {
@@ -230,8 +234,8 @@ const ChildDetailPage = () => {
                                 <Box sx={{ flex: '1 1 120px' }}>
                                     <Typography variant="body2" color="text.secondary">Trạng thái:</Typography>
                                     <Chip
-                                        label={child.isActive ? 'Đang học' : 'Không hoạt động'}
-                                        color={child.isActive ? 'success' : 'default'}
+                                        label={getStudentStatusLabel(child.isActive)}
+                                        color={getStudentStatusColor(child.isActive)}
                                         size="small"
                                         sx={{ mt: 0.5 }}
                                     />
@@ -318,7 +322,7 @@ const ChildDetailPage = () => {
                                             <TableCell>
                                                 <Chip
                                                     label={profile.bloodType}
-                                                    color="primary"
+                                                    color={getBloodTypeColor()}
                                                     size="small"
                                                     variant="outlined"
                                                 />
@@ -330,8 +334,8 @@ const ChildDetailPage = () => {
                                             </TableCell>                                                <TableCell>
                                                 {hasHealthNotes(profile) ? (
                                                     <Chip
-                                                        label="Có"
-                                                        color="warning"
+                                                        label={getHealthNoteLabel(true)}
+                                                        color={getHealthNoteColor(true)}
                                                         size="small"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -341,8 +345,8 @@ const ChildDetailPage = () => {
                                                     />
                                                 ) : (
                                                     <Chip
-                                                        label="Không"
-                                                        color="default"
+                                                        label={getHealthNoteLabel(false)}
+                                                        color={getHealthNoteColor(false)}
                                                         size="small"
                                                         variant="outlined"
                                                     />
@@ -398,9 +402,6 @@ const ChildDetailPage = () => {
                                 <Typography variant="h6" color="text.secondary">
                                     Chưa có sự kiện y tế
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Các sự kiện y tế của con em sẽ được hiển thị tại đây
-                                </Typography>
                             </Box>
                         ) : (
                             <TableContainer component={Paper} variant="outlined">
@@ -430,17 +431,16 @@ const ChildDetailPage = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <Chip
-                                                        label={event.type || 'Khác'}
+                                                        label={getMedicalEventTypeLabel(event.type)}
+                                                        color={getMedicalEventTypeColor(event.type)}
                                                         size="small"
                                                         variant="outlined"
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <Chip
-                                                        label={event.level === 1 ? 'Nhẹ'
-                                                            : event.level === 2 ? 'Trung bình' : 'Khẩn cấp'
-                                                        }
-                                                        color={getEventLevelColor(event.level)}
+                                                        label={getMedicalEventLevelLabel(event.level)}
+                                                        color={getMedicalEventLevelColor(event.level)}
                                                         size="small"
                                                     />
                                                 </TableCell>
@@ -455,10 +455,8 @@ const ChildDetailPage = () => {
                                                     </Typography>
                                                 </TableCell>                                                <TableCell>
                                                     <Chip
-                                                        label={event.status}
-                                                        color={event.status === 'resolved' ? 'success' :
-                                                            event.status === 'ongoing' ? 'warning' :
-                                                                event.status === 'pending' ? 'error' : 'default'}
+                                                        label={getMedicalEventStatusLabel(event.status)}
+                                                        color={getMedicalEventStatusColor(event.status)}
                                                         size="small"
                                                     />
                                                 </TableCell>                                                <TableCell>

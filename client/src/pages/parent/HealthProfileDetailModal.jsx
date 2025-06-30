@@ -12,7 +12,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Chip
+  Chip,
+  Card,
+  CardContent
 } from '@mui/material';
 import {
   ArrowBack,
@@ -46,6 +48,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
         // Xử lý data để loại bỏ dấu ngoặc vuông khi hiển thị
         const processedProfile = processHealthDataForDisplay(profileData);
         setProfile(processedProfile);
+        console.log('Health Profile Data:', profile);
 
       } catch (err) {
         console.error('Error loading data:', err);
@@ -134,15 +137,19 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle sx={{ bgcolor: '#f5f5f5', borderBottom: '1px solid #e0e0e0' }}>
+      <DialogTitle sx={{
+        bgcolor: '#ffffff',
+        borderBottom: '1px solid #e0e0e0',
+        py: 3
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <LocalHospital sx={{ color: '#1976d2' }} />
+          <LocalHospital sx={{ color: '#1976d2', fontSize: 28 }} />
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
               Hồ sơ sức khỏe - {profile?.studentId?.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Chi tiết lịch sử sức khỏe
+            <Typography variant="h6" color="text.secondary">
+              Chi tiết thông tin sức khỏe học sinh
             </Typography>
           </Box>
         </Box>
@@ -150,225 +157,235 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
 
       <DialogContent sx={{ p: 3 }}>
         {/* Student Information */}
-        <Box sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Person sx={{ fontSize: 20 }} />
-            Thông tin học sinh
-          </Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Họ và tên
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {profile?.studentId?.name || 'Chưa có thông tin'}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Mã học sinh
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {profile?.studentId?.studentCode || 'Chưa có thông tin'}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Mã BHYT
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                  {profile?.studentId?.medicalConverageId}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Health Profile Details */}
-        <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LocalHospital sx={{ fontSize: 20 }} />
-            Chi tiết hồ sơ sức khỏe
-          </Typography>
-
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa' }}>
-                <Height sx={{ fontSize: 24, color: '#666', mb: 1 }} />
-                <Typography variant="caption" color="text.secondary">
-                  Chiều cao
-                </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  {profile?.height || 'N/A'} cm
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa' }}>
-                <FitnessCenter sx={{ fontSize: 24, color: '#666', mb: 1 }} />
-                <Typography variant="caption" color="text.secondary">
-                  Cân nặng
-                </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  {profile?.weight || 'N/A'} kg
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa' }}>
-                <Bloodtype sx={{ fontSize: 24, color: '#666', mb: 1 }} />
-                <Typography variant="caption" color="text.secondary">
-                  Nhóm máu
-                </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  {profile?.bloodType || 'N/A'}
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} lg={3}>
-              <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa' }}>
-                <RemoveRedEye sx={{ fontSize: 24, color: '#666', mb: 1 }} />
-                <Typography variant="caption" color="text.secondary">
-                  Thị lực
-                </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  {profile?.vision || 'N/A'}
-                </Typography>
-              </Paper>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Additional Health Information */}
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-            Thông tin sức khỏe bổ sung
-          </Typography>          <Grid container spacing={2}>            {(() => {
-            const allergiesData = parseHealthData(profile?.allergies?.deleteSpecical);
-            return allergiesData.length > 0 && (
-              <Grid item xs={12} md={4}>
-                <Box sx={{ p: 2, bgcolor: '#fff3e0', borderRadius: 1, border: '1px solid #ffcc02' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                    <Warning sx={{ color: '#ff9800', mr: 1, mt: 0.5, fontSize: 20 }} />
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#e65100' }}>
-                      Dị ứng
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {allergiesData.map((item, index) => (
-                      <Chip
-                        key={index}
-                        label={item}
-                        size="small"
-                        color="warning"
-                        variant="outlined"
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              </Grid>
-            );
-          })()}            {(() => {
-            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases?.deleteSpecical);
-            return chronicDiseasesData.length > 0 && (
-              <Grid item xs={12} md={4}>
-                <Box sx={{ p: 2, bgcolor: '#ffebee', borderRadius: 1, border: '1px solid #ffcdd2' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                    <LocalHospital sx={{ color: '#d32f2f', mr: 1, mt: 0.5, fontSize: 20 }} />
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#c62828' }}>
-                      Bệnh mãn tính
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {chronicDiseasesData.map((item, index) => (
-                      <Chip
-                        key={index}
-                        label={item}
-                        size="small"
-                        color="error"
-                        variant="outlined"
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              </Grid>
-            );
-          })()}            {(() => {
-            const devicesSupportData = parseHealthData(profile?.devicesSupport?.deleteSpecical);
-            return devicesSupportData.length > 0 && (
-              <Grid item xs={12} md={4}>
-                <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #bbdefb' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                    <AccessibleForward sx={{ color: '#1976d2', mr: 1, mt: 0.5, fontSize: 20 }} />
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#1565c0' }}>
-                      Thiết bị hỗ trợ
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {devicesSupportData.map((item, index) => (
-                      <Chip
-                        key={index}
-                        label={item}
-                        size="small"
-                        color="info"
-                        variant="outlined"
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              </Grid>
-            );
-          })()}            {(() => {
-            const allergiesData = parseHealthData(profile?.allergies?.deleteSpecical);
-            const chronicDiseasesData = parseHealthData(profile?.chronicDiseases?.deleteSpecical);
-            const devicesSupportData = parseHealthData(profile?.devicesSupport?.deleteSpecical);
-
-            return allergiesData.length === 0 && chronicDiseasesData.length === 0 && devicesSupportData.length === 0 && (
-              <Grid item xs={12}>
-                <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Không có thông tin sức khỏe bổ sung nào được ghi nhận
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Person sx={{ fontSize: 20, color: '#1976d2' }} />
+              Thông tin học sinh
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Họ và tên
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {profile?.studentId?.name || 'Chưa có thông tin'}
                   </Typography>
                 </Box>
               </Grid>
-            );
-          })()}
-          </Grid>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Timestamp Information */}
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-            Thông tin hồ sơ
-          </Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Ngày tạo hồ sơ
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  {formatDateTime(profile?.createdAt)}
-                </Typography>
-              </Box>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Mã học sinh
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {profile?.studentId?.studentCode || 'Chưa có thông tin'}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Mã BHYT
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {profile?.studentId?.medicalConverageId || 'Chưa có thông tin'}
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Cập nhật lần cuối
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  {formatDateTime(profile?.updatedAt)}
-                </Typography>
-              </Box>
+          </CardContent>
+        </Card>
+
+        {/* Health Profile Details */}
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LocalHospital sx={{ fontSize: 20, color: '#1976d2' }} />
+              Chi tiết hồ sơ sức khỏe
+            </Typography>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                  <Height sx={{ fontSize: 32, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Chiều cao
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+                    {profile?.height || 'N/A'} cm
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                  <FitnessCenter sx={{ fontSize: 32, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Cân nặng
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+                    {profile?.weight || 'N/A'} kg
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                  <Bloodtype sx={{ fontSize: 32, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Nhóm máu
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+                    {profile?.bloodType || 'N/A'}
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} lg={3}>
+                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+                  <RemoveRedEye sx={{ fontSize: 32, color: '#1976d2', mb: 1 }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Thị lực
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
+                    {profile?.vision || 'N/A'}
+                  </Typography>
+                </Paper>
+              </Grid>
+            </Grid>            <Divider sx={{ my: 3 }} />
+
+            {/* Additional Health Information */}
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Thông tin sức khỏe bổ sung
+            </Typography>
+
+            <Grid container spacing={2}>
+              {(() => {
+                const allergiesData = parseHealthData(profile?.allergies);
+                return allergiesData.length > 0 && (
+                  <Grid item xs={12} md={4}>
+                    <Box sx={{ p: 2, bgcolor: '#fff8e1', borderRadius: 1, border: '1px solid #ffcc02' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                        <Warning sx={{ color: '#f57c00', mr: 1, mt: 0.5, fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e65100' }}>
+                          Dị ứng
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {allergiesData.map((item, index) => (
+                          <Chip
+                            key={index}
+                            label={item}
+                            size="small"
+                            color="warning"
+                            variant="outlined"
+                          />
+                        ))}
+                      </Box>
+                    </Box>
+                  </Grid>
+                );
+              })()}
+
+              {(() => {
+                const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
+                return chronicDiseasesData.length > 0 && (
+                  <Grid item xs={12} md={4}>
+                    <Box sx={{ p: 2, bgcolor: '#fce4ec', borderRadius: 1, border: '1px solid #f8bbd9' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                        <LocalHospital sx={{ color: '#c2185b', mr: 1, mt: 0.5, fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#ad1457' }}>
+                          Bệnh mãn tính
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {chronicDiseasesData.map((item, index) => (
+                          <Chip
+                            key={index}
+                            label={item}
+                            size="small"
+                            color="error"
+                            variant="outlined"
+                          />
+                        ))}
+                      </Box>
+                    </Box>
+                  </Grid>
+                );
+              })()}
+
+              {(() => {
+                const devicesSupportData = parseHealthData(profile?.devicesSupport);
+                return devicesSupportData.length > 0 && (
+                  <Grid item xs={12} md={4}>
+                    <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #90caf9' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                        <AccessibleForward sx={{ color: '#1976d2', mr: 1, mt: 0.5, fontSize: 20 }} />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1565c0' }}>
+                          Thiết bị hỗ trợ
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {devicesSupportData.map((item, index) => (<Chip
+                          key={index}
+                          label={item}
+                          size="small"
+                          color="info"
+                          variant="outlined"
+                        />
+                        ))}
+                      </Box>
+                    </Box>
+                  </Grid>
+                );
+              })()}
+
+              {(() => {
+                const allergiesData = parseHealthData(profile?.allergies);
+                const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
+                const devicesSupportData = parseHealthData(profile?.devicesSupport);
+
+                return (allergiesData.length === 0 && chronicDiseasesData.length === 0 && devicesSupportData.length === 0) && (
+                  <Grid item xs={12}>
+                    <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1, border: '1px solid #e0e0e0' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Không có thông tin sức khỏe bổ sung nào được ghi nhận
+                      </Typography>
+                    </Box>
+                  </Grid>
+                );
+              })()}
             </Grid>
-          </Grid>
-        </Box>
+
+            <Divider sx={{ my: 3 }} />
+
+            {/* Timestamp Information */}
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Thông tin hồ sơ
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Ngày tạo hồ sơ
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {formatDateTime(profile?.createdAt)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    Cập nhật lần cuối
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    {formatDateTime(profile?.updatedAt)}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
       </DialogContent>
 
       <DialogActions sx={{ p: 2, bgcolor: '#f5f5f5', borderTop: '1px solid #e0e0e0' }}>

@@ -143,7 +143,7 @@ const MedicalOrderDetailPage = () => {
       case 'pending': return '#ff9100';
       case 'approved': return '#00b0ff';
       case 'completed': return '#4caf50';
-      case 'cancelled': return '#f44336';
+      case 'canceled': return '#f44336';
       default: return 'default';
     }
   };
@@ -153,7 +153,7 @@ const MedicalOrderDetailPage = () => {
       case 'pending': return 'Đang xử lý';
       case 'approved': return 'Đã duyệt';
       case 'completed': return 'Hoàn thành';
-      case 'cancelled': return 'Đã hủy';
+      case 'canceled': return 'Đã hủy';
       default: return 'Không xác định';
     }
   };
@@ -163,8 +163,8 @@ const MedicalOrderDetailPage = () => {
       case 'pending': return <ScheduleIcon />;
       case 'approved': return <ThumbUp />;
       case 'completed': return <CheckCircleIcon />;
-      case 'cancelled': return <CancelIcon />;
-      default: return <HospitalIcon />;
+      case 'canceled': return <CancelIcon />;
+      default: return <MedicalIcon />;
     }
   };
   if (loading) {
@@ -211,9 +211,6 @@ const MedicalOrderDetailPage = () => {
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
               Chi tiết đơn thuốc
             </Typography>
-            <Typography variant="h6" color="text.secondary">
-              Mã đơn: #{medicalOrder._id?.slice(-8)}
-            </Typography>
           </Box>
         </Box>
 
@@ -250,13 +247,6 @@ const MedicalOrderDetailPage = () => {
               <Table sx={{ '& .MuiTableCell-root': { fontSize: '1rem', py: 2.5 } }}>
                 <TableBody>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, width: '30%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                      Mã đơn thuốc:
-                    </TableCell>
-                    <TableCell sx={{ fontSize: '1rem' }}>
-                      #{medicalOrder._id?.slice(-8)}
-                    </TableCell>
-                  </TableRow>                  <TableRow>
                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                       Con em:
                     </TableCell>
