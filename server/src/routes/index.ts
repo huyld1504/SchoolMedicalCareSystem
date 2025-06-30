@@ -6,11 +6,12 @@ import { authRoles } from "@src/middlewares/middleware.authorizationRole";
 import { transform } from "@src/middlewares/middleware.jwtTransform";
 import AuthRoutes from "./AuthRoutes";
 import ChildRoutes from "./ChildRoutes";
-import RoleRoutes from "./RoleRoutes";
-import UserRoutes from "./UserRoutes";
 import HealthProfileRoutes from "./HealthProfileRoutes";
+import ImageRoutes from "./ImageUploadRoutes";
 import MedicalEventRoutes from "./MedicalEventRoutes";
 import MedicalOrderRoutes from "./MedicalOrderRoutes";
+import RoleRoutes from "./RoleRoutes";
+import UserRoutes from "./UserRoutes";
 import VaccinationRoutes from "./VaccinationRoutes";
 
 /******************************************************************************
@@ -152,7 +153,7 @@ medicalOrderRouter.put(
 );
 medicalOrderRouter.get(
   Paths.MedicalOrder.GetById,
-  [transform(), auth(), authRoles(["nurse", "parent","admin"])],
+  [transform(), auth(), authRoles(["nurse", "parent", "admin"])],
   MedicalOrderRoutes.getById
 );
 medicalOrderRouter.post(
@@ -257,6 +258,8 @@ apiRouter.use(Paths.HealthProfile.Base, healthProfileRouter);
 apiRouter.use(Paths.MedicalEvent.Base, medicalEventRouter);
 // Add MedicalOrderRouter
 apiRouter.use(Paths.MedicalOrder.Base, medicalOrderRouter);
+// Add ImageRouter
+apiRouter.use('/images', ImageRoutes);
 
 /******************************************************************************
                                 Export default

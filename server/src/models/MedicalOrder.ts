@@ -8,6 +8,7 @@ export interface IMedicalOrder extends Document {
   note: string;
   status: string;
   isStock: boolean;
+  imageURL?: string;
 }
 
 interface IMedicalOrderModel extends Model<IMedicalOrder> {}
@@ -24,6 +25,7 @@ const schema = new Schema(
       default: "pending",
     },
     isStock: { type: Boolean, default: true },
+    imageURL: { type: String, default: "" }, // Optional field for image URL
   },
   {
     timestamps: {

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Image Upload API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    .upload-section {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+
+    .result {
+      background: #f5f5f5;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+    }
+
+    img {
+      max-width: 300px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Test Image Upload API</h1>
+
+  <!-- Login Section -->
+  <div class="upload-section">
+    <h3>1. Đăng nhập để lấy token</h3>
+    <input type="email" id="email" placeholder="Email" value="admin@school.edu">
+    <input type="password" id="password" placeholder="Password" value="123456">
+    <button onclick="login()">Đăng nhập</button>
+    <div id="loginResult" class="result"></div>
+  </div>
+
+  <!-- Single Upload -->
+  <div class="upload-section">
+    <h3>2. Upload Single Image</h3>
+    <input type="file" id="singleFile" accept="image/*">
+    <button onclick="uploadSingle()">Upload Single</button>
+    <div id="singleResult" class="result"></div>
+    <div id="singleImage"></div>
+  </div>
+
+  <!-- Multiple Upload -->
+  <div class="upload-section">
+    <h3>3. Upload Multiple Images</h3>
+    <input type="file" id="multipleFiles" accept="image/*" multiple>
+    <button onclick="uploadMultiple()">Upload Multiple</button>
+    <div id="multipleResult" class="result"></div>
+    <div id="multipleImages"></div>
+  </div>
+
+  <!-- Base64 Upload -->
+  <div class="upload-section">
+    <h3>4. Upload Base64</h3>
+    <textarea id="base64Data" placeholder="Paste base64 string here..." rows="3" style="width: 100%"></textarea>
+    <br>
+    <input type="text" id="fileName" placeholder="File name (optional)">
+    <button onclick="uploadBase64()">Upload Base64</button>
+    <div id="base64Result" class="result"></div>
+    <div id="base64Image"></div>
+  </div>
+
+  <!-- Delete Image -->
+  <div class="upload-section">
+    <h3>5. Delete Image</h3>
+    <input type="text" id="publicIdToDelete" placeholder="Public ID to delete">
+    <button onclick="deleteImage()">Delete Image</button>
+    <div id="deleteResult" class="result"></div>
+  </div>
+
+  <!-- Generate Thumbnail -->
+  <div class="upload-section">
+    <h3>6. Generate Thumbnail</h3>
+    <input type="text" id="publicIdThumbnail" placeholder="Public ID for thumbnail">
+    <input type="number" id="thumbnailWidth" placeholder="Width" value="150">
+    <input type="number" id="thumbnailHeight" placeholder="Height" value="150">
+    <button onclick="generateThumbnail()">Generate Thumbnail</button>
+    <div id="thumbnailResult" class="result"></div>
+    <div id="thumbnailImage"></div>
+  </div>
+
+  <script>
+    let authToken = '';
+    const API_BASE = 'http://127.0.0.1:3000/api'; // Adjust based on your server
+
+    // Login function
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+        document.getElementById('loginResult').textContent = JSON.stringify(result, null, 2);
+
+        if (result.isSuccess && result.data && result.data.token) {
+          authToken = result.data.token;
+          alert('Đăng nhập thành công! Token đã được lưu.');
+        }
+      } catch (error) {
+        document.getElementById('loginResult').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Upload single image
+    async function uploadSingle() {
+      const fileInput = document.getElementById('singleFile');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Vui lòng chọn file!');
+        return;
+      }
+
+      if (!authToken) {
+        alert('Vui lòng đăng nhập trước!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      try {
+        const response = await fetch(`${API_BASE}/images/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+        document.getElementById('singleResult').textContent = JSON.stringify(result, null, 2);
+
+        if (result.success && result.data.imageUrl) {
+          document.getElementById('singleImage').innerHTML =
+            `<img src="${result.data.imageUrl}" alt="Uploaded image">`;
+          document.getElementById('publicIdToDelete').value = result.data.publicId;
+          document.getElementById('publicIdThumbnail').value = result.data.publicId;
+        }
+      } catch (error) {
+        document.getElementById('singleResult').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Upload multiple images
+    async function uploadMultiple() {
+      const fileInput = document.getElementById('multipleFiles');
+      const files = fileInput.files;
+
+      if (files.length === 0) {
+        alert('Vui lòng chọn ít nhất một file!');
+        return;
+      }
+
+      if (!authToken) {
+        alert('Vui lòng đăng nhập trước!');
+        return;
+      }
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('images', files[i]);
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/images/upload-multiple`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+        document.getElementById('multipleResult').textContent = JSON.stringify(result, null, 2);
+
+        if (result.success && result.data.images) {
+          const imagesHtml = result.data.images.map(img =>
+            `<img src="${img.imageUrl}" alt="${img.originalName}">`
+          ).join('');
+          document.getElementById('multipleImages').innerHTML = imagesHtml;
+        }
+      } catch (error) {
+        document.getElementById('multipleResult').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Upload base64
+    async function uploadBase64() {
+      const base64Data = document.getElementById('base64Data').value;
+      const fileName = document.getElementById('fileName').value;
+
+      if (!base64Data) {
+        alert('Vui lòng nhập base64 data!');
+        return;
+      }
+
+      if (!authToken) {
+        alert('Vui lòng đăng nhập trước!');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/images/upload-base64`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            base64Data: base64Data,
+            fileName: fileName || undefined
+          })
+        });
+
+        const result = await response.json();
+        document.getElementById('base64Result').textContent = JSON.stringify(result, null, 2);
+
+        if (result.success && result.data.imageUrl) {
+          document.getElementById('base64Image').innerHTML =
+            `<img src="${result.data.imageUrl}" alt="Base64 uploaded image">`;
+        }
+      } catch (error) {
+        document.getElementById('base64Result').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Delete image
+    async function deleteImage() {
+      const publicId = document.getElementById('publicIdToDelete').value;
+
+      if (!publicId) {
+        alert('Vui lòng nhập public ID!');
+        return;
+      }
+
+      if (!authToken) {
+        alert('Vui lòng đăng nhập trước!');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/images/${encodeURIComponent(publicId)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+
+        const result = await response.json();
+        document.getElementById('deleteResult').textContent = JSON.stringify(result, null, 2);
+      } catch (error) {
+        document.getElementById('deleteResult').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Generate thumbnail
+    async function generateThumbnail() {
+      const publicId = document.getElementById('publicIdThumbnail').value;
+      const width = document.getElementById('thumbnailWidth').value;
+      const height = document.getElementById('thumbnailHeight').value;
+
+      if (!publicId) {
+        alert('Vui lòng nhập public ID!');
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams();
+        if (width) params.append('width', width);
+        if (height) params.append('height', height);
+
+        const response = await fetch(`${API_BASE}/images/thumbnail/${encodeURIComponent(publicId)}?${params}`);
+        const result = await response.json();
+        document.getElementById('thumbnailResult').textContent = JSON.stringify(result, null, 2);
+
+        if (result.success && result.data.thumbnailUrl) {
+          document.getElementById('thumbnailImage').innerHTML =
+            `<img src="${result.data.thumbnailUrl}" alt="Thumbnail">`;
+        }
+      } catch (error) {
+        document.getElementById('thumbnailResult').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Convert file to base64 helper
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1]; // Remove data:image/png;base64, prefix
+          resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    // Add helper to convert file to base64
+    document.getElementById('singleFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        try {
+          const base64 = await fileToBase64(file);
+          document.getElementById('base64Data').value = base64;
+          document.getElementById('fileName').value = file.name.split('.')[0];
+        } catch (error) {
+          console.error('Error converting to base64:', error);
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
