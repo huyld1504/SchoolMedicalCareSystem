@@ -21,6 +21,10 @@ export const medicalOrderSchema = Joi.object({
     "string.base": "Note must be a string",
     "string.max": "Note must not exceed 500 characters",
   }),
+  imageURL: Joi.string().uri().optional().messages({
+    "string.base": "Image URL must be a string",
+    "string.uri": "Image URL must be a valid URI",
+  }),
 });
 export const medicalOrderDetailSchema = Joi.object({
   _id: Joi.string().hex().length(24).optional().messages({

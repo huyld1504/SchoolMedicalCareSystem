@@ -4,6 +4,9 @@ import Joi from 'joi';
 export const createCampaignSchema = Joi.object({
   vaccineName: Joi.string().min(2).max(100).required(),
   vaccineType: Joi.string().min(2).max(100).required(),
+  vaccineDescription: Joi.string().min(10).max(500).optional().required(),
+  dosage: Joi.number().positive().optional().required(),
+  injection: Joi.number().positive().required().required(),
   targetAudience: Joi.string().min(5).max(200).required(),
   startDate: Joi.date().iso().min('now').required(),
   endDate: Joi.date().iso().min(Joi.ref('startDate')).required(),
@@ -13,6 +16,9 @@ export const createCampaignSchema = Joi.object({
 export const updateCampaignSchema = Joi.object({
   vaccineName: Joi.string().min(2).max(100).optional(),
   vaccineType: Joi.string().min(2).max(100).optional(),
+  vaccineDescription: Joi.string().min(10).max(500).optional(),
+  dosage: Joi.number().positive().optional(),
+  injection: Joi.number().positive().optional(),
   targetAudience: Joi.string().min(5).max(200).optional(),
   startDate: Joi.date().iso().optional(),
   endDate: Joi.date().iso().when('startDate', {
@@ -38,7 +44,10 @@ export const parentConsentSchema = Joi.object({
 
 // Schema cho y tá ghi nhận kết quả tiêm với business rules
 export const nurseRecordSchema = Joi.object({
-  status: Joi.string().valid('completed', 'missed', 'cancelled').required(),  vaccinationDate: Joi.date()
+  status: Joi.string()
+    .valid('completed', 'missed', 'cancelled')
+    .required(),
+  vaccinationDate: Joi.date()
     .when('status', {
       is: 'completed',
       then: Joi.required().messages({
@@ -61,28 +70,27 @@ export const campaignQuerySchema = Joi.object({
     .allow('')
     .empty(''),
   limit: Joi.number().integer().min(1).max(100).default(10).allow('').empty(''),
-  
+
   // Filters
   status: Joi.string()
     .valid('planned', 'ongoing', 'completed', 'cancelled')
     .allow('')
     .optional(),
-  
   // Sort
   sort: Joi.string()
     .pattern(/^[a-zA-Z]+:(asc|desc)$/)
     .default('startDate:desc'),
-  
+
   // Search
   keyword: Joi.string().max(100).allow('').optional().messages({
     'string.max': 'Keyword cannot be longer than 100 characters',
   }),
-    // Date range filters
+  // Date range filters
   startDateFrom: Joi.date().iso().allow('').optional(),
   startDateTo: Joi.date().iso().allow('').optional(),
   endDateFrom: Joi.date().iso().allow('').optional(),
   endDateTo: Joi.date().iso().allow('').optional(),
-    // Legacy support
+  // Legacy support
   sortBy: Joi.string()
     .valid('startDate', 'endDate', 'createdAt', 'status')
     .allow('')
@@ -102,7 +110,7 @@ export const participationQuerySchema = Joi.object({
     .allow('')
     .empty(''),
   limit: Joi.number().integer().min(1).max(100).default(10).allow('').empty(''),
-  
+
   // Filters
   parentConsent: Joi.string()
     .valid('pending', 'approved', 'denied')
@@ -114,23 +122,23 @@ export const participationQuerySchema = Joi.object({
     .optional(),
   campaignId: Joi.string().allow('').optional(),
   studentId: Joi.string().allow('').optional(),
-  
+
   // Sort
   sort: Joi.string()
     .pattern(/^[a-zA-Z]+:(asc|desc)$/)
     .default('createdAt:desc'),
-  
+
   // Search
   keyword: Joi.string().max(100).allow('').optional().messages({
     'string.max': 'Keyword cannot be longer than 100 characters',
   }),
-  
+
   // Date range filters
   consentDateFrom: Joi.date().iso().allow('').optional(),
   consentDateTo: Joi.date().iso().allow('').optional(),
   vaccinationDateFrom: Joi.date().iso().allow('').optional(),
   vaccinationDateTo: Joi.date().iso().allow('').optional(),
-  
+
   // Legacy support
   sortBy: Joi.string()
     .valid('createdAt', 'parentConsentDate', 'vaccinationDate')

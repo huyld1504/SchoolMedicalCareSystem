@@ -34,6 +34,10 @@ export const createMedicalEventSchema = Joi.object({
     "string.base": "Status must be a string.",
     "any.only": "Status must be one of 'Đã xử lí', 'Chờ xử lí', or 'Đang xử lí'.",
     "any.required": "Status is required."
+  }),
+  imageURL: Joi.string().uri().optional().messages({
+    "string.base": "Image URL must be a string.",
+    "string.uri": "Image URL must be a valid URI."
   })
 });
 
@@ -67,5 +71,9 @@ export const updateMedicalEventSchema = Joi.object({
   status: Joi.string().valid("Đã xử lí", "Chờ xử lí", "Đang xử lí").optional().messages({
     "string.base": "Status must be a string.",  
     "any.only": "Status must be one of 'Đã xử lí', 'Chờ xử lí', or 'Đang xử lí'."
+  }),
+  imageURL: Joi.string().uri().optional().messages({
+    "string.base": "Image URL must be a string.",
+    "string.uri": "Image URL must be a valid URI."
   })
 });

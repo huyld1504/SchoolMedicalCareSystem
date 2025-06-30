@@ -14,6 +14,7 @@ export interface IMedicalEvent extends Document {
       studentId: Types.ObjectId;
     }
   ];
+  imageURL?: string; // Optional field for image URL
 }
 
 interface IMedicalEventModel extends Model<IMedicalEvent> { }
@@ -27,7 +28,8 @@ const schema = new Schema({
   dateHappened: { type: Date, required: true },
   note: { type: String, default: "" },
   solution: { type: String, default: "" },
-  studentJoin: [{studentId: { type: Types.ObjectId, ref: "Child", required: true }}]
+  studentJoin: [{studentId: { type: Types.ObjectId, ref: "Child", required: true }}],
+  imageURL: { type: String, default: "" } // Optional field for image URL
 }, {
   timestamps: true
 });
