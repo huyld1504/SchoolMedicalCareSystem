@@ -272,11 +272,11 @@ const DetailView = ({ campaign }) => {
           mx: "auto",
         }}
       >
-        <Grid container spacing={3} sx={{ justifyContent: "center" }}>
+        <Grid container spacing={3} sx={{ justifyContent: "center"  }}>
           {/* === THAY ĐỔI: Khối Header đã được di chuyển vào Card bên dưới === */}
 
           {/* Campaign Information */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ width: "100%" }}>
             <Card sx={{ width: "100%", maxWidth: "1010px", mx: "auto" }}>
               <CardContent sx={{ width: "100%" }}>
                 {/* === THAY ĐỔI: Thêm khối header vào đây === */}
@@ -562,7 +562,7 @@ const DetailView = ({ campaign }) => {
           </Grid>
 
           {/* Participants List */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ width: "100%" }}>
             <Card sx={{ width: "100%", maxWidth: "1010px", mx: "auto" }}>
               <CardContent sx={{ width: "100%" }}>
                 <Box
@@ -683,7 +683,7 @@ const DetailView = ({ campaign }) => {
                   <Collapse in={showFilters}>
                     <Card variant="outlined" sx={{ p: 2 }}>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6} md={4}>
+                        <Grid item xs={12} sm={6} md={4} sx={{width: "300px"}}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Đồng ý phụ huynh</InputLabel>
                             <Select
@@ -704,7 +704,7 @@ const DetailView = ({ campaign }) => {
                           </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} sm={6} md={4}>
+                        <Grid item xs={12} sm={6} md={4} sx={{width: "300px"}}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Trạng thái tiêm</InputLabel>
                             <Select
