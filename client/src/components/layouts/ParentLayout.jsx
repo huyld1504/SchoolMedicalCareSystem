@@ -183,7 +183,7 @@ const ParentLayout = () => {
             <Divider sx={{ my: 2 }} />
 
             {/* Settings and Logout */}
-            <List>
+            {/* <List>
                 <ListItem disablePadding>
                     <ListItemButton
                         onClick={handleLogout}
@@ -206,7 +206,7 @@ const ParentLayout = () => {
                         />
                     </ListItemButton>
                 </ListItem>
-            </List>
+            </List> */}
         </Box>
     );
 

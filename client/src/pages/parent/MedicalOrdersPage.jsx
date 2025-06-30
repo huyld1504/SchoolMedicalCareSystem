@@ -24,7 +24,11 @@ import {
     FormControl,
     InputLabel,
     Select,
-    Tooltip
+    Tooltip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import {
     ArrowBack as BackIcon,
@@ -35,6 +39,7 @@ import {
     Refresh as RefreshIcon,
     Medication as MedicationIcon
 } from '@mui/icons-material';
+import HistoryIcon from '@mui/icons-material/History';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalOrderApi from '../../api/medicalOrderApi';
@@ -52,6 +57,9 @@ const MedicalOrdersPage = () => {
     const [orders, setOrders] = useState([]);
     const [children, setChildren] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [medicationHistoryDialogOpen, setMedicationHistoryDialogOpen] = useState(false);
+    const [medicationHistory, setMedicationHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
     const [error, setError] = useState(null);
 
     // Filter state (separate from applied search)
@@ -247,6 +255,54 @@ const MedicalOrdersPage = () => {
         setAppliedSearch(clearedFilters);
     };
 
+    const handleViewMedicationHistory = async (orderId) => {
+        try {
+            setHistoryLoading(true);
+            setMedicationHistory([]); // Clear previous data
+            setMedicationHistoryDialogOpen(true);
+
+            console.log('Loading medication history for order:', orderId);
+            const response = await medicalOrderApi.getRecord(orderId);
+
+            console.log('Medication history response:', response);
+
+            if (response?.isSuccess && response.data) {
+                // Handle different response structures
+                let historyData = [];
+
+                if (response.data.records && Array.isArray(response.data.records)) {
+                    historyData = response.data.records;
+                } else if (Array.isArray(response.data)) {
+                    historyData = response.data;
+                } else if (response.data.items && Array.isArray(response.data.items)) {
+                    historyData = [response.data]; // Wrap single record with items
+                } else {
+                    historyData = [response.data]; // Single record
+                }
+
+                setMedicationHistory(historyData);
+
+                if (historyData.length === 0) {
+                    toast.info('Chưa có lịch sử uống thuốc cho đơn này');
+                }
+            } else {
+                setMedicationHistory([]);
+                toast.info('Chưa có lịch sử uống thuốc cho đơn này');
+            }
+        } catch (error) {
+            console.error('Error loading medication history:', error);
+            setMedicationHistory([]);
+            toast.error('Có lỗi xảy ra khi tải lịch sử uống thuốc');
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
+    const handleCloseMedicationHistoryDialog = () => {
+        setMedicationHistoryDialogOpen(false);
+        setMedicationHistory([]);
+    };
+
     const handleViewOrder = (order) => {
         navigate(`/parent/medical-orders/${order._id}`, {
             state: {
@@ -337,28 +393,6 @@ const MedicalOrdersPage = () => {
                                     <MenuItem value="approved">Đã duyệt</MenuItem>
                                     <MenuItem value="canceled">Đã hủy</MenuItem>
                                     <MenuItem value="completed">Hoàn thành</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Con em</InputLabel>
-                                <Select
-                                    value={filters.childId}
-                                    label="Con em"
-                                    onChange={(e) => handleFilterChange('childId', e.target.value)}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                                        '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
-                                        '& .MuiSelect-select': { minWidth: '100px' }
-                                    }}
-                                >
-                                    <MenuItem value="">Tất cả</MenuItem>
-                                    {children.map((child) => (
-                                        <MenuItem key={child._id} value={child._id}>
-                                            {child.name}
-                                        </MenuItem>
-                                    ))}
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -480,6 +514,15 @@ const MedicalOrdersPage = () => {
                                                             <ViewIcon />
                                                         </IconButton>
                                                     </Tooltip>
+                                                    <Tooltip title="Lịch sử uống thuốc">
+                                                        <IconButton
+                                                            size="small"
+                                                            color="info"
+                                                            onClick={() => handleViewMedicationHistory(order._id)}
+                                                        >
+                                                            <HistoryIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -505,6 +548,161 @@ const MedicalOrdersPage = () => {
                     )}
                 </CardContent>
             </Card>
+            {/* Medication History Dialog */}
+            <Dialog
+                open={medicationHistoryDialogOpen}
+                onClose={handleCloseMedicationHistoryDialog}
+                maxWidth="lg"
+                fullWidth
+                PaperProps={{
+                    sx: { minHeight: '400px' }
+                }}
+            >
+                <DialogTitle>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <HistoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            <Typography variant="h6">Lịch sử uống thuốc</Typography>
+                        </Box>
+                        <IconButton
+                            onClick={handleCloseMedicationHistoryDialog}
+                            size="small"
+                        >
+                            <ClearIcon />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {historyLoading ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6 }}>
+                            <CircularProgress sx={{ mb: 2 }} />
+                            <Typography color="text.secondary">
+                                Đang tải lịch sử uống thuốc...
+                            </Typography>
+                        </Box>
+                    ) : medicationHistory.length > 0 ? (
+                        <Box>
+                            <Alert severity="info" sx={{ mb: 2 }}>
+                                Hiển thị {medicationHistory.reduce((total, record) => {
+                                    if (record.items && Array.isArray(record.items)) {
+                                        return total + record.items.length;
+                                    }
+                                    return total + 1;
+                                }, 0)} lần cho uống thuốc
+                            </Alert>
+                            <TableContainer component={Paper} variant="outlined">
+                                <Table size="small">
+                                    <TableHead>
+                                        <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                                            <TableCell sx={{ fontWeight: 600 }}>STT</TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>Tên thuốc</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 600 }}>Số lượng</TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>Thời gian</TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>Y tá</TableCell>
+                                            <TableCell sx={{ fontWeight: 600 }}>Ghi chú</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {medicationHistory.map((record, index) => {
+                                            // Handle different data structures
+                                            if (record.items && Array.isArray(record.items)) {
+                                                // If record has items array
+                                                return record.items.map((item, itemIndex) => (
+                                                    <TableRow key={`${record._id || index}-${item._id || itemIndex}`} hover>
+                                                        <TableCell>{index + 1}.{itemIndex + 1}</TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                                {item.name || item.medicineName || 'Không rõ tên thuốc'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Chip
+                                                                label={`${item.quantity || item.usedQuantity || 0} viên`}
+                                                                size="small"
+                                                                color="primary"
+                                                                variant="outlined"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2">
+                                                                {formatDate(record.createdAt || record.usedAt || item.createdAt)}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                                {record.userId?.name || record.nurseId?.name || 'N/A'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                {record.note || item.note || 'Không có ghi chú'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ));
+                                            } else {
+                                                // If record is a direct medication record
+                                                return (
+                                                    <TableRow key={record._id || index} hover>
+                                                        <TableCell>{index + 1}</TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                                {record.medicineName || record.name || 'Không rõ tên thuốc'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Chip
+                                                                label={`${record.usedQuantity || record.quantity || 0} viên`}
+                                                                size="small"
+                                                                color="primary"
+                                                                variant="outlined"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2">
+                                                                {formatDate(record.usedAt || record.createdAt)}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                                                {record.nurseId?.name || record.userId?.name || 'N/A'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography variant="body2" color="text.secondary">
+                                                                {record.note || 'Không có ghi chú'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            }
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
+                    ) : (
+                        <Box sx={{ textAlign: 'center', py: 6 }}>
+                            <MedicationIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                Chưa có lịch sử uống thuốc
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Đơn gửi thuốc này chưa có lịch sử cho uống thuốc nào
+                            </Typography>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions sx={{ px: 3, py: 2 }}>
+                    <Button
+                        onClick={handleCloseMedicationHistoryDialog}
+                        variant="outlined"
+                        startIcon={<ClearIcon />}
+                    >
+                        Đóng
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

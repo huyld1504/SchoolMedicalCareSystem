@@ -42,9 +42,6 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { ca, vi } from 'date-fns/locale';
 import vaccinationApi from '../../api/vaccinationApi';
 
 const VaccinationCampaignsPage = () => {
@@ -52,6 +49,7 @@ const VaccinationCampaignsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [campaigns, setCampaigns] = useState([]);
+  const [allCampaigns, setAllCampaigns] = useState([]); // Store all campaigns for client-side filtering
   const [loading, setLoading] = useState(true);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -66,7 +64,7 @@ const VaccinationCampaignsPage = () => {
     limit: 10
   });
 
-  // Applied search state (used for actual API calls)
+  // Applied search state (used for actual filtering)
   const [appliedSearch, setAppliedSearch] = useState({
     keyword: searchParams.get('keyword') || '',
     status: searchParams.get('status') || '',
@@ -84,6 +82,11 @@ const VaccinationCampaignsPage = () => {
     totalPages: 0
   });
 
+  // Load campaigns on first load
+  useEffect(() => {
+    loadAllCampaigns();
+  }, []);
+
   // Initialize filters from URL params on first load
   useEffect(() => {
     if (appliedSearch.keyword || appliedSearch.status || appliedSearch.startDateFrom || appliedSearch.startDateTo) {
@@ -99,10 +102,10 @@ const VaccinationCampaignsPage = () => {
     }
   }, []); // Only run once on mount
 
-  // Load campaigns when appliedSearch changes
+  // Apply client-side filtering when appliedSearch changes
   useEffect(() => {
-    loadCampaigns();
-  }, [appliedSearch]);
+    applyClientSideFiltering();
+  }, [appliedSearch, allCampaigns]);
 
   // Sync URL params with appliedSearch
   useEffect(() => {
@@ -114,47 +117,118 @@ const VaccinationCampaignsPage = () => {
     if (appliedSearch.page > 1) newParams.set('page', appliedSearch.page.toString());
 
     setSearchParams(newParams);
-  }, [appliedSearch, setSearchParams]); const loadCampaigns = async () => {
+  }, [appliedSearch, setSearchParams]); const loadAllCampaigns = async () => {
     try {
       setLoading(true);
-      console.log('Campaign search query:', appliedSearch);
+      console.log('Loading all campaigns...');
 
-      const response = await vaccinationApi.campaigns.search(appliedSearch);
-      console.log(response)
+      // Load all campaigns without pagination for client-side filtering
+      const response = await vaccinationApi.campaigns.search({
+        page: 1,
+        limit: 100, // Large limit to get all campaigns
+        keyword: '', // No server-side filters
+        status: '',
+        startDateFrom: '',
+        startDateTo: ''
+      });
+
+      console.log('All campaigns response:', response);
 
       if (response?.isSuccess) {
-        setCampaigns(response?.data?.records || []);
-        setPaginationInfo({
-          total: response?.data?.total || 0,
-          page: response?.data?.page || 1,
-          limit: response?.data?.limit || 10,
-          totalPages: response?.data?.totalPages || 0
-        });
-        console.log(response?.data?.records)
-        console.log('campaign ne: ', campaigns)
+        setAllCampaigns(response?.data?.records || []);
+        console.log('All campaigns loaded:', response?.data?.records?.length);
       } else {
-        setCampaigns([]);
-        setPaginationInfo({
-          total: 0,
-          page: 1,
-          limit: 10,
-          totalPages: 0
-        });
+        setAllCampaigns([]);
         toast.error('Không thể tải danh sách chiến dịch');
       }
     } catch (error) {
-      console.error('Error loading campaigns:', error);
+      console.error('Error loading all campaigns:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
+      setAllCampaigns([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyClientSideFiltering = () => {
+    if (allCampaigns.length === 0) {
       setCampaigns([]);
       setPaginationInfo({
         total: 0,
         page: 1,
-        limit: 10,
+        limit: appliedSearch.limit,
         totalPages: 0
       });
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    let filteredCampaigns = [...allCampaigns];
+
+    // Apply keyword filter
+    if (appliedSearch.keyword) {
+      filteredCampaigns = filteredCampaigns.filter(campaign =>
+        campaign.vaccineName?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        campaign.vaccineType?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        campaign.description?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        campaign.targetAudience?.toLowerCase().includes(appliedSearch.keyword.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (appliedSearch.status) {
+      filteredCampaigns = filteredCampaigns.filter(campaign =>
+        campaign.status === appliedSearch.status
+      );
+    }
+
+    // Apply date range filter
+    if (appliedSearch.startDateFrom || appliedSearch.startDateTo) {
+      filteredCampaigns = filteredCampaigns.filter(campaign => {
+        if (!campaign.startDate) return false;
+
+        const campaignStartDate = new Date(campaign.startDate);
+        let isValid = true;
+
+        // Check from date
+        if (appliedSearch.startDateFrom) {
+          const fromDate = new Date(appliedSearch.startDateFrom);
+          fromDate.setHours(0, 0, 0, 0);
+          isValid = isValid && campaignStartDate >= fromDate;
+        }
+
+        // Check to date
+        if (appliedSearch.startDateTo) {
+          const toDate = new Date(appliedSearch.startDateTo);
+          toDate.setHours(23, 59, 59, 999);
+          isValid = isValid && campaignStartDate <= toDate;
+        }
+
+        return isValid;
+      });
+    }
+
+    // Apply pagination
+    const total = filteredCampaigns.length;
+    const totalPages = Math.ceil(total / appliedSearch.limit);
+    const currentPage = Math.min(appliedSearch.page, totalPages || 1);
+    const startIndex = (currentPage - 1) * appliedSearch.limit;
+    const endIndex = startIndex + appliedSearch.limit;
+    const paginatedCampaigns = filteredCampaigns.slice(startIndex, endIndex);
+
+    setCampaigns(paginatedCampaigns);
+    setPaginationInfo({
+      total,
+      page: currentPage,
+      limit: appliedSearch.limit,
+      totalPages: totalPages || 1
+    });
+
+    console.log('Client-side filtering applied:', {
+      total: filteredCampaigns.length,
+      page: currentPage,
+      totalPages,
+      displayedCount: paginatedCampaigns.length
+    });
   };
 
   const handleViewCampaign = async (campaign) => {
@@ -230,269 +304,276 @@ const VaccinationCampaignsPage = () => {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-      <Container maxWidth="xl" sx={{ py: 3 }}>
-        {/* Header */}
-        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <VaccinesIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
-            <Box>
-              <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-                Quản lý Tiêm chủng
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                Theo dõi các chiến dịch tiêm chủng
-              </Typography>
-            </Box>
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <VaccinesIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+              Quản lý Tiêm chủng
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              Theo dõi các chiến dịch tiêm chủng
+            </Typography>
           </Box>
         </Box>
-        {/* Search and Filters */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={2}>
-                <TextField
-                  fullWidth
-                  placeholder="Tên vaccine, mô tả, v.v."
-                  value={filters.keyword}
-                  onChange={(e) => handleFilterChange('keyword', e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                />
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
-                  <InputLabel>Trạng thái</InputLabel>
-                  <Select
-                    value={filters.status}
-                    label="Trạng thái"
-                    onChange={(e) => handleFilterChange('status', e.target.value)}
-                    sx={{
-                      '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                      '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
-                      '& .MuiSelect-select': { minWidth: '100px' }
-                    }}
-                  >
-                    <MenuItem value="">Tất cả</MenuItem>
-                    <MenuItem value="planned">Sắp diễn ra</MenuItem>
-                    <MenuItem value="ongoing">Đang diễn ra</MenuItem>
-                    <MenuItem value="completed">Đã hoàn thành</MenuItem>
-                    <MenuItem value="cancelled">Đã hủy</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+      </Box>
+      {/* Search and Filters */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
+            Bộ lọc tìm kiếm
+          </Typography>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={2}>
+              <TextField
+                fullWidth
+                placeholder="Tên vaccine, mô tả, v.v."
+                value={filters.keyword}
+                onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Trạng thái</InputLabel>
+                <Select
+                  value={filters.status}
+                  label="Trạng thái"
+                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                    '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                    '& .MuiSelect-select': { minWidth: '100px' }
+                  }}
+                >
+                  <MenuItem value="">Tất cả</MenuItem>
+                  <MenuItem value="planned">Sắp diễn ra</MenuItem>
+                  <MenuItem value="ongoing">Đang diễn ra</MenuItem>
+                  <MenuItem value="completed">Đã hoàn thành</MenuItem>
+                  <MenuItem value="cancelled">Đã hủy</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
-              <Grid item xs={12} md={2}>
-                <DatePicker
-                  label="Từ ngày"
-                  value={filters.startDateFrom ? new Date(filters.startDateFrom) : null}
-                  onChange={(date) => handleFilterChange('startDateFrom', date ? date.toISOString() : '')}
-                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
-                />
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <DatePicker
-                  label="Đến ngày"
-                  value={filters.startDateTo ? new Date(filters.startDateTo) : null}
-                  onChange={(date) => handleFilterChange('startDateTo', date ? date.toISOString() : '')}
-                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
-                />
-              </Grid>
-              <Grid item xs={12} md={2}>
+            <Grid item xs={12} md={2}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Từ ngày"
+                value={filters.startDateFrom}
+                onChange={(e) => handleFilterChange('startDateFrom', e.target.value)}
+                size="small"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Đến ngày"
+                value={filters.startDateTo}
+                onChange={(e) => handleFilterChange('startDateTo', e.target.value)}
+                size="small"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
                   variant="contained"
-                  startIcon={<SearchIcon />}
                   onClick={handleSearch}
-                  fullWidth
-                  sx={{ mr: 1 }}
+                  startIcon={<SearchIcon />}
+                  sx={{ minWidth: 100 }}
                 >
                   Tìm kiếm
                 </Button>
-              </Grid>
-              <Grid item xs={12} md={2}>
                 <Button
                   variant="outlined"
-                  color="error"
-                  startIcon={<ClearIcon />}
                   onClick={handleClearFilters}
-                  fullWidth
+                  startIcon={<ClearIcon />}
                 >
-                  Xóa bộ lọc
+                  Xóa lọc
                 </Button>
-              </Grid>
+              </Box>
             </Grid>
-          </CardContent>
-        </Card>
+          </Grid>
+        </CardContent>
+      </Card>
 
-        {/* Campaigns Table */}
-        <Card>
-          <CardContent sx={{ p: 0 }}>
-            <Box sx={{ p: 2, bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider' }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Danh sách chiến dịch tiêm chủng
+      {/* Campaigns Table */}
+      <Card>
+        <CardContent sx={{ p: 0 }}>
+          <Box sx={{ p: 2, bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Danh sách chiến dịch tiêm chủng ({paginationInfo.total})
+            </Typography>
+          </Box>
+
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : campaigns.length === 0 ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <VaccinesIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary">
+                Chưa có chiến dịch tiêm chủng nào
               </Typography>
             </Box>
-
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                <CircularProgress />
-              </Box>
-            ) : campaigns.length === 0 ? (
-              <Box sx={{ p: 4, textAlign: 'center' }}>
-                <VaccinesIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary">
-                  Chưa có chiến dịch tiêm chủng nào
-                </Typography>
-              </Box>
-            ) : (
-              <>
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow sx={{ bgcolor: 'grey.50' }}>
-                        <TableCell sx={{ fontWeight: 600 }}>Tên vaccine</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Ngày bắt đầu</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Ngày kết thúc</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Trạng thái</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Mô tả</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }} align="center">Thao tác</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {campaigns.map((campaign) => (
-                        <TableRow key={campaign._id} sx={{ '&:hover': { bgcolor: 'grey.50' } }}>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <VaccinesIcon sx={{ mr: 2, color: 'primary.main' }} />
-                              <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                {campaign.vaccineName}
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell>{formatDate(campaign.startDate)}</TableCell>
-                          <TableCell>{formatDate(campaign.endDate)}</TableCell>
-                          <TableCell>
-                            <Chip
-                              label={getStatusText(campaign.status)}
-                              color={getStatusColor(campaign.status)}
-                              size="small"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{
-                              maxWidth: 200,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
-                            }}>
-                              {campaign.description || 'Không có mô tả'}
+          ) : (
+            <>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: 'grey.50' }}>
+                      <TableCell sx={{ fontWeight: 600 }}>Tên vaccine</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Loại vaccine</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Ngày bắt đầu</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Ngày kết thúc</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Trạng thái</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Mô tả</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }} align="center">Thao tác</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {campaigns.map((campaign) => (
+                      <TableRow key={campaign._id} sx={{ '&:hover': { bgcolor: 'grey.50' } }}>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <VaccinesIcon sx={{ mr: 2, color: 'primary.main' }} />
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                              {campaign.vaccineName}
                             </Typography>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                              <Tooltip title="Xem chi tiết">
-                                <IconButton
-                                  size="small"
-                                  color="primary"
-                                  onClick={() => handleViewCampaign(campaign)}
-                                >
-                                  <ViewIcon />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Quản lý tham gia">
-                                <IconButton
-                                  size="small"
-                                  color="info"
-                                  onClick={() => handleViewParticipations(campaign)}
-                                >
-                                  <AssignmentIcon />
-                                </IconButton>
-                              </Tooltip>
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>                {/* Pagination */}
-                <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-                  <Pagination
-                    count={paginationInfo.totalPages}
-                    page={paginationInfo.page}
-                    onChange={handlePageChange}
-                    color="primary"
-                    showFirstButton
-                    showLastButton
+                          </Box>
+                        </TableCell>
+                        <TableCell>{campaign.vaccineType}</TableCell>
+                        <TableCell>{formatDate(campaign.startDate)}</TableCell>
+                        <TableCell>{formatDate(campaign.endDate)}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={getStatusText(campaign.status)}
+                            color={getStatusColor(campaign.status)}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" sx={{
+                            maxWidth: 200,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {campaign.description || 'Không có mô tả'}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                            <Tooltip title="Xem chi tiết">
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => handleViewCampaign(campaign)}
+                              >
+                                <ViewIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Quản lý tham gia">
+                              <IconButton
+                                size="small"
+                                color="info"
+                                onClick={() => handleViewParticipations(campaign)}
+                              >
+                                <AssignmentIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>                {/* Pagination */}
+              <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+                <Pagination
+                  count={paginationInfo.totalPages}
+                  page={paginationInfo.page}
+                  onChange={handlePageChange}
+                  color="primary"
+                  showFirstButton
+                  showLastButton
+                />
+              </Box>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Campaign Detail Dialog */}
+      <Dialog open={detailDialogOpen} onClose={() => setDetailDialogOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          <Typography variant="h6" component="div" sx={{ display: 'flex', alignItems: 'center' }}>
+            <VaccinesIcon sx={{ mr: 2 }} />
+            Chi tiết chiến dịch tiêm chủng
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          {selectedCampaign && (
+            <Grid container spacing={5} sx={{ mt: 1 }}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle2" gutterBottom>Tên vaccine</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.vaccineName}</Typography>
+
+                <Typography variant="subtitle2" gutterBottom>Loại vaccine</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.vaccineType}</Typography>
+
+                <Typography variant="subtitle2" gutterBottom>Ngày bắt đầu</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.startDate)}</Typography>
+
+                <Typography variant="subtitle2" gutterBottom>Ngày kết thúc</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign?.endDate)}</Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle2" gutterBottom>Trạng thái</Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Chip
+                    label={getStatusText(selectedCampaign.status)}
+                    color={getStatusColor(selectedCampaign.status)}
+                    size="small"
                   />
                 </Box>
-              </>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Campaign Detail Dialog */}
-        <Dialog open={detailDialogOpen} onClose={() => setDetailDialogOpen(false)} maxWidth="md" fullWidth>
-          <DialogTitle>
-            <Typography variant="h6" component="div" sx={{ display: 'flex', alignItems: 'center' }}>
-              <VaccinesIcon sx={{ mr: 2 }} />
-              Chi tiết chiến dịch tiêm chủng
-            </Typography>
-          </DialogTitle>
-          <DialogContent>
-            {selectedCampaign && (
-              <Grid container spacing={5} sx={{ mt: 1 }}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" gutterBottom>Tên vaccine</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.vaccineName}</Typography>
+                <Typography variant="subtitle2" gutterBottom>Đối tượng tiêm</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.targetAudience}</Typography>
 
-                  <Typography variant="subtitle2" gutterBottom>Loại vaccine</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.vaccineType}</Typography>
+                <Typography variant="subtitle2" gutterBottom>Ngày tạo</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.createdAt)}</Typography>
 
-                  <Typography variant="subtitle2" gutterBottom>Ngày bắt đầu</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.startDate)}</Typography>
-
-                  <Typography variant="subtitle2" gutterBottom>Ngày kết thúc</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign?.endDate)}</Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle2" gutterBottom>Trạng thái</Typography>
-                  <Box sx={{ mb: 2 }}>
-                    <Chip
-                      label={getStatusText(selectedCampaign.status)}
-                      color={getStatusColor(selectedCampaign.status)}
-                      size="small"
-                    />
-                  </Box>
-
-                  <Typography variant="subtitle2" gutterBottom>Đối tượng tiêm</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{selectedCampaign.targetAudience}</Typography>
-
-                  <Typography variant="subtitle2" gutterBottom>Ngày tạo</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.createdAt)}</Typography>
-
-                  <Typography variant="subtitle2" gutterBottom>Cập nhật lần cuối</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.updatedAt)}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" gutterBottom>Mô tả</Typography>
-                  <Typography variant="body1">
-                    {selectedCampaign.description || 'Không có mô tả'}
-                  </Typography>
-                </Grid>
+                <Typography variant="subtitle2" gutterBottom>Cập nhật lần cuối</Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>{formatDate(selectedCampaign.updatedAt)}</Typography>
               </Grid>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDetailDialogOpen(false)}>Đóng</Button>
-            {selectedCampaign && (
-              <Button
-                variant="contained"
-                onClick={() => handleViewParticipations(selectedCampaign)}
-              >
-                Xem danh sách tham gia
-              </Button>)}          </DialogActions>
-        </Dialog>
-      </Container>
-    </LocalizationProvider>
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" gutterBottom>Mô tả</Typography>
+                <Typography variant="body1">
+                  {selectedCampaign.description || 'Không có mô tả'}
+                </Typography>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailDialogOpen(false)}>Đóng</Button>
+          {selectedCampaign && (
+            <Button
+              variant="contained"
+              onClick={() => handleViewParticipations(selectedCampaign)}
+            >
+              Xem danh sách tham gia
+            </Button>)}          </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
 

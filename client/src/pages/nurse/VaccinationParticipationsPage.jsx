@@ -50,7 +50,6 @@ import {
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { vi } from 'date-fns/locale';
@@ -63,6 +62,7 @@ const VaccinationParticipationsPage = () => {
 
   const [campaign, setCampaign] = useState(null);
   const [participations, setParticipations] = useState([]);
+  const [allParticipations, setAllParticipations] = useState([]); // Store all participations for client-side filtering
   const [loading, setLoading] = useState(true);
 
   // Filter state (separate from applied search)
@@ -107,6 +107,13 @@ const VaccinationParticipationsPage = () => {
     loadCampaignDetails();
   }, [campaignId]);
 
+  // Load all participations on first load
+  useEffect(() => {
+    if (campaignId) {
+      loadAllParticipations();
+    }
+  }, [campaignId]);
+
   // Initialize filters from URL params on first load
   useEffect(() => {
     if (appliedSearch.keyword || appliedSearch.consentStatus || appliedSearch.vaccinationStatus || appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
@@ -123,12 +130,10 @@ const VaccinationParticipationsPage = () => {
     }
   }, []); // Only run once on mount
 
-  // Load participations when appliedSearch changes
+  // Apply client-side filtering when appliedSearch changes
   useEffect(() => {
-    if (campaignId) {
-      loadParticipations();
-    }
-  }, [campaignId, appliedSearch]);
+    applyClientSideFiltering();
+  }, [appliedSearch, allParticipations]);
 
   // Sync URL params with appliedSearch
   useEffect(() => {
@@ -143,98 +148,121 @@ const VaccinationParticipationsPage = () => {
     setSearchParams(newParams);
   }, [appliedSearch, setSearchParams]);
 
-  const loadParticipations = async () => {
+  const loadAllParticipations = async () => {
     try {
       setLoading(true);
+      console.log('Loading all participations...');
 
-      console.log('Participation search query:', appliedSearch);
-
-      // Create API query without keyword and vaccinationDate (handled client-side)
+      // Load all participations without any filters for client-side filtering
       const apiQuery = {
-        page: 1, // Load all data for client-side filtering
-        limit: 99, // Large limit to get all data
-        consentStatus: appliedSearch.consentStatus,
-        vaccinationStatus: appliedSearch.vaccinationStatus
-        // vaccinationDate removed - handled client-side
+        page: 1,
+        limit: 100, // Large limit to get all participations
+        // No filters - load everything for client-side filtering
       };
 
       const response = await vaccinationApi.campaigns.getParticipations(campaignId, apiQuery);
 
       if (response?.isSuccess) {
-        let allParticipations = response?.data?.records || [];
-
-        // Apply keyword filter client-side (similar to MedicalEventsPage)
-        if (appliedSearch.keyword) {
-          allParticipations = allParticipations.filter(participation =>
-            participation.student?.name?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
-            participation.student?.studentCode?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
-            participation.parentNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
-            participation.nurseNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase())
-          );
-        }
-
-        // Apply vaccination date filter client-side (date range)
-        if (appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
-          allParticipations = allParticipations.filter(participation => {
-            if (!participation.vaccinationDate) return false;
-            
-            const participationDate = new Date(participation.vaccinationDate);
-            let isValid = true;
-            
-            // Check from date
-            if (appliedSearch.vaccinationDateFrom) {
-              const fromDate = new Date(appliedSearch.vaccinationDateFrom);
-              fromDate.setHours(0, 0, 0, 0); // Start of day
-              isValid = isValid && participationDate >= fromDate;
-            }
-            
-            // Check to date
-            if (appliedSearch.vaccinationDateTo) {
-              const toDate = new Date(appliedSearch.vaccinationDateTo);
-              toDate.setHours(23, 59, 59, 999); // End of day
-              isValid = isValid && participationDate <= toDate;
-            }
-            
-            return isValid;
-          });
-        }
-
-        // Client-side pagination
-        const total = allParticipations.length;
-        const totalPages = Math.ceil(total / appliedSearch.limit);
-        const startIndex = (appliedSearch.page - 1) * appliedSearch.limit;
-        const paginatedParticipations = allParticipations.slice(startIndex, startIndex + appliedSearch.limit);
-
-        setParticipations(paginatedParticipations);
-        setPaginationInfo({
-          total,
-          page: appliedSearch.page,
-          limit: appliedSearch.limit,
-          totalPages
-        });
+        setAllParticipations(response?.data?.records || []);
+        console.log('All participations loaded:', response?.data?.records?.length);
       } else {
-        setParticipations([]);
-        setPaginationInfo({
-          total: 0,
-          page: 1,
-          limit: 20,
-          totalPages: 0
-        });
+        setAllParticipations([]);
       }
-      console.log('Participations loaded:', response?.data?.records);
     } catch (error) {
-      console.error('Error loading participations:', error);
+      console.error('Error loading all participations:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
+      setAllParticipations([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyClientSideFiltering = () => {
+    if (allParticipations.length === 0) {
       setParticipations([]);
       setPaginationInfo({
         total: 0,
         page: 1,
-        limit: 20,
+        limit: appliedSearch.limit,
         totalPages: 0
       });
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    let filteredParticipations = [...allParticipations];
+
+    // Apply keyword filter
+    if (appliedSearch.keyword) {
+      filteredParticipations = filteredParticipations.filter(participation =>
+        participation.student?.name?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        participation.student?.studentCode?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        participation.parentNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        participation.nurseNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase())
+      );
+    }
+
+    // Apply consent status filter
+    if (appliedSearch.consentStatus) {
+      filteredParticipations = filteredParticipations.filter(participation =>
+        participation.consentStatus === appliedSearch.consentStatus
+      );
+    }
+
+    // Apply vaccination status filter
+    if (appliedSearch.vaccinationStatus) {
+      filteredParticipations = filteredParticipations.filter(participation =>
+        participation.vaccinationStatus === appliedSearch.vaccinationStatus
+      );
+    }
+
+    // Apply vaccination date range filter
+    if (appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
+      filteredParticipations = filteredParticipations.filter(participation => {
+        if (!participation.vaccinationDate) return false;
+
+        const participationDate = new Date(participation.vaccinationDate);
+        let isValid = true;
+
+        // Check from date
+        if (appliedSearch.vaccinationDateFrom) {
+          const fromDate = new Date(appliedSearch.vaccinationDateFrom);
+          fromDate.setHours(0, 0, 0, 0);
+          isValid = isValid && participationDate >= fromDate;
+        }
+
+        // Check to date
+        if (appliedSearch.vaccinationDateTo) {
+          const toDate = new Date(appliedSearch.vaccinationDateTo);
+          toDate.setHours(23, 59, 59, 999);
+          isValid = isValid && participationDate <= toDate;
+        }
+
+        return isValid;
+      });
+    }
+
+    // Apply pagination
+    const total = filteredParticipations.length;
+    const totalPages = Math.ceil(total / appliedSearch.limit);
+    const currentPage = Math.min(appliedSearch.page, totalPages || 1);
+    const startIndex = (currentPage - 1) * appliedSearch.limit;
+    const endIndex = startIndex + appliedSearch.limit;
+    const paginatedParticipations = filteredParticipations.slice(startIndex, endIndex);
+
+    setParticipations(paginatedParticipations);
+    setPaginationInfo({
+      total,
+      page: currentPage,
+      limit: appliedSearch.limit,
+      totalPages: totalPages || 1
+    });
+
+    console.log('Client-side filtering applied:', {
+      total: filteredParticipations.length,
+      page: currentPage,
+      totalPages,
+      displayedCount: paginatedParticipations.length
+    });
   };
 
   const loadCampaignDetails = async () => {
@@ -257,8 +285,8 @@ const VaccinationParticipationsPage = () => {
       ); if (response?.isSuccess) {
         toast.success('Đã ghi nhận kết quả tiêm chủng');
         setRecordingDialog(false);
-        // Trigger reload by calling loadParticipations
-        loadParticipations();
+        // Trigger reload by calling loadAllParticipations
+        loadAllParticipations();
       } else {
         toast.error('Không thể ghi nhận kết quả');
       }
@@ -391,10 +419,11 @@ const VaccinationParticipationsPage = () => {
                   value={filters.keyword}
                   onChange={(e) => handleFilterChange('keyword', e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  size="small"
                 />
               </Grid>
               <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
+                <FormControl fullWidth size="small">
                   <InputLabel>Đồng ý PH</InputLabel>
                   <Select
                     value={filters.consentStatus}
@@ -414,7 +443,7 @@ const VaccinationParticipationsPage = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
+                <FormControl fullWidth size="small">
                   <InputLabel>Trạng thái tiêm</InputLabel>
                   <Select
                     value={filters.vaccinationStatus}
@@ -435,19 +464,25 @@ const VaccinationParticipationsPage = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={1.5}>
-                <DatePicker
+                <TextField
+                  fullWidth
+                  type="date"
                   label="Từ ngày"
-                  value={filters.vaccinationDateFrom ? new Date(filters.vaccinationDateFrom) : null}
-                  onChange={(date) => handleFilterChange('vaccinationDateFrom', date ? date.toISOString() : '')}
-                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                  value={filters.vaccinationDateFrom}
+                  onChange={(e) => handleFilterChange('vaccinationDateFrom', e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
               <Grid item xs={12} md={1.5}>
-                <DatePicker
+                <TextField
+                  fullWidth
+                  type="date"
                   label="Đến ngày"
-                  value={filters.vaccinationDateTo ? new Date(filters.vaccinationDateTo) : null}
-                  onChange={(date) => handleFilterChange('vaccinationDateTo', date ? date.toISOString() : '')}
-                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+                  value={filters.vaccinationDateTo}
+                  onChange={(e) => handleFilterChange('vaccinationDateTo', e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
 
