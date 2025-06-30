@@ -393,7 +393,7 @@ const VaccinationNotificationDetailPage = () => {
 
                 <Box sx={{ mb: 1.5 }}>
                   <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Phản hồi của phụ huynh
+                  Phản hồi của phụ huynh
                   </Typography>
                   <Chip
                     label={getConsentLabel(notification.parentConsent)}
@@ -406,27 +406,15 @@ const VaccinationNotificationDetailPage = () => {
                       height: '34px'
                     }}
                   />
+                  
                   {notification.parentNote && (
-                    <Box sx={{ mt: 1.5, width: '100%' }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 500, fontSize: '0.85rem', mb: 0.5, ml: 0.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ mb: 1.5 }}>
+                      <Typography ariant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
                         {notification.parentConsent === 'denied' ? 'Lý do từ chối của phụ huynh' : 'Ghi chú của phụ huynh'}
                       </Typography>
-                      <Box
-                        sx={{
-                          bgcolor: 'white',
-                          borderRadius: 2,
-                          border: '1.5px solid',
-                          borderColor: 'grey.300',
-                          p: 1.5,
-                          minHeight: 32,
-                          fontSize: '0.8rem',
-                          wordBreak: 'break-word',
-                          width: '100%',
-                          whiteSpace: 'pre-line'
-                        }}
-                      >
-                        {notification.parentNote.replace(/(.{36})/g, '$1\n')}
-                      </Box>
+                       <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
+                      {notification.parentNote}
+                      </Typography>
                     </Box>
                   )}
                 </Box>
@@ -434,7 +422,7 @@ const VaccinationNotificationDetailPage = () => {
                 {notification.vaccinationDate && (
                   <Box sx={{ mb: 1.5 }}>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                      Ngày tiêm
+                    Ngày tiêm
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
                       {formatDateTime(notification.vaccinationDate)}
@@ -444,11 +432,25 @@ const VaccinationNotificationDetailPage = () => {
 
                 {notification.vaccinatedNurse && (
                   <Box sx={{ mb: 1.5 }}>
-                    <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
+                    Y tá tiêm
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
                       {notification.vaccinatedNurse.name}
                     </Typography>
                   </Box>
                 )}
+
+                {notification.nurseNote && (
+                    <Box sx={{ mb: 1.5 }}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
+                        Ghi chú của y tá
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
+                      {notification.nurseNote}
+                      </Typography>
+                    </Box>
+                  )}
 
                 {/* Nút hành động */}
                 {notification.parentConsent === 'pending' && (
