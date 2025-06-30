@@ -43,6 +43,8 @@ import AccountManager from "../pages/admin/AccountManager";
 import VaccinationCampaigns from "../pages/admin/VaccinationCampaigns";
 import VaccinationCampaignDetail from "../pages/admin/VaccinationCampaignDetail";
 import EditCampaign from "../pages/admin/VaccinationCampaigns/EditCampaign";
+import AdminMedicalEventsPage from "../pages/admin/AdminMedicalEventsPage";
+import AdminMedicalEventDetailPage from "../pages/admin/AdminMedicalEventDetailPage";
 
 // Parent vaccination pages
 import VaccinationNotificationsPage from "../pages/parent/VaccinationNotificationsPage";
@@ -313,7 +315,20 @@ const router = createBrowserRouter([
               },
             ],
           },
-
+          {
+            path: 'medical-events',
+            element: <AdminMedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/detail/:eventId',
+            element: <AdminMedicalEventDetailPage />,
+          },
+        ],
+      },
+      // Medical Orders Management
+      {
+        path: 'medical-orders',
+        children: [
           // Admin có thể truy cập tất cả trang nurse
           {
             path: 'students',
