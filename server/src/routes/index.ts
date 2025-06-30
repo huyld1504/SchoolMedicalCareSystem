@@ -69,7 +69,7 @@ childRouter.post(
 );
 childRouter.get(
   Paths.Child.GetAll,
-  [transform(), auth(), authRoles(["parent", "nurse"])],
+  [transform(), auth(), authRoles(["parent", "nurse", "admin"])],
   ChildRoutes.get
 );
 /******************************************************************************
