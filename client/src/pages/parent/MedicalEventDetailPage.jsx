@@ -15,6 +15,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  TableHead,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -24,6 +25,13 @@ import {
 import { useNavigate, useParams, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalEventAPI from '../../api/medicalEventApi';
+import {
+  getMedicalEventTypeLabel,
+  getMedicalEventLevelLabel,
+  getRawMedicalEventLevelColor,
+  getRawMedicalEventStatusColor,
+  getMedicalEventStatusLabel
+} from '../../utils/colorUtils';
 
 const MedicalEventDetailPage = () => {
   const navigate = useNavigate();
@@ -126,53 +134,23 @@ const MedicalEventDetailPage = () => {
   };
 
   const getEventTypeLabel = (type) => {
-    return type || 'Không xác định';
+    return getMedicalEventTypeLabel(type);
   };
 
   const getLevelColor = (level) => {
-    switch (level) {
-      case 3:
-        return '#d32f2f'; // Đỏ
-      case 2:
-        return '#ed6c02'; // Cam
-      case 1:
-        return '#2e7d32'; // Xanh lá
-      default:
-        return '#757575'; // Xám
-    }
+    return getRawMedicalEventLevelColor(level);
   };
 
   const getLevelLabel = (level) => {
-    switch (level) {
-      case 1:
-        return 'Nhẹ';
-      case 2:
-        return 'Trung bình';
-      case 3:
-        return 'Khẩn cấp';
-      default:
-        return 'Không xác định';
-    }
+    return getMedicalEventLevelLabel(level);
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'Đã xử lí':
-        return '#2e7d32'; // Xanh lá
-      case 'Đang xử lí':
-        return '#ed6c02'; // Cam
-      case 'Chờ xử lí':
-        return '#d32f2f'; // Đỏ
-      default:
-        return '#757575'; // Xám
-    }
+    return getRawMedicalEventStatusColor(status);
   };
 
   const getStatusLabel = (status) => {
-    if (status === 'Đã xử lí' || status === 'Đang xử lí' || status === 'Chờ xử lí') {
-      return status;
-    }
-    return 'Đã xử lí'; // Giá trị mặc định
+    return getMedicalEventStatusLabel(status);
   };
 
   const getChildDisplayName = () => {
@@ -258,6 +236,38 @@ const MedicalEventDetailPage = () => {
                 <TableCell sx={{ fontWeight: 600, width: '25%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>Ngày sự kiện:</TableCell>
                 <TableCell sx={{ fontSize: '1rem' }}>{formatDate(medicalEvent.dateHappened || medicalEvent.createdAt)}</TableCell>
               </TableRow>
+
+              {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && (
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Học sinh tham gia:</TableCell>
+                  <TableCell>
+                    <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: '4px' }}>
+                      <TableHead>
+                        <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                          <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.9rem', py: 1 }}>Tên học sinh</TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.9rem', py: 1 }}>Mã học sinh</TableCell>
+                          <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.9rem', py: 1 }}>Mã BHYT</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {medicalEvent.studentJoin.map((student, index) => {
+                          // Xử lý cả trường hợp có studentId nested và không có
+                          const studentData = student.studentId || student;
+                          return (
+                            <TableRow key={index} sx={{ '&:last-child td': { border: 0 } }}>
+                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>{studentData.name || 'N/A'}</TableCell>
+                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>{studentData.studentCode || 'N/A'}</TableCell>
+                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>
+                                {studentData.medicalConverageId || 'N/A'}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableCell>
+                </TableRow>
+              )}
 
               <TableRow>
                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Loại sự kiện:</TableCell>
@@ -358,27 +368,6 @@ const MedicalEventDetailPage = () => {
                   />
                 </TableCell>
               </TableRow>
-
-              {/* Thông tin con em */}
-              {passedChildData && (
-                <>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Tên con em:</TableCell>
-                    <TableCell sx={{ fontSize: '1rem', fontWeight: 600, color: 'primary.main' }}>
-                      {getChildDisplayInfo().name}
-                    </TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Mã học sinh:</TableCell>
-                    <TableCell sx={{ fontSize: '1rem' }}>
-                      {getChildDisplayInfo().studentId}
-                    </TableCell>
-                  </TableRow>
-
-                  <Divider sx={{ my: 2 }} />
-                </>
-              )}
             </TableBody>
           </Table>
         </CardContent>

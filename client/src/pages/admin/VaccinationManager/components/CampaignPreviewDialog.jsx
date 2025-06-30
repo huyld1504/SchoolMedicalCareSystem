@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -53,12 +52,15 @@ const CampaignPreviewDialog = () => {
   const participations = data?.data?.records || [];
 
   const handleImportExcel = async (e) => {
+    console.log("Handling import Excel file...");
     const file = e.target.files[0];
     if (!file) return;
     setImporting(true);
     setImportMsg("");
+    console.log("Importing file:", file.name);
     try {
       const studentIds = await unpackExcelStudentIds(file);
+      console.log("Student IDs:", studentIds);
       if (!studentIds.length) throw new Error("File không có studentId hợp lệ");
       const data = {
         studentIds: studentIds,
@@ -67,6 +69,7 @@ const CampaignPreviewDialog = () => {
       setImportMsg("Import thành công!");
       refetch();
     } catch (err) {
+      console.log("Import error:", err);
       setImportMsg("Import thất bại: " + err.response.data.message);
     } finally {
       setImporting(false);
