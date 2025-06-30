@@ -17,6 +17,7 @@ import { useParams, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalOrderApi from '../../api/medicalOrderApi';
 import { formattedDate } from '../../utils/date.utils';
+import { useSelector } from 'react-redux';
 
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
@@ -35,6 +36,7 @@ const initialNewMedicineState = {
 };
 
 const MedicalOrderDetailPage = () => {
+    const {user} = useSelector((state) => state.auth);
     const { orderId } = useParams();
     const navigate = useNavigate();
 
@@ -338,7 +340,7 @@ const MedicalOrderDetailPage = () => {
                     <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn thuốc</Typography>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems="center">
-                    {medicalOrder.status === 'pending' && (
+                    {medicalOrder.status === 'pending' && user.role === "nurse" && (
                         <>
                             <Button
                                 variant="outlined"
@@ -380,7 +382,7 @@ const MedicalOrderDetailPage = () => {
                     <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
                         <Stack direction="row" spacing={1}>
-                            {medicalOrder.status === 'approved' && (
+                            {medicalOrder.status === 'approved' && user.role === "nurse" && (
                                 <>
                                     <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
                                         Cho uống thuốc ({numSelected})

@@ -152,7 +152,7 @@ medicalOrderRouter.put(
 );
 medicalOrderRouter.get(
   Paths.MedicalOrder.GetById,
-  [transform(), auth(), authRoles(["nurse", "parent"])],
+  [transform(), auth(), authRoles(["nurse", "parent","admin"])],
   MedicalOrderRoutes.getById
 );
 medicalOrderRouter.post(

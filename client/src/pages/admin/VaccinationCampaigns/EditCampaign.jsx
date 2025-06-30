@@ -43,6 +43,7 @@ const EditCampaign = () => {
     vaccineType: '',
     targetAudience: '',
     startDate: null,
+    endDate: null,
     status: 'planned'
   });
 
@@ -81,6 +82,7 @@ const EditCampaign = () => {
         vaccineType: campaign.vaccineType || '',
         targetAudience: campaign.targetAudience || '',
         startDate: campaign.startDate ? new Date(campaign.startDate) : null,
+        endDate: campaign.endDate ? new Date(campaign.endDate) : null,
         status: campaign.status || 'planned',
       });
     }
@@ -119,6 +121,10 @@ const EditCampaign = () => {
       newErrors.startDate = 'Ngày bắt đầu là bắt buộc';
     }
 
+    if (formData.endDate && formData.startDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = 'Ngày kết thúc phải sau ngày bắt đầu';
+    }
+
 
 
     setErrors(newErrors);
@@ -135,6 +141,7 @@ const EditCampaign = () => {
       vaccineType: formData.vaccineType,
       targetAudience: formData.targetAudience,
       startDate: formData.startDate ? formData.startDate.toISOString() : null,
+      endDate: formData.endDate ? formData.endDate.toISOString() : null,
       status: formData.status,
     };
 
@@ -179,7 +186,7 @@ const EditCampaign = () => {
           onClick={handleCancel}
           sx={{ mr: 2 }}
         >
-       
+
         </Button>
         <Typography variant="h4" component="h1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <EditIcon color="primary" />
@@ -260,7 +267,27 @@ const EditCampaign = () => {
                       }
                     }}
                   />
-                </LocalizationProvider>              </Grid>
+                </LocalizationProvider>
+              </Grid>
+
+              {/* End Date */}
+              <Grid item xs={12} sm={6}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
+                  <DatePicker
+                    label="Ngày kết thúc"
+                    value={formData.endDate}
+                    onChange={(date) => handleInputChange('endDate', date)}
+                    minDate={formData.startDate || undefined}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        error: !!errors.endDate,
+                        helperText: errors.endDate,
+                      }
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
 
               {/* Action Buttons */}
               <Grid item xs={12}>

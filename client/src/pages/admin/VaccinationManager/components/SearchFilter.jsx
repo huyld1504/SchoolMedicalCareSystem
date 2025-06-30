@@ -30,7 +30,7 @@ const SearchFilter = () => {
   return (
     <div>
       <TextField
-        placeholder="Search users by name or email..."
+        placeholder="Search users by name or type..."
         value={searchValue}
         onChange={handleSearch}
         size="small"
