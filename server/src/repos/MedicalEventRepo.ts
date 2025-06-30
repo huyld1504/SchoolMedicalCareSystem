@@ -221,7 +221,7 @@ export class MedicalEventRepository extends BaseRepository<IMedicalEvent> {
       this.model.find({ ...queryFilter })
         .populate({
           path: "studentJoin.studentId",
-          select: "name studentCode medicalConverageId"
+          select: "name studentCode medicalConverageId gender"
         })
         .populate({
           path: "userId",
@@ -255,7 +255,7 @@ export class MedicalEventRepository extends BaseRepository<IMedicalEvent> {
       })
       .populate({
         path: "studentJoin.studentId",
-        select: "name studentCode medicalConverageId"
+        select: "name studentCode medicalConverageId gender"
       })
       .exec();
   }

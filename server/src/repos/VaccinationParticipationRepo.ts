@@ -161,38 +161,41 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
     return this.update(participationId, updateData);
   }  /**
    * Record vaccination (nurse function) with enhanced validation
-   * Chức năng: Ghi nhận kết quả tiêm chủng của học sinh
-   * Business Rules:
+   * Chức năng: Ghi nhận kết quả tiêm chủng của học sinh   * Business Rules:
    * - nurseNote là TÙY CHỌN cho tất cả trường hợp (completed, missed, cancelled)
    * - Nếu có nurseNote thì phải có nội dung có nghĩa (không được chỉ space)
-   * - Status 'completed' yêu cầu vaccinationDate và vaccinatedNurse
+   * - Status 'completed' yêu cầu vaccinationDate từ y tá và vaccinatedNurse
    * 
    * Tối ưu hóa:
    * - Sử dụng compound indexes cho trường vaccinationStatus và vaccinatedNurse
    * @param participationId - ID của tham gia
    * @param nurseId - ID của y tá thực hiện tiêm
    * @param status - Trạng thái tiêm chủng (completed, missed, cancelled)
+   * @param vaccinationDate - Ngày tiêm do y tá nhập (bắt buộc khi status = completed)
    * @param note - Ghi chú từ y tá (TÙY CHỌN - có thể để trống)
    * @return Promise<IVaccinationParticipation | null>
    * @throws Error nếu participation không tồn tại hoặc đã được tiêm chủng  
-   */
-  async recordVaccination(
+   */  async recordVaccination(
     participationId: string,
     nurseId: string,
     status: 'completed' | 'missed' | 'cancelled',
+    vaccinationDate?: Date,
     note?: string
   ): Promise<IVaccinationParticipation | null> {
     // Prepare base update data
     const updateData: Partial<IVaccinationParticipation> = {
       vaccinationStatus: status,
-    };
-
-    // Add nurse note only if provided and has meaningful content
+    };    // Add nurse note only if provided and has meaningful content
     if (note && note.trim().length > 0) {
       updateData.nurseNote = note.trim();
-    }    // For completed vaccination, record date and nurse automatically
+    }
+
+    // For completed vaccination, use provided date and record nurse
     if (status === 'completed') {
-      updateData.vaccinationDate = new Date(); // Tự động lưu ngày hiện tại
+      if (!vaccinationDate) {
+        throw new Error('Vaccination date is required when status is completed');
+      }
+      updateData.vaccinationDate = vaccinationDate; // Sử dụng ngày do y tá nhập
       updateData.vaccinatedNurse = new Types.ObjectId(nurseId); // Lưu ID y tá thực hiện
     }
 

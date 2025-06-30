@@ -69,7 +69,7 @@ childRouter.post(
 );
 childRouter.get(
   Paths.Child.GetAll,
-  [transform(), auth(), authRoles(["parent", "nurse"])],
+  [transform(), auth(), authRoles(["parent", "nurse", "admin"])],
   ChildRoutes.get
 );
 /******************************************************************************
@@ -142,7 +142,7 @@ medicalOrderRouter.post(
 );
 medicalOrderRouter.get(
   Paths.Default,
-  [transform(), auth(), authRoles(["parent", "nurse"])],
+  [transform(), auth(), authRoles(["parent", "nurse", "admin"])],
   MedicalOrderRoutes.get
 );
 medicalOrderRouter.put(
@@ -162,7 +162,7 @@ medicalOrderRouter.post(
 );
 medicalOrderRouter.get(
   Paths.MedicalOrder.GetRecords,
-  [transform(), auth(), authRoles(["nurse", "parent"])],
+  [transform(), auth(), authRoles(["nurse", "parent", "admin"])],
   MedicalOrderRoutes.getRecords
 );
 medicalOrderRouter.put(

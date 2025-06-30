@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Table as MuiTable,
@@ -131,8 +130,7 @@ const Table = () => {
                   <Button
                     size="small"
                     onClick={() => {
-                      dispatch(setPreviewCampaignId(row._id));
-                      dispatch(setIsPreviewOpen(true));
+                      navigate(`${row._id}`);
                     }}
                   >
                     Xem
