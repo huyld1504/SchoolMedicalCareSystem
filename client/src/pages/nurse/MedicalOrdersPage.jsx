@@ -9,11 +9,11 @@ import {
     Paper, Skeleton
 } from '@mui/material';
 import {
-    Refresh as RefreshIcon, 
-    Visibility as ViewIcon, 
+    Refresh as RefreshIcon,
+    Visibility as ViewIcon,
     LocalHospital as MedicalIcon,
-    ExpandMore as ExpandMoreIcon, 
-    Search as SearchIcon, 
+    ExpandMore as ExpandMoreIcon,
+    Search as SearchIcon,
     Clear as ClearIcon,
     FilterList as FilterIcon
 } from '@mui/icons-material';
@@ -38,13 +38,13 @@ const STATUS_OPTIONS = [
     { value: '', label: 'Tất cả' },
     { value: 'pending', label: 'Chờ duyệt', color: 'warning' },
     { value: 'approved', label: 'Đã duyệt', color: 'info' },
-     { value: 'canceled', label: 'Từ chối ', color: 'error' },
+    { value: 'canceled', label: 'Từ chối ', color: 'error' },
 ];
 
 // Utility functions
 const cleanObject = (obj) => {
     return Object.fromEntries(
-        Object.entries(obj).filter(([_, value]) => 
+        Object.entries(obj).filter(([_, value]) =>
             value !== null && value !== undefined && value !== ''
         )
     );
@@ -119,10 +119,10 @@ const useMedicalOrders = (searchParams) => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const query = Object.fromEntries(searchParams.entries());
             if (!query.limit) query.limit = 10;
-            
+
             const response = await medicalOrderApi.getMedicalOrder(query);
             console.log('API Response:', response);
 
@@ -140,10 +140,10 @@ const useMedicalOrders = (searchParams) => {
             }
         } catch (error) {
             console.error('Error loading medical orders:', error);
-            setError(error.message || 'Lỗi khi tải danh sách đơn thuốc');
+            setError(error.message || 'Lỗi khi tải danh sách đơn gửi thuốc');
             setMedicalOrders([]);
             setPaginationInfo(DEFAULT_PAGINATION);
-            toast.error('Lỗi khi tải danh sách đơn thuốc');
+            toast.error('Lỗi khi tải danh sách đơn gửi thuốc');
         } finally {
             setLoading(false);
         }
@@ -177,7 +177,7 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
 
     return (
         <Accordion defaultExpanded sx={{ mb: 3, boxShadow: 1 }}>
-            <AccordionSummary 
+            <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 sx={{ bgcolor: 'grey.50' }}
             >
@@ -187,11 +187,11 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
                         Lọc theo
                     </Typography>
                     {hasActiveFilters && (
-                        <Chip 
-                            label="Đang lọc" 
-                            size="small" 
-                            color="primary" 
-                            variant="outlined" 
+                        <Chip
+                            label="Đang lọc"
+                            size="small"
+                            color="primary"
+                            variant="outlined"
                         />
                     )}
                 </Box>
@@ -217,7 +217,7 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
                                 </Select>
                             </FormControl>
                         </Grid>
-                        
+
                         <Grid item xs={12} sm={6} md={3}>
                             <DatePicker
                                 label="Từ ngày"
@@ -232,7 +232,7 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
                                 }}
                             />
                         </Grid>
-                        
+
                         <Grid item xs={12} sm={6} md={3}>
                             <DatePicker
                                 label="Đến ngày"
@@ -249,9 +249,9 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
                                 }}
                             />
                         </Grid>
-                        
+
                         <Grid item xs={12} sm={12} md={3}>
-                            <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end'}, gap: 2, width: '100%' }}>
+                            <Box sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, gap: 2, width: '100%' }}>
                                 <Button
                                     variant="outlined"
                                     startIcon={<ClearIcon />}
@@ -280,10 +280,10 @@ const FilterAccordion = ({ filters, onFilterChange, onSearch, onClear, loading }
 const StatusChip = ({ status }) => {
     const config = getStatusConfig(status);
     return (
-        <Chip 
-            label={config.label} 
-            color={config.color} 
-            size="small" 
+        <Chip
+            label={config.label}
+            color={config.color}
+            size="small"
             variant="outlined"
         />
     );
@@ -315,7 +315,7 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
             <Paper sx={{ p: 4, textAlign: 'center' }}>
                 <MedicalIcon sx={{ fontSize: 64, color: 'grey.400', mb: 2 }} />
                 <Typography variant="h6" color="text.secondary">
-                    Không tìm thấy đơn thuốc nào
+                    Không tìm thấy đơn gửi thuốc nào
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     Thử điều chỉnh bộ lọc để tìm kiếm
@@ -327,9 +327,9 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
     return (
         <Card elevation={2}>
             <CardContent sx={{ p: 0 }}>
-                <Box sx={{ 
-                    p: 3, 
-                    bgcolor: 'primary.main', 
+                <Box sx={{
+                    p: 3,
+                    bgcolor: 'primary.main',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
@@ -337,10 +337,10 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                 }}>
                     <MedicalIcon />
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Danh sách đơn thuốc ({paginationInfo.total} đơn)
+                        Danh sách đơn gửi thuốc ({paginationInfo.total} đơn)
                     </Typography>
                 </Box>
-                
+
                 <TableContainer>
                     <Table stickyHeader>
                         <TableHead>
@@ -370,9 +370,9 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                         </TableHead>
                         <TableBody>
                             {orders.map((order, index) => (
-                                <TableRow 
-                                    key={order._id} 
-                                    hover 
+                                <TableRow
+                                    key={order._id}
+                                    hover
                                     sx={{ '&:hover': { bgcolor: 'action.hover' } }}
                                 >
                                     <TableCell align="center">
@@ -399,9 +399,9 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                                         <StatusChip status={order.status} />
                                     </TableCell>
                                     <TableCell>
-                                        <Typography 
-                                            variant="body2" 
-                                            sx={{ 
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
                                                 maxWidth: 150,
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
@@ -414,8 +414,8 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                                     </TableCell>
                                     <TableCell align="center">
                                         <Tooltip title="Xem chi tiết">
-                                            <IconButton 
-                                                color="primary" 
+                                            <IconButton
+                                                color="primary"
                                                 onClick={() => onViewDetails(order._id)}
                                                 size="small"
                                             >
@@ -438,13 +438,13 @@ const MedicalOrdersPage = () => {
     const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    
+
     const { filters, handleFilterChange, resetFilters } = useFilters(searchParams);
     const { medicalOrders, paginationInfo, loading, error, refetch } = useMedicalOrders(searchParams);
 
     const handleSearch = useCallback(() => {
         const { startDate, endDate } = filters;
-        
+
         const newParams = cleanObject({
             status: filters.status,
             startDate: formatDateToISO(startDate, 'start'),
@@ -480,8 +480,8 @@ const MedicalOrdersPage = () => {
     if (error) {
         return (
             <Container maxWidth="xl" sx={{ py: 3 }}>
-                <Alert 
-                    severity="error" 
+                <Alert
+                    severity="error"
                     action={
                         <Button color="inherit" size="small" onClick={handleRefresh}>
                             Thử lại
@@ -498,27 +498,27 @@ const MedicalOrdersPage = () => {
         <Container maxWidth="xl" sx={{ py: 3 }}>
             {/* Header */}
             <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
-                <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center' 
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
                 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <MedicalIcon sx={{ color: 'primary.main', fontSize: 40 }} />
                         <Box>
                             <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
-                                Quản lý Đơn thuốc
+                                Quản lý Đơn gửi thuốc
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Quản lý và theo dõi các đơn thuốc của học sinh
+                                Quản lý và theo dõi các đơn gửi thuốc của học sinh
                             </Typography>
                         </Box>
                     </Box>
-                    
+
                     <Tooltip title="Làm mới dữ liệu">
-                        <IconButton 
-                            onClick={handleRefresh} 
-                            color="primary" 
+                        <IconButton
+                            onClick={handleRefresh}
+                            color="primary"
                             disabled={loading}
                             sx={{ bgcolor: 'action.hover' }}
                         >
@@ -548,9 +548,9 @@ const MedicalOrdersPage = () => {
             {/* Pagination */}
             {!loading && paginationInfo.totalPages > 1 && (
                 <Box sx={{ display: 'flex', justifyContent: 'end', mt: 3 }}>
-                    <Pagination 
-                        count={paginationInfo.totalPages} 
-                        page={paginationInfo.page} 
+                    <Pagination
+                        count={paginationInfo.totalPages}
+                        page={paginationInfo.page}
                         onChange={handlePageChange}
                         color="primary"
                         size="large"

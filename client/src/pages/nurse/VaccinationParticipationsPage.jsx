@@ -68,7 +68,7 @@ const VaccinationParticipationsPage = () => {
   // Filter state (separate from applied search)
   const [filters, setFilters] = useState({
     keyword: '',
-    consentStatus: '',
+    parentConsent: '',
     vaccinationStatus: '',
     vaccinationDateFrom: '',
     vaccinationDateTo: '',
@@ -79,7 +79,7 @@ const VaccinationParticipationsPage = () => {
   // Applied search state (used for actual API calls)
   const [appliedSearch, setAppliedSearch] = useState({
     keyword: searchParams.get('keyword') || '',
-    consentStatus: searchParams.get('consentStatus') || '',
+    parentConsent: searchParams.get('parentConsent') || '',
     vaccinationStatus: searchParams.get('vaccinationStatus') || '',
     vaccinationDateFrom: searchParams.get('vaccinationDateFrom') || '',
     vaccinationDateTo: searchParams.get('vaccinationDateTo') || '',
@@ -116,11 +116,11 @@ const VaccinationParticipationsPage = () => {
 
   // Initialize filters from URL params on first load
   useEffect(() => {
-    if (appliedSearch.keyword || appliedSearch.consentStatus || appliedSearch.vaccinationStatus || appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
+    if (appliedSearch.keyword || appliedSearch.parentConsent || appliedSearch.vaccinationStatus || appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
       // Copy appliedSearch to filters to show in form
       setFilters({
         keyword: appliedSearch.keyword,
-        consentStatus: appliedSearch.consentStatus,
+        parentConsent: appliedSearch.parentConsent,
         vaccinationStatus: appliedSearch.vaccinationStatus,
         vaccinationDateFrom: appliedSearch.vaccinationDateFrom,
         vaccinationDateTo: appliedSearch.vaccinationDateTo,
@@ -139,7 +139,7 @@ const VaccinationParticipationsPage = () => {
   useEffect(() => {
     const newParams = new URLSearchParams();
     if (appliedSearch.keyword) newParams.set('keyword', appliedSearch.keyword);
-    if (appliedSearch.consentStatus) newParams.set('consentStatus', appliedSearch.consentStatus);
+    if (appliedSearch.parentConsent) newParams.set('parentConsent', appliedSearch.parentConsent);
     if (appliedSearch.vaccinationStatus) newParams.set('vaccinationStatus', appliedSearch.vaccinationStatus);
     if (appliedSearch.vaccinationDateFrom) newParams.set('vaccinationDateFrom', appliedSearch.vaccinationDateFrom);
     if (appliedSearch.vaccinationDateTo) newParams.set('vaccinationDateTo', appliedSearch.vaccinationDateTo);
@@ -202,9 +202,9 @@ const VaccinationParticipationsPage = () => {
     }
 
     // Apply consent status filter
-    if (appliedSearch.consentStatus) {
+    if (appliedSearch.parentConsent) {
       filteredParticipations = filteredParticipations.filter(participation =>
-        participation.consentStatus === appliedSearch.consentStatus
+        participation.parentConsent === appliedSearch.parentConsent
       );
     }
 
@@ -327,7 +327,7 @@ const VaccinationParticipationsPage = () => {
   const handleClearFilters = () => {
     const clearedFilters = {
       keyword: '',
-      consentStatus: '',
+      parentConsent: '',
       vaccinationStatus: '',
       vaccinationDateFrom: '',
       vaccinationDateTo: '',
@@ -426,9 +426,9 @@ const VaccinationParticipationsPage = () => {
                 <FormControl fullWidth size="small">
                   <InputLabel>Đồng ý PH</InputLabel>
                   <Select
-                    value={filters.consentStatus}
+                    value={filters.parentConsent}
                     label="Đồng ý PH"
-                    onChange={(e) => handleFilterChange('consentStatus', e.target.value)}
+                    onChange={(e) => handleFilterChange('parentConsent', e.target.value)}
                     sx={{
                       '& .MuiOutlinedInput-root': { borderRadius: 2 },
                       '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },

@@ -77,7 +77,7 @@ const MedicalOrderDetailPage = () => {
                 setNewStatus(detailsResponse.data.order.status);
 
             } else {
-                setError('Không tìm thấy thông tin đơn thuốc.');
+                setError('Không tìm thấy thông tin đơn gửi thuốc.');
             }
 
             if (historyResponse.isSuccess && historyResponse.data) {
@@ -337,7 +337,7 @@ const MedicalOrderDetailPage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton onClick={handleBack} sx={{ mr: 2 }}><BackIcon /></IconButton>
                     <PersonIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
-                    <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn thuốc</Typography>
+                    <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn gửi thuốc</Typography>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems="center">
                     {medicalOrder.status === 'pending' && user.role === "nurse" && (
@@ -522,7 +522,7 @@ const MedicalOrderDetailPage = () => {
             </Dialog>
 
             <Dialog open={isRejectModalOpen} onClose={handleCloseRejectModal} fullWidth maxWidth="sm">
-                <DialogTitle>Lý do từ chối đơn thuốc</DialogTitle>
+                <DialogTitle>Lý do từ chối đơn gửi thuốc</DialogTitle>
                 <DialogContent>
                     <DialogContentText sx={{ mb: 2 }}>
                         Vui lòng nhập lý do từ chối.
