@@ -106,9 +106,9 @@ const VaccinationNotificationDetailPage = () => {
         }));
 
         handleCloseConsentDialog();
-        
+
         // Chuyển về trang danh sách thông báo sau khi phản hồi thành công
-        navigate('/parent/vaccination-notifications'); 
+        navigate('/parent/vaccination-notifications');
       } else {
         toast.error('Có lỗi xảy ra khi cập nhật phản hồi');
       }
@@ -172,7 +172,7 @@ const VaccinationNotificationDetailPage = () => {
       case 'denied':
         return '#d32f2f'; 
       case 'pending':
-        return '#1976d2'; 
+        return '#ed6c02'; 
       default:
         return '#757575'; 
     }
@@ -195,15 +195,15 @@ const VaccinationNotificationDetailPage = () => {
   const getVaccinationStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return '#2e7d32'; 
+        return '#2e7d32';
       case 'scheduled':
-        return '#1976d2'; 
+        return '#1976d2';
       case 'missed':
-        return '#ed6c02'; 
+        return '#ed6c02';
       case 'cancelled':
-        return '#d32f2f'; 
+        return '#d32f2f';
       default:
-        return '#757575'; 
+        return '#757575';
     }
   };
 
@@ -226,13 +226,13 @@ const VaccinationNotificationDetailPage = () => {
   const getCampaignStatusColor = (status) => {
     switch (status) {
       case 'active':
-        return '#ed6c02'; 
+        return '#ed6c02';
       case 'completed':
-        return '#2e7d32'; 
+        return '#2e7d32';
       case 'planned':
-        return '#1976d2'; 
+        return '#1976d2';
       default:
-        return '#757575'; 
+        return '#757575';
     }
   };
 
@@ -373,7 +373,7 @@ const VaccinationNotificationDetailPage = () => {
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, mb: 3 }}>
             <Box sx={{ minWidth: '200px', flex: 1 }}>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
-                Tên vaccine
+                Tên chiến dịch
               </Typography>
               <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
                 {safeRender(notification.campaign?.vaccineName)}
@@ -400,7 +400,7 @@ const VaccinationNotificationDetailPage = () => {
 
             <Box sx={{ minWidth: '120px', flex: 1 }}>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
-                Liều lượng (mL)
+                Liều lượng (cc)
               </Typography>
               <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
                 {safeRender(notification.campaign?.dosage)}
@@ -441,9 +441,9 @@ const VaccinationNotificationDetailPage = () => {
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
                 Trạng thái
               </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
+              <Typography
+                variant="body1"
+                sx={{
                   fontSize: '1.2rem',
                   fontWeight: 600,
                   color: getCampaignStatusColor(notification.campaign?.status)
@@ -489,9 +489,9 @@ const VaccinationNotificationDetailPage = () => {
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
                 Phản hồi của phụ huynh
               </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
+              <Typography
+                variant="body1"
+                sx={{
                   fontSize: '1.2rem',
                   fontWeight: 600,
                   color: getConsentColor(notification.parentConsent)
@@ -501,13 +501,17 @@ const VaccinationNotificationDetailPage = () => {
               </Typography>
             </Box>
 
-            <Box sx={{ minWidth: '150px', flex: 1 }}>
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
                 Ngày phản hồi
               </Typography>
               <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
                 {formatDate(notification.parentConsentDate)}
               </Typography>
+            </Box>
+
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
+              {/* Empty box để căn chỉnh */}
             </Box>
           </Box>
 
@@ -529,9 +533,9 @@ const VaccinationNotificationDetailPage = () => {
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
                 Trạng thái tiêm chủng
               </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
+              <Typography
+                variant="body1"
+                sx={{
                   fontSize: '1.2rem',
                   fontWeight: 600,
                   color: getVaccinationStatusColor(notification.vaccinationStatus)
@@ -541,7 +545,7 @@ const VaccinationNotificationDetailPage = () => {
               </Typography>
             </Box>
 
-            <Box sx={{ minWidth: '150px', flex: 1 }}>
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
                 Ngày tiêm
               </Typography>
@@ -574,7 +578,7 @@ const VaccinationNotificationDetailPage = () => {
 
           {/* Nút hành động cho phụ huynh */}
           {notification.parentConsent === 'pending' && (
-            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Button
                 variant="contained"
                 color="success"
@@ -582,7 +586,7 @@ const VaccinationNotificationDetailPage = () => {
                 onClick={() => handleOpenConsentDialog('approved')}
                 sx={{ fontSize: '1rem', px: 4, py: 1.5 }}
               >
-                Đồng ý tiêm chủng
+                Đồng ý
               </Button>
               <Button
                 variant="contained"
@@ -591,7 +595,7 @@ const VaccinationNotificationDetailPage = () => {
                 onClick={() => handleOpenConsentDialog('denied')}
                 sx={{ fontSize: '1rem', px: 4, py: 1.5 }}
               >
-                Từ chối tiêm chủng
+                Từ chối
               </Button>
             </Box>
           )}
