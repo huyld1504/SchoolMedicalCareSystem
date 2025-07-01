@@ -80,7 +80,7 @@ const VaccinationNotificationDetailPage = () => {
       return;
     }
 
-    
+
     try {
       setSaving(true);
 
@@ -106,6 +106,9 @@ const VaccinationNotificationDetailPage = () => {
         }));
 
         handleCloseConsentDialog();
+        
+        // Chuyển về trang danh sách thông báo sau khi phản hồi thành công
+        navigate('/parent/vaccination-notifications'); 
       } else {
         toast.error('Có lỗi xảy ra khi cập nhật phản hồi');
       }
@@ -128,35 +131,50 @@ const VaccinationNotificationDetailPage = () => {
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'Chưa có';
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      return 'Chưa có';
+    }
   };
 
   const formatDateTime = (dateString) => {
     if (!dateString) return 'Chưa có';
-    return new Date(dateString).toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Chưa có';
+    }
+  };
+
+  // Safe render function to handle objects
+  const safeRender = (value) => {
+    if (value === null || value === undefined || value === '') return 'Chưa có';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return String(value);
   };
 
   // Get consent color and label
   const getConsentColor = (consent) => {
     switch (consent) {
       case 'approved':
-        return '#2e7d32'; // Xanh lá
+        return '#2e7d32'; 
       case 'denied':
-        return '#d32f2f'; // Đỏ
+        return '#d32f2f'; 
       case 'pending':
-        return '#ed6c02'; // Cam
+        return '#1976d2'; 
       default:
-        return '#757575'; // Xám
+        return '#757575'; 
     }
   };
 
@@ -169,7 +187,7 @@ const VaccinationNotificationDetailPage = () => {
       case 'pending':
         return 'Chờ phản hồi';
       default:
-        return 'Không xác định';
+        return 'Chưa có';
     }
   };
 
@@ -177,15 +195,15 @@ const VaccinationNotificationDetailPage = () => {
   const getVaccinationStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return '#2e7d32'; // Xanh lá
+        return '#2e7d32'; 
       case 'scheduled':
-        return '#1976d2'; // Xanh dương
+        return '#1976d2'; 
       case 'missed':
-        return '#ed6c02'; // Cam
+        return '#ed6c02'; 
       case 'cancelled':
-        return '#d32f2f'; // Đỏ
+        return '#d32f2f'; 
       default:
-        return '#757575'; // Xám
+        return '#757575'; 
     }
   };
 
@@ -200,7 +218,34 @@ const VaccinationNotificationDetailPage = () => {
       case 'cancelled':
         return 'Đã hủy';
       default:
-        return 'Không xác định';
+        return 'Chưa có';
+    }
+  };
+
+  // Get campaign status color and label
+  const getCampaignStatusColor = (status) => {
+    switch (status) {
+      case 'active':
+        return '#ed6c02'; 
+      case 'completed':
+        return '#2e7d32'; 
+      case 'planned':
+        return '#1976d2'; 
+      default:
+        return '#757575'; 
+    }
+  };
+
+  const getCampaignStatusLabel = (status) => {
+    switch (status) {
+      case 'planned':
+        return 'Đã lên kế hoạch';
+      case 'active':
+        return 'Đang diễn ra';
+      case 'completed':
+        return 'Hoàn thành';
+      default:
+        return safeRender(status);
     }
   };
 
@@ -244,248 +289,314 @@ const VaccinationNotificationDetailPage = () => {
         </Box>
       </Box>
 
-      <Grid container spacing={4} sx={{ maxWidth: '1400px', mx: 'auto', justifyContent: 'center' }}>
-        {/* Bảng thông tin tổng hợp */}
-        <Grid item xs={12}>
-          {/* Xóa Card bọc ngoài */}
-          <Grid container spacing={4} alignItems="stretch">
-            {/* Cột 1: Thông tin chiến dịch */}
-            <Grid item xs={12} md={4} lg={4} xl={4}>
-              <Box sx={{ bgcolor: 'primary.50', p: 4, borderRadius: 4, height: '100%', border: '2.5px solid', borderColor: 'primary.200', minHeight: '400px', fontSize: '1.1rem' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2.5, color: 'primary.main', display: 'flex', alignItems: 'center', fontSize: '1.1rem' }}>
-                  <VaccineIcon sx={{ mr: 1, fontSize: 22 }} />
-                  Thông tin chiến dịch
-                </Typography>
+      {/* Card thông tin học sinh */}
+      <Card elevation={3} sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{
+            fontWeight: 600,
+            mb: 3,
+            color: 'primary.main',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '1.5rem'
+          }}>
+            <PersonIcon sx={{ mr: 1, fontSize: 32 }} />
+            Thông tin học sinh
+          </Typography>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Tên chiến dịch
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '1rem' }}>
-                    {notification.campaign?.vaccineName || 'N/A'}
-                  </Typography>
-                </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Họ và tên
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.student?.name)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Loại vaccine
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                    {notification.campaign?.vaccineType || 'N/A'}
-                  </Typography>
-                </Box>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Mã học sinh
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.student?.studentCode)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Đối tượng tiêm
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                    {notification.campaign?.targetAudience || 'N/A'}
-                  </Typography>
-                </Box>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Ngày sinh
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {formatDate(notification.student?.dateOfBirth || notification.student?.birthdate)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Ngày bắt đầu
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                    {formatDate(notification.campaign?.startDate)}
-                  </Typography>
-                </Box>
+            <Box sx={{ minWidth: '120px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Giới tính
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {notification.student?.gender === 'male' ? 'Nam' :
+                  notification.student?.gender === 'female' ? 'Nữ' : 'Chưa có'}
+              </Typography>
+            </Box>
 
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Trạng thái
-                  </Typography>
-                  <Chip
-                    label={notification.campaign?.status === 'planned' ? 'Đã lên kế hoạch' : notification.campaign?.status || 'N/A'}
-                    color="primary"
-                    variant="outlined"
-                    size="small"
-                    sx={{ fontSize: '0.8rem', fontWeight: 500 }}
-                  />
-                </Box>
-              </Box>
-            </Grid>
+            <Box sx={{ minWidth: '180px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Mã BHYT
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem', color: notification.student?.medicalConverageId ? 'text.primary' : 'text.secondary' }}>
+                {safeRender(notification.student?.medicalConverageId)}
+              </Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
 
-            {/* Cột 2: Thông tin học sinh */}
-            <Grid item xs={12} md={4} lg={4} xl={4}>
-              <Box sx={{ bgcolor: 'success.50', p: 4, borderRadius: 4, height: '100%', border: '2.5px solid', borderColor: 'success.200', minHeight: '400px', fontSize: '1.1rem' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2.5, color: 'success.main', display: 'flex', alignItems: 'center', fontSize: '1.1rem' }}>
-                  <PersonIcon sx={{ mr: 1, fontSize: 22 }} />
-                  Thông tin học sinh
-                </Typography>
+      {/* Card thông tin chiến dịch */}
+      <Card elevation={3} sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{
+            fontWeight: 600,
+            mb: 3,
+            color: 'primary.main',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '1.5rem'
+          }}>
+            <VaccineIcon sx={{ mr: 1, fontSize: 32 }} />
+            Thông tin chiến dịch
+          </Typography>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Họ và tên
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '1rem' }}>
-                    {notification.student?.name || 'N/A'}
-                  </Typography>
-                </Box>
+          {/* Row 1: Basic vaccine info */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, mb: 3 }}>
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Tên vaccine
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.campaign?.vaccineName)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Mã học sinh
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                    {notification.student?.studentCode || 'N/A'}
-                  </Typography>
-                </Box>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Loại vaccine
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.campaign?.vaccineType)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 2.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Ngày sinh
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                    {formatDate(notification.student?.dateOfBirth || notification.student?.birthdate) || 'Chưa có'}
-                  </Typography>
-                </Box>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Đối tượng tiêm
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.campaign?.targetAudience)}
+              </Typography>
+            </Box>
 
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Giới tính
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                    {notification.student?.gender === 'male' ? 'Nam' :
-                      notification.student?.gender === 'female' ? 'Nữ' : 'N/A'}
-                  </Typography>
-                </Box>
-              </Box>
-            </Grid>
+            <Box sx={{ minWidth: '120px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Liều lượng (mL)
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.campaign?.dosage)}
+              </Typography>
+            </Box>
+          </Box>
 
-            {/* Cột 3: Trạng thái và phản hồi */}
-            <Grid item xs={12} md={4} lg={4} xl={4}>
-              <Box sx={{ bgcolor: 'warning.50', p: 4, borderRadius: 4, height: '100%', border: '2.5px solid', borderColor: 'warning.200', minHeight: '400px', fontSize: '1.1rem' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'warning.main', display: 'flex', alignItems: 'center', fontSize: '1.1rem' }}>
-                  <EventIcon sx={{ mr: 1, fontSize: 20 }} />
-                  Trạng thái và phản hồi
-                </Typography>
+          {/* Row 2: Schedule and method info */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Số mũi tiêm
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.campaign?.injection)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 1.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Trạng thái tiêm chủng
-                  </Typography>
-                  <Chip
-                    label={getVaccinationStatusLabel(notification.vaccinationStatus)}
-                    sx={{
-                      fontSize: '0.95rem',
-                      fontWeight: 600,
-                      color: 'white',
-                      backgroundColor: getVaccinationStatusColor(notification.vaccinationStatus),
-                      minWidth: '110px',
-                      height: '34px'
-                    }}
-                  />
-                </Box>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Ngày bắt đầu
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {formatDate(notification.campaign?.startDate)}
+              </Typography>
+            </Box>
 
-                {notification.parentConsentDate && (
-                  <Box sx={{ mb: 1.5 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                      Ngày phản hồi
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontSize: '1.1rem', fontWeight: 500 }}>
-                      {formatDateTime(notification.parentConsentDate)}
-                    </Typography>
-                  </Box>
-                )}
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Ngày kết thúc
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {formatDate(notification.campaign?.endDate)}
+              </Typography>
+            </Box>
 
-                <Box sx={{ mb: 1.5 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                  Phản hồi của phụ huynh
-                  </Typography>
-                  <Chip
-                    label={getConsentLabel(notification.parentConsent)}
-                    sx={{
-                      fontSize: '0.95rem',
-                      fontWeight: 600,
-                      color: 'white',
-                      backgroundColor: getConsentColor(notification.parentConsent),
-                      minWidth: '110px',
-                      height: '34px'
-                    }}
-                  />
-                  
-                  {notification.parentNote && (
-                    <Box sx={{ mb: 1.5 }}>
-                      <Typography ariant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                        {notification.parentConsent === 'denied' ? 'Lý do từ chối của phụ huynh' : 'Ghi chú của phụ huynh'}
-                      </Typography>
-                       <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                      {notification.parentNote}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
+            <Box sx={{ minWidth: '120px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Trạng thái
+              </Typography>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  fontSize: '1.2rem',
+                  fontWeight: 600,
+                  color: getCampaignStatusColor(notification.campaign?.status)
+                }}
+              >
+                {getCampaignStatusLabel(notification.campaign?.status)}
+              </Typography>
+            </Box>
+          </Box>
 
-                {notification.vaccinationDate && (
-                  <Box sx={{ mb: 1.5 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Ngày tiêm
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                      {formatDateTime(notification.vaccinationDate)}
-                    </Typography>
-                  </Box>
-                )}
+          {/* Mô tả vaccine - hiển thị riêng để có nhiều không gian hơn */}
+          {notification.campaign?.vaccineDescription && (
+            <Box sx={{ mt: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: 600, fontSize: '1rem' }}>
+                Mô tả vaccine
+              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: 400, fontSize: '1.1rem', lineHeight: 1.6 }}>
+                {safeRender(notification.campaign?.vaccineDescription)}
+              </Typography>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
 
-                {notification.vaccinatedNurse && (
-                  <Box sx={{ mb: 1.5 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                    Y tá tiêm
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                      {notification.vaccinatedNurse.name}
-                    </Typography>
-                  </Box>
-                )}
+      {/* Card trạng thái và phản hồi */}
+      <Card elevation={3} sx={{ mb: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{
+            fontWeight: 600,
+            mb: 3,
+            color: 'primary.main',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '1.5rem'
+          }}>
+            <EventIcon sx={{ mr: 1, fontSize: 32 }} />
+            Trạng thái và phản hồi
+          </Typography>
 
-                {notification.nurseNote && (
-                    <Box sx={{ mb: 1.5 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '0.85rem' }}>
-                        Ghi chú của y tá
-                      </Typography>
-                      <Typography variant="body2" sx={{ fontSize: '0.9rem' }}>
-                      {notification.nurseNote}
-                      </Typography>
-                    </Box>
-                  )}
+          {/* Hàng 1: Phản hồi của phụ huynh + Ngày phản hồi */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, mb: 3 }}>
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Phản hồi của phụ huynh
+              </Typography>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  fontSize: '1.2rem',
+                  fontWeight: 600,
+                  color: getConsentColor(notification.parentConsent)
+                }}
+              >
+                {getConsentLabel(notification.parentConsent)}
+              </Typography>
+            </Box>
 
-                {/* Nút hành động */}
-                {notification.parentConsent === 'pending' && (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1.5 }}>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      startIcon={<ApproveIcon />}
-                      onClick={() => handleOpenConsentDialog('approved')}
-                      fullWidth
-                      size="small"
-                      sx={{ py: 0.8, fontSize: '0.8rem', fontWeight: 600 }}
-                      disabled={notification.parentConsent !== 'pending'}
-                    >
-                      Đồng ý
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      startIcon={<DenyIcon />}
-                      onClick={() => handleOpenConsentDialog('denied')}
-                      fullWidth
-                      size="small"
-                      sx={{ py: 0.8, fontSize: '0.8rem', fontWeight: 600 }}
-                      disabled={notification.parentConsent !== 'pending'}
-                    >
-                      Từ chối
-                    </Button>
-                  </Box>
-                )}                 
-              </Box>
-            </Grid>
-          </Grid>
-        </Grid>       
-      </Grid>
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Ngày phản hồi
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {formatDate(notification.parentConsentDate)}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Ghi chú của phụ huynh */}
+          {notification.parentNote && (
+            <Box sx={{ mb: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: 600, fontSize: '1rem' }}>
+                {notification.parentConsent === 'denied' ? 'Lý do từ chối của phụ huynh' : 'Ghi chú của phụ huynh'}
+              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: 400, fontSize: '1.1rem', lineHeight: 1.6 }}>
+                {safeRender(notification.parentNote)}
+              </Typography>
+            </Box>
+          )}
+
+          {/* Hàng 2: Trạng thái tiêm chủng + Ngày tiêm + Y tá tiêm */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, mb: 3 }}>
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Trạng thái tiêm chủng
+              </Typography>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  fontSize: '1.2rem',
+                  fontWeight: 600,
+                  color: getVaccinationStatusColor(notification.vaccinationStatus)
+                }}
+              >
+                {getVaccinationStatusLabel(notification.vaccinationStatus)}
+              </Typography>
+            </Box>
+
+            <Box sx={{ minWidth: '150px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Ngày tiêm
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {formatDate(notification.vaccinationDate)}
+              </Typography>
+            </Box>
+
+            <Box sx={{ minWidth: '200px', flex: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5, fontWeight: 600, fontSize: '1rem' }}>
+                Y tá tiêm
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1.2rem' }}>
+                {safeRender(notification.vaccinatedNurse?.name)}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Ghi chú của y tá */}
+          {notification.nurseNote && (
+            <Box sx={{ mt: 3, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: 600, fontSize: '1rem' }}>
+                Ghi chú của y tá
+              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: 400, fontSize: '1.1rem', lineHeight: 1.6 }}>
+                {safeRender(notification.nurseNote)}
+              </Typography>
+            </Box>
+          )}
+
+          {/* Nút hành động cho phụ huynh */}
+          {notification.parentConsent === 'pending' && (
+            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<ApproveIcon />}
+                onClick={() => handleOpenConsentDialog('approved')}
+                sx={{ fontSize: '1rem', px: 4, py: 1.5 }}
+              >
+                Đồng ý tiêm chủng
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                startIcon={<DenyIcon />}
+                onClick={() => handleOpenConsentDialog('denied')}
+                sx={{ fontSize: '1rem', px: 4, py: 1.5 }}
+              >
+                Từ chối tiêm chủng
+              </Button>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Dialog xác nhận phản hồi */}
       <Dialog open={consentDialogOpen && notification.parentConsent === 'pending'} onClose={handleCloseConsentDialog} maxWidth="sm" fullWidth>
