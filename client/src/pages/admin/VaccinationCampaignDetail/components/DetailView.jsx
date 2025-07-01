@@ -375,6 +375,39 @@ const DetailView = ({ campaign }) => {
                     <Grid item xs={12}>
                       <Box sx={{ mb: 2 }}>
                         <Typography variant="subtitle2" color="text.secondary">
+                          Liều lượng(cc)
+                        </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+                          {campaign.dosage || "N/A"}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                         Số mũi tiêm
+                        </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+                          {campaign.injection || "N/A"}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                         Thông tin về vaccine
+                        </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+                          {campaign.vaccineDescription || "N/A"}
+                        </Typography>
+                      </Box>
+                    </Grid>
+
+                  
+
+                    <Grid item xs={12}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
                           Người tạo
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
@@ -388,81 +421,7 @@ const DetailView = ({ campaign }) => {
                 <Divider sx={{ my: 3 }} />
 
                 {/* Schedule */}
-                <Box sx={{ mb: 4 }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontWeight: "bold",
-                      mb: 2,
-                      color: "text.primary",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    <CalendarIcon color="primary" fontSize="small" />
-                    Lịch trình
-                  </Typography>
-
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Ngày bắt đầu
-                        </Typography>
-                        <Typography variant="body1">
-                          {formatDate(campaign.startDate)}
-                        </Typography>
-                      </Box>
-                    </Grid>
-
-                    {campaign.endDate && (
-                      <Grid item xs={12} sm={6}>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                          >
-                            Ngày kết thúc
-                          </Typography>
-                          <Typography variant="body1">
-                            {formatDate(campaign.endDate)}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    )}
-
-                    {campaign.schedule && campaign.schedule.length > 0 && (
-                      <Grid item xs={12}>
-                        <Typography
-                          variant="subtitle2"
-                          color="text.secondary"
-                          sx={{ mb: 1 }}
-                        >
-                          Lịch chi tiết
-                        </Typography>
-                        <Box sx={{ maxHeight: 200, overflow: "auto" }}>
-                          <List dense>
-                            {campaign.schedule.map((scheduleItem, index) => (
-                              <ListItem key={index} divider>
-                                <ListItemText
-                                  primary={`${formatDateTime(
-                                    scheduleItem.date
-                                  )}`}
-                                  secondary={
-                                    scheduleItem.note || "Không có ghi chú"
-                                  }
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
-                        </Box>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Box>
-
-                <Divider sx={{ my: 3 }} />
+            
 
                 {/* Additional Information */}
                 <Box>
