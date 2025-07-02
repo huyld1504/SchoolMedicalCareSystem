@@ -205,7 +205,8 @@ const ChildDetailPage = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                                 Thông tin cơ bản
                             </Typography>
-                        </Box>                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                        </Box>                          
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
                             <Box sx={{ display: 'flex', flex: 1, gap: 4, flexWrap: 'wrap', minWidth: '300px' }}>
                                 <Box sx={{ flex: '1 1 150px' }}>
                                     <Typography variant="body2" color="text.secondary">Ngày sinh:</Typography>

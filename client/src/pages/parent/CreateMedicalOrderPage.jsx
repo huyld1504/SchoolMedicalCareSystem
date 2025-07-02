@@ -68,7 +68,7 @@ const CreateMedicalOrderPage = () => {
             startDate: new Date().toISOString().split('T')[0],
             endDate: '',
             note: 'None',
-            prescriptionImageUrl: null // Add field for prescription image
+            imageURL: null // Add field for prescription image
         },
         medicalOrderDetails: [
             {
@@ -168,7 +168,7 @@ const CreateMedicalOrderPage = () => {
                 ...prev,
                 medicalOrder: {
                     ...prev.medicalOrder,
-                    prescriptionImageUrl: null
+                    imageURL: null
                 },
                 medicalOrderDetails: [
                     {
@@ -209,7 +209,7 @@ const CreateMedicalOrderPage = () => {
                     ...prev,
                     medicalOrder: {
                         ...prev.medicalOrder,
-                        prescriptionImageUrl: result.url
+                        imageURL: result.data.imageUrl
                     }
                 }));
 
@@ -241,7 +241,7 @@ const CreateMedicalOrderPage = () => {
                 ...prev,
                 medicalOrder: {
                     ...prev.medicalOrder,
-                    prescriptionImageUrl: null
+                    imageURL: null
                 }
             }));
 
@@ -297,6 +297,7 @@ const CreateMedicalOrderPage = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        console.log('Submitting form data:', formData);
 
         // Validate child selection
         if (!formData.medicalOrder.ChildId) {
@@ -561,7 +562,6 @@ const CreateMedicalOrderPage = () => {
                                             <Button
                                                 variant="outlined"
                                                 component="span"
-                                                startIcon={<CloudUpload />}
                                                 disabled={uploading}
                                                 sx={{
                                                     height: 120,
@@ -744,6 +744,11 @@ const CreateMedicalOrderPage = () => {
                                                         value={detail.type}
                                                         onChange={(e) => handleMedicalOrderDetailChange(index, e)}
                                                         required
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                                            '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
+                                                            '& .MuiSelect-select': { minWidth: '100px' }
+                                                        }}
                                                     >
                                                         <MenuItem value="viên">Viên</MenuItem>
                                                         <MenuItem value="gói">Gói</MenuItem>

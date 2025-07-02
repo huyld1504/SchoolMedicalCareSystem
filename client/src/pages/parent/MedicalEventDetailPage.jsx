@@ -237,7 +237,7 @@ const MedicalEventDetailPage = () => {
 
               {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && (
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Học sinh tham gia:</TableCell>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin học sinh:</TableCell>
                   <TableCell>
                     <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: '4px' }}>
                       <TableHead>
