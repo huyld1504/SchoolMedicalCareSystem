@@ -66,7 +66,9 @@ const MedicalEventDetailPage = () => {
                 loadStudentInfo();
             }
         }
-    }, [eventId, studentId, location.state]); const loadMedicalEventDetail = async () => {
+    }, [eventId, studentId, location.state]); 
+    
+    const loadMedicalEventDetail = async () => {
         try {
             setLoading(true);
             setError(null);
@@ -74,7 +76,7 @@ const MedicalEventDetailPage = () => {
             console.log('Loading medical event detail for eventId:', eventId);
             console.log('studentId:', studentId);
 
-            const response = await medicalEventAPI.getById(eventId);
+            const response = await medicalEventAPI.getEventById(eventId);
             console.log('Medical event detail response:', response);
 
             if (response.isSuccess && response.data) {
@@ -88,7 +90,9 @@ const MedicalEventDetailPage = () => {
         } finally {
             setLoading(false);
         }
-    }; const loadStudentInfo = async () => {
+    }; 
+    
+    const loadStudentInfo = async () => {
         try {
             if (studentId) {
                 const response = await studentsApi.getStudentById(studentId);
@@ -113,13 +117,17 @@ const MedicalEventDetailPage = () => {
                 setStudentInfo(studentFromEvent);
             }
         }
-    }; const handleBack = () => {
+    };
+    
+    const handleBack = () => {
         if (studentId) {
             navigate(`/nurse/medical-events/${studentId}`);
         } else {
             navigate('/nurse/medical-events');
         }
-    }; const handleEdit = () => {
+    }; 
+    
+    const handleEdit = () => {
         console.log('Navigating to edit page with event data:', medicalEvent);
 
         if (studentId) {
@@ -149,7 +157,9 @@ const MedicalEventDetailPage = () => {
             minute: '2-digit',
             second: '2-digit'
         });
-    }; const getDisplayValue = (value) => {
+    }; 
+    
+    const getDisplayValue = (value) => {
         if (value === null || value === undefined) return 'Không có thông tin';
         if (value === '') return 'Không có thông tin';
         return value;
@@ -172,7 +182,9 @@ const MedicalEventDetailPage = () => {
             default:
                 return '#757575'; // Xám
         }
-    }; const getLevelLabel = (level) => {
+    }; 
+    
+    const getLevelLabel = (level) => {
         switch (level) {
             case 3:
                 return 'Khẩn cấp';
@@ -183,7 +195,9 @@ const MedicalEventDetailPage = () => {
             default:
                 return 'Không xác định';
         }
-    }; const getStatusColor = (status) => {
+    }; 
+    
+    const getStatusColor = (status) => {
         switch (status) {
             case 'Đã xử lí':
                 return '#2e7d32'; // Xanh lá

@@ -41,7 +41,7 @@ async function getAll(req: IReq, res: IRes) {
 }
 
 async function getById(req: IReq, res: IRes) {
-  const eventId = req.params.eventId as string;
+  const eventId = req.params.id as string;
   const medicalEvent = await MedicalEventService.getMedicalEventById(eventId);
 
   if (!medicalEvent) {

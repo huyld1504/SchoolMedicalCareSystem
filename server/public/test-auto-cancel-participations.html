@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Auto-Cancel Pending Participations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    button.danger {
+      background: #dc3545;
+    }
+
+    button.danger:hover {
+      background: #c82333;
+    }
+
+    button.success {
+      background: #28a745;
+    }
+
+    button.success:hover {
+      background: #218838;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    .success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .info {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+    }
+
+    h1,
+    h2 {
+      color: #333;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .status-pending {
+      color: #ffc107;
+      font-weight: bold;
+    }
+
+    .status-approved {
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .status-denied {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .status-canceled {
+      color: #6c757d;
+      font-weight: bold;
+    }
+
+    .scenario {
+      background: #f8f9fa;
+      padding: 15px;
+      border-left: 4px solid #007bff;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🧪 Test Auto-Cancel Pending Participations</h1>
+    <p>Test tính năng tự động hủy các phiếu tham gia có <code>parentConsent: 'pending'</code> khi chiến dịch kết thúc.
+    </p>
+  </div>
+
+  <div class="container">
+    <h2>📋 Bước 1: Tạo Campaign Test</h2>
+    <div class="form-group">
+      <label for="campaignName">Tên Campaign Test</label>
+      <input type="text" id="campaignName" value="Test Auto-Cancel Campaign">
+    </div>
+    <div class="form-group">
+      <label for="vaccineType">Loại Vaccine</label>
+      <input type="text" id="vaccineType" value="Test Vaccine">
+    </div>
+    <div class="form-group">
+      <label for="injection">Cách Tiêm</label>
+      <select id="injection">
+        <option value="tiêm bắp">Tiêm bắp</option>
+        <option value="tiêm dưới da">Tiêm dưới da</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="targetAudience">Đối Tượng</label>
+      <input type="text" id="targetAudience" value="Test Students">
+    </div>
+    <button onclick="createTestCampaign()" class="success">🆕 Tạo Campaign Test</button>
+  </div>
+
+  <div class="container">
+    <h2>👥 Bước 2: Thêm Học Sinh (Giả Lập)</h2>
+    <p>Thêm học sinh vào campaign, tạo ra participations với <code>parentConsent: 'pending'</code></p>
+    <div class="form-group">
+      <label for="studentIds">Student IDs (giả lập, cách nhau bằng dấu phẩy)</label>
+      <textarea id="studentIds"
+        rows="3">674a1b2c3d4e5f6789abcdef,674a1b2c3d4e5f6789abcde0,674a1b2c3d4e5f6789abcde1</textarea>
+    </div>
+    <button onclick="addStudentsToCampaign()" id="addStudentsBtn" disabled>➕ Thêm Học Sinh</button>
+  </div>
+
+  <div class="container">
+    <h2>👀 Bước 3: Xem Participations</h2>
+    <p>Kiểm tra danh sách participations trước khi complete campaign</p>
+    <button onclick="getParticipations()" id="getParticipationsBtn" disabled>📋 Xem Participations</button>
+  </div>
+
+  <div class="container">
+    <h2>✅ Bước 4: Complete Campaign (Trigger Auto-Cancel)</h2>
+    <p class="scenario">
+      <strong>🎯 Scenario Test:</strong><br>
+      1. Campaign hiện tại có status = 'planned'<br>
+      2. Có một số participations với parentConsent = 'pending'<br>
+      3. Khi update campaign status → 'completed'<br>
+      4. Hệ thống sẽ tự động cập nhật tất cả pending participations:<br>
+      &nbsp;&nbsp;• <code>parentConsent: 'pending'</code> → <code>'canceled'</code><br>
+      &nbsp;&nbsp;• <code>vaccinationStatus: 'scheduled'</code> → <code>'cancelled'</code><br>
+      &nbsp;&nbsp;• <code>parentConsentDate: new Date()</code>
+    </p>
+    <button onclick="completeCampaign()" class="danger" id="completeCampaignBtn" disabled>🏁 Complete Campaign</button>
+  </div>
+
+  <div class="container">
+    <h2>🔍 Bước 5: Verify Results</h2>
+    <p>Kiểm tra lại participations sau khi campaign completed</p>
+    <button onclick="getParticipationsAfter()" id="getParticipationsAfterBtn" disabled>🔍 Verify Results</button>
+  </div>
+
+  <div class="container">
+    <h2>📊 Kết Quả Test</h2>
+    <div id="result" class="result info">Chưa có kết quả. Hãy thực hiện các bước test...</div>
+  </div>
+
+  <div class="container">
+    <h2>📖 Hướng Dẫn Sử Dụng</h2>
+    <ol>
+      <li><strong>Tạo Campaign:</strong> Tạo một campaign test với status 'planned'</li>
+      <li><strong>Thêm Học Sinh:</strong> Thêm học sinh vào campaign (tạo participations pending)</li>
+      <li><strong>Xem Participations:</strong> Kiểm tra trạng thái ban đầu</li>
+      <li><strong>Complete Campaign:</strong> Cập nhật status → 'completed' (trigger auto-cancel)</li>
+      <li><strong>Verify:</strong> Kiểm tra kết quả - tất cả pending phải thành canceled</li>
+    </ol>
+
+    <h3>💡 Expected Results:</h3>
+    <ul>
+      <li>✅ Tất cả participations có <span class="status-pending">parentConsent: 'pending'</span> → <span
+          class="status-canceled">parentConsent: 'canceled'</span></li>
+      <li>✅ Tất cả participations có <code>vaccinationStatus: 'scheduled'</code> →
+        <code>vaccinationStatus: 'cancelled'</code></li>
+      <li>✅ Tất cả participations có <code>parentConsentDate</code> được cập nhật</li>
+      <li>✅ Console log hiển thị số lượng participations đã được canceled</li>
+    </ul>
+  </div>
+
+  <script>
+    // Global variables
+    let currentCampaignId = null;
+    const API_BASE = '/api/vaccination-campaigns';
+
+    // Helper function to show results
+    function showResult(data, type = 'info') {
+      const resultDiv = document.getElementById('result');
+      resultDiv.className = `result ${type}`;
+      resultDiv.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+    }
+
+    // Set default dates
+    function setDefaultDates() {
+      const now = new Date();
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return { startDate: tomorrow, endDate: nextWeek };
+    }
+
+    // Create test campaign
+    async function createTestCampaign() {
+      try {
+        showResult('Đang tạo campaign test...', 'info');
+
+        const { startDate, endDate } = setDefaultDates();
+
+        const data = {
+          vaccineName: document.getElementById('campaignName').value,
+          vaccineType: document.getElementById('vaccineType').value,
+          injection: document.getElementById('injection').value,
+          targetAudience: document.getElementById('targetAudience').value,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        };
+
+        const response = await fetch(API_BASE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Note: In production, add authorization header
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          currentCampaignId = result.data._id;
+          document.getElementById('addStudentsBtn').disabled = false;
+          showResult(`✅ Campaign tạo thành công!\nID: ${currentCampaignId}\nStatus: ${result.data.status}\n\n${JSON.stringify(result, null, 2)}`, 'success');
+        } else {
+          showResult(`❌ Lỗi tạo campaign:\n\n${JSON.stringify(result, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        showResult(`❌ Lỗi kết nối: ${error.message}`, 'error');
+      }
+    }
+
+    // Add students to campaign
+    async function addStudentsToCampaign() {
+      if (!currentCampaignId) {
+        showResult('❌ Vui lòng tạo campaign trước', 'error');
+        return;
+      }
+
+      try {
+        showResult('Đang thêm học sinh vào campaign...', 'info');
+
+        const studentIdsText = document.getElementById('studentIds').value;
+        const studentIds = studentIdsText.split(',').map(id => id.trim()).filter(id => id);
+
+        if (studentIds.length === 0) {
+          showResult('❌ Vui lòng nhập ít nhất 1 student ID', 'error');
+          return;
+        }
+
+        const response = await fetch(`${API_BASE}/${currentCampaignId}/students`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ studentIds })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById('getParticipationsBtn').disabled = false;
+          showResult(`✅ Đã thêm ${studentIds.length} học sinh vào campaign!\n\nTất cả participations sẽ có:\n• parentConsent: 'pending'\n• vaccinationStatus: 'scheduled'\n\n${JSON.stringify(result, null, 2)}`, 'success');
+        } else {
+          showResult(`❌ Lỗi thêm học sinh:\n\n${JSON.stringify(result, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        showResult(`❌ Lỗi kết nối: ${error.message}`, 'error');
+      }
+    }
+
+    // Get participations
+    async function getParticipations() {
+      if (!currentCampaignId) {
+        showResult('❌ Không có campaign ID', 'error');
+        return;
+      }
+
+      try {
+        showResult('Đang lấy danh sách participations...', 'info');
+
+        const response = await fetch(`${API_BASE}/${currentCampaignId}/participations`);
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById('completeCampaignBtn').disabled = false;
+
+          let summary = '📋 PARTICIPATIONS TRƯỚC KHI COMPLETE:\n\n';
+
+          if (result.data && result.data.records) {
+            const pendingCount = result.data.records.filter(p => p.parentConsent === 'pending').length;
+            const approvedCount = result.data.records.filter(p => p.parentConsent === 'approved').length;
+            const deniedCount = result.data.records.filter(p => p.parentConsent === 'denied').length;
+
+            summary += `📊 Thống kê:\n`;
+            summary += `• Pending: ${pendingCount}\n`;
+            summary += `• Approved: ${approvedCount}\n`;
+            summary += `• Denied: ${deniedCount}\n`;
+            summary += `• Total: ${result.data.records.length}\n\n`;
+
+            summary += `🎯 Dự kiến sau khi complete:\n`;
+            summary += `• ${pendingCount} participations sẽ chuyển thành 'canceled'\n\n`;
+          }
+
+          summary += `Full Response:\n${JSON.stringify(result, null, 2)}`;
+
+          showResult(summary, 'success');
+        } else {
+          showResult(`❌ Lỗi lấy participations:\n\n${JSON.stringify(result, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        showResult(`❌ Lỗi kết nối: ${error.message}`, 'error');
+      }
+    }
+
+    // Complete campaign (trigger auto-cancel)
+    async function completeCampaign() {
+      if (!currentCampaignId) {
+        showResult('❌ Không có campaign ID', 'error');
+        return;
+      }
+
+      try {
+        showResult('🏁 Đang complete campaign (trigger auto-cancel)...', 'info');
+
+        const response = await fetch(`${API_BASE}/${currentCampaignId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'completed' })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById('getParticipationsAfterBtn').disabled = false;
+          showResult(`✅ Campaign đã được completed!\n\n🔄 Auto-cancel logic đã được trigger.\nKiểm tra console logs để xem số lượng participations đã canceled.\n\n${JSON.stringify(result, null, 2)}`, 'success');
+        } else {
+          showResult(`❌ Lỗi complete campaign:\n\n${JSON.stringify(result, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        showResult(`❌ Lỗi kết nối: ${error.message}`, 'error');
+      }
+    }
+
+    // Get participations after complete
+    async function getParticipationsAfter() {
+      if (!currentCampaignId) {
+        showResult('❌ Không có campaign ID', 'error');
+        return;
+      }
+
+      try {
+        showResult('🔍 Đang verify results sau khi complete...', 'info');
+
+        const response = await fetch(`${API_BASE}/${currentCampaignId}/participations`);
+        const result = await response.json();
+
+        if (response.ok) {
+          let summary = '🔍 RESULTS VERIFICATION:\n\n';
+
+          if (result.data && result.data.records) {
+            const pendingCount = result.data.records.filter(p => p.parentConsent === 'pending').length;
+            const approvedCount = result.data.records.filter(p => p.parentConsent === 'approved').length;
+            const deniedCount = result.data.records.filter(p => p.parentConsent === 'denied').length;
+            const canceledCount = result.data.records.filter(p => p.parentConsent === 'canceled').length;
+
+            const scheduledCount = result.data.records.filter(p => p.vaccinationStatus === 'scheduled').length;
+            const cancelledVaccinationCount = result.data.records.filter(p => p.vaccinationStatus === 'cancelled').length;
+
+            summary += `📊 Parent Consent Status:\n`;
+            summary += `• Pending: ${pendingCount} ${pendingCount === 0 ? '✅' : '❌'}\n`;
+            summary += `• Approved: ${approvedCount}\n`;
+            summary += `• Denied: ${deniedCount}\n`;
+            summary += `• Canceled: ${canceledCount} ${canceledCount > 0 ? '✅' : '❌'}\n\n`;
+
+            summary += `📊 Vaccination Status:\n`;
+            summary += `• Scheduled: ${scheduledCount}\n`;
+            summary += `• Cancelled: ${cancelledVaccinationCount} ${cancelledVaccinationCount > 0 ? '✅' : '❌'}\n\n`;
+
+            summary += `🎯 Test Results:\n`;
+            summary += `• Auto-cancel hoạt động: ${pendingCount === 0 && canceledCount > 0 ? '✅ PASS' : '❌ FAIL'}\n`;
+            summary += `• Vaccination status cập nhật: ${cancelledVaccinationCount > 0 ? '✅ PASS' : '❌ FAIL'}\n\n`;
+
+            // Check for parentConsentDate updates
+            const canceledParticipations = result.data.records.filter(p => p.parentConsent === 'canceled');
+            const hasConsentDate = canceledParticipations.every(p => p.parentConsentDate);
+            summary += `• ParentConsentDate cập nhật: ${hasConsentDate ? '✅ PASS' : '❌ FAIL'}\n\n`;
+          }
+
+          summary += `Full Response:\n${JSON.stringify(result, null, 2)}`;
+
+          const overallPass = result.data.records.filter(p => p.parentConsent === 'pending').length === 0;
+          showResult(summary, overallPass ? 'success' : 'error');
+        } else {
+          showResult(`❌ Lỗi verify results:\n\n${JSON.stringify(result, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        showResult(`❌ Lỗi kết nối: ${error.message}`, 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>
