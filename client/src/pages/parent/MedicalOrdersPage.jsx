@@ -37,7 +37,8 @@ import {
     Search as SearchIcon,
     Clear as ClearIcon,
     Refresh as RefreshIcon,
-    Medication as MedicationIcon
+    Medication as MedicationIcon,
+    AddBox as AddIcon
 } from '@mui/icons-material';
 import HistoryIcon from '@mui/icons-material/History';
 import { useNavigate, useSearchParams } from 'react-router';
@@ -355,6 +356,19 @@ const MedicalOrdersPage = () => {
                     <Typography variant="h6" color="text.secondary">
                         Theo dõi các đơn gửi thuốc của con em
                     </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => navigate('/parent/medical-orders/add')}
+                        sx={{
+                            bgcolor: '#1976d2',
+                            '&:hover': { bgcolor: '#1565c0' }
+                        }}
+                    >
+                        Tạo đơn thuốc
+                    </Button>
                 </Box>
             </Box>
 
