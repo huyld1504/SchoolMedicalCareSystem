@@ -217,7 +217,7 @@ const DetailView = ({ campaign }) => {
       case "completed":
       case "hoàn thành":
         return "info";
-      case "cancelled":
+      case "canceled":
       case "đã hủy":
         return "error";
       case "pending":
@@ -230,6 +230,23 @@ const DetailView = ({ campaign }) => {
         return "default";
     }
   };
+  const getStatusVN = (status) => {
+    switch (status?.toLowerCase()) {
+      case "ongoing":
+        return "đang hoạt động";
+      case "completed":
+        return "hoàn thành";
+      case "canceled":
+        return "đã hủy";
+      case "pending":
+        return "chờ xử lý";
+      case "planned":
+        return "đang lên kế hoạch";
+      default:
+        return "default";
+    }
+  };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -272,7 +289,7 @@ const DetailView = ({ campaign }) => {
           mx: "auto",
         }}
       >
-        <Grid container spacing={3} sx={{ justifyContent: "center"  }}>
+        <Grid container spacing={3} sx={{ justifyContent: "center" }}>
           {/* === THAY ĐỔI: Khối Header đã được di chuyển vào Card bên dưới === */}
 
           {/* Campaign Information */}
@@ -301,13 +318,13 @@ const DetailView = ({ campaign }) => {
                     {campaign.vaccineType} - {campaign.targetAudience}
                   </Typography>
                   <Chip
-                    label={campaign.status || "N/A"}
+                    label={getStatusVN(campaign.status) || "N/A"}
                     color={getStatusColor(campaign.status)}
                     size="large"
                     sx={{ fontSize: "1rem", px: 3, py: 1 }}
                   />
                 </Box>
-                
+
                 {/* === THAY ĐỔI: Thêm Divider và bỏ tiêu đề "Thông tin chiến dịch" thừa === */}
                 <Divider sx={{ mb: 3 }} />
 
@@ -385,7 +402,7 @@ const DetailView = ({ campaign }) => {
                     <Grid item xs={12}>
                       <Box sx={{ mb: 2 }}>
                         <Typography variant="subtitle2" color="text.secondary">
-                         Số mũi tiêm
+                          Số mũi tiêm
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
                           {campaign.injection || "N/A"}
@@ -395,7 +412,7 @@ const DetailView = ({ campaign }) => {
                     <Grid item xs={12}>
                       <Box sx={{ mb: 2 }}>
                         <Typography variant="subtitle2" color="text.secondary">
-                         Thông tin về vaccine
+                          Thông tin về vaccine
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
                           {campaign.vaccineDescription || "N/A"}
@@ -403,7 +420,7 @@ const DetailView = ({ campaign }) => {
                       </Box>
                     </Grid>
 
-                  
+
 
                     <Grid item xs={12}>
                       <Box sx={{ mb: 2 }}>
@@ -421,7 +438,7 @@ const DetailView = ({ campaign }) => {
                 <Divider sx={{ my: 3 }} />
 
                 {/* Schedule */}
-            
+
 
                 {/* Additional Information */}
                 <Box>
@@ -642,7 +659,7 @@ const DetailView = ({ campaign }) => {
                   <Collapse in={showFilters}>
                     <Card variant="outlined" sx={{ p: 2 }}>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6} md={4} sx={{width: "300px"}}>
+                        <Grid item xs={12} sm={6} md={4} sx={{ width: "300px" }}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Đồng ý phụ huynh</InputLabel>
                             <Select
@@ -663,7 +680,7 @@ const DetailView = ({ campaign }) => {
                           </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} sm={6} md={4} sx={{width: "300px"}}>
+                        <Grid item xs={12} sm={6} md={4} sx={{ width: "300px" }}>
                           <FormControl fullWidth size="small">
                             <InputLabel>Trạng thái tiêm</InputLabel>
                             <Select
@@ -765,27 +782,28 @@ const DetailView = ({ campaign }) => {
                                       <Chip
                                         label={
                                           participant.parentConsent ===
-                                          "approved"
+                                            "approved"
                                             ? "Đã đồng ý"
                                             : participant.parentConsent ===
                                               "pending"
-                                            ? "Chờ phản hồi"
-                                            : participant.parentConsent ===
-                                              "denied"
-                                            ? "Từ chối"
-                                            : "Chưa rõ"
+                                              ? "Chờ phản hồi"
+                                              : participant.parentConsent ===
+                                                "denied"
+                                                ? "Từ chối"
+                                                : participant.parentConsent === "canceled" ? "Hủy bỏ"
+                                                  : "Chưa rõ"
                                         }
                                         color={
                                           participant.parentConsent ===
-                                          "approved"
+                                            "approved"
                                             ? "success"
                                             : participant.parentConsent ===
-                                              "pending"
-                                            ? "warning"
-                                            : participant.parentConsent ===
-                                              "denied"
-                                            ? "error"
-                                            : "default"
+                                              "canceled"
+                                              ? "warning"
+                                              : participant.parentConsent ===
+                                                "denied"
+                                                ? "error"
+                                                : "default"
                                         }
                                         size="small"
                                       />
@@ -795,34 +813,34 @@ const DetailView = ({ campaign }) => {
                                       <Chip
                                         label={
                                           participant.vaccinationStatus ===
-                                          "completed"
+                                            "completed"
                                             ? "Đã tiêm"
                                             : participant.vaccinationStatus ===
                                               "scheduled"
-                                            ? "Đã lên lịch"
-                                            : participant.vaccinationStatus ===
-                                              "missed"
-                                            ? "Bỏ lỡ"
-                                            : participant.vaccinationStatus ===
-                                              "cancelled"
-                                            ? "Đã hủy"
-                                            : participant.vaccinationStatus ||
-                                              "Chưa rõ"
+                                              ? "Đã lên lịch"
+                                              : participant.vaccinationStatus ===
+                                                "missed"
+                                                ? "Bỏ lỡ"
+                                                : participant.vaccinationStatus ===
+                                                  "canceled"
+                                                  ? "Đã hủy"
+                                                  : participant.vaccinationStatus ||
+                                                  "Chưa rõ"
                                         }
                                         color={
                                           participant.vaccinationStatus ===
-                                          "completed"
+                                            "completed"
                                             ? "success"
                                             : participant.vaccinationStatus ===
                                               "scheduled"
-                                            ? "info"
-                                            : participant.vaccinationStatus ===
-                                              "missed"
-                                            ? "warning"
-                                            : participant.vaccinationStatus ===
-                                              "cancelled"
-                                            ? "error"
-                                            : "default"
+                                              ? "info"
+                                              : participant.vaccinationStatus ===
+                                                "missed"
+                                                ? "warning"
+                                                : participant.vaccinationStatus ===
+                                                  "canceled"
+                                                  ? "error"
+                                                  : "default"
                                         }
                                         size="small"
                                       />
@@ -832,8 +850,8 @@ const DetailView = ({ campaign }) => {
                                       <Typography variant="body2">
                                         {participant.vaccinationDate
                                           ? formatDate(
-                                              participant.vaccinationDate
-                                            )
+                                            participant.vaccinationDate
+                                          )
                                           : "Chưa tiêm"}
                                       </Typography>
                                     </TableCell>
