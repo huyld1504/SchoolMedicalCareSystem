@@ -33,11 +33,14 @@ import {
     Event as EventIcon,
     Delete as DeleteIcon,
     Add as AddIcon,
+    CloudUpload as UploadIcon,
+    Image as ImageIcon,
 } from '@mui/icons-material';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalEventAPI from '../../api/medicalEventApi';
 import studentsApi from '../../api/studentsApi';
+import { callAPIFormData } from '../../api/axiosClient';
 
 const MedicalEventEditPage = () => {
     const { studentId, eventId } = useParams();
@@ -51,7 +54,7 @@ const MedicalEventEditPage = () => {
     const [searchStudentCode, setSearchStudentCode] = useState('');
     const [foundStudent, setFoundStudent] = useState(null); // Để hiển thị preview học sinh tìm được
     const [searchStatus, setSearchStatus] = useState(''); // 'searching', 'found', 'not-found', ''
-    const [searchTimeout, setSearchTimeout] = useState(null); // Để debounce search// Form state
+    const [searchTimeout, setSearchTimeout] = useState(null); // Để debounce search    // Form state
     const [formData, setFormData] = useState({
         dateHappened: null, // Thay đổi từ string thành Date object
         type: '',
@@ -61,6 +64,12 @@ const MedicalEventEditPage = () => {
         note: '',
         status: 'Đã xử lí'
     });
+
+    // Image upload state
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [existingImageUrl, setExistingImageUrl] = useState(null);
 
     useEffect(() => {
         // Kiểm tra xem có dữ liệu được truyền qua state không
@@ -82,7 +91,7 @@ const MedicalEventEditPage = () => {
                 loadStudentInfo();
             }
         }
-    }, [eventId, studentId, location.state]); const populateFormData = (eventData) => {
+    }, [eventId, studentId, location.state]);    const populateFormData = (eventData) => {
         console.log('Populating form data with:', eventData);
         console.log('Event type:', eventData.type);
         console.log('Event level:', eventData.level);
@@ -98,6 +107,11 @@ const MedicalEventEditPage = () => {
             note: eventData.note || '',
             status: eventData.status || 'Đã xử lí'
         });
+
+        // Set existing image URL if available
+        if (eventData.imageURL || eventData.imageUrl) {
+            setExistingImageUrl(eventData.imageURL || eventData.imageUrl);
+        }
 
         // Load danh sách học sinh tham gia
         if (eventData.studentJoin && Array.isArray(eventData.studentJoin)) {
@@ -157,6 +171,49 @@ const MedicalEventEditPage = () => {
             ...prev,
             [field]: value
         }));
+    };
+
+    // Image upload functions
+    const handleImageSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                toast.error('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)');
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                toast.error('Kích thước file không được vượt quá 5MB');
+                return;
+            }
+
+            setSelectedImage(file);
+            
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setSelectedImage(null);
+        setImagePreview(null);
+        // Reset input file
+        const fileInput = document.getElementById('image-upload-input-edit');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    };
+
+    const handleRemoveExistingImage = () => {
+        setExistingImageUrl(null);
     }; const handleSubmit = async () => {
         try {
             setSaving(true);
@@ -202,6 +259,41 @@ const MedicalEventEditPage = () => {
                     studentId: student.id
                 }))
             };
+
+            // Handle image upload if new image selected
+            if (selectedImage) {
+                try {
+                    setUploadingImage(true);
+                    toast.info('Đang upload ảnh mới...');
+                    
+                    const formDataImage = new FormData();
+                    formDataImage.append('image', selectedImage);
+                    
+                    console.log('Uploading new image:', selectedImage.name, 'Size:', selectedImage.size);
+                    
+                    // Upload image using callAPIFormData
+                    const imageResponse = await callAPIFormData('POST', '/images/upload', formDataImage);
+                    
+                    console.log('Image upload response:', imageResponse);
+                    
+                    if (imageResponse && imageResponse.success && imageResponse.data?.imageUrl) {
+                        updateData.imageURL = imageResponse.data.imageUrl;
+                        console.log('New image uploaded successfully:', updateData.imageURL);
+                        toast.success('Upload ảnh mới thành công');
+                    } else {
+                        console.warn('Image upload failed - Invalid response format:', imageResponse);
+                        toast.warning('Không thể upload ảnh mới - Phản hồi không hợp lệ. Sẽ tiếp tục cập nhật sự kiện.');
+                    }
+                } catch (imageError) {
+                    console.error('Error uploading new image:', imageError);
+                    toast.warning('Lỗi khi upload ảnh mới, nhưng sẽ tiếp tục cập nhật sự kiện');
+                } finally {
+                    setUploadingImage(false);
+                }
+            } else if (existingImageUrl) {
+                // Keep existing image URL if no new image uploaded
+                updateData.imageURL = existingImageUrl;
+            }
 
             console.log('Updating medical event with data:', updateData);
             const response = await medicalEventAPI.update(eventId, updateData);
@@ -728,6 +820,121 @@ const MedicalEventEditPage = () => {
                                         />
                                     </TableCell>
                                 </TableRow>
+
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
+                                        Hình ảnh sự kiện:
+                                    </TableCell>
+                                    <TableCell>
+                                        <Box>
+                                            {/* Existing image display */}
+                                            {existingImageUrl && !selectedImage && (
+                                                <Box sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, bgcolor: 'grey.50' }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                                        Ảnh hiện tại:
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                        <img 
+                                                            src={existingImageUrl} 
+                                                            alt="Existing" 
+                                                            style={{
+                                                                width: '150px',
+                                                                height: '100px',
+                                                                objectFit: 'contain',
+                                                                borderRadius: '4px',
+                                                                border: '1px solid #ddd'
+                                                            }}
+                                                        />
+                                                        <Button
+                                                            size="small"
+                                                            color="error"
+                                                            onClick={handleRemoveExistingImage}
+                                                        >
+                                                            Xóa ảnh hiện tại
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+                                            )}
+
+                                            {/* Upload new image */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Button
+                                                    variant="outlined"
+                                                    component="label"
+                                                    startIcon={<UploadIcon />}
+                                                    disabled={uploadingImage}
+                                                    sx={{ minWidth: 160 }}
+                                                >
+                                                    {uploadingImage ? 'Đang tải...' : selectedImage ? 'Đổi ảnh khác' : 'Chọn ảnh mới'}
+                                                    <input
+                                                        id="image-upload-input-edit"
+                                                        type="file"
+                                                        hidden
+                                                        accept="image/*"
+                                                        onChange={handleImageSelect}
+                                                    />
+                                                </Button>
+                                                
+                                                {selectedImage && (
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <ImageIcon sx={{ color: 'success.main' }} />
+                                                        <Typography variant="body2" sx={{ color: 'success.main' }}>
+                                                            {selectedImage.name}
+                                                        </Typography>
+                                                        <Button
+                                                            size="small"
+                                                            color="error"
+                                                            onClick={handleRemoveImage}
+                                                        >
+                                                            Hủy
+                                                        </Button>
+                                                    </Box>
+                                                )}
+                                            </Box>
+
+                                            {/* New image preview */}
+                                            {imagePreview && (
+                                                <Box sx={{ 
+                                                    mt: 2, 
+                                                    p: 2, 
+                                                    border: '1px solid #e0e0e0', 
+                                                    borderRadius: 1,
+                                                    bgcolor: 'grey.50'
+                                                }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+                                                        Xem trước ảnh mới:
+                                                    </Typography>
+                                                    <Box sx={{ 
+                                                        display: 'flex', 
+                                                        justifyContent: 'center',
+                                                        '& img': {
+                                                            maxWidth: '300px',
+                                                            maxHeight: '200px',
+                                                            objectFit: 'contain',
+                                                            borderRadius: 1,
+                                                            border: '1px solid #ddd'
+                                                        }
+                                                    }}>
+                                                        <img 
+                                                            src={imagePreview} 
+                                                            alt="New Preview" 
+                                                        />
+                                                    </Box>
+                                                </Box>
+                                            )}
+
+                                            {/* Upload guidelines */}
+                                            <Typography variant="caption" sx={{ 
+                                                display: 'block', 
+                                                mt: 1, 
+                                                color: 'text.secondary',
+                                                fontStyle: 'italic'
+                                            }}>
+                                                Chấp nhận file: JPEG, PNG, GIF. Kích thước tối đa: 5MB
+                                            </Typography>
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Trạng thái: *
@@ -769,10 +976,10 @@ const MedicalEventEditPage = () => {
                                 variant="contained"
                                 startIcon={<SaveIcon />}
                                 onClick={handleSubmit}
-                                disabled={saving}
+                                disabled={saving || uploadingImage}
                                 size="large"
                             >
-                                {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                                {uploadingImage ? 'Đang tải ảnh...' : saving ? 'Đang lưu...' : 'Lưu thay đổi'}
                             </Button>
                         </Box>
                     </CardContent>

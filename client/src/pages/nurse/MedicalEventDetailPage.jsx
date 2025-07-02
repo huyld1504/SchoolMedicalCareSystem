@@ -174,13 +174,13 @@ const MedicalEventDetailPage = () => {
     const getLevelColor = (level) => {
         switch (level) {
             case 3:
-                return '#d32f2f'; // Đỏ
+                return '#d32f2f'; 
             case 2:
-                return '#ed6c02'; // Cam
+                return '#ed6c02'; 
             case 1:
-                return '#2e7d32'; // Xanh lá
+                return '#2e7d32'; 
             default:
-                return '#757575'; // Xám
+                return '#757575'; 
         }
     }; 
     
@@ -200,13 +200,13 @@ const MedicalEventDetailPage = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'Đã xử lí':
-                return '#2e7d32'; // Xanh lá
+                return '#2e7d32'; 
             case 'Đang xử lí':
-                return '#ed6c02'; // Cam
+                return '#ed6c02'; 
             case 'Chờ xử lí':
-                return '#d32f2f'; // Đỏ
+                return '#d32f2f'; 
             default:
-                return '#757575'; // Xám
+                return '#757575'; 
         }
     };
 
@@ -286,9 +286,10 @@ const MedicalEventDetailPage = () => {
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, width: '25%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>Ngày sự kiện:</TableCell>
                                 <TableCell sx={{ fontSize: '1rem' }}>{formatDate(medicalEvent.dateHappened || medicalEvent.createdAt)}</TableCell>
-                            </TableRow>                            {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && (
+                            </TableRow>
+                            {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && (
                                 <TableRow>
-                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin học sinh tham gia:</TableCell>
+                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Học sinh tham gia: *</TableCell>
                                     <TableCell>
                                         <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: '4px' }}>
                                             <TableHead>
@@ -348,6 +349,24 @@ const MedicalEventDetailPage = () => {
                                 <TableCell sx={{ fontSize: '1rem' }}>{getDisplayValue(medicalEvent.userId?.name)}</TableCell>
                             </TableRow>
 
+                            {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && medicalEvent.studentJoin[0].studentId?.userId && (
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin phụ huynh:</TableCell>
+                                    <TableCell sx={{ fontSize: '1rem' }}>
+                                        <Box>
+                                            <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+                                                <strong>Tên:</strong> {getDisplayValue(medicalEvent.studentJoin[0].studentId.userId?.name)}
+                                            </Typography>
+                                            {medicalEvent.studentJoin[0].studentId.userId?.email && (
+                                                <Typography variant="body1" sx={{ fontSize: '1rem', mt: 0.5 }}>
+                                                    <strong>Email:</strong> {medicalEvent.studentJoin[0].studentId.userId.email}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Mô tả chi tiết:</TableCell>
                                 <TableCell sx={{ maxWidth: '500px' }}>
@@ -367,6 +386,66 @@ const MedicalEventDetailPage = () => {
                                     </TableCell>
                                 </TableRow>
                             )}
+                            
+                            {/* Hình ảnh sự kiện */}
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Hình ảnh:</TableCell>
+                                <TableCell>
+                                    {(() => {
+                                        // Support both imageURL (single) and imageUrl (array)
+                                        const singleImage = medicalEvent.imageURL || medicalEvent.imageUrl;
+                                        const imageArray = Array.isArray(medicalEvent.imageUrl) ? medicalEvent.imageUrl : 
+                                                         (singleImage ? [singleImage] : []);
+                                        
+                                        if (imageArray.length > 0) {
+                                            return (
+                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                                                    {imageArray.map((imageUrl, index) => (
+                                                        <Box
+                                                            key={index}
+                                                            sx={{
+                                                                border: '1px solid #e0e0e0',
+                                                                borderRadius: 1,
+                                                                overflow: 'hidden',
+                                                                cursor: 'pointer',
+                                                                '&:hover': {
+                                                                    boxShadow: 2
+                                                                }
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={imageUrl}
+                                                                alt={`Hình ảnh sự kiện y tế ${index + 1}`}
+                                                                style={{
+                                                                    width: 200,
+                                                                    height: 150,
+                                                                    objectFit: 'contain',
+                                                                    display: 'block'
+                                                                }}
+                                                                onClick={() => {
+                                                                    window.open(imageUrl, '_blank');
+                                                                }}
+                                                                onError={(e) => {
+                                                                    e.target.style.display = 'none';
+                                                                    console.error('Failed to load image:', imageUrl);
+                                                                }}
+                                                            />
+                                                        </Box>
+                                                    ))}
+                                                </Box>
+                                            );
+                                        } else {
+                                            return (
+                                                <Typography variant="body1" sx={{ fontSize: '1rem', fontStyle: 'italic', color: 'text.secondary' }}>
+                                                    Không có hình ảnh
+                                                </Typography>
+                                            );
+                                        }
+                                    })()}
+                                </TableCell>
+                            </TableRow>
+                            
+                            {/* Giải pháp/Điều trị */}
                             {medicalEvent.solution && (
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Giải pháp/Điều trị:</TableCell>
