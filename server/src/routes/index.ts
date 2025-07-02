@@ -119,7 +119,7 @@ medicalEventRouter.get(
 );
 medicalEventRouter.get(
   Paths.MedicalEvent.GetById,
-  [transform(), auth(), authRoles(["nurse", "admin"])],
+  [transform(), auth(), authRoles(["nurse", "admin", "parent"])],
   MedicalEventRoutes.getById
 );
 medicalEventRouter.put(

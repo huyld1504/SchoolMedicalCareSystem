@@ -219,13 +219,13 @@ const VaccinationNotificationsPage = () => {
   const getConsentColor = (consent) => {
     switch (consent) {
       case 'approved':
-        return '#2e7d32'; // Xanh lá
+        return '#2e7d32'; 
       case 'denied':
-        return '#d32f2f'; // Đỏ
+        return '#d32f2f'; 
       case 'pending':
-        return '#ed6c02'; // Cam
+        return '#ed6c02'; 
       default:
-        return '#757575'; // Xám
+        return '#757575'; 
     }
   };
 
@@ -323,7 +323,7 @@ const VaccinationNotificationsPage = () => {
 
             {/* Parent Consent Filter */}
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth size="small" sx={{ minWidth: '170px' }}>
+              <FormControl fullWidth size="small" sx={{ minWidth: '180px' }}>
                 <InputLabel>Trạng thái duyệt</InputLabel>
                 <Select
                   value={filters.parentConsent}
@@ -348,7 +348,7 @@ const VaccinationNotificationsPage = () => {
 
             {/* Vaccination Status Filter */}
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth size="small" sx={{ minWidth: '170px' }}>
+              <FormControl fullWidth size="small" sx={{ minWidth: '180px' }}>
                 <InputLabel>Trạng thái tiêm</InputLabel>
                 <Select
                   value={filters.vaccinationStatus}
@@ -379,7 +379,6 @@ const VaccinationNotificationsPage = () => {
                   onClick={handleApplyFilters}
                   color="primary"
                   startIcon={<SearchIcon />}
-                  size="small"
                 >
                   Tìm kiếm
                 </Button>
@@ -388,7 +387,6 @@ const VaccinationNotificationsPage = () => {
                   onClick={handleClearFilters}
                   color="secondary"
                   startIcon={<FilterIcon />}
-                  size="small"
                 >
                   Xóa bộ lọc
                 </Button>
@@ -409,16 +407,16 @@ const VaccinationNotificationsPage = () => {
         </Alert>
       ) : (
         <Card>
-          <CardContent sx={{ p: 0 }}>
+          <CardContent>
             {/* Header với thông tin pagination */}
-            <Box sx={{ p: 2, bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Danh sách thông báo tiêm chủng ({paginationInfo.total} thông báo)
-              </Typography>
-            </Box>
+            <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
+              Danh sách thông báo tiêm chủng ({paginationInfo.total} thông báo)
+            </Typography>
 
             <TableContainer 
-              component={Paper} sx={{
+              component={Paper} 
+              variant="outlined"
+              sx={{
                 '&::-webkit-scrollbar': {
                   width: 10, 
                   height: 10,
@@ -431,16 +429,18 @@ const VaccinationNotificationsPage = () => {
                   border: '2px solid #f5f5f5',
                 },
               }}>
-              <Table stickyHeader sx={{ minWidth: 1200, background: '#fff' }}>
-                <TableHead>
+              <Table stickyHeader sx={{ minWidth: 1400 }}>
+                <TableHead sx={{ bgcolor: '#f5f5f5' }}>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, width: '5%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">STT</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '15%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Họ và tên</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '10%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Mã học sinh</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '15%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Tên chiến dịch</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '15%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Loại vaccine</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '10%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Ngày bắt đầu</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '10%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Thao tác</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '5%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">STT</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '12%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Họ và tên</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '8%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Mã học sinh</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '12%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Tên chiến dịch</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '12%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Loại vaccine</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '8%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Ngày bắt đầu</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '10%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Trạng thái duyệt</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '10%', fontSize: '1rem', whiteSpace: 'nowrap' }} align="center">Trạng thái tiêm</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '8%', fontSize: '1rem', whiteSpace: 'nowrap', textAlign: 'center' }}>Thao tác</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -460,6 +460,30 @@ const VaccinationNotificationsPage = () => {
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineName || 'N/A'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineType || 'N/A'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{formatDate(notification.campaign?.startDate)}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            color: getConsentColor(notification.parentConsent),
+                            fontWeight: 600,
+                            fontSize: '0.93rem'
+                          }}
+                        >
+                          {getConsentLabel(notification.parentConsent)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            color: getVaccinationStatusColor(notification.vaccinationStatus),
+                            fontWeight: 600,
+                            fontSize: '0.93rem'
+                          }}
+                        >
+                          {getVaccinationStatusLabel(notification.vaccinationStatus)}
+                        </Typography>
+                      </TableCell>
                       <TableCell align="center" sx={{ py: 1 }}>
                         <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                           <Tooltip title="Xem chi tiết">
@@ -495,5 +519,4 @@ const VaccinationNotificationsPage = () => {
     </Container>
   );
 };
-
 export default VaccinationNotificationsPage;

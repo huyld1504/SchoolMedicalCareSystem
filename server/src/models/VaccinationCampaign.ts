@@ -13,7 +13,7 @@ export interface IVaccinationCampaign extends Document {
   startDate: Date;
   endDate: Date;
   // Trạng thái chiến dịch
-  status: 'planned' | 'ongoing' | 'completed' | 'cancelled';
+  status: 'planned' | 'ongoing' | 'completed' | 'canceled';
   // Người tạo
   createdBy: Types.ObjectId; // Admin tạo chiến dịch
 }
@@ -35,7 +35,7 @@ const schema = new Schema({
   // Trạng thái chiến dịch
   status: {
     type: String,
-    enum: ['planned', 'ongoing', 'completed', 'cancelled'],
+    enum: ['planned', 'ongoing', 'completed', 'canceled'],
     default: 'planned',
   },
   // Người tạo
