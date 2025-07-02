@@ -36,7 +36,7 @@ const initialNewMedicineState = {
 };
 
 const MedicalOrderDetailPage = () => {
-    const {user} = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.auth);
     const { orderId } = useParams();
     const navigate = useNavigate();
 
@@ -74,6 +74,7 @@ const MedicalOrderDetailPage = () => {
 
             if (detailsResponse.isSuccess && detailsResponse.data) {
                 setOrderData(detailsResponse.data);
+                console.log(('Order details loaded:', detailsResponse.data.order));
                 setNewStatus(detailsResponse.data.order.status);
 
             } else {
@@ -123,7 +124,7 @@ const MedicalOrderDetailPage = () => {
             status: 'canceled',
             note: rejectionReason,
         };
-        
+
         await handleUpdateStatus(payload);
         handleCloseRejectModal();
     };
@@ -364,76 +365,182 @@ const MedicalOrderDetailPage = () => {
                     )}
                 </Stack>
             </Box>
+            {medicalOrder.imageURL ? (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', md: 'row' },
+                        gap: 2,
+                        mb: 3,
+                    }}
+                >
+                    {/* Bên trái: Thông tin + Ảnh */}
+                    <Card
+                        sx={{
+                            flex: 1,
+                            maxWidth: { md: '50%' },
+                            mb: { xs: 2, md: 0 },
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CardContent sx={{ width: '100%' }}>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
+                            <Box sx={{ mb: 2 }}>
+                                <Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography>
+                                <Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography>
+                                <Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || '—'}</Typography>
+                            </Box>
+                            <Box sx={{ textAlign: 'center' }}>
+                                <img
+                                    src={medicalOrder.imageURL}
+                                    alt="Ảnh đơn thuốc"
+                                    style={{ maxWidth: 500, maxHeight: 550, borderRadius: 8, boxShadow: '0 2px 8px #0002' }}
+                                />
+                                <Typography variant="caption" display="block" sx={{ mt: 1, color: 'text.secondary' }}>
+                                    Ảnh đơn thuốc
+                                </Typography>
+                            </Box>
+                        </CardContent>
+                    </Card>
 
-            <Card sx={{ mb: 3 }}>
-                <CardContent>
-                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
-                    <Grid container spacing={2} sx={{ mt: 1, alignItems: 'center' }}>
-                        <Grid item xs={12} sm={4}><Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography></Grid>
-                        <Grid item xs={12} sm={4}><Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography></Grid>
-                        <Grid item xs={12} sm={4}><Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || '—'}</Typography></Grid>
-                      
-                    </Grid>
-                </CardContent>
-            </Card>
-
-            <Card sx={{ mb: 3 }}>
-                <CardContent sx={{ p: 0 }}>
-                    <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
-                        <Stack direction="row" spacing={1}>
-                            {medicalOrder.status === 'approved' && user.role === "nurse" && (
-                                <>
-                                    <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
-                                        Cho uống thuốc ({numSelected})
-                                    </Button>
-                                    <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>
-                                        Thêm thuốc mới
-                                    </Button>
-                                </>
-                            )}
-                        </Stack>
-                    </Box>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell padding="checkbox">
-                                        {medicalOrder.status === 'approved' && <Tooltip title="Chọn/Bỏ chọn tất cả"><Checkbox color="primary" indeterminate={numSelected > 0 && numSelected < rowCount} checked={rowCount > 0 && numSelected === rowCount} onChange={handleSelectAllClick} /></Tooltip>}
-                                    </TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
-                                    <TableCell align="center" sx={{ fontWeight: 'bold' }}>Liều lượng</TableCell>
-                                    <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
-                                   
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {medicalOrderDetails.map((detail) => {
-                                    const isItemSelected = !!selectionForRecord[detail._id];
-                                    return (
-                                        <TableRow key={detail._id} hover role="checkbox" tabIndex={-1} selected={isItemSelected}>
+                    {/* Bên phải: Danh sách thuốc */}
+                    <Card
+                        sx={{
+                            flex: 1,
+                            maxWidth: { md: '50%' },
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <CardContent sx={{ p: 0 }}>
+                            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
+                                <Stack direction="row" spacing={1}>
+                                    {medicalOrder.status === 'approved' && user.role === "nurse" && (
+                                        <>
+                                            <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
+                                                Cho uống thuốc ({numSelected})
+                                            </Button>
+                                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>
+                                                Thêm thuốc mới
+                                            </Button>
+                                        </>
+                                    )}
+                                </Stack>
+                            </Box>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
                                             <TableCell padding="checkbox">
-                                                {medicalOrder.status === 'approved' && <Checkbox color="primary" checked={isItemSelected} onChange={() => handleSelectionChange(detail)} disabled={detail.quantity <= 0} />}
+                                                {medicalOrder.status === 'approved' && <Tooltip title="Chọn/Bỏ chọn tất cả"><Checkbox color="primary" indeterminate={numSelected > 0 && numSelected < rowCount} checked={rowCount > 0 && numSelected === rowCount} onChange={handleSelectAllClick} /></Tooltip>}
                                             </TableCell>
-                                            <TableCell sx={{ fontWeight: 500 }}>
-                                                {detail.medicineName}
-                                                {detail.quantity <= 2 && (<Tooltip title="Số lượng sắp hết!"><WarningIcon color="warning" sx={{ fontSize: 16, ml: 1, verticalAlign: 'middle' }} /></Tooltip>)}
-                                            </TableCell>
-                                            <TableCell align="center">{detail.dosage}</TableCell>
-                                            <TableCell align="center">{detail.quantity}</TableCell>
-                                            <TableCell>{formatTime(detail.time)}</TableCell>
-                                            <TableCell>{detail.note || '—'}</TableCell>
-                                            
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Liều lượng</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
                                         </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </CardContent>
-            </Card>
+                                    </TableHead>
+                                    <TableBody>
+                                        {medicalOrderDetails.map((detail) => {
+                                            const isItemSelected = !!selectionForRecord[detail._id];
+                                            return (
+                                                <TableRow key={detail._id} hover role="checkbox" tabIndex={-1} selected={isItemSelected}>
+                                                    <TableCell padding="checkbox">
+                                                        {medicalOrder.status === 'approved' && <Checkbox color="primary" checked={isItemSelected} onChange={() => handleSelectionChange(detail)} disabled={detail.quantity <= 0} />}
+                                                    </TableCell>
+                                                    <TableCell sx={{ fontWeight: 500 }}>
+                                                        {detail.medicineName}
+                                                        {detail.quantity <= 2 && (<Tooltip title="Số lượng sắp hết!"><WarningIcon color="warning" sx={{ fontSize: 16, ml: 1, verticalAlign: 'middle' }} /></Tooltip>)}
+                                                    </TableCell>
+                                                    <TableCell align="center">{detail.dosage}</TableCell>
+                                                    <TableCell align="center">{detail.quantity}</TableCell>
+                                                    <TableCell>{formatTime(detail.time)}</TableCell>
+                                                    <TableCell>{detail.note || '—'}</TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </CardContent>
+                    </Card>
+                </Box>
+            ) : (
+                <>
+                    {/* Layout cũ khi không có ảnh */}
+                    <Card sx={{ mb: 3 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
+                            <Grid container spacing={2} sx={{ mt: 1, alignItems: 'center' }}>
+                                <Grid item xs={12} sm={4}><Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography></Grid>
+                                <Grid item xs={12} sm={4}><Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography></Grid>
+                                <Grid item xs={12} sm={4}><Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || '—'}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                    <Card sx={{ mb: 3 }}>
+                        <CardContent sx={{ p: 0 }}>
+                            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
+                                <Stack direction="row" spacing={1}>
+                                    {medicalOrder.status === 'approved' && user.role === "nurse" && (
+                                        <>
+                                            <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
+                                                Cho uống thuốc ({numSelected})
+                                            </Button>
+                                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>
+                                                Thêm thuốc mới
+                                            </Button>
+                                        </>
+                                    )}
+                                </Stack>
+                            </Box>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell padding="checkbox">
+                                                {medicalOrder.status === 'approved' && <Tooltip title="Chọn/Bỏ chọn tất cả"><Checkbox color="primary" indeterminate={numSelected > 0 && numSelected < rowCount} checked={rowCount > 0 && numSelected === rowCount} onChange={handleSelectAllClick} /></Tooltip>}
+                                            </TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Liều lượng</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {medicalOrderDetails.map((detail) => {
+                                            const isItemSelected = !!selectionForRecord[detail._id];
+                                            return (
+                                                <TableRow key={detail._id} hover role="checkbox" tabIndex={-1} selected={isItemSelected}>
+                                                    <TableCell padding="checkbox">
+                                                        {medicalOrder.status === 'approved' && <Checkbox color="primary" checked={isItemSelected} onChange={() => handleSelectionChange(detail)} disabled={detail.quantity <= 0} />}
+                                                    </TableCell>
+                                                    <TableCell sx={{ fontWeight: 500 }}>
+                                                        {detail.medicineName}
+                                                        {detail.quantity <= 2 && (<Tooltip title="Số lượng sắp hết!"><WarningIcon color="warning" sx={{ fontSize: 16, ml: 1, verticalAlign: 'middle' }} /></Tooltip>)}
+                                                    </TableCell>
+                                                    <TableCell align="center">{detail.dosage}</TableCell>
+                                                    <TableCell align="center">{detail.quantity}</TableCell>
+                                                    <TableCell>{formatTime(detail.time)}</TableCell>
+                                                    <TableCell>{detail.note || '—'}</TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </CardContent>
+                    </Card>
+                </>
+            )}
+
+
 
             {/* THAY ĐỔI: Khôi phục lại đầy đủ phần Lịch sử sử dụng thuốc */}
             {usageHistory && usageHistory.length > 0 && (
@@ -504,7 +611,14 @@ const MedicalOrderDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={isAddNewModalOpen} onClose={handleCloseAddNewModal} PaperProps={{ sx: { width: '35%' } }}>
+            <Dialog open={isAddNewModalOpen} onClose={handleCloseAddNewModal} PaperProps={{
+                sx: {
+                    position: 'absolute',
+                    right: 70,
+                    top: 90,
+                    width: 500,
+                }
+            }}>
                 <DialogTitle>Thêm thuốc mới vào đơn</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ pt: 1 }}>
