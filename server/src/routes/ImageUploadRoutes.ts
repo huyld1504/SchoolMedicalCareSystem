@@ -28,7 +28,7 @@ const upload = multer({
 
 router.post(
   '/upload',
- [transform(), auth()],
+  [transform(), auth()],
   upload.single('image'),
   async (req: Request, res: Response): Promise<void> => {
     try {
@@ -90,7 +90,7 @@ router.post(
   async (req: Request, res: Response): Promise<void> => {
     try {
       const files = req.files as Express.Multer.File[];
-      
+
       if (!files || files.length === 0) {
         res.status(400).json({
           success: false,
@@ -132,7 +132,7 @@ router.post(
           errors: failedUploads.map(f => f.uploadResult.error),
         });
         return;
-      }      
+      }
       const successCount = successUploads.length;
       const totalCount = files.length;
 
@@ -180,7 +180,7 @@ router.post(
         return;
       }
 
-      const timestamp = Date.now();      const publicId = fileName ? 
+      const timestamp = Date.now(); const publicId = fileName ?
         `${timestamp}-${fileName}` : `${timestamp}-image`;
       const uploadFolder = folder ?? 'school-medical-care/uploads';
 
@@ -235,8 +235,8 @@ router.delete(
       }
 
       // Decode publicId nếu được encode
-      const decodedPublicId = decodeURIComponent(publicId);
-      const deleted = await cloudinaryService.deleteImage(decodedPublicId);
+      // const decodedPublicId = decodeURIComponent(publicId);
+      const deleted = await cloudinaryService.deleteImage(publicId);
 
       if (deleted) {
         res.status(200).json({

@@ -64,13 +64,12 @@ export const createMedicalOrderWithDetailsSchema = Joi.object({
   medicalOrder: medicalOrderSchema.required(),
   medicalOrderDetails: Joi.array()
     .items(medicalOrderDetailSchema)
-    .min(1)
-    .required()
+    // .min(1)
     .messages({
       "array.base": "Medical order details must be an array",
       "array.min": "At least one medical order detail is required",
       "any.required": "Medical order details are required",
-    }),
+    }).default([]),
 });
 
 export const additionalDetailsSchema = Joi.object({
