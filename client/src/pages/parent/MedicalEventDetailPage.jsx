@@ -16,11 +16,17 @@ import {
   TableCell,
   TableRow,
   TableHead,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  CardMedia,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
   MedicalServices as MedicalIcon,
   Event as EventIcon,
+  Image as ImageIcon,
+  ZoomIn as ZoomInIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
@@ -30,7 +36,8 @@ import {
   getMedicalEventLevelLabel,
   getRawMedicalEventLevelColor,
   getRawMedicalEventStatusColor,
-  getMedicalEventStatusLabel
+  getMedicalEventStatusLabel,
+  getMedicalEventTypeColor,
 } from '../../utils/colorUtils';
 
 const MedicalEventDetailPage = () => {
@@ -41,6 +48,7 @@ const MedicalEventDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [medicalEvent, setMedicalEvent] = useState(null);
+  const [imageViewOpen, setImageViewOpen] = useState(false);
 
   // Check if data was passed via state
   const passedEventData = location.state?.eventData;
@@ -135,6 +143,10 @@ const MedicalEventDetailPage = () => {
     return getMedicalEventTypeLabel(type);
   };
 
+  const getEventTypeColor = (type) => {
+    return getMedicalEventTypeColor(type);
+  };
+
   const getLevelColor = (level) => {
     return getRawMedicalEventLevelColor(level);
   };
@@ -149,29 +161,6 @@ const MedicalEventDetailPage = () => {
 
   const getStatusLabel = (status) => {
     return getMedicalEventStatusLabel(status);
-  };
-
-  const getChildDisplayName = () => {
-    if (passedChildData && passedChildData.name) {
-      return passedChildData.name;
-    }
-    return 'N/A';
-  };
-
-  const getChildDisplayInfo = () => {
-    if (passedChildData) {
-      return {
-        name: passedChildData.name || 'N/A',
-        studentId: passedChildData.studentCode || 'N/A',
-        birthDate: passedChildData.birthdate || 'N/A'
-      };
-    }
-    return {
-      name: 'N/A',
-      studentId: 'N/A',
-      class: 'N/A',
-      birthDate: 'N/A'
-    };
   };
 
   if (loading) {
@@ -231,7 +220,7 @@ const MedicalEventDetailPage = () => {
           <Table sx={{ '& .MuiTableCell-root': { fontSize: '1rem', py: 2.5 } }}>
             <TableBody>
               <TableRow>
-                <TableCell sx={{ fontWeight: 600, width: '25%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>Ngày sự kiện:</TableCell>
+                <TableCell sx={{ fontWeight: 600, width: '25%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>Ngày diễn ra sự kiện:</TableCell>
                 <TableCell sx={{ fontSize: '1rem' }}>{formatDate(medicalEvent.dateHappened || medicalEvent.createdAt)}</TableCell>
               </TableRow>
 
@@ -270,7 +259,7 @@ const MedicalEventDetailPage = () => {
               <TableRow>
                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Loại sự kiện:</TableCell>
                 <TableCell>
-                  <Typography sx={{ fontSize: '1rem' }}>
+                  <Typography sx={{ fontSize: '1rem', color: getEventTypeColor(medicalEvent.type), fontWeight: 600 }}>
                     {getEventTypeLabel(medicalEvent.type)}
                   </Typography>
                 </TableCell>
@@ -349,6 +338,56 @@ const MedicalEventDetailPage = () => {
                 </TableRow>
               )}
 
+              {/* Hình ảnh sự kiện y tế */}
+              {medicalEvent.imageURL ? (
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Hình ảnh sự kiện:</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Box sx={{ position: 'relative' }}>
+                        <CardMedia
+                          component="img"
+                          src={medicalEvent.imageURL}
+                          alt="Hình ảnh sự kiện y tế"
+                          sx={{
+                            width: 150,
+                            height: 110,
+                            objectFit: 'cover',
+                            borderRadius: 2,
+                            border: '2px solid #e0e0e0',
+                            cursor: 'pointer',
+                            transition: 'transform 0.2s',
+                            '&:hover': {
+                              transform: 'scale(1.05)',
+                              boxShadow: 3,
+                              border: '2px solid #1976d2'
+                            }
+                          }}
+                          onClick={() => setImageViewOpen(true)}
+                        />
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: 'primary.main', fontWeight: 500, mb: 1 }}>
+                          Click ảnh để xem chi tiết
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Hình ảnh sự kiện:</TableCell>
+                  <TableCell>
+                    <Chip
+                      icon={<ImageIcon />}
+                      label="Không có hình ảnh"
+                      color="default"
+                      sx={{ fontSize: '0.95rem', px: 2, py: 1 }}
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+
               <TableRow>
                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Trạng thái:</TableCell>
                 <TableCell>
@@ -370,6 +409,41 @@ const MedicalEventDetailPage = () => {
           </Table>
         </CardContent>
       </Card>
+      {/* Image Preview Modal */}
+      <Dialog
+        open={imageViewOpen}
+        onClose={() => setImageViewOpen(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {medicalEvent?.imageURL && (
+            <Box
+              component="img"
+              src={medicalEvent.imageURL}
+              alt="Ảnh đơn thuốc chi tiết"
+              sx={{
+                width: '100%',
+                height: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain'
+              }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            onClick={() => setImageViewOpen(false)}
+            color="primary"
+            variant="contained"
+            size="large"
+            sx={{ fontSize: '1rem', px: 4, py: 1 }}
+          >
+            Đóng
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Container>
   );
 };

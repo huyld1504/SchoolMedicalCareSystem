@@ -232,9 +232,6 @@ const MedicalOrderDetailPage = () => {
               <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 0, fontSize: '1.8rem' }}>
                 Chi tiết đơn thuốc
               </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '1rem', mt: 0.5 }}>
-                Mã đơn: #{medicalOrder._id?.slice(-8)?.toUpperCase() || 'N/A'}
-              </Typography>
             </Box>
           </Box>
 
@@ -374,25 +371,9 @@ const MedicalOrderDetailPage = () => {
                                 }}
                                 onClick={() => setImageViewOpen(true)}
                               />
-                              <IconButton
-                                size="small"
-                                sx={{
-                                  position: 'absolute',
-                                  top: 4,
-                                  right: 4,
-                                  bgcolor: 'rgba(0,0,0,0.8)',
-                                  color: 'white',
-                                  '&:hover': { bgcolor: 'rgba(0,0,0,0.9)' },
-                                  width: 28,
-                                  height: 28
-                                }}
-                                onClick={() => setImageViewOpen(true)}
-                              >
-                                <ZoomInIcon fontSize="small" />
-                              </IconButton>
                             </Box>
                             <Typography variant="body2" sx={{ ml: 1, color: 'primary.main', fontWeight: 500, fontSize: '0.95rem' }}>
-                              Click để xem ảnh lớn
+                              Click ảnh để xem chi tiết
                             </Typography>
                           </Box>
                         </TableCell>
