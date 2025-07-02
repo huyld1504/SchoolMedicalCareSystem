@@ -714,4 +714,34 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       totalPages: Math.ceil(total / queryBuilder.getLimit())
     };
   }
+  /**
+   * Cancel pending participations when campaign is completed
+   * Chức năng: Tự động hủy tất cả phiếu tham gia có parentConsent = 'pending' 
+   * khi chiến dịch kết thúc (status = 'completed')
+   * 
+   * Business Rule: Khi chiến dịch kết thúc, tất cả phiếu chưa được phụ huynh 
+   * đồng ý sẽ tự động chuyển thành 'canceled'
+   * 
+   * @param campaignId - ID của chiến dịch đã hoàn thành
+   * @returns Promise<number> - Số lượng phiếu đã được cập nhật
+   */  public async cancelPendingParticipations(
+    campaignId: string,
+  ): Promise<number> {
+    const result = await VaccinationParticipation.updateMany(
+      {
+        campaign: new Types.ObjectId(campaignId),
+        parentConsent: 'pending',
+        vaccinationStatus: { $ne: 'completed' }, // Không cập nhật nếu đã tiêm
+      },
+      {
+        $set: {
+          parentConsent: 'canceled',
+          vaccinationStatus: 'canceled',
+          parentConsentDate: new Date(),
+        },
+      },
+    );
+
+    return result.modifiedCount;
+  }
 }

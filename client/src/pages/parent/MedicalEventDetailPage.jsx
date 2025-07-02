@@ -45,7 +45,7 @@ const MedicalEventDetailPage = () => {
   // Check if data was passed via state
   const passedEventData = location.state?.eventData;
   const passedChildData = location.state?.childData;
-  console.log('📦 Passed event data:', passedEventData)
+  console.log('📦 Passed event data:', passedEventData);
   console.log('📦 Passed child data:', passedChildData);
   useEffect(() => {
     const loadMedicalEvent = async () => {
@@ -69,12 +69,10 @@ const MedicalEventDetailPage = () => {
 
         console.log('🔄 Fetching event data from API...');
         // Fallback to API call if no data passed
-        const response = await medicalEventAPI.getEventsByStudentId(eventId, {
-          page: 1,
-          limit: 10
-        });
-        if (response && response.data && response.data.records && response.data.records) {
-          setMedicalEvent(response.data.records);
+        const response = await medicalEventAPI.getEventById(eventId);
+        console.log(response);
+        if (response && response.data) {
+          setMedicalEvent(response.data);
           console.log("Medical Events:", response.data.records);
         } else {
           setError('Không tìm thấy thông tin sự kiện y tế');

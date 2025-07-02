@@ -27,7 +27,7 @@ export const updateCampaignSchema = Joi.object({
     otherwise: Joi.date().iso().optional(),
   }),
   status: Joi.string()
-    .valid('planned', 'ongoing', 'completed', 'cancelled')
+    .valid('planned', 'ongoing', 'completed', 'canceled')
     .optional(),
 });
 
@@ -38,7 +38,7 @@ export const addStudentsToCampaignSchema = Joi.object({
 
 // Schema cho phụ huynh đồng ý/từ chối với business rules validation
 export const parentConsentSchema = Joi.object({
-  consent: Joi.string().valid('approved', 'denied').required(),
+  consent: Joi.string().valid('approved', 'denied', 'canceled').required(),
   note: Joi.string().max(500).allow('').optional(), // Cho phép empty string
 });
 

@@ -34,7 +34,14 @@ class VaccinationService {
     updateData: Partial<IVaccinationCampaign>,
     adminId: string
   ): Promise<void> {
+    const campaign = await this.campaignRepo.findById(campaignId);
+    if (!campaign) {
+      throw new ApplicationError("Campaign not found");
+    }
     await this.campaignRepo.updateCampaign(campaignId, updateData, adminId);
+    if (updateData.status === 'completed' || updateData.status === 'canceled') {
+      await this.participationRepo.cancelPendingParticipations(campaignId);
+    }
   }
 
   /**
@@ -140,7 +147,7 @@ class VaccinationService {
 
     if (participation.vaccinationStatus === "completed") {
       throw new ApplicationError("This student has already been vaccinated");
-    }    return this.participationRepo.recordVaccination(
+    } return this.participationRepo.recordVaccination(
       participationId,
       nurseId,
       status,
@@ -189,34 +196,6 @@ class VaccinationService {
     return this.participationRepo.getStudentsWithPendingConsent(
       campaignId,
       options
-    );
-  }
-
-  /**
-   * Get approved students ready for vaccination (for nurse)
-   */
-  async getApprovedStudentsForVaccination(
-    campaignId: string,
-    options: PaginationOptions
-  ): Promise<PaginationResult<IVaccinationParticipation>> {
-    return this.participationRepo.getApprovedStudentsForVaccination(
-      campaignId,
-      options
-    );
-  }
-
-  /**
-   * Update campaign status (Admin only)
-   */
-  async updateCampaignStatus(
-    campaignId: string,
-    status: string,
-    adminId: string
-  ): Promise<IVaccinationCampaign | null> {
-    return this.campaignRepo.updateCampaign(
-      campaignId,
-      { status } as Partial<IVaccinationCampaign>,
-      adminId
     );
   }
 
