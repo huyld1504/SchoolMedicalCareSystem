@@ -296,7 +296,9 @@ const MedicalEventDetailPage = () => {
                                                 <TableRow sx={{ bgcolor: '#f5f5f5' }}>
                                                     <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Tên</TableCell>
                                                     <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Mã học sinh</TableCell>
-                                                    <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Giới tính</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Tên phụ huynh</TableCell>
+                                                    <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Số điện thoại phụ huynh</TableCell>
+
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -305,9 +307,10 @@ const MedicalEventDetailPage = () => {
                                                     const studentData = student.studentId || student;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td': { border: 0 } }}>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.name || 'N/A'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.studentCode || studentData.code || 'N/A'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.gender === 'male' ? 'Nam' : studentData.gender === 'female' ? 'Nữ' : 'N/A'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.name || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.studentCode || studentData.code || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.userId.name || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData?.userId?.phone || 'Không có thông tin'}</TableCell>
                                                         </TableRow>
                                                     );
                                                 })}
@@ -349,24 +352,6 @@ const MedicalEventDetailPage = () => {
                                 <TableCell sx={{ fontSize: '1rem' }}>{getDisplayValue(medicalEvent.userId?.name)}</TableCell>
                             </TableRow>
 
-                            {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && medicalEvent.studentJoin[0].studentId?.userId && (
-                                <TableRow>
-                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin phụ huynh:</TableCell>
-                                    <TableCell sx={{ fontSize: '1rem' }}>
-                                        <Box>
-                                            <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                                                <strong>Tên:</strong> {getDisplayValue(medicalEvent.studentJoin[0].studentId.userId?.name)}
-                                            </Typography>
-                                            {medicalEvent.studentJoin[0].studentId.userId?.email && (
-                                                <Typography variant="body1" sx={{ fontSize: '1rem', mt: 0.5 }}>
-                                                    <strong>Email:</strong> {medicalEvent.studentJoin[0].studentId.userId.email}
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                    </TableCell>
-                                </TableRow>
-                            )}
-
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Mô tả chi tiết:</TableCell>
                                 <TableCell sx={{ maxWidth: '500px' }}>
@@ -392,46 +377,39 @@ const MedicalEventDetailPage = () => {
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Hình ảnh:</TableCell>
                                 <TableCell>
                                     {(() => {
-                                        // Support both imageURL (single) and imageUrl (array)
-                                        const singleImage = medicalEvent.imageURL || medicalEvent.imageUrl;
-                                        const imageArray = Array.isArray(medicalEvent.imageUrl) ? medicalEvent.imageUrl : 
-                                                         (singleImage ? [singleImage] : []);
+                                        const imageUrl = medicalEvent.imageURL || medicalEvent.imageUrl;
                                         
-                                        if (imageArray.length > 0) {
+                                        if (imageUrl) {
                                             return (
-                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                                                    {imageArray.map((imageUrl, index) => (
-                                                        <Box
-                                                            key={index}
-                                                            sx={{
-                                                                border: '1px solid #e0e0e0',
-                                                                borderRadius: 1,
-                                                                overflow: 'hidden',
-                                                                cursor: 'pointer',
-                                                                '&:hover': {
-                                                                    boxShadow: 2
-                                                                }
-                                                            }}
-                                                        >
-                                                            <img
-                                                                src={imageUrl}
-                                                                alt={`Hình ảnh sự kiện y tế ${index + 1}`}
-                                                                style={{
-                                                                    width: 200,
-                                                                    height: 150,
-                                                                    objectFit: 'contain',
-                                                                    display: 'block'
-                                                                }}
-                                                                onClick={() => {
-                                                                    window.open(imageUrl, '_blank');
-                                                                }}
-                                                                onError={(e) => {
-                                                                    e.target.style.display = 'none';
-                                                                    console.error('Failed to load image:', imageUrl);
-                                                                }}
-                                                            />
-                                                        </Box>
-                                                    ))}
+                                                <Box 
+                                                    sx={{
+                                                        border: '1px solid #e0e0e0',
+                                                        borderRadius: 1,
+                                                        overflow: 'hidden',
+                                                        cursor: 'pointer',
+                                                        display: 'inline-block',
+                                                        '&:hover': {
+                                                            boxShadow: 2
+                                                        }
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt="Hình ảnh"
+                                                        style={{
+                                                            width: 300,
+                                                            height: 200,
+                                                            objectFit: 'contain',
+                                                            display: 'block'
+                                                        }}
+                                                        onClick={() => {
+                                                            window.open(imageUrl, '_blank');
+                                                        }}
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            console.error('Failed to load image:', imageUrl);
+                                                        }}
+                                                    />
                                                 </Box>
                                             );
                                         } else {

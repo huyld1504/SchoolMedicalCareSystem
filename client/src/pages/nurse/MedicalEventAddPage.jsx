@@ -126,8 +126,12 @@ const MedicalEventAddPage = () => {
                             studentCode: student.studentCode || '',
                             gender: student.gender || '',
                             userId: student.userId,
-                            medicalConverageId: student.medicalConverageId
+                            medicalConverageId: student.medicalConverageId,
+                            parentName: student.userId?.name || 'N/A',
+                            parentEmail: student.userId?.email || 'N/A'
                         };
+                        
+                        console.log('StudentData userId details:', student.userId);
                         setStudentsJoin([studentData]);
                     }
                 }
@@ -151,8 +155,6 @@ const MedicalEventAddPage = () => {
             navigate('/nurse/medical-events');
         }
     };
-
-
 
     // Image upload functions
     const handleImageSelect = (event) => {
@@ -356,13 +358,19 @@ const MedicalEventAddPage = () => {
                 console.log('Found student:', student);
                 
                 if (student) {
+                    // Log the userId information to understand its structure
+                    console.log('Student userId details:', student.userId);
+                    
                     const foundStudentData = {
                         id: student._id || student.id || Math.random().toString(36).substr(2, 9),
                         name: student.name || student.fullName || student.studentName || 'Không có tên',
                         studentCode: student.studentCode || student.code || student.studentId || 'Không có mã',
                         gender: student.gender || student.sex || 'N/A',
                         userId: student.userId,
-                        medicalConverageId: student.medicalConverageId
+                        medicalConverageId: student.medicalConverageId,
+                        // Explicitly extract parent information
+                        parentName: student.userId?.name || 'N/A',
+                        parentEmail: student.userId?.email || 'N/A'
                     };
                     
                     setFoundStudent(foundStudentData);
@@ -401,7 +409,18 @@ const MedicalEventAddPage = () => {
             return;
         }
 
-        setStudentsJoin(prev => [...prev, foundStudent]);
+        // Create a complete student object with parent information
+        const studentToAdd = {
+            ...foundStudent,
+            // Make sure userId structure is maintained for compatibility
+            userId: foundStudent.userId ? {
+                ...foundStudent.userId,
+                name: foundStudent.parentName || foundStudent.userId.name || 'N/A',
+                email: foundStudent.parentEmail || foundStudent.userId.email || 'N/A'
+            } : null
+        };
+
+        setStudentsJoin(prev => [...prev, studentToAdd]);
         handleClearSearch();
         toast.success(`Đã thêm học sinh ${foundStudent.name} thành công`);
     };
@@ -517,12 +536,10 @@ const MedicalEventAddPage = () => {
                                                             {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A'}
                                                         </TableCell>
                                                         <TableCell align="center" sx={{ fontSize: '0.75rem', py: 1 }}>
-                                                            {student.userId && typeof student.userId === 'object' ? (
-                                                                <Box>
-                                                                    <div>{student.userId.name || 'N/A'}</div>
-                                                                    <div style={{ color: '#666', fontSize: '0.7rem' }}>{student.userId.email || 'N/A'}</div>
-                                                                </Box>
-                                                            ) : 'N/A'}
+                                                            <Box>
+                                                                <div>{student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'N/A')}</div>
+                                                                <div style={{ color: '#666', fontSize: '0.7rem' }}>{student.parentEmail || (student.userId && typeof student.userId === 'object' ? student.userId.email : 'N/A')}</div>
+                                                            </Box>
                                                         </TableCell>
                                                         <TableCell align="center" sx={{ py: 1 }}>
                                                             <IconButton 
@@ -609,24 +626,22 @@ const MedicalEventAddPage = () => {
                                                         <strong>Giới tính:</strong> {foundStudent.gender === 'male' ? 'Nam' : foundStudent.gender === 'female' ? 'Nữ' : 'N/A'}
                                                     </Typography>
                                                 </Box>
-                                                
-                                                {/* Hiển thị thông tin phụ huynh nếu có */}
-                                                {foundStudent.userId && typeof foundStudent.userId === 'object' && (
-                                                    <Box sx={{ mt: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
-                                                        <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                                            Thông tin phụ huynh:
-                                                        </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 3 }}>
-                                                            <Typography variant="body2">
-                                                                <strong>Tên:</strong> {foundStudent.userId?.name || 'N/A'}
-                                                            </Typography>
-                                                            <Typography variant="body2">
-                                                                <strong>Email:</strong> {foundStudent.userId.email || 'N/A'}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Box>
-                                                )}
 
+                                                {/* Hiển thị thông tin phụ huynh */}
+                                                <Box sx={{ mt: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                                        Thông tin phụ huynh:
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', gap: 3 }}>
+                                                        <Typography variant="body2">
+                                                            <strong>Tên:</strong> {foundStudent.parentName || 'N/A'}
+                                                        </Typography>
+                                                        <Typography variant="body2">
+                                                            <strong>Email:</strong> {foundStudent.parentEmail || 'N/A'}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                                
                                                 <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
                                                     Nhấn "THÊM HỌC SINH" để thêm vào danh sách
                                                 </Typography>
@@ -649,19 +664,17 @@ const MedicalEventAddPage = () => {
                             </TableRow>
 
                             {/* Hiển thị thông tin phụ huynh */}
-                            {studentsJoin.length > 0 && studentsJoin[0].userId && typeof studentsJoin[0].userId === 'object' && (
+                            {studentsJoin.length > 0 && (
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin phụ huynh:</TableCell>
                                 <TableCell sx={{ fontSize: '1rem' }}>
                                     <Box>
                                         <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                                            <strong>Tên:</strong> {getDisplayValue(studentsJoin[0].userId?.name)}
+                                            <strong>Tên:</strong> {getDisplayValue(studentsJoin[0].parentName || (studentsJoin[0].userId && typeof studentsJoin[0].userId === 'object' ? studentsJoin[0].userId.name : null))}
                                         </Typography>
-                                        {studentsJoin[0].userId?.email && (
-                                            <Typography variant="body1" sx={{ fontSize: '1rem', mt: 0.5 }}>
-                                                <strong>Email:</strong> {studentsJoin[0].userId.email}
-                                            </Typography>
-                                        )}
+                                        <Typography variant="body1" sx={{ fontSize: '1rem', mt: 0.5 }}>
+                                            <strong>Email:</strong> {getDisplayValue(studentsJoin[0].parentEmail || (studentsJoin[0].userId && typeof studentsJoin[0].userId === 'object' ? studentsJoin[0].userId.email : null))}
+                                        </Typography>
                                     </Box>
                                 </TableCell>
                             </TableRow>
