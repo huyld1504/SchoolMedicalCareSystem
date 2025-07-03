@@ -16,6 +16,7 @@ export const addUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(20).required(),
   roleId: Joi.string().required(),
+  phone: Joi.string().allow("").max(10).optional(), // Optional phone number
 });
 
 export const addChildSchema = Joi.object({

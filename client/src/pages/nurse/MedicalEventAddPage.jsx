@@ -307,8 +307,7 @@ const MedicalEventAddPage = () => {
             console.log(`Searching for student with ${searchType}:`, searchTerm.trim());
             const response = await studentsApi.getAllStudents({
                 keyword: searchTerm.trim(),
-                page: 1,
-                populate: 'userId' // Thêm populate để lấy thông tin user
+                page: 1
             });
 
             console.log('API response:', response);
@@ -351,8 +350,9 @@ const MedicalEventAddPage = () => {
             gender: student.gender || '',
             userId: student.userId,
             medicalConverageId: student.medicalConverageId,
-            parentName: student.userId?.name || 'N/A',
-            parentEmail: student.userId?.email || 'N/A'
+            parentName: student.userId?.name || 'Không có thông tin',
+            parentEmail: student.userId?.email || 'Không có thông tin',
+            parentPhone: student.userId?.phone || 'Không có thông tin'
         };
 
         setStudentsJoin(prev => [...prev, studentToAdd]);
@@ -474,28 +474,31 @@ const MedicalEventAddPage = () => {
                                             <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: '4px', mb: 2 }}>
                                                 <TableHead>
                                                     <TableRow sx={{ bgcolor: '#f5f5f5' }}>
-                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Tên</TableCell>
-                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Mã học sinh</TableCell>
-                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Giới tính</TableCell>
-                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Phụ huynh</TableCell>
-                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Thao tác</TableCell>
+                                                        <TableCell align="start" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Tên</TableCell>
+                                                        <TableCell align="start" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Mã học sinh</TableCell>
+                                                        <TableCell align="start" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Giới tính</TableCell>
+                                                        <TableCell align="start" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Phụ huynh</TableCell>
+                                                        <TableCell align="start" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Số điện thoại</TableCell>
+                                                        <TableCell align="start" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Thao tác</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
                                                     {studentsJoin.map((student) => (
                                                         <TableRow key={student.id} sx={{ '&:last-child td': { border: 0 } }}>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'N/A'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'N/A'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>
+                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'N/A'}</TableCell>
+                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'N/A'}</TableCell>
+                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>
                                                                 {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A'}
                                                             </TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.75rem', py: 1 }}>
+                                                            <TableCell align="start" sx={{ fontSize: '0.75rem', py: 1 }}>
                                                                 <Box>
-                                                                    <div>{student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'N/A')}</div>
-                                                                    <div style={{ color: '#666', fontSize: '0.7rem' }}>{student.parentEmail || (student.userId && typeof student.userId === 'object' ? student.userId.email : 'N/A')}</div>
+                                                                    <div>{student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'Không có thông tin')}</div>
                                                                 </Box>
                                                             </TableCell>
-                                                            <TableCell align="center" sx={{ py: 1 }}>
+                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>
+                                                                <div style={{ color: '#666', fontSize: '1rem' }}>{student.parentPhone || (student.userId && typeof student.userId === 'object' ? student.userId.phone : 'Không có thông tin')}</div>
+                                                            </TableCell>
+                                                            <TableCell align="start" sx={{ py: 1 }}>
                                                                 <IconButton
                                                                     size="small"
                                                                     color="error"
@@ -587,7 +590,7 @@ const MedicalEventAddPage = () => {
                                                         Đang tìm kiếm:
                                                         {searchStudentCode.trim() && ` Mã HS: "${searchStudentCode.trim()}"`}
                                                         {searchStudentCode.trim() && searchStudentName.trim() && ' hoặc '}
-                                                        {searchStudentName.trim() && ` Tên: "${searchStudentName.trim()}"`}
+                                                        {searchStudentName.trim() && ` Tên HS: "${searchStudentName.trim()}"`}
                                                     </Typography>
                                                 </Box>
                                             )}
@@ -623,7 +626,7 @@ const MedicalEventAddPage = () => {
                                                                     <Box sx={{ flex: 1 }}>
                                                                         <Box sx={{ display: 'flex', gap: 3, mb: 1 }}>
                                                                             <Typography variant="body2">
-                                                                                <strong>Tên:</strong> {student.name || 'N/A'}
+                                                                                <strong>Tên HS:</strong> {student.name || 'N/A'}
                                                                             </Typography>
                                                                             <Typography variant="body2">
                                                                                 <strong>Mã HS:</strong> {student.studentCode || 'N/A'}
@@ -640,10 +643,13 @@ const MedicalEventAddPage = () => {
                                                                             </Typography>
                                                                             <Box sx={{ display: 'flex', gap: 3 }}>
                                                                                 <Typography variant="caption">
-                                                                                    <strong>Tên:</strong> {student.userId?.name || 'N/A'}
+                                                                                    <strong>Tên:</strong> {student.userId?.name || 'Không có thông tin'}
                                                                                 </Typography>
                                                                                 <Typography variant="caption">
-                                                                                    <strong>Email:</strong> {student.userId?.email || 'N/A'}
+                                                                                    <strong>Email:</strong> {student.userId?.email || 'Không có thông tin'}
+                                                                                </Typography>
+                                                                                <Typography variant="caption">
+                                                                                    <strong>Số điện thoại:</strong> {student.userId?.phone || 'Không có thông tin'}
                                                                                 </Typography>
                                                                             </Box>
                                                                         </Box>
