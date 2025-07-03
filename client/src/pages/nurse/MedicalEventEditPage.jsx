@@ -138,7 +138,8 @@ const MedicalEventEditPage = () => {
                     id: studentData._id || studentData.id || Math.random().toString(36).substr(2, 9),
                     name: studentData.name || '',
                     studentCode: studentData.studentCode || studentData.code || '',
-                    gender: studentData.gender || ''
+                    gender: studentData.gender || '',
+                    userId: studentData.userId || null,
                 };
             });
             setStudentsJoin(students);
@@ -321,7 +322,7 @@ const MedicalEventEditPage = () => {
                 studentJoin: studentsJoin.map(student => ({
                     studentId: student.id
                 })),
-                imageURL: formData.imageURL
+                imageURL: formData.imageURL || ""
             };
 
             console.log('Updating medical event with data:', updateData);
@@ -576,10 +577,10 @@ const MedicalEventEditPage = () => {
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'Không có thông tin'}</TableCell>
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'Không có thông tin'}</TableCell>
                                                             <TableCell align="center" sx={{ fontSize: '0.75rem', py: 1 }}>
-                                                                <div>{student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'Không có thông tin')}</div>
+                                                                {student?.userId?.name || "Không có thông tin"}
                                                             </TableCell>
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>
-                                                                <div>{student.parentPhone || (student.userId && typeof student.userId === 'object' ? student.userId.phone : 'Không có thông tin')}</div>
+                                                                {student?.userId?.phone || "Không có thông tin"}
                                                             </TableCell>
                                                             <TableCell align="center" sx={{ py: 1 }}>
                                                                 <IconButton

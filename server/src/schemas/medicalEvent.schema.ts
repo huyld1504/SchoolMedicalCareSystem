@@ -75,5 +75,5 @@ export const updateMedicalEventSchema = Joi.object({
   imageURL: Joi.string().uri().optional().messages({
     "string.base": "Image URL must be a string.",
     "string.uri": "Image URL must be a valid URI."
-  })
+  }).allow("").default("")
 });
