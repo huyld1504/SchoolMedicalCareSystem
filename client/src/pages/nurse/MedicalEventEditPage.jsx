@@ -355,66 +355,6 @@ const MedicalEventEditPage = () => {
         }
     };
 
-    const handleBackWithData = (updatedEventData) => {
-        if (studentId) {
-            // Nếu có studentId, chuyển đến trang chi tiết với dữ liệu cập nhật
-            navigate(`/nurse/medical-events/${studentId}/detail/${eventId}`, {
-                state: {
-                    eventData: updatedEventData,
-                    updated: true
-                }
-            });
-        } else {
-            // Chuyển đến trang chi tiết (không phụ thuộc vào previous path)
-            navigate(`/nurse/medical-events/detail/${eventId}`, {
-                state: {
-                    eventData: updatedEventData,
-                    updated: true
-                }
-            });
-        }
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return 'Không có thông tin';
-        return new Date(dateString).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
-
-    const getDisplayValue = (value) => {
-        if (value === null || value === undefined) return 'Không có thông tin';
-        if (value === '') return 'Không có';
-        return value;
-    };
-
-    const hasValue = (value) => {
-        return value !== null && value !== undefined && value !== '' && String(value).trim() !== '';
-    };
-
-    const getEventTypeLabel = (type) => {
-        // API trả về trực tiếp tiếng Việt, chỉ cần return luôn
-        // Chỉ có 3 loại: cấp cứu, chấn thương, bệnh
-        return type || 'Không xác định';
-    };
-
-    const getLevelLabel = (level) => {
-        switch (parseInt(level)) {
-            case 3:
-                return 'Khẩn cấp';
-            case 2:
-                return 'Trung bình';
-            case 1:
-                return 'Nhẹ';
-            default:
-                return 'Không xác định';
-        }
-    };
-
     // Functions để quản lý học sinh tham gia
     const handleSearchStudent = async (searchTerm, searchType = 'general') => {
         if (!searchTerm.trim()) {
@@ -475,7 +415,7 @@ const MedicalEventEditPage = () => {
             medicalConverageId: student.medicalConverageId,
             parentName: student.userId?.name || 'Không có thông tin',
             parentEmail: student.userId?.email || 'Không có thông tin',
-            parentName: student.userId?.phone || 'Không có thông tin',
+            parentPhone: student.userId?.phone || 'Không có thông tin',
         };
 
         setStudentsJoin(prev => [...prev, studentToAdd]);
