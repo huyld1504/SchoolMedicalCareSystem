@@ -68,7 +68,7 @@ const CreateMedicalOrderPage = () => {
             startDate: new Date().toISOString().split('T')[0],
             endDate: '',
             note: 'None',
-            imageURL: null // Add field for prescription image
+            imageURL: "" // Add field for prescription image
         },
         medicalOrderDetails: [
             {
@@ -319,6 +319,7 @@ const CreateMedicalOrderPage = () => {
             if (!uploadedImageUrl) {
                 setError('Vui lòng tải lên ảnh đơn thuốc');
                 setLoading(false);
+                toast.error('❌ Vui lòng tải lên ảnh đơn thuốc');
                 return;
             }
         } else {
@@ -870,7 +871,7 @@ const CreateMedicalOrderPage = () => {
                             <Box
                                 component="img"
                                 src={uploadedImageUrl}
-                                alt="Prescription Full View"
+                                alt="Ảnh đơn thuốc chi tiết"
                                 sx={{
                                     width: '100%',
                                     height: 'auto',

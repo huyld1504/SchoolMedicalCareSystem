@@ -24,7 +24,7 @@ export const medicalOrderSchema = Joi.object({
   imageURL: Joi.string().uri().optional().messages({
     "string.base": "Image URL must be a string",
     "string.uri": "Image URL must be a valid URI",
-  }),
+  }).allow("").default(""),
 });
 export const medicalOrderDetailSchema = Joi.object({
   _id: Joi.string().hex().length(24).optional().messages({

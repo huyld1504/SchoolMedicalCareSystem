@@ -23,7 +23,8 @@ import {
   DialogContent,
   DialogActions,
   CardMedia,
-  Stack
+  Stack,
+  DialogTitle,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -38,7 +39,8 @@ import {
   CalendarToday as CalendarIcon,
   ThumbUp,
   Image as ImageIcon,
-  ZoomIn as ZoomInIcon
+  ZoomIn as ZoomInIcon,
+  Close
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
@@ -565,32 +567,38 @@ const MedicalOrderDetailPage = () => {
         <Dialog
           open={imageViewOpen}
           onClose={() => setImageViewOpen(false)}
-          maxWidth="lg"
+          maxWidth="md"
           fullWidth
         >
+          <DialogTitle>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="h6">Ảnh đơn thuốc</Typography>
+              <IconButton
+                onClick={() => setImageViewOpen(false)}
+                size="small"
+              >
+                <Close />
+              </IconButton>
+            </Stack>
+          </DialogTitle>
           <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {medicalOrder?.imageURL && (
               <Box
                 component="img"
                 src={medicalOrder.imageURL}
-                alt="Ảnh đơn thuốc chi tiết"
+                alt="Ảnh đơn thuốc chi tiết"  
                 sx={{
                   width: '100%',
                   height: 'auto',
-                  maxHeight: '100%',
+                  borderRadius: 1,
+                  maxHeight: '70vh',
                   objectFit: 'contain'
                 }}
               />
             )}
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
-            <Button
-              onClick={() => setImageViewOpen(false)}
-              color="primary"
-              variant="contained"
-              size="large"
-              sx={{ fontSize: '1rem', px: 4, py: 1 }}
-            >
+            <Button onClick={() => setImageViewOpen(false)}>
               Đóng
             </Button>
           </DialogActions>

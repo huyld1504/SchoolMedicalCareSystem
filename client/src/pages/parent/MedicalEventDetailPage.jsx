@@ -20,6 +20,8 @@ import {
   DialogContent,
   DialogActions,
   CardMedia,
+  DialogTitle,
+  Stack
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -27,6 +29,7 @@ import {
   Event as EventIcon,
   Image as ImageIcon,
   ZoomIn as ZoomInIcon,
+  Close
 } from '@mui/icons-material';
 import { useNavigate, useParams, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
@@ -413,9 +416,20 @@ const MedicalEventDetailPage = () => {
       <Dialog
         open={imageViewOpen}
         onClose={() => setImageViewOpen(false)}
-        maxWidth="lg"
+        maxWidth="md"
         fullWidth
       >
+        <DialogTitle>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">Ảnh đơn thuốc</Typography>
+            <IconButton
+              onClick={() => setImageViewOpen(false)}
+              size="small"
+            >
+              <Close />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
         <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {medicalEvent?.imageURL && (
             <Box
@@ -424,21 +438,16 @@ const MedicalEventDetailPage = () => {
               alt="Ảnh đơn thuốc chi tiết"
               sx={{
                 width: '100%',
-                height: '100%',
-                maxHeight: '100%',
+                height: 'auto',
+                borderRadius: 1,
+                maxHeight: '70vh',
                 objectFit: 'contain'
               }}
             />
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button
-            onClick={() => setImageViewOpen(false)}
-            color="primary"
-            variant="contained"
-            size="large"
-            sx={{ fontSize: '1rem', px: 4, py: 1 }}
-          >
+          <Button onClick={() => setImageViewOpen(false)}>
             Đóng
           </Button>
         </DialogActions>

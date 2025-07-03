@@ -458,6 +458,7 @@ const MedicalEventsPage = () => {
                       <TableCell sx={{ fontWeight: 'bold' }}>STT</TableCell>
                       <TableCell sx={{ fontWeight: 'bold' }}>Ngày xảy ra</TableCell>
                       <TableCell sx={{ fontWeight: 'bold' }}>Con em</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold' }}>Mã học sinh</TableCell>
                       <TableCell sx={{ fontWeight: 'bold' }}>Loại sự kiện</TableCell>
                       <TableCell sx={{ fontWeight: 'bold' }}>Mức độ</TableCell>
                       <TableCell sx={{ fontWeight: 'bold' }}>Mô tả</TableCell>
@@ -469,16 +470,8 @@ const MedicalEventsPage = () => {
                       <TableRow key={event._id} hover>
                         <TableCell>{(appliedSearch.page - 1) * appliedSearch.limit + index + 1}</TableCell>
                         <TableCell>{formatDate(event.dateHappened)}</TableCell>
-                        <TableCell>
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {event.childInfo?.name || 'N/A'}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {event.childInfo?.studentCode || 'N/A'}
-                            </Typography>
-                          </Box>
-                        </TableCell>
+                        <TableCell>{event.childInfo?.name || 'N/A'}</TableCell>
+                        <TableCell>{event.childInfo?.studentCode || 'N/A'}</TableCell>
                         <TableCell>{getTypeChip(event.type)}</TableCell>
                         <TableCell>{getLevelChip(event.level)}</TableCell>
                         <TableCell>
