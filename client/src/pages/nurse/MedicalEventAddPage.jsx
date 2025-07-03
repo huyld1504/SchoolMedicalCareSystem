@@ -20,6 +20,7 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    Dialog,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -72,6 +73,10 @@ const MedicalEventAddPage = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [uploadingImage, setUploadingImage] = useState(false);
+
+    // Image modal state
+    const [openImageModal, setOpenImageModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
     useEffect(() => {
         const loadData = async () => {
             if (studentId) {
@@ -164,10 +169,15 @@ const MedicalEventAddPage = () => {
         try {
             const file = event.target.files[0];
             if (file) {
+                // Set loading state
+                setUploadingImage(true);
+                toast.info('Đang tải ảnh lên...');
+
                 // Validate file type
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                 if (!allowedTypes.includes(file.type)) {
                     toast.error('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)');
+                    setUploadingImage(false);
                     return;
                 }
 
@@ -175,8 +185,10 @@ const MedicalEventAddPage = () => {
                 const maxSize = 5 * 1024 * 1024; // 5MB
                 if (file.size > maxSize) {
                     toast.error('Kích thước file không được vượt quá 5MB');
+                    setUploadingImage(false);
                     return;
                 }
+
                 const response = await cloudinaryApi.uploadImage(file);
                 console.log(response);
                 if (response.success) {
@@ -188,29 +200,36 @@ const MedicalEventAddPage = () => {
                         imageURL: response.data.imageUrl // Set the image URL in formData
                     }));
                     toast.success(response.message || 'Tải ảnh lên thành công');
-                    setUploadingImage(false);
+                } else {
+                    toast.error(response.message || 'Lỗi khi tải ảnh lên');
                 }
-                setSelectedImage();
-
+                setUploadingImage(false);
             }
         } catch (error) {
             console.log(error);
             toast.error(error.message || 'Lỗi khi tải ảnh lên');
+            setUploadingImage(false);
+        } finally {
+            // Reset input file
+            const fileInput = document.getElementById('image-upload-input');
+            if (fileInput) {
+                fileInput.value = '';
+            }
         }
     };
     const handleRemoveImage = async () => {
         try {
+            const response = await cloudinaryApi.deleteImage(imagePublicId);
+            console.log(response);
+            if (response.success) {
+                toast.success(response.message || 'Xóa ảnh thành công');
+            }
             setSelectedImage(null);
             setImagePreview(null);
             setFormData(prev => ({
                 ...prev,
                 imageURL: '' // Clear the image URL from formData
             }));
-            const response = await cloudinaryApi.deleteImage(imagePublicId);
-            console.log(response);
-            if (response.success) {
-                toast.success(response.message || 'Xóa ảnh thành công');
-            }
             // Reset input file
             const fileInput = document.getElementById('image-upload-input');
             if (fileInput) {
@@ -219,6 +238,17 @@ const MedicalEventAddPage = () => {
         } catch (error) {
             toast.error(error.message || 'Lỗi khi xóa ảnh');
         }
+    };
+
+    // Image modal handlers
+    const handleImageClick = (imageUrl) => {
+        setModalImageUrl(imageUrl);
+        setOpenImageModal(true);
+    };
+
+    const handleCloseImageModal = () => {
+        setOpenImageModal(false);
+        setModalImageUrl('');
     };
 
     const handleSubmit = async () => {
@@ -511,7 +541,8 @@ const MedicalEventAddPage = () => {
                                                     ))}
                                                 </TableBody>
                                             </Table>
-                                        )}                                        {/* Form thêm học sinh mới */}
+                                        )}
+                                        {/* Form thêm học sinh mới */}
                                         <Box>
                                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1, flexWrap: 'wrap' }}>
                                                 <TextField
@@ -670,7 +701,8 @@ const MedicalEventAddPage = () => {
                                                         ))}
                                                     </Box>
                                                 </Box>
-                                            )}                                            {/* Hiển thị khi không tìm thấy */}
+                                            )}
+                                            {/* Hiển thị khi không tìm thấy */}
                                             {searchStatus === 'not-found' && (searchStudentCode.trim() || searchStudentName.trim()) && (
                                                 <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                                                     <Typography variant="body2">
@@ -684,23 +716,6 @@ const MedicalEventAddPage = () => {
                                         </Box>
                                     </TableCell>
                                 </TableRow>
-
-                                {/* Hiển thị thông tin phụ huynh */}
-                                {studentsJoin.length > 0 && (
-                                    <TableRow>
-                                        <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin phụ huynh:</TableCell>
-                                        <TableCell sx={{ fontSize: '1rem' }}>
-                                            <Box>
-                                                <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                                                    <strong>Tên:</strong> {getDisplayValue(studentsJoin[0].parentName || (studentsJoin[0].userId && typeof studentsJoin[0].userId === 'object' ? studentsJoin[0].userId.name : null))}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ fontSize: '1rem', mt: 0.5 }}>
-                                                    <strong>Email:</strong> {getDisplayValue(studentsJoin[0].parentEmail || (studentsJoin[0].userId && typeof studentsJoin[0].userId === 'object' ? studentsJoin[0].userId.email : null))}
-                                                </Typography>
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
 
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
@@ -796,48 +811,7 @@ const MedicalEventAddPage = () => {
                                     </TableCell>
                                     <TableCell>
                                         <Box>
-                                            {/* Upload button */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                                <Button
-                                                    variant="outlined"
-                                                    component="label"
-                                                    startIcon={<UploadIcon />}
-                                                    disabled={uploadingImage}
-                                                    sx={{ minWidth: 160 }}
-                                                >
-                                                    {uploadingImage ? 'Đang tải...' : 'Chọn ảnh'}
-                                                    <input
-                                                        id="image-upload-input"
-                                                        type="file"
-                                                        hidden
-                                                        accept="image/*"
-                                                        onChange={handleImageSelect}
-                                                    />
-                                                </Button>                                                {selectedImage && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        <ImageIcon sx={{ color: 'success.main' }} />
-                                                        <Typography variant="body2" sx={{ color: 'success.main' }}>
-                                                            {selectedImage.name}
-                                                        </Typography>
-                                                        <Button
-                                                            variant="outlined"
-                                                            size="small"
-                                                            color="error"
-                                                            onClick={handleRemoveImage}
-                                                            sx={{
-                                                                minWidth: 'auto',
-                                                                px: 2,
-                                                                '&:hover': {
-                                                                    backgroundColor: 'error.light',
-                                                                    color: 'white'
-                                                                }
-                                                            }}
-                                                        >
-                                                            Xóa ảnh
-                                                        </Button>
-                                                    </Box>
-                                                )}
-                                            </Box>                                            {/* Image preview */}
+                                            {/* Image preview */}
                                             {imagePreview && (
                                                 <Box sx={{
                                                     mt: 2,
@@ -875,12 +849,17 @@ const MedicalEventAddPage = () => {
                                                             maxHeight: '200px',
                                                             objectFit: 'contain',
                                                             borderRadius: 1,
-                                                            border: '1px solid #ddd'
+                                                            border: '1px solid #ddd',
+                                                            cursor: 'pointer',
+                                                            '&:hover': {
+                                                                opacity: 0.8
+                                                            }
                                                         }
                                                     }}>
                                                         <img
                                                             src={imagePreview}
                                                             alt="Preview"
+                                                            onClick={() => handleImageClick(imagePreview)}
                                                         />
                                                     </Box>
                                                 </Box>
@@ -895,6 +874,26 @@ const MedicalEventAddPage = () => {
                                             }}>
                                                 Chấp nhận file: JPEG, PNG, GIF. Kích thước tối đa: 5MB
                                             </Typography>
+
+                                            {/* Upload button */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Button
+                                                    variant="outlined"
+                                                    component="label"
+                                                    startIcon={<UploadIcon />}
+                                                    disabled={uploadingImage}
+                                                    sx={{ minWidth: 160 }}
+                                                >
+                                                    {uploadingImage ? 'Đang tải...' : 'Chọn ảnh'}
+                                                    <input
+                                                        id="image-upload-input"
+                                                        type="file"
+                                                        hidden
+                                                        accept="image/*"
+                                                        onChange={handleImageSelect}
+                                                    />
+                                                </Button>
+                                            </Box>
                                         </Box>
                                     </TableCell>
                                 </TableRow>
@@ -950,6 +949,61 @@ const MedicalEventAddPage = () => {
                     </CardContent>
                 </Card>
             </Container>
+
+            {/* Image Modal */}
+            <Dialog
+                open={openImageModal}
+                onClose={handleCloseImageModal}
+                maxWidth={false}
+                sx={{
+                    '& .MuiDialog-paper': {
+                        margin: 0,
+                        maxHeight: '100vh',
+                        maxWidth: '100vw',
+                        overflow: 'hidden'
+                    }
+                }}
+            >
+                <Box
+                    sx={{
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '50vh',
+                        maxHeight: '100vh',
+                        width: 'auto',
+                        overflow: 'hidden',
+                        p: 2
+                    }}
+                >
+                    {modalImageUrl && (
+                        <img
+                            src={modalImageUrl}
+                            alt="Zoom"
+                            style={{
+                                maxWidth: 'min(95vw, 1200px)',
+                                maxHeight: 'min(90vh, 800px)',
+                                width: 'auto',
+                                height: 'auto',
+                                objectFit: 'contain',
+                                display: 'block'
+                            }}
+                        />
+                    )}
+                    <Button
+                        onClick={handleCloseImageModal}
+                        variant="contained"
+                        sx={{
+                            mt: 2,
+                            position: 'sticky'
+                        }}
+                    >
+                        Đóng
+                    </Button>
+                </Box>
+            </Dialog>
         </LocalizationProvider>
     );
 };

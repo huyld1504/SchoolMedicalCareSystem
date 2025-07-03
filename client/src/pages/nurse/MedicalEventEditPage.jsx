@@ -209,6 +209,14 @@ const MedicalEventEditPage = () => {
                     return;
                 }
 
+                setUploadingImage(true);
+
+                // Nếu có ảnh hiện tại, tự động xóa nó trước khi tải ảnh mới
+                if (existingImageUrl) {
+                    setExistingImageUrl(null);
+                    console.log('Đã xóa ảnh hiện tại để thay thế bằng ảnh mới');
+                }
+
                 const response = await cloudinaryApi.uploadImage(file);
                 console.log(response);
                 if (response.success) {
@@ -220,13 +228,15 @@ const MedicalEventEditPage = () => {
                         imageURL: response.data.imageUrl
                     }));
                     toast.success(response.message || 'Tải ảnh lên thành công');
-                    setUploadingImage(false);
+                } else {
+                    toast.error(response.message || 'Lỗi khi tải ảnh lên');
                 }
-                setSelectedImage();
             }
         } catch (error) {
             console.log(error);
             toast.error(error.message || 'Lỗi khi tải ảnh lên');
+        } finally {
+            setUploadingImage(false);
         }
     };
 
@@ -241,13 +251,6 @@ const MedicalEventEditPage = () => {
 
     const handleRemoveImage = async () => {
         try {
-            setSelectedImage('');
-            setImagePreview('');
-            setFormData(prev => ({
-                ...prev,
-                imageURL: ''
-            }));
-
             if (imagePublicId) {
                 const response = await cloudinaryApi.deleteImage(imagePublicId);
                 console.log(response);
@@ -255,6 +258,13 @@ const MedicalEventEditPage = () => {
                     toast.success(response.message || 'Xóa ảnh thành công');
                 }
             }
+
+            setSelectedImage('');
+            setImagePreview('');
+            setFormData(prev => ({
+                ...prev,
+                imageURL: ''
+            }));
 
             // Reset input file
             const fileInput = document.getElementById('image-upload-input-edit');
@@ -465,7 +475,7 @@ const MedicalEventEditPage = () => {
             medicalConverageId: student.medicalConverageId,
             parentName: student.userId?.name || 'Không có thông tin',
             parentEmail: student.userId?.email || 'Không có thông tin',
-             parentName: student.userId?.phone || 'Không có thông tin',
+            parentName: student.userId?.phone || 'Không có thông tin',
         };
 
         setStudentsJoin(prev => [...prev, studentToAdd]);
@@ -645,7 +655,7 @@ const MedicalEventEditPage = () => {
                                                 </TableBody>
                                             </Table>
                                         )}
-                                        
+
                                         {/* Form thêm học sinh mới */}
                                         <Box>
                                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1, flexWrap: 'wrap' }}>
@@ -781,6 +791,9 @@ const MedicalEventEditPage = () => {
                                                                                 </Typography>
                                                                                 <Typography variant="caption">
                                                                                     <strong>Email:</strong> {student.userId?.email || 'Không có thông tin'}
+                                                                                </Typography>
+                                                                                <Typography variant="caption">
+                                                                                    <strong>Số điện thoại:</strong> {student.userId?.phone || 'Không có thông tin'}
                                                                                 </Typography>
                                                                             </Box>
                                                                         </Box>
@@ -921,8 +934,8 @@ const MedicalEventEditPage = () => {
                                     </TableCell>
                                     <TableCell>
                                         <Box>
-                                            {/* Existing image display */}
-                                            {(existingImageUrl || selectedImage) && (
+                                            {/* Hiển thị ảnh hiện tại (chỉ khi có ảnh hiện tại và chưa chọn ảnh mới) */}
+                                            {existingImageUrl && !selectedImage && (
                                                 <Box sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, bgcolor: 'grey.50' }}>
                                                     <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                                                         Ảnh hiện tại:
@@ -954,53 +967,8 @@ const MedicalEventEditPage = () => {
                                                 </Box>
                                             )}
 
-                                            {/* Upload new image */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                                <Button
-                                                    variant="outlined"
-                                                    component="label"
-                                                    startIcon={<UploadIcon />}
-                                                    disabled={uploadingImage}
-                                                    sx={{ minWidth: 160 }}
-                                                >
-                                                    {uploadingImage ? 'Đang tải...' : selectedImage ? 'Đổi ảnh khác' : 'Chọn ảnh mới'}
-                                                    <input
-                                                        id="image-upload-input-edit"
-                                                        type="file"
-                                                        hidden
-                                                        accept="image/*"
-                                                        onChange={handleImageSelect}
-                                                    />
-                                                </Button>
-
-                                                {selectedImage && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        <ImageIcon sx={{ color: 'success.main' }} />
-                                                        <Typography variant="body2" sx={{ color: 'success.main' }}>
-                                                            {selectedImage.name}
-                                                        </Typography>
-                                                        <Button
-                                                            variant="outlined"
-                                                            size="small"
-                                                            color="error"
-                                                            onClick={handleRemoveImage}
-                                                            sx={{
-                                                                minWidth: 'auto',
-                                                                px: 2,
-                                                                '&:hover': {
-                                                                    backgroundColor: 'error.light',
-                                                                    color: 'white'
-                                                                }
-                                                            }}
-                                                        >
-                                                            Xóa ảnh
-                                                        </Button>
-                                                    </Box>
-                                                )}
-                                            </Box>
-
-                                            {/* New image preview */}
-                                            {imagePreview && (
+                                            {/* Hiển thị ảnh mới đã chọn */}
+                                            {imagePreview && selectedImage && (
                                                 <Box sx={{
                                                     mt: 2,
                                                     p: 2,
@@ -1010,7 +978,7 @@ const MedicalEventEditPage = () => {
                                                 }}>
                                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                                                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                                            Xem trước ảnh mới:
+                                                            Ảnh mới đã chọn:
                                                         </Typography>
                                                         <Button
                                                             variant="outlined"
@@ -1050,6 +1018,26 @@ const MedicalEventEditPage = () => {
                                                     </Box>
                                                 </Box>
                                             )}
+
+                                            {/* Upload new image */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, mt: 3 }}>
+                                                <Button
+                                                    variant="outlined"
+                                                    component="label"
+                                                    startIcon={<UploadIcon />}
+                                                    disabled={uploadingImage}
+                                                    sx={{ minWidth: 160 }}
+                                                >
+                                                    {uploadingImage ? 'Đang tải...' : 'Chọn ảnh mới'}
+                                                    <input
+                                                        id="image-upload-input-edit"
+                                                        type="file"
+                                                        hidden
+                                                        accept="image/*"
+                                                        onChange={handleImageSelect}
+                                                    />
+                                                </Button>
+                                            </Box>
 
                                             {/* Upload guidelines */}
                                             <Typography variant="caption" sx={{
@@ -1115,9 +1103,9 @@ const MedicalEventEditPage = () => {
                 </Card>
 
                 {/* Image Modal */}
-                <Dialog 
-                    open={openImageModal} 
-                    onClose={() => setOpenImageModal(false)} 
+                <Dialog
+                    open={openImageModal}
+                    onClose={() => setOpenImageModal(false)}
                     maxWidth={false}
                     sx={{
                         '& .MuiDialog-paper': {
@@ -1128,11 +1116,11 @@ const MedicalEventEditPage = () => {
                         }
                     }}
                 >
-                    <Box 
-                        sx={{ 
+                    <Box
+                        sx={{
                             position: 'relative',
-                            display: 'flex', 
-                            flexDirection: 'column', 
+                            display: 'flex',
+                            flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
                             minHeight: '50vh',
@@ -1145,9 +1133,9 @@ const MedicalEventEditPage = () => {
                         <img
                             src={modalImageUrl}
                             alt="Zoom"
-                            style={{ 
-                                maxWidth: 'min(95vw, 1200px)', 
-                                maxHeight: 'min(90vh, 800px)', 
+                            style={{
+                                maxWidth: 'min(95vw, 1200px)',
+                                maxHeight: 'min(90vh, 800px)',
                                 width: 'auto',
                                 height: 'auto',
                                 objectFit: 'contain',
@@ -1155,9 +1143,9 @@ const MedicalEventEditPage = () => {
                             }}
                         />
                         <Button
-                            onClick={() => setOpenImageModal(false)} 
+                            onClick={() => setOpenImageModal(false)}
                             variant="contained"
-                            sx={{ 
+                            sx={{
                                 mt: 2,
                                 position: 'sticky',
                                 bottom: 0
