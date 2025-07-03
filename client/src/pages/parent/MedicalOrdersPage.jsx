@@ -613,7 +613,6 @@ const MedicalOrdersPage = () => {
                                             <TableCell align="center" sx={{ fontWeight: 600 }}>Số lượng</TableCell>
                                             <TableCell sx={{ fontWeight: 600 }}>Thời gian</TableCell>
                                             <TableCell sx={{ fontWeight: 600 }}>Y tá</TableCell>
-                                            <TableCell sx={{ fontWeight: 600 }}>Ghi chú</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -647,11 +646,6 @@ const MedicalOrdersPage = () => {
                                                                 {record.userId?.name || record.nurseId?.name || 'N/A'}
                                                             </Typography>
                                                         </TableCell>
-                                                        <TableCell>
-                                                            <Typography variant="body2" color="text.secondary">
-                                                                {record.note || item.note || 'Không có ghi chú'}
-                                                            </Typography>
-                                                        </TableCell>
                                                     </TableRow>
                                                 ));
                                             } else {
@@ -680,11 +674,6 @@ const MedicalOrdersPage = () => {
                                                         <TableCell>
                                                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                                                 {record.nurseId?.name || record.userId?.name || 'N/A'}
-                                                            </Typography>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Typography variant="body2" color="text.secondary">
-                                                                {record.note || 'Không có ghi chú'}
                                                             </Typography>
                                                         </TableCell>
                                                     </TableRow>
