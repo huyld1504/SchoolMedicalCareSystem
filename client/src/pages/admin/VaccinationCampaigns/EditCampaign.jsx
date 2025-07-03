@@ -41,6 +41,9 @@ const EditCampaign = () => {
   const [formData, setFormData] = useState({
     vaccineName: '',
     vaccineType: '',
+    vaccineDescription: '',
+    injection: '',
+    dosage: '',
     targetAudience: '',
     startDate: null,
     endDate: null,
@@ -80,6 +83,9 @@ const EditCampaign = () => {
       setFormData({
         vaccineName: campaign.vaccineName || '',
         vaccineType: campaign.vaccineType || '',
+        vaccineDescription: campaign.vaccineDescription || '',
+        injection: campaign.injection || '',
+        dosage: campaign.dosage || '',
         targetAudience: campaign.targetAudience || '',
         startDate: campaign.startDate ? new Date(campaign.startDate) : null,
         endDate: campaign.endDate ? new Date(campaign.endDate) : null,
@@ -139,6 +145,9 @@ const EditCampaign = () => {
     } const submitData = {
       vaccineName: formData.vaccineName,
       vaccineType: formData.vaccineType,
+      vaccineDescription: formData.vaccineDescription,
+      injection: formData.injection,
+      dosage: formData.dosage,
       targetAudience: formData.targetAudience,
       startDate: formData.startDate ? formData.startDate.toISOString() : null,
       endDate: formData.endDate ? formData.endDate.toISOString() : null,
@@ -232,6 +241,41 @@ const EditCampaign = () => {
                   onChange={(e) => handleInputChange('targetAudience', e.target.value)}
                   error={!!errors.targetAudience}
                   helperText={errors.targetAudience}
+                />
+              </Grid>
+
+              {/* Vaccine Description */}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Mô tả vaccine"
+                  multiline
+                  rows={3}
+                  value={formData.vaccineDescription}
+                  onChange={(e) => handleInputChange('vaccineDescription', e.target.value)}
+                  placeholder="Nhập mô tả chi tiết về vaccine..."
+                />
+              </Grid>
+
+              {/* Injection Method */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phương pháp tiêm"
+                  value={formData.injection}
+                  onChange={(e) => handleInputChange('injection', e.target.value)}
+                  placeholder="Ví dụ: Tiêm bắp, Tiêm dưới da..."
+                />
+              </Grid>
+
+              {/* Dosage */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Liều lượng"
+                  value={formData.dosage}
+                  onChange={(e) => handleInputChange('dosage', e.target.value)}
+                  placeholder="Ví dụ: 0.5ml, 1 liều..."
                 />
               </Grid>
 
