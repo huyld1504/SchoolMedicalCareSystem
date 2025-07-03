@@ -232,20 +232,23 @@ const CreateMedicalOrderPage = () => {
         if (!uploadedImagePublicId) return;
 
         try {
-            // await deleteImage(uploadedImagePublicId);
-            setUploadedImageUrl(null);
-            setUploadedImagePublicId(null);
-
-            // Update form data
-            setFormData(prev => ({
-                ...prev,
-                medicalOrder: {
-                    ...prev.medicalOrder,
-                    imageURL: null
-                }
-            }));
-
-            toast.success('✅ Đã xóa ảnh thành công!');
+            const res = await deleteImage(uploadedImagePublicId);
+            console.log(res);
+            if (res.success) {
+                toast.success(res.message);
+                setUploadedImageUrl(null);
+                setUploadedImagePublicId(null);
+                // Update form data
+                setFormData(prev => ({
+                    ...prev,
+                    medicalOrder: {
+                        ...prev.medicalOrder,
+                        prescriptionImageUrl: null
+                    }
+                }));
+            } else {
+                toast.error(res.message || 'Xóa ảnh thất bại');
+            }
         } catch (err) {
             console.error('Delete image error:', err);
             toast.error('❌ Có lỗi xảy ra khi xóa ảnh');
