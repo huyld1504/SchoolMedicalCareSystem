@@ -16,6 +16,7 @@ import {
     TableCell,
     TableHead,
     TableRow,
+    Dialog
 } from '@mui/material';
 import {
     ArrowBack as BackIcon,
@@ -34,102 +35,51 @@ const MedicalEventDetailPage = () => {
     const location = useLocation();
 
     const [medicalEvent, setMedicalEvent] = useState(null);
-    const [studentInfo, setStudentInfo] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); useEffect(() => {
-        // Kiểm tra xem có dữ liệu được truyền qua state không
+    const [error, setError] = useState(null);
+    const [openImageModal, setOpenImageModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+
+    useEffect(() => {
         const eventDataFromState = location.state?.eventData;
         const isUpdated = location.state?.updated;
 
         if (eventDataFromState) {
-            console.log('Using event data from navigation state:', eventDataFromState);
             setMedicalEvent(eventDataFromState);
             setLoading(false);
-
-            // Hiển thị thông báo nếu dữ liệu vừa được cập nhật
-            if (isUpdated) {
-                toast.success('Dữ liệu sự kiện y tế đã được cập nhật');
-            }
-
-            // Vẫn load thông tin student nếu có studentId
-            if (studentId) {
-                loadStudentInfo();
-            } else if (eventDataFromState.studentJoin && eventDataFromState.studentJoin.length > 0) {
-                // Nếu không có studentId từ URL nhưng có trong event data
-                console.log('Setting student info from event data:', eventDataFromState.studentJoin[0].studentId);
-                setStudentInfo(eventDataFromState.studentJoin[0].studentId);
-            }
+            if (isUpdated) toast.success('Dữ liệu sự kiện y tế đã được cập nhật');
         } else {
-            console.log('No event data in state, loading from API/sample data');
             loadMedicalEventDetail();
-            if (studentId) {
-                loadStudentInfo();
-            }
         }
-    }, [eventId, studentId, location.state]); 
-    
+        // eslint-disable-next-line
+    }, [eventId, location.state]);
+
     const loadMedicalEventDetail = async () => {
         try {
             setLoading(true);
             setError(null);
-
-            console.log('Loading medical event detail for eventId:', eventId);
-            console.log('studentId:', studentId);
-
             const response = await medicalEventAPI.getEventById(eventId);
-            console.log('Medical event detail response:', response);
-
             if (response.isSuccess && response.data) {
                 setMedicalEvent(response.data);
             } else {
                 setError('Không tìm thấy sự kiện y tế');
             }
         } catch (error) {
-            console.error('Error loading medical event detail:', error);
             setError('Lỗi khi tải thông tin sự kiện y tế');
         } finally {
             setLoading(false);
         }
-    }; 
-    
-    const loadStudentInfo = async () => {
-        try {
-            if (studentId) {
-                const response = await studentsApi.getStudentById(studentId);
-                if (response.isSuccess && response.data) {
-                    setStudentInfo(response.data);
-                } else {
-                    // Fallback: thử lấy thông tin student từ event data
-                    const eventData = location.state?.eventData;
-                    if (eventData && eventData.studentJoin && eventData.studentJoin.length > 0) {
-                        const studentFromEvent = eventData.studentJoin[0].studentId;
-                        setStudentInfo(studentFromEvent);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error loading student info:', error);
-
-            // Fallback: thử lấy thông tin student từ event data
-            const eventData = location.state?.eventData;
-            if (eventData && eventData.studentJoin && eventData.studentJoin.length > 0) {
-                const studentFromEvent = eventData.studentJoin[0].studentId;
-                setStudentInfo(studentFromEvent);
-            }
-        }
     };
-    
+
     const handleBack = () => {
         if (studentId) {
             navigate(`/nurse/medical-events/${studentId}`);
         } else {
             navigate('/nurse/medical-events');
         }
-    }; 
-    
-    const handleEdit = () => {
-        console.log('Navigating to edit page with event data:', medicalEvent);
+    };
 
+    const handleEdit = () => {
         if (studentId) {
             navigate(`/nurse/medical-events/${studentId}/edit/${eventId}`, {
                 state: {
@@ -147,76 +97,31 @@ const MedicalEventDetailPage = () => {
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-    }; 
-    
-    const getDisplayValue = (value) => {
-        if (value === null || value === undefined) return 'Không có thông tin';
-        if (value === '') return 'Không có thông tin';
-        return value;
-    };
+    const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('vi-VN', {
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
+    }) : 'Không có thông tin';
 
-    const getEventTypeLabel = (type) => {
-        // API trả về trực tiếp tiếng Việt, chỉ cần return luôn
-        // Chỉ có 3 loại: cấp cứu, chấn thương, bệnh
-        return type || 'Không xác định';
-    };
+    const getDisplayValue = (value) => (value === null || value === undefined || value === '') ? 'Không có thông tin' : value;
 
     const getLevelColor = (level) => {
-        switch (level) {
-            case 3:
-                return '#d32f2f'; 
-            case 2:
-                return '#ed6c02'; 
-            case 1:
-                return '#2e7d32'; 
-            default:
-                return '#757575'; 
-        }
-    }; 
-    
+        if (level === 3) return '#d32f2f';
+        if (level === 2) return '#ed6c02';
+        if (level === 1) return '#2e7d32';
+        return '#757575';
+    };
     const getLevelLabel = (level) => {
-        switch (level) {
-            case 3:
-                return 'Khẩn cấp';
-            case 2:
-                return 'Trung bình';
-            case 1:
-                return 'Nhẹ';
-            default:
-                return 'Không xác định';
-        }
-    }; 
-    
+        if (level === 3) return 'Khẩn cấp';
+        if (level === 2) return 'Trung bình';
+        if (level === 1) return 'Nhẹ';
+        return 'Không xác định';
+    };
     const getStatusColor = (status) => {
-        switch (status) {
-            case 'Đã xử lí':
-                return '#2e7d32'; 
-            case 'Đang xử lí':
-                return '#ed6c02'; 
-            case 'Chờ xử lí':
-                return '#d32f2f'; 
-            default:
-                return '#757575'; 
-        }
+        if (status === 'Đã xử lí') return '#2e7d32';
+        if (status === 'Đang xử lí') return '#ed6c02';
+        if (status === 'Chờ xử lí') return '#d32f2f';
+        return '#757575';
     };
-
-    const getStatusLabel = (status) => {
-        // Trả về status từ API hoặc giá trị mặc định
-        if (status === 'Đã xử lí' || status === 'Đang xử lí' || status === 'Chờ xử lí') {
-            return status;
-        }
-        return 'Đã xử lí'; // Giá trị mặc định
-    };
+    const getStatusLabel = (status) => status || 'Đã xử lí';
 
     if (loading) {
         return (
@@ -289,7 +194,7 @@ const MedicalEventDetailPage = () => {
                             </TableRow>
                             {medicalEvent.studentJoin && medicalEvent.studentJoin.length > 0 && (
                                 <TableRow>
-                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Học sinh tham gia: *</TableCell>
+                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin học sinh: *</TableCell>
                                     <TableCell>
                                         <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: '4px' }}>
                                             <TableHead>
@@ -298,19 +203,17 @@ const MedicalEventDetailPage = () => {
                                                     <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Mã học sinh</TableCell>
                                                     <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Tên phụ huynh</TableCell>
                                                     <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 0.2 }}>Số điện thoại phụ huynh</TableCell>
-
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                                 {medicalEvent.studentJoin.map((student, index) => {
-                                                    // Xử lý cả trường hợp có studentId nested và không có
                                                     const studentData = student.studentId || student;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td': { border: 0 } }}>
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.name || 'Không có thông tin'}</TableCell>
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.studentCode || studentData.code || 'Không có thông tin'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.userId.name || 'Không có thông tin'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData?.userId?.phone || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.userId?.name || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 0.2, height: '32px' }}>{studentData.userId?.phone || 'Không có thông tin'}</TableCell>
                                                         </TableRow>
                                                     );
                                                 })}
@@ -322,36 +225,23 @@ const MedicalEventDetailPage = () => {
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Loại sự kiện:</TableCell>
                                 <TableCell>
-                                    <Typography
-                                        sx={{
-                                            fontSize: '1rem'
-                                        }}
-                                    >
-                                        {getEventTypeLabel(medicalEvent.type)}
+                                    <Typography sx={{ fontSize: '1rem' }}>
+                                        {medicalEvent.type || 'Không xác định'}
                                     </Typography>
                                 </TableCell>
                             </TableRow>
-
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Mức độ:</TableCell>
                                 <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: getLevelColor(medicalEvent.level),
-                                            fontWeight: 600,
-                                            fontSize: '1rem'
-                                        }}
-                                    >
+                                    <Typography sx={{ color: getLevelColor(medicalEvent.level), fontWeight: 600, fontSize: '1rem' }}>
                                         {getLevelLabel(medicalEvent.level)}
                                     </Typography>
                                 </TableCell>
                             </TableRow>
-
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Nhân viên xử lý:</TableCell>
                                 <TableCell sx={{ fontSize: '1rem' }}>{getDisplayValue(medicalEvent.userId?.name)}</TableCell>
                             </TableRow>
-
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Mô tả chi tiết:</TableCell>
                                 <TableCell sx={{ maxWidth: '500px' }}>
@@ -361,6 +251,7 @@ const MedicalEventDetailPage = () => {
                                 </TableCell>
                             </TableRow>
 
+                            {/* Ghi chú */}
                             {medicalEvent.note && (
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Ghi chú:</TableCell>
@@ -371,58 +262,7 @@ const MedicalEventDetailPage = () => {
                                     </TableCell>
                                 </TableRow>
                             )}
-                            
-                            {/* Hình ảnh sự kiện */}
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Hình ảnh:</TableCell>
-                                <TableCell>
-                                    {(() => {
-                                        const imageUrl = medicalEvent.imageURL || medicalEvent.imageUrl;
-                                        
-                                        if (imageUrl) {
-                                            return (
-                                                <Box 
-                                                    sx={{
-                                                        border: '1px solid #e0e0e0',
-                                                        borderRadius: 1,
-                                                        overflow: 'hidden',
-                                                        cursor: 'pointer',
-                                                        display: 'inline-block',
-                                                        '&:hover': {
-                                                            boxShadow: 2
-                                                        }
-                                                    }}
-                                                >
-                                                    <img
-                                                        src={imageUrl}
-                                                        alt="Hình ảnh"
-                                                        style={{
-                                                            width: 300,
-                                                            height: 200,
-                                                            objectFit: 'contain',
-                                                            display: 'block'
-                                                        }}
-                                                        onClick={() => {
-                                                            window.open(imageUrl, '_blank');
-                                                        }}
-                                                        onError={(e) => {
-                                                            e.target.style.display = 'none';
-                                                            console.error('Failed to load image:', imageUrl);
-                                                        }}
-                                                    />
-                                                </Box>
-                                            );
-                                        } else {
-                                            return (
-                                                <Typography variant="body1" sx={{ fontSize: '1rem', fontStyle: 'italic', color: 'text.secondary' }}>
-                                                    Không có hình ảnh
-                                                </Typography>
-                                            );
-                                        }
-                                    })()}
-                                </TableCell>
-                            </TableRow>
-                            
+
                             {/* Giải pháp/Điều trị */}
                             {medicalEvent.solution && (
                                 <TableRow>
@@ -434,6 +274,8 @@ const MedicalEventDetailPage = () => {
                                     </TableCell>
                                 </TableRow>
                             )}
+
+                            {/* Triệu chứng */}
                             {medicalEvent.symptoms && (
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Triệu chứng:</TableCell>
@@ -445,6 +287,7 @@ const MedicalEventDetailPage = () => {
                                 </TableRow>
                             )}
 
+                            {/* Trạng thái sự kiện */}
                             {medicalEvent.treatment && (
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Điều trị:</TableCell>
@@ -472,10 +315,94 @@ const MedicalEventDetailPage = () => {
                                     />
                                 </TableCell>
                             </TableRow>
+
+                            {/* Hình ảnh sự kiện */}
+                            {medicalEvent.imageURL && (
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Hình ảnh:</TableCell>
+                                    <TableCell>
+                                        <Box
+                                            sx={{
+                                                border: '1px solid #e0e0e0',
+                                                borderRadius: 1,
+                                                overflow: 'hidden',
+                                                cursor: 'pointer',
+                                                display: 'inline-block',
+                                                '&:hover': { boxShadow: 2 }
+                                            }}
+                                        >
+                                            <img
+                                                src={medicalEvent.imageURL}
+                                                alt="Hình ảnh"
+                                                style={{ width: 300, height: 200, objectFit: 'contain', display: 'block', cursor: 'zoom-in' }}
+                                                onClick={() => {
+                                                    setModalImageUrl(medicalEvent.imageURL);
+                                                    setOpenImageModal(true);
+                                                }}
+                                                onError={e => { e.target.style.display = 'none'; }}
+                                            />
+                                        </Box>
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
             </Card>
+
+            {/* Image Modal */}
+            <Dialog
+                open={openImageModal}
+                onClose={() => setOpenImageModal(false)}
+                maxWidth={false}
+                sx={{
+                    '& .MuiDialog-paper': {
+                        margin: 0,
+                        maxHeight: '100vh',
+                        maxWidth: '100vw',
+                        overflow: 'hidden'
+                    }
+                }}
+            >
+                <Box
+                    sx={{
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '50vh',
+                        maxHeight: '100vh',
+                        width: 'auto',
+                        overflow: 'hidden',
+                        p: 2
+                    }}
+                >
+                    <img
+                        src={modalImageUrl}
+                        alt="Zoom"
+                        style={{
+                            maxWidth: 'min(95vw, 1200px)',
+                            maxHeight: 'min(90vh, 800px)',
+                            width: 'auto',
+                            height: 'auto',
+                            objectFit: 'contain',
+                            display: 'block'
+                        }}
+                    />
+                    <Button
+                        onClick={() => setOpenImageModal(false)}
+                        variant="contained"
+                        sx={{
+                            mt: 2,
+                            position: 'sticky',
+                            bottom: 0
+                        }}
+                    >
+                        Đóng
+                    </Button>
+                </Box>
+            </Dialog>
         </Container>
     );
 };

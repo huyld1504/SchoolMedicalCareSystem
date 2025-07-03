@@ -20,7 +20,7 @@ import {
     InputLabel,
     Select,
     MenuItem,
-    TextareaAutosize,
+    Dialog,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -40,29 +40,38 @@ import { useParams, useNavigate, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalEventAPI from '../../api/medicalEventApi';
 import studentsApi from '../../api/studentsApi';
-import { callAPIFormData } from '../../api/axiosClient';
+import cloudinaryApi from '../../api/cloudinaryApi';
 
 const MedicalEventEditPage = () => {
     const { studentId, eventId } = useParams();
     const navigate = useNavigate();
-    const location = useLocation(); const [medicalEvent, setMedicalEvent] = useState(null);
+    const location = useLocation();
+
+    const [medicalEvent, setMedicalEvent] = useState(null);
     const [studentInfo, setStudentInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState(null);    // State để quản lý học sinh tham gia
+    const [error, setError] = useState(null);
+
+    // State để quản lý học sinh tham gia
     const [studentsJoin, setStudentsJoin] = useState([]);
     const [searchStudentCode, setSearchStudentCode] = useState('');
-    const [foundStudent, setFoundStudent] = useState(null); // Để hiển thị preview học sinh tìm được
-    const [searchStatus, setSearchStatus] = useState(''); // 'searching', 'found', 'not-found', ''
-    const [searchTimeout, setSearchTimeout] = useState(null); // Để debounce search    // Form state
+    const [searchStudentName, setSearchStudentName] = useState('');
+    const [foundStudent, setFoundStudent] = useState([]);
+    const [searchStatus, setSearchStatus] = useState('');
+    const [searchTimeout, setSearchTimeout] = useState(null);
+    const [imagePublicId, setImagePublicId] = useState(null);
+
+    // Form state
     const [formData, setFormData] = useState({
-        dateHappened: null, // Thay đổi từ string thành Date object
+        dateHappened: new Date(),
         type: '',
         level: '',
         description: '',
         solution: '',
         note: '',
-        status: 'Đã xử lí'
+        status: 'Đã xử lí',
+        imageURL: ''
     });
 
     // Image upload state
@@ -70,6 +79,10 @@ const MedicalEventEditPage = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [existingImageUrl, setExistingImageUrl] = useState(null);
+
+    // New state for image modal
+    const [openImageModal, setOpenImageModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
 
     useEffect(() => {
         // Kiểm tra xem có dữ liệu được truyền qua state không
@@ -91,7 +104,9 @@ const MedicalEventEditPage = () => {
                 loadStudentInfo();
             }
         }
-    }, [eventId, studentId, location.state]);    const populateFormData = (eventData) => {
+    }, [eventId, studentId, location.state]);
+
+    const populateFormData = (eventData) => {
         console.log('Populating form data with:', eventData);
         console.log('Event type:', eventData.type);
         console.log('Event level:', eventData.level);
@@ -101,11 +116,13 @@ const MedicalEventEditPage = () => {
             dateHappened: eventData.dateHappened ?
                 new Date(eventData.dateHappened) :
                 new Date(eventData.createdAt),
-            type: eventData.type || '', level: eventData.level?.toString() || '',
+            type: eventData.type || '',
+            level: eventData.level?.toString() || '',
             description: eventData.description || '',
             solution: eventData.solution || '',
             note: eventData.note || '',
-            status: eventData.status || 'Đã xử lí'
+            status: eventData.status || 'Đã xử lí',
+            imageURL: eventData.imageURL || eventData.imageUrl || ''
         });
 
         // Set existing image URL if available
@@ -174,47 +191,82 @@ const MedicalEventEditPage = () => {
     };
 
     // Image upload functions
-    const handleImageSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            // Validate file type
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-            if (!allowedTypes.includes(file.type)) {
-                toast.error('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)');
-                return;
+    const handleImageSelect = async (event) => {
+        try {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    toast.error('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)');
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    toast.error('Kích thước file không được vượt quá 5MB');
+                    return;
+                }
+
+                const response = await cloudinaryApi.uploadImage(file);
+                console.log(response);
+                if (response.success) {
+                    setSelectedImage(file);
+                    setImagePreview(response.data.imageUrl);
+                    setImagePublicId(response.data.publicId);
+                    setFormData(prev => ({
+                        ...prev,
+                        imageURL: response.data.imageUrl
+                    }));
+                    toast.success(response.message || 'Tải ảnh lên thành công');
+                    setUploadingImage(false);
+                }
+                setSelectedImage();
             }
-
-            // Validate file size (max 5MB)
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            if (file.size > maxSize) {
-                toast.error('Kích thước file không được vượt quá 5MB');
-                return;
-            }
-
-            setSelectedImage(file);
-            
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImagePreview(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleRemoveImage = () => {
-        setSelectedImage(null);
-        setImagePreview(null);
-        // Reset input file
-        const fileInput = document.getElementById('image-upload-input-edit');
-        if (fileInput) {
-            fileInput.value = '';
+        } catch (error) {
+            console.log(error);
+            toast.error(error.message || 'Lỗi khi tải ảnh lên');
         }
     };
 
     const handleRemoveExistingImage = () => {
         setExistingImageUrl(null);
-    }; const handleSubmit = async () => {
+        setFormData(prev => ({
+            ...prev,
+            imageURL: ''
+        }));
+        toast.success('Đã xóa ảnh hiện tại');
+    };
+
+    const handleRemoveImage = async () => {
+        try {
+            setSelectedImage('');
+            setImagePreview('');
+            setFormData(prev => ({
+                ...prev,
+                imageURL: ''
+            }));
+
+            if (imagePublicId) {
+                const response = await cloudinaryApi.deleteImage(imagePublicId);
+                console.log(response);
+                if (response.success) {
+                    toast.success(response.message || 'Xóa ảnh thành công');
+                }
+            }
+
+            // Reset input file
+            const fileInput = document.getElementById('image-upload-input-edit');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+        } catch (error) {
+            toast.error(error.message || 'Lỗi khi xóa ảnh');
+        }
+    };
+
+    const handleSubmit = async () => {
         try {
             setSaving(true);
             // Validate required fields (tất cả trừ ghi chú)
@@ -245,7 +297,9 @@ const MedicalEventEditPage = () => {
             if (!(formData.dateHappened instanceof Date) || isNaN(formData.dateHappened.getTime())) {
                 toast.error('Vui lòng chọn ngày và giờ hợp lệ');
                 return;
-            }            // Prepare data for API
+            }
+
+            // Prepare data for API
             const updateData = {
                 dateHappened: formData.dateHappened.toISOString(),
                 type: formData.type,
@@ -254,58 +308,22 @@ const MedicalEventEditPage = () => {
                 solution: formData.solution,
                 note: formData.note,
                 status: formData.status,
-                // Server expect object với studentId bên trong
                 studentJoin: studentsJoin.map(student => ({
                     studentId: student.id
-                }))
+                })),
+                imageURL: formData.imageURL
             };
-
-            // Handle image upload if new image selected
-            if (selectedImage) {
-                try {
-                    setUploadingImage(true);
-                    toast.info('Đang upload ảnh mới...');
-                    
-                    const formDataImage = new FormData();
-                    formDataImage.append('image', selectedImage);
-                    
-                    console.log('Uploading new image:', selectedImage.name, 'Size:', selectedImage.size);
-                    
-                    // Upload image using callAPIFormData
-                    const imageResponse = await callAPIFormData('POST', '/images/upload', formDataImage);
-                    
-                    console.log('Image upload response:', imageResponse);
-                    
-                    if (imageResponse && imageResponse.success && imageResponse.data?.imageUrl) {
-                        updateData.imageURL = imageResponse.data.imageUrl;
-                        console.log('New image uploaded successfully:', updateData.imageURL);
-                        toast.success('Upload ảnh mới thành công');
-                    } else {
-                        console.warn('Image upload failed - Invalid response format:', imageResponse);
-                        toast.warning('Không thể upload ảnh mới - Phản hồi không hợp lệ. Sẽ tiếp tục cập nhật sự kiện.');
-                    }
-                } catch (imageError) {
-                    console.error('Error uploading new image:', imageError);
-                    toast.warning('Lỗi khi upload ảnh mới, nhưng sẽ tiếp tục cập nhật sự kiện');
-                } finally {
-                    setUploadingImage(false);
-                }
-            } else if (existingImageUrl) {
-                // Keep existing image URL if no new image uploaded
-                updateData.imageURL = existingImageUrl;
-            }
 
             console.log('Updating medical event with data:', updateData);
             const response = await medicalEventAPI.update(eventId, updateData);
-            console.log('Update response:', response); if (response.isSuccess) {
+            console.log('Update response:', response);
+
+            if (response.isSuccess) {
                 toast.success('Cập nhật sự kiện y tế thành công');
 
-                // Sau khi chỉnh sửa thành công, luôn trở về trang danh sách sự kiện y tế
                 if (studentId) {
-                    // Nếu có studentId, quay về danh sách sự kiện của học sinh đó
                     navigate(`/nurse/medical-events/${studentId}`);
                 } else {
-                    // Nếu không có studentId, quay về danh sách sự kiện tổng quát
                     navigate('/nurse/medical-events');
                 }
             } else {
@@ -317,27 +335,17 @@ const MedicalEventEditPage = () => {
         } finally {
             setSaving(false);
         }
-    }; const handleBack = () => {
-        const previousPath = location.state?.from;
+    };
 
-        // Nếu người dùng đến từ trang chi tiết, quay về trang chi tiết với dữ liệu
-        if (previousPath && previousPath.includes('/detail/')) {
-            navigate(previousPath, {
-                state: {
-                    eventData: medicalEvent
-                }
-            });
+    const handleBack = () => {
+        if (studentId) {
+            navigate(`/nurse/medical-events/${studentId}`);
         } else {
-            // Nếu không, quay về trang danh sách sự kiện y tế
-            if (studentId) {
-                // Nếu có studentId, quay về danh sách sự kiện của học sinh đó
-                navigate(`/nurse/medical-events/${studentId}`);
-            } else {
-                // Nếu không có studentId, quay về danh sách sự kiện tổng quát
-                navigate('/nurse/medical-events');
-            }
+            navigate('/nurse/medical-events');
         }
-    }; const handleBackWithData = (updatedEventData) => {
+    };
+
+    const handleBackWithData = (updatedEventData) => {
         if (studentId) {
             // Nếu có studentId, chuyển đến trang chi tiết với dữ liệu cập nhật
             navigate(`/nurse/medical-events/${studentId}/detail/${eventId}`, {
@@ -358,7 +366,7 @@ const MedicalEventEditPage = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return 'Không có thông tin';
         return new Date(dateString).toLocaleDateString('vi-VN', {
             year: 'numeric',
             month: '2-digit',
@@ -366,11 +374,15 @@ const MedicalEventEditPage = () => {
             hour: '2-digit',
             minute: '2-digit'
         });
-    }; const getDisplayValue = (value) => {
-        if (value === null || value === undefined) return 'N/A';
+    };
+
+    const getDisplayValue = (value) => {
+        if (value === null || value === undefined) return 'Không có thông tin';
         if (value === '') return 'Không có';
         return value;
-    }; const hasValue = (value) => {
+    };
+
+    const hasValue = (value) => {
         return value !== null && value !== undefined && value !== '' && String(value).trim() !== '';
     };
 
@@ -391,10 +403,12 @@ const MedicalEventEditPage = () => {
             default:
                 return 'Không xác định';
         }
-    };    // Functions để quản lý học sinh tham gia
-    const handleSearchStudent = async (code) => {
-        if (!code.trim()) {
-            setFoundStudent(null);
+    };
+
+    // Functions để quản lý học sinh tham gia
+    const handleSearchStudent = async (searchTerm, searchType = 'general') => {
+        if (!searchTerm.trim()) {
+            setFoundStudent([]);
             setSearchStatus('');
             return;
         }
@@ -402,97 +416,93 @@ const MedicalEventEditPage = () => {
         try {
             setSearchStatus('searching');
 
-            // Tìm kiếm thông tin học sinh từ API bằng keyword
-            console.log('Searching for student with code:', code.trim());
+            console.log(`Searching for student with ${searchType}:`, searchTerm.trim());
             const response = await studentsApi.getAllStudents({
-                keyword: code.trim(),
-                page: 1
+                keyword: searchTerm.trim(),
+                page: 1,
+                populate: 'userId'
             });
 
             console.log('API response:', response);
 
-            // Sửa lại: dữ liệu học sinh nằm trong response.data.records
             const studentsData = response.data?.records || response.data || [];
 
             if (response.isSuccess && studentsData.length > 0) {
                 console.log('Students found:', studentsData);
-
-                // Tìm học sinh có mã chính xác khớp với input (thử tất cả các field có thể)
-                const student = studentsData.find(s => {
-                    // Thử tất cả các field có thể chứa mã học sinh
-                    const possibleCodes = [
-                        s.studentCode,
-                        s.code,
-                        s.studentId,
-                        s.id,
-                        s.mã_học_sinh,
-                        s.student_code
-                    ].filter(Boolean); // Loại bỏ null/undefined
-
-                    const searchCode = code.trim().toLowerCase();
-
-                    return possibleCodes.some(code =>
-                        String(code).toLowerCase() === searchCode
-                    );
-                });
-
-                console.log('Found student:', student);
-
-                if (student) {
-                    const foundStudentData = {
-                        id: student._id || student.id || Math.random().toString(36).substr(2, 9),
-                        name: student.name || student.fullName || student.studentName || 'Không có tên',
-                        studentCode: student.studentCode || student.code || student.studentId || code.trim(),
-                        gender: student.gender || student.sex || 'N/A'
-                    };
-                    setFoundStudent(foundStudentData);
-                    setSearchStatus('found');
-                } else {
-                    console.log('No exact match found. All students:', studentsData);
-                    setFoundStudent(null);
-                    setSearchStatus('not-found');
-                }
+                setFoundStudent(studentsData);
+                setSearchStatus('found');
             } else {
                 console.log('No students found or API error:', response);
-                setFoundStudent(null);
+                setFoundStudent([]);
                 setSearchStatus('not-found');
             }
         } catch (error) {
             console.error('Error finding student:', error);
-            setFoundStudent(null);
+            setFoundStudent([]);
             setSearchStatus('not-found');
         }
     };
 
-    const handleAddStudent = async () => {
-        if (!searchStudentCode.trim()) {
-            toast.error('Vui lòng nhập mã học sinh');
+    const handleAddSpecificStudent = (student) => {
+        if (!student) {
+            toast.error('Thông tin học sinh không hợp lệ');
             return;
         }
 
-        // Kiểm tra xem đã tìm kiếm và có kết quả chưa
-        if (!foundStudent) {
+        const existingStudent = studentsJoin.find(s => s.id === (student._id || student.id));
+        if (existingStudent) {
+            toast.error('Học sinh này đã có trong danh sách');
+            return;
+        }
+
+        // Create a complete student object with parent information
+        const studentToAdd = {
+            id: student._id || student.id,
+            name: student.name || '',
+            studentCode: student.studentCode || '',
+            gender: student.gender || '',
+            userId: student.userId,
+            medicalConverageId: student.medicalConverageId,
+            parentName: student.userId?.name || 'Không có thông tin',
+            parentEmail: student.userId?.email || 'Không có thông tin',
+             parentName: student.userId?.phone || 'Không có thông tin',
+        };
+
+        setStudentsJoin(prev => [...prev, studentToAdd]);
+        toast.success(`Đã thêm học sinh ${student.name} thành công`);
+    };
+
+    const handleAddStudent = async () => {
+        const searchCodeTerm = searchStudentCode.trim();
+        const searchNameTerm = searchStudentName.trim();
+
+        if (!searchCodeTerm && !searchNameTerm) {
+            toast.error('Vui lòng nhập mã học sinh hoặc tên học sinh');
+            return;
+        }
+
+        if (!foundStudent || foundStudent.length === 0) {
             toast.error('Vui lòng tìm kiếm học sinh trước khi thêm');
             return;
         }
 
-        // Kiểm tra xem học sinh đã có trong danh sách chưa
-        const existingStudent = studentsJoin.find(s => s.studentCode === foundStudent.studentCode);
-        if (existingStudent) {
-            toast.error('Học sinh này đã có trong danh sách');
-            return;
-        }        // Thêm học sinh vào danh sách
-        setStudentsJoin(prev => [...prev, foundStudent]);
-        handleClearSearch();
-        toast.success(`Đã thêm học sinh ${foundStudent.name} thành công`);
-    }; const handleRemoveStudent = (studentId) => {
+        // If only one student found, add that student
+        if (foundStudent.length === 1) {
+            handleAddSpecificStudent(foundStudent[0]);
+        } else {
+            toast.info('Có nhiều học sinh được tìm thấy. Vui lòng chọn học sinh cụ thể từ danh sách bên dưới');
+        }
+    };
+
+    const handleRemoveStudent = (studentId) => {
         setStudentsJoin(prev => prev.filter(s => s.id !== studentId));
         toast.success('Đã xóa học sinh khỏi danh sách');
     };
 
-    const handleClearSearch = () => {
+    const handleResetSearch = () => {
         setSearchStudentCode('');
-        setFoundStudent(null);
+        setSearchStudentName('');
+        setFoundStudent([]);
         setSearchStatus('');
     };
 
@@ -526,7 +536,9 @@ const MedicalEventEditPage = () => {
                 </Container>
             </LocalizationProvider>
         );
-    } return (
+    }
+
+    return (
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
             <Container maxWidth="lg" sx={{ py: 3 }}>
                 {/* Header */}
@@ -536,9 +548,10 @@ const MedicalEventEditPage = () => {
                             <BackIcon />
                         </IconButton>
                         <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
-                        <Box>                        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-                            Chỉnh sửa sự kiện y tế
-                        </Typography>
+                        <Box>
+                            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                                Chỉnh sửa sự kiện y tế
+                            </Typography>
                             {/* Chỉ hiển thị thông tin học sinh nếu có dữ liệu thực tế */}
                             {studentInfo && (
                                 <Typography variant="h6" color="text.secondary">
@@ -560,39 +573,40 @@ const MedicalEventEditPage = () => {
                         </Box>
                         <Divider sx={{ mb: 2 }} />
                         <Table sx={{ '& .MuiTableCell-root': { fontSize: '1rem', py: 2.5 } }}>
-                            <TableBody>                            <TableRow>
-                                <TableCell sx={{ fontWeight: 600, width: '25%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                                    Ngày sự kiện: *
-                                </TableCell>
-                                <TableCell sx={{ fontSize: '1rem' }}>
-                                    <DateTimePicker
-                                        value={formData.dateHappened}
-                                        onChange={(newValue) => handleInputChange('dateHappened', newValue)}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                size="small"
-                                                fullWidth
-                                                error={!formData.dateHappened}
-                                                helperText={!formData.dateHappened ? 'Vui lòng chọn ngày và giờ' : ''}
-                                            />
-                                        )}
-                                        ampm={false}
-                                        format="dd/MM/yyyy HH:mm"
-                                        slotProps={{
-                                            textField: {
-                                                size: 'small',
-                                                fullWidth: true,
-                                                error: !formData.dateHappened,
-                                                helperText: !formData.dateHappened ? 'Vui lòng chọn ngày và giờ' : ''
-                                            }
-                                        }}
-                                    />
-                                </TableCell>
-                            </TableRow>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 600, width: '25%', bgcolor: 'grey.50', fontSize: '1.1rem' }}>
+                                        Ngày sự kiện: *
+                                    </TableCell>
+                                    <TableCell sx={{ fontSize: '1rem' }}>
+                                        <DateTimePicker
+                                            value={formData.dateHappened}
+                                            onChange={(newValue) => handleInputChange('dateHappened', newValue)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    size="small"
+                                                    fullWidth
+                                                    error={!formData.dateHappened}
+                                                    helperText={!formData.dateHappened ? 'Vui lòng chọn ngày và giờ' : ''}
+                                                />
+                                            )}
+                                            ampm={false}
+                                            format="dd/MM/yyyy HH:mm"
+                                            slotProps={{
+                                                textField: {
+                                                    size: 'small',
+                                                    fullWidth: true,
+                                                    error: !formData.dateHappened,
+                                                    helperText: !formData.dateHappened ? 'Vui lòng chọn ngày và giờ' : ''
+                                                }
+                                            }}
+                                        />
+                                    </TableCell>
+                                </TableRow>
                                 {/* Quản lý học sinh tham gia */}
                                 <TableRow>
-                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Học sinh tham gia: *</TableCell>
+                                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin học sinh: *</TableCell>
                                     <TableCell>
                                         {/* Danh sách học sinh hiện tại */}
                                         {studentsJoin.length > 0 && (
@@ -601,17 +615,21 @@ const MedicalEventEditPage = () => {
                                                     <TableRow sx={{ bgcolor: '#f5f5f5' }}>
                                                         <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Tên</TableCell>
                                                         <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Mã học sinh</TableCell>
-                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Giới tính</TableCell>
+                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Phụ huynh</TableCell>
+                                                        <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Số điện thoại phụ huynh</TableCell>
                                                         <TableCell align="center" sx={{ fontWeight: 600, fontSize: '0.85rem', py: 1 }}>Thao tác</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
-                                                    {studentsJoin.map((student, index) => (
+                                                    {studentsJoin.map((student) => (
                                                         <TableRow key={student.id} sx={{ '&:last-child td': { border: 0 } }}>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'N/A'}</TableCell>
-                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'N/A'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="center" sx={{ fontSize: '0.75rem', py: 1 }}>
+                                                                <div>{student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'Không có thông tin')}</div>
+                                                            </TableCell>
                                                             <TableCell align="center" sx={{ fontSize: '0.85rem', py: 1 }}>
-                                                                {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A'}
+                                                                <div>{student.parentPhone || (student.userId && typeof student.userId === 'object' ? student.userId.phone : 'Không có thông tin')}</div>
                                                             </TableCell>
                                                             <TableCell align="center" sx={{ py: 1 }}>
                                                                 <IconButton
@@ -627,100 +645,176 @@ const MedicalEventEditPage = () => {
                                                 </TableBody>
                                             </Table>
                                         )}
+                                        
                                         {/* Form thêm học sinh mới */}
-                                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1 }}>
-                                            <TextField
-                                                size="small"
-                                                label="Mã học sinh"
-                                                value={searchStudentCode}
-                                                onChange={(e) => {
-                                                    const newValue = e.target.value;
-                                                    setSearchStudentCode(newValue);
+                                        <Box>
+                                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1, flexWrap: 'wrap' }}>
+                                                <TextField
+                                                    size="small"
+                                                    label="Mã học sinh"
+                                                    value={searchStudentCode}
+                                                    onChange={(e) => {
+                                                        const newValue = e.target.value;
+                                                        setSearchStudentCode(newValue);
 
-                                                    // Clear timeout trước đó
-                                                    if (searchTimeout) {
-                                                        clearTimeout(searchTimeout);
-                                                    }
+                                                        if (searchTimeout) {
+                                                            clearTimeout(searchTimeout);
+                                                        }
 
-                                                    if (newValue.trim()) {
-                                                        // Debounce search sau 500ms
-                                                        const timeout = setTimeout(() => {
-                                                            handleSearchStudent(newValue);
-                                                        }, 500);
-                                                        setSearchTimeout(timeout);
-                                                    } else {
-                                                        setFoundStudent(null);
-                                                        setSearchStatus('');
-                                                    }
-                                                }}
-                                                placeholder="Nhập mã học sinh để tìm kiếm..."
-                                                sx={{ minWidth: 200 }}
-                                                onKeyPress={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        handleAddStudent();
-                                                    }
-                                                }}
-                                            />
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                startIcon={<AddIcon />}
-                                                onClick={handleAddStudent}
-                                                disabled={!foundStudent || searchStatus !== 'found'}
-                                            >
-                                                Thêm học sinh
-                                            </Button>
-                                        </Box>
-                                        {/* Hiển thị trạng thái tìm kiếm */}
-                                        {searchStatus === 'searching' && (
-                                            <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <CircularProgress size={16} />
-                                                    Đang tìm kiếm học sinh...
-                                                </Typography>
+                                                        if (newValue.trim()) {
+                                                            const timeout = setTimeout(() => {
+                                                                handleSearchStudent(newValue, 'studentCode');
+                                                            }, 500);
+                                                            setSearchTimeout(timeout);
+                                                        } else if (!searchStudentName.trim()) {
+                                                            setFoundStudent([]);
+                                                            setSearchStatus('');
+                                                        }
+                                                    }}
+                                                    sx={{ minWidth: 200 }}
+                                                    placeholder="Nhập mã học sinh..."
+                                                    onKeyPress={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            handleAddStudent();
+                                                        }
+                                                    }}
+                                                />
+
+                                                <TextField
+                                                    size="small"
+                                                    label="Tên học sinh"
+                                                    value={searchStudentName}
+                                                    onChange={(e) => {
+                                                        const newValue = e.target.value;
+                                                        setSearchStudentName(newValue);
+
+                                                        if (searchTimeout) {
+                                                            clearTimeout(searchTimeout);
+                                                        }
+
+                                                        if (newValue.trim()) {
+                                                            const timeout = setTimeout(() => {
+                                                                handleSearchStudent(newValue, 'studentName');
+                                                            }, 500);
+                                                            setSearchTimeout(timeout);
+                                                        } else if (!searchStudentCode.trim()) {
+                                                            setFoundStudent([]);
+                                                            setSearchStatus('');
+                                                        }
+                                                    }}
+                                                    sx={{ minWidth: 200 }}
+                                                    placeholder="Nhập tên học sinh..."
+                                                    onKeyPress={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            handleAddStudent();
+                                                        }
+                                                    }}
+                                                />
+                                                <Button
+                                                    variant='contained'
+                                                    onClick={handleResetSearch}
+                                                >
+                                                    Xóa bộ lọc
+                                                </Button>
                                             </Box>
-                                        )}
 
-                                        {/* Hiển thị thông tin học sinh tìm được */}
-                                        {searchStatus === 'found' && foundStudent && (
-                                            <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                                    Tìm thấy học sinh:
-                                                </Typography>
-                                                <Box sx={{ display: 'flex', gap: 3 }}>
-                                                    <Typography variant="body2">
-                                                        <strong>Tên:</strong> {foundStudent.name}
-                                                    </Typography>
-                                                    <Typography variant="body2">
-                                                        <strong>Mã HS:</strong> {foundStudent.studentCode}
-                                                    </Typography>
-                                                    <Typography variant="body2">
-                                                        <strong>Giới tính:</strong> {foundStudent.gender === 'male' ? 'Nam' : foundStudent.gender === 'female' ? 'Nữ' : 'N/A'}
+                                            {/* Hiển thị thông tin tìm kiếm hiện tại */}
+                                            {(searchStudentCode.trim() || searchStudentName.trim()) && (
+                                                <Box sx={{ mt: 1, p: 1, bgcolor: 'info.light', borderRadius: 1 }}>
+                                                    <Typography variant="caption" sx={{ fontStyle: 'italic' }}>
+                                                        Đang tìm kiếm:
+                                                        {searchStudentCode.trim() && ` Mã HS: "${searchStudentCode.trim()}"`}
+                                                        {searchStudentCode.trim() && searchStudentName.trim() && ' hoặc '}
+                                                        {searchStudentName.trim() && ` Tên: "${searchStudentName.trim()}"`}
                                                     </Typography>
                                                 </Box>
-                                                <Typography variant="body2" sx={{ mt: 1, fontStyle: 'italic' }}>
-                                                    Nhấn "Thêm học sinh" để thêm vào danh sách
-                                                </Typography>
-                                            </Box>
-                                        )}
+                                            )}
+                                            {/* Hiển thị trạng thái tìm kiếm */}
+                                            {searchStatus === 'searching' && (
+                                                <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <CircularProgress size={16} />
+                                                        Đang tìm kiếm học sinh...
+                                                    </Typography>
+                                                </Box>
+                                            )}
 
-                                        {/* Hiển thị khi không tìm thấy */}
-                                        {searchStatus === 'not-found' && searchStudentCode.trim() && (
-                                            <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                                    Không tìm thấy học sinh với mã "{searchStudentCode.trim()}"
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
-                                                    Vui lòng kiểm tra lại mã học sinh
-                                                </Typography>
-                                            </Box>
-                                        )}
+                                            {/* Hiển thị danh sách học sinh tìm được */}
+                                            {searchStatus === 'found' && foundStudent && foundStudent.length > 0 && (
+                                                <Box sx={{ mt: 1, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: 600, p: 2, bgcolor: 'grey.50', borderBottom: '1px solid #e0e0e0' }}>
+                                                        Tìm thấy {foundStudent.length} học sinh:
+                                                    </Typography>
 
-                                        {studentsJoin.length === 0 && (
-                                            <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic', mt: 1 }}>
-                                                Chưa có học sinh tham gia. Sử dụng form bên dưới để thêm học sinh.
-                                            </Typography>
-                                        )}
+                                                    <Box sx={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                                        {foundStudent.map((student, index) => (
+                                                            <Box
+                                                                key={student._id || student.id || index}
+                                                                sx={{
+                                                                    p: 2,
+                                                                    borderBottom: index < foundStudent.length - 1 ? '1px solid #f0f0f0' : 'none',
+                                                                    '&:hover': { bgcolor: 'grey.50' }
+                                                                }}
+                                                            >
+                                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                                    <Box sx={{ flex: 1 }}>
+                                                                        <Box sx={{ display: 'flex', gap: 3, mb: 1 }}>
+                                                                            <Typography variant="body2">
+                                                                                <strong>Tên:</strong> {student.name || 'Không có thông tin'}
+                                                                            </Typography>
+                                                                            <Typography variant="body2">
+                                                                                <strong>Mã HS:</strong> {student.studentCode || 'Không có thông tin'}
+                                                                            </Typography>
+                                                                            <Typography variant="body2">
+                                                                                <strong>Giới tính:</strong> {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'Không có thông tin'}
+                                                                            </Typography>
+                                                                        </Box>
+
+                                                                        {/* Thông tin phụ huynh */}
+                                                                        <Box sx={{ mt: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
+                                                                            <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}>
+                                                                                Thông tin phụ huynh:
+                                                                            </Typography>
+                                                                            <Box sx={{ display: 'flex', gap: 3 }}>
+                                                                                <Typography variant="caption">
+                                                                                    <strong>Tên:</strong> {student.userId?.name || 'Không có thông tin'}
+                                                                                </Typography>
+                                                                                <Typography variant="caption">
+                                                                                    <strong>Email:</strong> {student.userId?.email || 'Không có thông tin'}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    </Box>
+
+                                                                    <Button
+                                                                        variant="contained"
+                                                                        size="small"
+                                                                        startIcon={<AddIcon />}
+                                                                        onClick={() => handleAddSpecificStudent(student)}
+                                                                        disabled={studentsJoin.some(s => s.id === (student._id || student.id))}
+                                                                        sx={{ ml: 2, minWidth: '80px' }}
+                                                                    >
+                                                                        {studentsJoin.some(s => s.id === (student._id || student.id)) ? 'Đã thêm' : 'Thêm'}
+                                                                    </Button>
+                                                                </Box>
+                                                            </Box>
+                                                        ))}
+                                                    </Box>
+                                                </Box>
+                                            )}
+
+                                            {/* Hiển thị khi không tìm thấy */}
+                                            {searchStatus === 'not-found' && (searchStudentCode.trim() || searchStudentName.trim()) && (
+                                                <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                    <Typography variant="body2">
+                                                        Không tìm thấy học sinh với từ khóa tìm kiếm
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
+                                                        Vui lòng kiểm tra lại mã học sinh hoặc tên học sinh
+                                                    </Typography>
+                                                </Box>
+                                            )}
+                                        </Box>
                                     </TableCell>
                                 </TableRow><TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
@@ -823,34 +917,38 @@ const MedicalEventEditPage = () => {
 
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                                        Hình ảnh sự kiện:
+                                        Hình ảnh:
                                     </TableCell>
                                     <TableCell>
                                         <Box>
                                             {/* Existing image display */}
-                                            {existingImageUrl && !selectedImage && (
+                                            {(existingImageUrl || selectedImage) && (
                                                 <Box sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, bgcolor: 'grey.50' }}>
                                                     <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                                                         Ảnh hiện tại:
                                                     </Typography>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <img 
-                                                            src={existingImageUrl} 
-                                                            alt="Existing" 
-                                                            style={{
-                                                                width: '150px',
-                                                                height: '100px',
-                                                                objectFit: 'contain',
-                                                                borderRadius: '4px',
-                                                                border: '1px solid #ddd'
-                                                            }}
+                                                        <img
+                                                            src={existingImageUrl}
+                                                            alt="Existing"
+                                                            style={{ maxWidth: '300px', maxHeight: '200px', objectFit: 'contain', borderRadius: 4, border: '1px solid #ddd', display: 'block', cursor: 'zoom-in' }}
+                                                            onClick={() => { setModalImageUrl(existingImageUrl); setOpenImageModal(true); }}
                                                         />
                                                         <Button
+                                                            variant="outlined"
                                                             size="small"
                                                             color="error"
                                                             onClick={handleRemoveExistingImage}
+                                                            sx={{
+                                                                minWidth: 'auto',
+                                                                px: 2,
+                                                                '&:hover': {
+                                                                    backgroundColor: 'error.light',
+                                                                    color: 'white'
+                                                                }
+                                                            }}
                                                         >
-                                                            Xóa ảnh hiện tại
+                                                            Xóa ảnh
                                                         </Button>
                                                     </Box>
                                                 </Box>
@@ -874,7 +972,7 @@ const MedicalEventEditPage = () => {
                                                         onChange={handleImageSelect}
                                                     />
                                                 </Button>
-                                                
+
                                                 {selectedImage && (
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                         <ImageIcon sx={{ color: 'success.main' }} />
@@ -882,11 +980,20 @@ const MedicalEventEditPage = () => {
                                                             {selectedImage.name}
                                                         </Typography>
                                                         <Button
+                                                            variant="outlined"
                                                             size="small"
                                                             color="error"
                                                             onClick={handleRemoveImage}
+                                                            sx={{
+                                                                minWidth: 'auto',
+                                                                px: 2,
+                                                                '&:hover': {
+                                                                    backgroundColor: 'error.light',
+                                                                    color: 'white'
+                                                                }
+                                                            }}
                                                         >
-                                                            Hủy
+                                                            Xóa ảnh
                                                         </Button>
                                                     </Box>
                                                 )}
@@ -894,39 +1001,60 @@ const MedicalEventEditPage = () => {
 
                                             {/* New image preview */}
                                             {imagePreview && (
-                                                <Box sx={{ 
-                                                    mt: 2, 
-                                                    p: 2, 
-                                                    border: '1px solid #e0e0e0', 
+                                                <Box sx={{
+                                                    mt: 2,
+                                                    p: 2,
+                                                    border: '1px solid #e0e0e0',
                                                     borderRadius: 1,
                                                     bgcolor: 'grey.50'
                                                 }}>
-                                                    <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                                                        Xem trước ảnh mới:
-                                                    </Typography>
-                                                    <Box sx={{ 
-                                                        display: 'flex', 
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                                            Xem trước ảnh mới:
+                                                        </Typography>
+                                                        <Button
+                                                            variant="outlined"
+                                                            size="small"
+                                                            color="error"
+                                                            onClick={handleRemoveImage}
+                                                            sx={{
+                                                                minWidth: 'auto',
+                                                                px: 2,
+                                                                '&:hover': {
+                                                                    backgroundColor: 'error.light',
+                                                                    color: 'white'
+                                                                }
+                                                            }}
+                                                        >
+                                                            Xóa ảnh
+                                                        </Button>
+                                                    </Box>
+                                                    <Box sx={{
+                                                        display: 'flex',
                                                         justifyContent: 'center',
                                                         '& img': {
                                                             maxWidth: '300px',
                                                             maxHeight: '200px',
                                                             objectFit: 'contain',
-                                                            borderRadius: 1,
-                                                            border: '1px solid #ddd'
+                                                            borderRadius: 4,
+                                                            border: '1px solid #ddd',
+                                                            display: 'block',
+                                                            cursor: 'zoom-in'
                                                         }
                                                     }}>
-                                                        <img 
-                                                            src={imagePreview} 
-                                                            alt="New Preview" 
+                                                        <img
+                                                            src={imagePreview}
+                                                            alt="New Preview"
+                                                            onClick={() => { setModalImageUrl(imagePreview); setOpenImageModal(true); }}
                                                         />
                                                     </Box>
                                                 </Box>
                                             )}
 
                                             {/* Upload guidelines */}
-                                            <Typography variant="caption" sx={{ 
-                                                display: 'block', 
-                                                mt: 1, 
+                                            <Typography variant="caption" sx={{
+                                                display: 'block',
+                                                mt: 1,
                                                 color: 'text.secondary',
                                                 fontStyle: 'italic'
                                             }}>
@@ -956,6 +1084,7 @@ const MedicalEventEditPage = () => {
                                 </TableRow>
                             </TableBody>
                         </Table>
+
                         {/* Note about required fields */}
                         <Box sx={{ mt: 3, p: 2, bgcolor: 'warning.light', borderRadius: 1 }}>
                             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
@@ -984,6 +1113,60 @@ const MedicalEventEditPage = () => {
                         </Box>
                     </CardContent>
                 </Card>
+
+                {/* Image Modal */}
+                <Dialog 
+                    open={openImageModal} 
+                    onClose={() => setOpenImageModal(false)} 
+                    maxWidth={false}
+                    sx={{
+                        '& .MuiDialog-paper': {
+                            margin: 0,
+                            maxHeight: '100vh',
+                            maxWidth: '100vw',
+                            overflow: 'hidden'
+                        }
+                    }}
+                >
+                    <Box 
+                        sx={{ 
+                            position: 'relative',
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minHeight: '50vh',
+                            maxHeight: '100vh',
+                            width: 'auto',
+                            overflow: 'hidden',
+                            p: 2
+                        }}
+                    >
+                        <img
+                            src={modalImageUrl}
+                            alt="Zoom"
+                            style={{ 
+                                maxWidth: 'min(95vw, 1200px)', 
+                                maxHeight: 'min(90vh, 800px)', 
+                                width: 'auto',
+                                height: 'auto',
+                                objectFit: 'contain',
+                                display: 'block'
+                            }}
+                        />
+                        <Button
+                            onClick={() => setOpenImageModal(false)} 
+                            variant="contained"
+                            sx={{ 
+                                mt: 2,
+                                position: 'sticky',
+                                bottom: 0
+                            }}
+                        >
+                            Đóng
+                        </Button>
+                    </Box>
+                </Dialog>
             </Container>
         </LocalizationProvider>
     );
