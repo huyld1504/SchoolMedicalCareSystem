@@ -15,11 +15,8 @@ import {
     CardContent,
     Divider,
     Fab,
-    Switch,
-    FormControlLabel,
     Stack,
     LinearProgress,
-    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -52,8 +49,8 @@ const CreateMedicalOrderPage = () => {
     const [child, setChild] = useState(null);
     const [children, setChildren] = useState([]); // Add children list for dropdown
 
-    // Upload mode toggle
-    const [uploadMode, setUploadMode] = useState(false); // false: manual entry, true: image upload
+    // Input mode options
+    const [inputMode, setInputMode] = useState('both'); // 'manual', 'upload', 'both'
     const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
     const [uploadedImagePublicId, setUploadedImagePublicId] = useState(null);
     const [imageViewOpen, setImageViewOpen] = useState(false); // For image preview modal
@@ -147,20 +144,14 @@ const CreateMedicalOrderPage = () => {
         }
     };
 
-    // Handle mode toggle
-    const handleModeToggle = (e) => {
-        const newUploadMode = e.target.checked;
-        setUploadMode(newUploadMode);
+    // Handle mode change
+    const handleModeChange = (e) => {
+        const newMode = e.target.value;
+        setInputMode('both');
 
         // Reset relevant data when switching modes
-        if (newUploadMode) {
-            // Switching to upload mode - clear manual entry details
-            setFormData(prev => ({
-                ...prev,
-                medicalOrderDetails: []
-            }));
-        } else {
-            // Switching to manual mode - clear uploaded image and reset details
+        if (newMode === 'manual') {
+            // Manual only - clear uploaded image
             if (uploadedImageUrl && uploadedImagePublicId) {
                 handleDeleteImage();
             }
@@ -181,7 +172,14 @@ const CreateMedicalOrderPage = () => {
                     }
                 ]
             }));
+        } else if (newMode === 'upload') {
+            // Upload only - clear manual entry details
+            setFormData(prev => ({
+                ...prev,
+                medicalOrderDetails: []
+            }));
         }
+        // For 'both' mode, keep everything as is
 
         // Clear any errors
         setError(null);
@@ -316,29 +314,29 @@ const CreateMedicalOrderPage = () => {
             return;
         }
 
-        // Validate based on mode
-        if (uploadMode) {
-            // Upload mode validation
-            if (!uploadedImageUrl) {
-                setError('Vui lòng tải lên ảnh đơn thuốc');
-                setLoading(false);
-                toast.error('❌ Vui lòng tải lên ảnh đơn thuốc');
-                return;
-            }
-        } else {
-            // Manual entry mode validation
-            if (formData.medicalOrderDetails.length === 0) {
-                setError('Vui lòng thêm ít nhất một loại thuốc');
-                setLoading(false);
-                return;
-            }
+        // Validate based on mode - at least one method must be provided
+        const hasImageData = !!uploadedImageUrl;
+        const hasManualData = formData.medicalOrderDetails.length > 0 && 
+            formData.medicalOrderDetails.some(detail => detail.medicineName && detail.dosage && detail.time);
 
+        if (!hasImageData && !hasManualData) {
+            setError('Vui lòng cung cấp thông tin thuốc bằng ít nhất một cách: nhập thủ công hoặc tải ảnh đơn thuốc');
+            setLoading(false);
+            toast.error('❌ Vui lòng cung cấp thông tin thuốc');
+            return;
+        }
+
+        // Validate manual entry details if provided
+        if (hasManualData) {
             for (let i = 0; i < formData.medicalOrderDetails.length; i++) {
                 const detail = formData.medicalOrderDetails[i];
-                if (!detail.medicineName || !detail.dosage || !detail.time) {
-                    setError(`Vui lòng điền đầy đủ thông tin thuốc ở dòng ${i + 1}`);
-                    setLoading(false);
-                    return;
+                if (detail.medicineName || detail.dosage || detail.time) {
+                    // If any field is filled, all required fields must be filled
+                    if (!detail.medicineName || !detail.dosage || !detail.time) {
+                        setError(`Vui lòng điền đầy đủ thông tin thuốc ở dòng ${i + 1}`);
+                        setLoading(false);
+                        return;
+                    }
                 }
             }
         }
@@ -508,44 +506,51 @@ const CreateMedicalOrderPage = () => {
                     </Card>
 
                     {/* Mode Selection */}
-                    <Card sx={{ mb: 3, bgcolor: '#f8f9fa' }}>
+                    {/* <Card sx={{ mb: 3, bgcolor: '#f8f9fa' }}>
                         <CardContent>
                             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                                 Cách thức nhập thông tin thuốc
                             </Typography>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={uploadMode}
-                                        onChange={handleModeToggle}
-                                        color="primary"
-                                    />
-                                }
-                                label={
+                            
+                            <TextField
+                                select
+                                fullWidth
+                                label="Chọn cách nhập thông tin"
+                                value={inputMode}
+                                onChange={handleModeChange}
+                                sx={{ 
+                                    mb: 2,
+                                    bgcolor: 'white',
+                                    maxWidth: 500
+                                }}
+                            >
+                                <MenuItem value="manual">
                                     <Stack direction="row" spacing={1} alignItems="center">
-                                        <Typography variant="body1">
-                                            {uploadMode ? 'Upload ảnh đơn thuốc' : 'Nhập thông tin thủ công'}
-                                        </Typography>
-                                        <Chip
-                                            size="small"
-                                            label={uploadMode ? 'Ảnh' : 'Thủ công'}
-                                            color={uploadMode ? 'primary' : 'secondary'}
-                                        />
+                                        <Typography>📝 Nhập thông tin thủ công</Typography>
                                     </Stack>
-                                }
-                                sx={{ mb: 1 }}
-                            />
+                                </MenuItem>
+                                <MenuItem value="upload">
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                        <Typography>📷 Upload ảnh đơn thuốc</Typography>
+                                    </Stack>
+                                </MenuItem>
+                                <MenuItem value="both">
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                        <Typography>📝📷 Cả hai cách (Thủ công + Ảnh)</Typography>
+                                    </Stack>
+                                </MenuItem>
+                            </TextField>
+
                             <Typography variant="body2" color="text.secondary">
-                                {uploadMode
-                                    ? 'Tải lên ảnh chụp đơn thuốc từ bác sĩ. Hệ thống sẽ lưu trữ ảnh để y tá tham khảo.'
-                                    : 'Điền thông tin chi tiết về từng loại thuốc (tên, liều lượng, cách dùng, ...).'
-                                }
+                                {inputMode === 'manual' && 'Điền thông tin chi tiết về từng loại thuốc (tên, liều lượng, cách dùng, ...).'}
+                                {inputMode === 'upload' && 'Tải lên ảnh chụp đơn thuốc từ bác sĩ. Hệ thống sẽ lưu trữ ảnh để y tá tham khảo.'}
+                                {inputMode === 'both' && 'Vừa nhập thông tin chi tiết về thuốc, vừa tải ảnh đơn thuốc để y tá có thể tham khảo đầy đủ nhất. Ít nhất một trong hai cách phải được cung cấp.'}
                             </Typography>
                         </CardContent>
-                    </Card>
+                    </Card> */}
 
                     {/* Prescription Image Upload */}
-                    {uploadMode && (
+                    {(inputMode === 'upload' || inputMode === 'both') && (
                         <Card sx={{ mb: 3 }}>
                             <CardContent>
                                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -604,10 +609,9 @@ const CreateMedicalOrderPage = () => {
                                     <Box>
                                         <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
                                             <ImageIcon color="primary" />
-                                            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                                Ảnh đơn thuốc đã được tải lên
+                                            <Typography variant="body1" sx={{ fontWeight: 'medium', color: 'success.main' }}>
+                                                ✅ Ảnh đơn thuốc đã được tải lên thành công
                                             </Typography>
-                                            <Chip label="Thành công" color="success" size="small" />
                                         </Stack>
 
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
@@ -682,14 +686,21 @@ const CreateMedicalOrderPage = () => {
                         </Card>
                     )}
 
-                    {/* Medical Order Details - Only show in manual mode */}
-                    {!uploadMode && (
+                    {/* Medical Order Details - Show in manual and both modes */}
+                    {(inputMode === 'manual' || inputMode === 'both') && (
                         <Card sx={{ mb: 3 }}>
                             <CardContent>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                        Chi tiết thuốc
-                                    </Typography>
+                                    <Box>
+                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                            Chi tiết thuốc
+                                        </Typography>
+                                        {inputMode === 'both' && (
+                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                                Tùy chọn: Có thể bỏ trống nếu đã tải ảnh đơn thuốc
+                                            </Typography>
+                                        )}
+                                    </Box>
                                     <Button
                                         variant="outlined"
                                         startIcon={<AddIcon />}
