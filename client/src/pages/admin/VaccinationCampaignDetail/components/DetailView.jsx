@@ -790,7 +790,7 @@ const DetailView = ({ campaign }) => {
                                               : participant.parentConsent ===
                                                 "denied"
                                                 ? "Từ chối"
-                                                : participant.parentConsent === "canceled" ? "Hủy bỏ"
+                                                : participant.parentConsent === "canceled" ? "Đã hủy"
                                                   : "Chưa rõ"
                                         }
                                         color={

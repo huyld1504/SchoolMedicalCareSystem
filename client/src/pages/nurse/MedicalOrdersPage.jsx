@@ -39,6 +39,7 @@ const STATUS_OPTIONS = [
     { value: 'pending', label: 'Chờ duyệt', color: 'warning' },
     { value: 'approved', label: 'Đã duyệt', color: 'info' },
     { value: 'canceled', label: 'Từ chối ', color: 'error' },
+    {value: 'completed', label: 'Đã hoàn thành', color: 'success' },
 ];
 
 // Utility functions
@@ -382,7 +383,7 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2" fontWeight={500}>
-                                            {order.ChildId?.name || 'Không rõ'}
+                                            {order.ChildId?.name || 'Không có thông tin'}
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="center">
@@ -395,7 +396,7 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                                             {formatDateForDisplay(order.endDate)}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="center">
+                                    <TableCell align="center" sx={{fontWeight: 600}}>
                                         <StatusChip status={order.status} />
                                     </TableCell>
                                     <TableCell>
