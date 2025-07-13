@@ -64,7 +64,7 @@ const CreateMedicalOrderPage = () => {
             ChildId: childId || '', // Set to childId if available, otherwise empty
             startDate: new Date().toISOString().split('T')[0],
             endDate: '',
-            note: 'None',
+            note: '',
             imageURL: "" // Add field for prescription image
         },
         medicalOrderDetails: [
@@ -73,7 +73,7 @@ const CreateMedicalOrderPage = () => {
                 dosage: '',
                 type: 'viên',
                 time: '',
-                note: 'None',
+                note: '',
                 quantity: 1
             }
         ]
@@ -167,7 +167,7 @@ const CreateMedicalOrderPage = () => {
                         dosage: '',
                         type: 'viên',
                         time: '',
-                        note: 'None',
+                        note: '',
                         quantity: 1
                     }
                 ]
