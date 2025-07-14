@@ -25,7 +25,7 @@ export default function AppLayout() {
               "/",
             ].some((p) => pathName.startsWith(p))
           ) {
-            navigate(currentPath || `/${user.role.toLowerCase()}`);
+            navigate(currentPath);
           }
         } else {
           // If user is not authenticated and not on public pages, redirect to login

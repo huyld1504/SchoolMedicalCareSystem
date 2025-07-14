@@ -222,6 +222,8 @@ const VaccinationNotificationsPage = () => {
         return '#2e7d32'; 
       case 'denied':
         return '#d32f2f'; 
+        case 'canceled':
+        return '#d32f2f';
       case 'pending':
         return '#ed6c02'; 
       default:
@@ -237,6 +239,8 @@ const VaccinationNotificationsPage = () => {
         return 'Đã từ chối';
       case 'pending':
         return 'Chờ phản hồi';
+      case 'canceled':
+        return 'Đã hủy';
       default:
         return 'Không xác định';
     }
@@ -251,7 +255,7 @@ const VaccinationNotificationsPage = () => {
         return '#1976d2'; // Xanh dương
       case 'missed':
         return '#ed6c02'; // Cam
-      case 'cancelled':
+      case 'canceled':
         return '#d32f2f'; // Đỏ
       default:
         return '#757575'; // Xám
@@ -266,7 +270,7 @@ const VaccinationNotificationsPage = () => {
         return 'Đã lên lịch';
       case 'missed':
         return 'Bỏ lỡ';
-      case 'cancelled':
+      case 'canceled':
         return 'Đã hủy';
       default:
         return 'Không xác định';

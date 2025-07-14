@@ -32,7 +32,7 @@ const cloudinaryApi = {
 
   // Delete image from Cloudinary
   deleteImage: async (publicId) => {
-    return await callAPI("delete", `/images/${publicId}`);
+    return await callAPI("delete", `/images/delete`, {publicId});
   },
 
   // Get thumbnail URL

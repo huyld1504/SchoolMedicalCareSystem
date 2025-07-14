@@ -24,7 +24,7 @@ export const medicalOrderSchema = Joi.object({
   imageURL: Joi.string().uri().optional().messages({
     "string.base": "Image URL must be a string",
     "string.uri": "Image URL must be a valid URI",
-  }),
+  }).allow("").default(""),
 });
 export const medicalOrderDetailSchema = Joi.object({
   _id: Joi.string().hex().length(24).optional().messages({
@@ -64,12 +64,11 @@ export const createMedicalOrderWithDetailsSchema = Joi.object({
   medicalOrder: medicalOrderSchema.required(),
   medicalOrderDetails: Joi.array()
     .items(medicalOrderDetailSchema)
-    // .min(1)
+    .min(0) // Allow empty array when user only uploads image
     .messages({
       "array.base": "Medical order details must be an array",
-      "array.min": "At least one medical order detail is required",
       "any.required": "Medical order details are required",
-    }).default([]),
+    }),
 });
 
 export const additionalDetailsSchema = Joi.object({

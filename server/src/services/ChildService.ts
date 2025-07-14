@@ -58,6 +58,7 @@ class ChildService {
     }
 
     const children = await Child.find(filter)
+      .populate("userId", "name email phone") // Populate userId with name and email
       .skip(queryBuilder.getSkip())
       .limit(queryBuilder.getLimit())
       .sort(queryBuilder.getSort());

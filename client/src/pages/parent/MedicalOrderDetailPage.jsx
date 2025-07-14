@@ -18,7 +18,13 @@ import {
   Grid,
   Avatar,
   Paper,
-  TableHead
+  TableHead,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  CardMedia,
+  Stack,
+  DialogTitle,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -31,7 +37,12 @@ import {
   Warning as WarningIcon,
   Inventory as StockIcon,
   CalendarToday as CalendarIcon,
-  ThumbUp
+  ThumbUp,
+  Image as ImageIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
+  RestartAlt as ResetIcon,
+  Close
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
@@ -61,6 +72,8 @@ const MedicalOrderDetailPage = () => {
   const [medicalOrder, setMedicalOrder] = useState(null);
   const [orderDetails, setOrderDetails] = useState([]);
   const [childInfo, setChildInfo] = useState(null);
+  const [imageViewOpen, setImageViewOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
     const loadMedicalOrder = async () => {
@@ -75,6 +88,7 @@ const MedicalOrderDetailPage = () => {
 
           setMedicalOrder(orderData);
           setOrderDetails(detailsData);
+          console.log('Medical order data:', orderData);
 
           // Load child info if we have ChildId
           if (orderData.ChildId) {
@@ -110,6 +124,23 @@ const MedicalOrderDetailPage = () => {
 
   const handleBack = () => {
     navigate('/parent/medical-orders');
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+  };
+
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+  };
+
+  const handleOpenImageView = () => {
+    setZoomLevel(1); // Reset zoom when opening modal
+    setImageViewOpen(true);
   };
 
   const formatDate = (dateString) => {
@@ -199,268 +230,387 @@ const MedicalOrderDetailPage = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={handleBack} sx={{ mr: 2 }}>
-            <BackIcon />
-          </IconButton>
-          <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-              Chi tiết đơn thuốc
-            </Typography>
+    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: '#f5f5f5', p: 0, m: 0 }}>
+      <Container maxWidth={false} sx={{ width: '100%', px: 2, py: 2, m: 0 }}>
+        {/* Header */}
+        <Box sx={{
+          mb: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2,
+          bgcolor: 'white',
+          p: 2,
+          borderRadius: 1,
+          boxShadow: 1
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton onClick={handleBack} sx={{ mr: 2 }}>
+              <BackIcon />
+            </IconButton>
+            <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 36 }} />
+            <Box>
+              <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 0, fontSize: '1.8rem' }}>
+                Chi tiết đơn thuốc
+              </Typography>
+            </Box>
           </Box>
+
+          {/* Status Badge */}
+          <Chip
+            icon={getStatusIcon(medicalOrder.status)}
+            label={getStatusLabel(medicalOrder.status)}
+            sx={{
+              fontSize: '1.1rem',
+              px: 4,
+              py: 2.5,
+              backgroundColor: getStatusColor(medicalOrder.status),
+              color: 'white',
+              fontWeight: 700,
+              height: 48,
+              '& .MuiChip-icon': {
+                fontSize: 20
+              }
+            }}
+            size="medium"
+          />
         </Box>
 
-        {/* Status Badge */}
-        <Chip
-          icon={getStatusIcon(medicalOrder.status)}
-          label={getStatusLabel(medicalOrder.status)}
-          sx={{
-            fontSize: '1rem',
-            px: 3,
-            py: 2,
-            backgroundColor: getStatusColor(medicalOrder.status),
-            color: 'white',
-            fontWeight: 600,
-            height: 40
-          }}
-          size="medium"
-        />
-      </Box>
+        {/* Main Information - Full Width */}
+        <Card sx={{ mb: 2, height: 'fit-content', boxShadow: 2 }}>
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <OrderIcon sx={{ mr: 1.5, color: 'primary.main', fontSize: 28 }} />
+              <Typography variant="h5" sx={{ fontWeight: 600, fontSize: '1.4rem' }}>
+                Thông tin chi tiết đơn thuốc
+              </Typography>
+            </Box>
+            <Divider sx={{ mb: 2, border: '1px solid', borderColor: 'divider' }} />
 
-      <Grid container spacing={3}>
-        {/* Main Information */}
-        <Grid item xs={12} md={8}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <OrderIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Thông tin chi tiết đơn thuốc
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 2 }} />
-
-              <Table sx={{ '& .MuiTableCell-root': { fontSize: '1rem', py: 2.5 } }}>
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                      Con em:
-                    </TableCell>
-                    <TableCell sx={{ fontSize: '1rem' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar sx={{ bgcolor: 'primary.main', mr: 2, width: 36, height: 36 }}>
-                          <PersonIcon />
-                        </Avatar>
-                        <Box>
-                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            {childInfo?.name || 'N/A'}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            ID: {medicalOrder.ChildId?.slice(-6) || 'N/A'}
-                          </Typography>
-                        </Box>
+            <Table sx={{ '& .MuiTableCell-root': { fontSize: '1.1rem', py: 2 } }}>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                    Con em:
+                  </TableCell>
+                  <TableCell sx={{ fontSize: '1.1rem' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar sx={{ bgcolor: 'primary.main', mr: 2, width: 40, height: 40 }}>
+                        <PersonIcon />
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
+                          {childInfo?.name || 'N/A'}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem' }}>
+                          ID: {childInfo.studentCode || 'N/A'}
+                        </Typography>
                       </Box>
-                    </TableCell>
-                  </TableRow>
+                    </Box>
+                  </TableCell>
+                </TableRow>
 
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                      Ngày bắt đầu:
-                    </TableCell>
-                    <TableCell sx={{ fontSize: '1rem' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <CalendarIcon sx={{ mr: 1, color: 'success.main' }} />
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                    Ngày bắt đầu:
+                  </TableCell>
+                  <TableCell sx={{ fontSize: '1.1rem' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CalendarIcon sx={{ mr: 1, color: 'success.main', fontSize: 24 }} />
+                      <Typography sx={{ fontSize: '1.1rem', fontWeight: 500 }}>
                         {formatDate(medicalOrder.startDate)}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                </TableRow>
 
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                      Ngày kết thúc:
-                    </TableCell>
-                    <TableCell sx={{ fontSize: '1rem' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <CalendarIcon sx={{ mr: 1, color: 'error.main' }} />
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                    Ngày kết thúc:
+                  </TableCell>
+                  <TableCell sx={{ fontSize: '1.1rem' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CalendarIcon sx={{ mr: 1, color: 'error.main', fontSize: 24 }} />
+                      <Typography sx={{ fontSize: '1.1rem', fontWeight: 500 }}>
                         {formatDate(medicalOrder.endDate)}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                    Tình trạng kho:
+                  </TableCell>
+                  <TableCell sx={{ fontSize: '1.1rem' }}>
+                    <Chip
+                      icon={<StockIcon />}
+                      label={medicalOrder.isStock ? 'Có sẵn trong kho' : 'Không có trong kho'}
+                      color={medicalOrder.isStock ? 'success' : 'warning'}
+                      sx={{ fontSize: '1rem', px: 2, py: 1 }}
+                    />
+                  </TableCell>
+                </TableRow>                  <TableRow>
+                  <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                    Ghi chú:
+                  </TableCell>
+                  <TableCell sx={{ maxWidth: '400px' }}>
+                    <Typography variant="body1" sx={{ lineHeight: 1.8, whiteSpace: 'pre-wrap', fontSize: '1.1rem' }}>
+                      {getDisplayValue(medicalOrder.note)}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+
+                {/* Prescription Image Row */}
+                {medicalOrder.imageURL ? (
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                      Ảnh đơn thuốc:
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'inline', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ position: 'relative' }}>
+                          <CardMedia
+                            component="img"
+                            src={medicalOrder.imageURL}
+                            alt="Ảnh đơn thuốc"
+                            sx={{
+                              width: 140,
+                              height: 100,
+                              objectFit: 'cover',
+                              borderRadius: 1,
+                              border: '2px solid #e0e0e0',
+                              cursor: 'pointer',
+                              transition: 'transform 0.2s',
+                              '&:hover': {
+                                transform: 'scale(1.05)',
+                                boxShadow: 3,
+                                border: '2px solid #1976d2'
+                              }
+                            }}
+                            onClick={handleOpenImageView}
+                          />
+                        </Box>
+                        <Typography variant="body2" sx={{ ml: 1, color: 'primary.main', fontWeight: 500, fontSize: '0.95rem' }}>
+                          Click ảnh để xem chi tiết
+                        </Typography>
                       </Box>
                     </TableCell>
                   </TableRow>
-
+                ) : (
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                      Tình trạng kho:
+                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.2rem', width: '30%' }}>
+                      Ảnh đơn thuốc:
                     </TableCell>
-                    <TableCell sx={{ fontSize: '1rem' }}>
+                    <TableCell>
                       <Chip
-                        icon={<StockIcon />}
-                        label={medicalOrder.isStock ? 'Có sẵn trong kho' : 'Không có trong kho'}
-                        color={medicalOrder.isStock ? 'success' : 'warning'}
-                        size="small"
+                        icon={<ImageIcon />}
+                        label="Không có ảnh đơn thuốc"
+                        color="default"
+                        sx={{ fontSize: '1rem', px: 2, py: 1 }}
                       />
                     </TableCell>
-                  </TableRow>                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                      Ghi chú:
-                    </TableCell>
-                    <TableCell sx={{ maxWidth: '400px' }}>
-                      <Typography variant="body1" sx={{ lineHeight: 1.8, whiteSpace: 'pre-wrap', fontSize: '1rem' }}>
-                        {getDisplayValue(medicalOrder.note)}
-                      </Typography>
-                    </TableCell>
                   </TableRow>
-                </TableBody>
-              </Table>              {/* Medicine Details Section */}
-              {orderDetails && orderDetails.length > 0 && (
-                <Box sx={{ mt: 4 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, display: 'flex', alignItems: 'center' }}>
-                    <MedicalIcon sx={{ mr: 1, color: 'primary.main' }} />
-                    Chi tiết thuốc ({orderDetails.length} loại)
-                  </Typography>
-
-                  {/* Mỗi detail thuốc là một section riêng biệt */}
-                  {orderDetails.map((detail, index) => (
-                    <Box key={detail._id} sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: 'grey.50' }}>
-                      {/* Tiêu đề thuốc */}
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'primary.main', display: 'flex', alignItems: 'center' }}>
-                        <Box
-                          sx={{
-                            bgcolor: 'primary.main',
-                            color: 'white',
-                            borderRadius: '50%',
-                            width: 24,
-                            height: 24,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            mr: 2
-                          }}
-                        >
-                          {index + 1}
-                        </Box>
-                        {detail.medicineName}
-                      </Typography>
-
-                      {/* Bảng thông tin thuốc - tất cả trên một hàng */}
-                      <Table sx={{ '& .MuiTableCell-root': { fontSize: '0.9rem', py: 1.5, border: '1px solid #e0e0e0' } }}>
-                        <TableHead>
-                          <TableRow sx={{ bgcolor: 'primary.light' }}>
-                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Liều lượng</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Loại</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Thời gian uống</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Số lượng</TableCell>
-                            {detail.note && <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center' }}>Ghi chú</TableCell>}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow sx={{ bgcolor: 'white' }}>
-                            <TableCell sx={{ textAlign: 'center', fontWeight: 500 }}>
-                              <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                                {detail.dosage}
-                              </Typography>
-                            </TableCell>
-                            <TableCell sx={{ textAlign: 'center' }}>
-                              <Chip
-                                label={detail.type}
-                                size="small"
-                                sx={{ bgcolor: 'info.light', color: 'info.contrastText', fontWeight: 500 }}
-                              />
-                            </TableCell>
-                            <TableCell sx={{ textAlign: 'center', fontWeight: 500 }}>
-                              <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                                {detail.time}
-                              </Typography>
-                            </TableCell>
-                            <TableCell sx={{ textAlign: 'center' }}>
-                              <Chip
-                                label={`${detail.quantity} ${detail.type}`}
-                                color="primary"
-                                size="small"
-                                sx={{ fontWeight: 600 }}
-                              />
-                            </TableCell>
-                            {detail.note && (
-                              <TableCell sx={{ textAlign: 'center', maxWidth: 200 }}>
-                                <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                                  {detail.note}
-                                </Typography>
-                              </TableCell>
-                            )}
-                          </TableRow>
-                        </TableBody>
-                      </Table>                    </Box>
-                  ))}
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>        {/* Side Information */}
-        <Grid item xs={12} md={4}>
-
-          {/* Timeline Information */}
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ScheduleIcon sx={{ fontSize: 24, color: '#795548', mr: 1 }} />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#795548' }}>
-                  Thời gian
+                )}
+              </TableBody>
+            </Table>
+            {/* Medicine Details Section */}
+            {orderDetails && orderDetails.length > 0 && (
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, display: 'flex', alignItems: 'center', fontSize: '1.3rem' }}>
+                  <MedicalIcon sx={{ mr: 1.5, color: 'primary.main', fontSize: 28 }} />
+                  Chi tiết thuốc ({orderDetails.length} loại)
                 </Typography>
+
+                {/* Mỗi detail thuốc là một section riêng biệt */}
+                {orderDetails.map((detail, index) => (
+                  <Box key={detail._id} sx={{ mb: 2, p: 2, border: '2px solid #e0e0e0', borderRadius: 2, bgcolor: 'grey.50', boxShadow: 1 }}>
+                    {/* Tiêu đề thuốc */}
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, color: 'primary.main', display: 'flex', alignItems: 'center', fontSize: '1.2rem' }}>
+                      <Box
+                        sx={{
+                          bgcolor: 'primary.main',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: 28,
+                          height: 28,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.9rem',
+                          fontWeight: 700,
+                          mr: 2
+                        }}
+                      >
+                        {index + 1}
+                      </Box>
+                      {detail.medicineName}
+                    </Typography>
+
+                    {/* Bảng thông tin thuốc - tất cả trên một hàng */}
+                    <Table sx={{ '& .MuiTableCell-root': { fontSize: '0.9rem', py: 1, border: '1px solid #e0e0e0' } }}>
+                      <TableHead>
+                        <TableRow sx={{ bgcolor: 'primary.main' }}>
+                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Liều lượng</TableCell>
+                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Loại</TableCell>
+                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Thời gian uống</TableCell>
+                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Số lượng</TableCell>
+                          {detail.note && <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Ghi chú</TableCell>}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow sx={{ bgcolor: 'white' }}>
+                          <TableCell sx={{ textAlign: 'center', fontWeight: 500, py: 1 }}>
+                            <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.95rem', fontWeight: 600 }}>
+                              {detail.dosage}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center', py: 1 }}>
+                            <Chip
+                              label={detail.type}
+                              sx={{ bgcolor: 'info.light', color: 'info.contrastText', fontWeight: 500, fontSize: '0.85rem', height: 28, px: 1 }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center', fontWeight: 500, py: 1 }}>
+                            <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.95rem', fontWeight: 600 }}>
+                              {detail.time}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center', py: 1 }}>
+                            <Chip
+                              label={`${detail.quantity}`}
+                              color="primary"
+                              sx={{ fontWeight: 600, fontSize: '0.85rem', height: 28, px: 1 }}
+                            />
+                          </TableCell>
+                          {detail.note && (
+                            <TableCell sx={{ textAlign: 'center', maxWidth: 150, py: 1 }}>
+                              <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary', fontSize: '0.85rem' }}>
+                                {detail.note}
+                              </Typography>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </Box>
+                ))}
               </Box>
+            )}
+          </CardContent>
+        </Card>
 
-              <Typography variant="body2" color="text.secondary">
-                Ngày tạo:
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>
-                {formatDateTime(medicalOrder.createdAt)}
-              </Typography>
 
-              <Typography variant="body2" color="text.secondary">
-                Cập nhật cuối:
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 2 }}>
-                {formatDateTime(medicalOrder.updatedAt)}
-              </Typography>
 
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="body2" color="text.secondary">
-                Thời gian điều trị:
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <Paper variant="outlined" sx={{ p: 1, mr: 1, bgcolor: 'success.light', color: 'success.contrastText' }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Từ: {formatDate(medicalOrder.startDate)}
-                  </Typography>
-                </Paper>
-                <Paper variant="outlined" sx={{ p: 1, bgcolor: 'error.light', color: 'error.contrastText' }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    Đến: {formatDate(medicalOrder.endDate)}
-                  </Typography>
-                </Paper>
+        {/* Image Preview Modal with Zoom */}
+        <Dialog
+          open={imageViewOpen}
+          onClose={() => setImageViewOpen(false)}
+          maxWidth="lg"
+          fullWidth
+          PaperProps={{
+            sx: {
+              minHeight: '80vh',
+              maxHeight: '90vh'
+            }
+          }}
+        >
+          <DialogTitle>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="h6">Ảnh đơn thuốc</Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {Math.round(zoomLevel * 100)}%
+                </Typography>
+                <IconButton
+                  onClick={handleZoomOut}
+                  size="small"
+                  disabled={zoomLevel <= 0.5}
+                  title="Thu nhỏ"
+                >
+                  <ZoomOutIcon />
+                </IconButton>
+                <IconButton
+                  onClick={handleZoomIn}
+                  size="small"
+                  disabled={zoomLevel >= 3}
+                  title="Phóng to"
+                >
+                  <ZoomInIcon />
+                </IconButton>
+                <IconButton
+                  onClick={handleResetZoom}
+                  size="small"
+                  title="Đặt lại kích thước"
+                >
+                  <ResetIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setImageViewOpen(false)}
+                  size="small"
+                  title="Đóng"
+                >
+                  <Close />
+                </IconButton>
+              </Stack>
+            </Stack>
+          </DialogTitle>
+          <DialogContent sx={{
+            p: 2,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'auto',
+            backgroundColor: '#f5f5f5'
+          }}>
+            {medicalOrder?.imageURL && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: 'auto',
+                  cursor: zoomLevel < 3 ? 'zoom-in' : 'zoom-out'
+                }}
+                onClick={() => {
+                  if (zoomLevel < 3) {
+                    handleZoomIn();
+                  } else {
+                    handleZoomOut();
+                  }
+                }}
+              >
+                <Box
+                  component="img"
+                  src={medicalOrder.imageURL}
+                  alt="Ảnh đơn thuốc chi tiết"
+                  sx={{
+                    transform: `scale(${zoomLevel})`,
+                    transformOrigin: 'center',
+                    transition: 'transform 0.2s ease-in-out',
+                    maxWidth: '100%',
+                    maxHeight: '150%',
+                    objectFit: 'contain',
+                    borderRadius: 1,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                  }}
+                />
               </Box>
-
-              {/* Duration calculation */}
-              {medicalOrder.startDate && medicalOrder.endDate && (
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Thời gian điều trị:
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    {Math.ceil((new Date(medicalOrder.endDate) - new Date(medicalOrder.startDate)) / (1000 * 60 * 60 * 24))} ngày
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Click vào ảnh để zoom hoặc sử dụng các nút điều khiển
+            </Typography>
+            <Button onClick={() => setImageViewOpen(false)} variant="contained">
+              Đóng
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Box>
   );
 };
 

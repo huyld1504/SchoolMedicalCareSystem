@@ -9,6 +9,7 @@ export interface IUser extends Document {
   password: string;
   /** Password */
   name: string;
+  phone ?: string;
   encryptPassword: (password: string) => string;
   validPassword: (password: string) => boolean;
 

@@ -353,6 +353,7 @@ const VaccinationParticipationsPage = () => {
       case 'approved': return 'success';
       case 'denied': return 'error';
       case 'pending': return 'warning';
+      case 'canceled': return 'error';
       default: return 'default';
     }
   };
@@ -362,6 +363,7 @@ const VaccinationParticipationsPage = () => {
       case 'approved': return 'Đã đồng ý';
       case 'denied': return 'Từ chối';
       case 'pending': return 'Chờ phản hồi';
+      case 'canceled': return 'Đã hủy';
       default: return consent;
     }
   };
@@ -369,8 +371,8 @@ const VaccinationParticipationsPage = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed': return 'success';
-      case 'missed': return 'error';
-      case 'cancelled': return 'warning';
+      case 'missed': return 'warning';
+      case 'canceled': return 'error';
       case 'scheduled': return 'info';
       default: return 'default';
     }
@@ -380,7 +382,7 @@ const VaccinationParticipationsPage = () => {
     switch (status) {
       case 'completed': return 'Đã tiêm';
       case 'missed': return 'Bỏ lỡ';
-      case 'cancelled': return 'Đã hủy';
+      case 'canceled': return 'Đã hủy';
       case 'scheduled': return 'Đã lên lịch';
       default: return status;
     }
