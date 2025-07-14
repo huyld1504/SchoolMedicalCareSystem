@@ -102,7 +102,7 @@ const VaccinationNotificationDetailPage = () => {
           parentConsent: consentType,
           parentNote: consentNote?.trim() || '',
           parentConsentDate: new Date().toISOString(),
-          vaccinationStatus: consentType === 'denied' ? 'cancelled' : prev.vaccinationStatus
+          vaccinationStatus: consentType === 'denied' ? 'canceled' : prev.vaccinationStatus
         }));
 
         handleCloseConsentDialog();
@@ -200,7 +200,7 @@ const VaccinationNotificationDetailPage = () => {
         return '#1976d2';
       case 'missed':
         return '#ed6c02';
-      case 'cancelled':
+      case 'canceled':
         return '#d32f2f';
       default:
         return '#757575';
@@ -215,7 +215,7 @@ const VaccinationNotificationDetailPage = () => {
         return 'Đã lên lịch';
       case 'missed':
         return 'Bỏ lỡ';
-      case 'cancelled':
+      case 'canceled':
         return 'Đã hủy';
       default:
         return 'Chưa có';

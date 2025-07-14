@@ -45,7 +45,7 @@ export const parentConsentSchema = Joi.object({
 // Schema cho y tá ghi nhận kết quả tiêm với business rules
 export const nurseRecordSchema = Joi.object({
   status: Joi.string()
-    .valid('completed', 'missed', 'cancelled')
+    .valid('completed', 'missed', 'canceled')
     .required(),
   vaccinationDate: Joi.date()
     .when('status', {
@@ -73,7 +73,7 @@ export const campaignQuerySchema = Joi.object({
 
   // Filters
   status: Joi.string()
-    .valid('planned', 'ongoing', 'completed', 'cancelled')
+    .valid('planned', 'ongoing', 'completed', 'canceled')
     .allow('')
     .optional(),
   // Sort
@@ -117,7 +117,7 @@ export const participationQuerySchema = Joi.object({
     .allow('')
     .optional(),
   vaccinationStatus: Joi.string()
-    .valid('scheduled', 'completed', 'missed', 'cancelled')
+    .valid('scheduled', 'completed', 'missed', 'canceled')
     .allow('')
     .optional(),
   campaignId: Joi.string().allow('').optional(),

@@ -131,7 +131,7 @@ class VaccinationService {
   async recordVaccination(
     participationId: string,
     nurseId: string,
-    status: 'completed' | 'missed' | 'cancelled',
+    status: 'completed' | 'missed' | 'canceled',
     vaccinationDate?: Date,
     note?: string
   ): Promise<IVaccinationParticipation | null> {

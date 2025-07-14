@@ -73,7 +73,7 @@ const VaccinationParticipationsPage = () => {
     vaccinationDateFrom: '',
     vaccinationDateTo: '',
     page: 1,
-    limit: 20
+    limit: 10
   });
 
   // Applied search state (used for actual API calls)
@@ -84,14 +84,14 @@ const VaccinationParticipationsPage = () => {
     vaccinationDateFrom: searchParams.get('vaccinationDateFrom') || '',
     vaccinationDateTo: searchParams.get('vaccinationDateTo') || '',
     page: parseInt(searchParams.get('page')) || 1,
-    limit: 20
+    limit: 10
   });
 
   // State cho pagination
   const [paginationInfo, setPaginationInfo] = useState({
     total: 0,
     page: 1,
-    limit: 20,
+    limit: 10,
     totalPages: 0
   });
 
@@ -156,7 +156,7 @@ const VaccinationParticipationsPage = () => {
       // Load all participations without any filters for client-side filtering
       const apiQuery = {
         page: 1,
-        limit: 100, // Large limit to get all participations
+        limit: 10, // Large limit to get all participations
         // No filters - load everything for client-side filtering
       };
 
@@ -461,7 +461,7 @@ const VaccinationParticipationsPage = () => {
                     <MenuItem value="scheduled">Đã lên lịch</MenuItem>
                     <MenuItem value="completed">Đã tiêm</MenuItem>
                     <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                    <MenuItem value="cancelled">Đã hủy</MenuItem>
+                    <MenuItem value="canceled">Đã hủy</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -669,7 +669,7 @@ const VaccinationParticipationsPage = () => {
                       >
                         <MenuItem value="completed">Đã tiêm thành công</MenuItem>
                         <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                        <MenuItem value="cancelled">Hủy tiêm</MenuItem>
+                        <MenuItem value="canceled">Hủy tiêm</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

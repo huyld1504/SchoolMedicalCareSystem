@@ -65,7 +65,7 @@ const CampaignTable = () => {
         return 'Đang hoạt động';
       case 'completed':
         return 'Hoàn thành';
-      case 'cancelled':
+      case 'canceled':
         return 'Đã hủy';
       case 'pending':
         return 'Chờ xử lý';
@@ -87,7 +87,7 @@ const CampaignTable = () => {
       case 'completed':
       case 'hoàn thành':
         return 'info';
-      case 'cancelled':
+      case 'canceled':
       case 'đã hủy':
         return 'error';
       case 'pending':

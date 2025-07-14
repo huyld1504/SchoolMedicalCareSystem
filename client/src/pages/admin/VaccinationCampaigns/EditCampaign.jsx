@@ -290,7 +290,7 @@ const EditCampaign = () => {
                     <MenuItem value="planned">Đã lên kế hoạch</MenuItem>
                     <MenuItem value="ongoing">Đang hoạt động</MenuItem>
                     <MenuItem value="completed">Hoàn thành</MenuItem>
-                    <MenuItem value="cancelled">Đã hủy</MenuItem>
+                    <MenuItem value="canceled">Đã hủy</MenuItem>
                     <MenuItem value="pending">Chờ xử lý</MenuItem>
                   </Select>
                 </FormControl>

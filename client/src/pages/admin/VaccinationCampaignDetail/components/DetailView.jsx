@@ -697,7 +697,7 @@ const DetailView = ({ campaign }) => {
                               <MenuItem value="scheduled">Đã lên lịch</MenuItem>
                               <MenuItem value="completed">Đã tiêm</MenuItem>
                               <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                              <MenuItem value="cancelled">Đã hủy</MenuItem>
+                              <MenuItem value="canceled">Đã hủy</MenuItem>
                             </Select>
                           </FormControl>
                         </Grid>

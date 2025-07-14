@@ -34,7 +34,7 @@ const statusOptions = [
   { value: "planned", label: "Kế hoạch" },
   { value: "ongoing", label: "Đang diễn ra" },
   { value: "completed", label: "Đã hoàn thành" },
-  { value: "cancelled", label: "Đã hủy" },
+  { value: "canceled", label: "Đã hủy" },
 ];
 
 const CreateVaccinationForm = ({ onSuccess }) => {
