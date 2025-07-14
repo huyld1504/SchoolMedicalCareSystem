@@ -16,7 +16,9 @@ export const addUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(20).required(),
   roleId: Joi.string().required(),
-  phone: Joi.string().allow("").max(10).optional(), // Optional phone number
+  phone: Joi.string()
+  .pattern(/^[0-9]{9,11}$/) 
+  .required()
 });
 
 export const addChildSchema = Joi.object({
