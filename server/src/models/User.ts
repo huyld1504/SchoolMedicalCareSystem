@@ -16,6 +16,8 @@ export interface IUser extends Document {
   /** Role id */
   roleId: Types.ObjectId | IRole;
 
+  phone : string;
+
   isActive: boolean;
 }
 
@@ -28,7 +30,7 @@ const schema = new Schema(
     name: { type: String, required: true },
     roleId: { type: Types.ObjectId, ref: "Role", required: true },
     isActive: { type: Boolean, default: true },
-    phone: { type: String, required: false, default: '' },
+    phone : { type: String, required: true },
   },
   {
     timestamps: {

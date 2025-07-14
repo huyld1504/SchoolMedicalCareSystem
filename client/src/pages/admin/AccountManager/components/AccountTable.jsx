@@ -60,7 +60,6 @@ const AccountTable = () => {
   const total = data?.data?.total || 0;
   const page = data?.data?.page || 0;
   const totalPages = data?.data?.totalPages || 0;
-  const limit = data?.data?.limit || 0;
 
   return (
     <Box>
@@ -101,6 +100,7 @@ const AccountTable = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
+                <TableCell>Phone</TableCell>
                 <TableCell>Role ID</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Created At</TableCell>
@@ -120,6 +120,7 @@ const AccountTable = () => {
                     <TableCell>{user._id}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.phone}</TableCell>
                     <TableCell>{user.roleId}</TableCell>
                     <TableCell>
                       <Chip

@@ -21,6 +21,7 @@ const initialState = {
   email: "",
   password: "",
   roleId: "",
+  phone:""
 };
 
 const CreateAccountForm = ({ onSuccess }) => {
@@ -29,12 +30,11 @@ const CreateAccountForm = ({ onSuccess }) => {
   const {
     data: roles,
     isLoading: loadingRoles,
-    error: rolesError,
   } = useQueryRoles();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data) => userApi.createUser(data),
-    onSuccess: (res) => {
+    onSuccess: () => {
       setForm(initialState);
       if (onSuccess) {
         onSuccess();
@@ -63,8 +63,13 @@ const CreateAccountForm = ({ onSuccess }) => {
     if (!form.password.trim() || form.password.length < 6)
       return "Password must be at least 6 characters";
     if (!form.roleId) return "Role is required";
+  
+    if (!form.phone || !form.phone.trim()) return "Phone is required";
+    if (!/^[0-9]{9,11}$/.test(form.phone)) return "Invalid phone number";
+  
     return "";
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,6 +109,15 @@ const CreateAccountForm = ({ onSuccess }) => {
           name="password"
           type="password"
           value={form.password}
+          onChange={handleChange}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+         <TextField
+          label="Phone"
+          name="phone"
+          type="text"
+          value={form.phone}
           onChange={handleChange}
           fullWidth
           sx={{ mb: 2 }}
