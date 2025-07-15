@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { TextField, InputAdornment, IconButton, Button } from "@mui/material";
 import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
@@ -28,9 +27,9 @@ const SearchFilter = () => {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", gap: 8 }}>
       <TextField
-        placeholder="Search users by name or type..."
+        placeholder="Tìm người dùng theo tên hoặc loại..."
         value={searchValue}
         onChange={handleSearch}
         size="small"
@@ -43,7 +42,11 @@ const SearchFilter = () => {
           ),
           endAdornment: searchValue && (
             <InputAdornment position="end">
-              <IconButton size="small" onClick={handleClearSearch}>
+              <IconButton
+                size="small"
+                onClick={handleClearSearch}
+                aria-label="Xóa tìm kiếm"
+              >
                 <ClearIcon />
               </IconButton>
             </InputAdornment>
@@ -57,12 +60,12 @@ const SearchFilter = () => {
           const newQuery = createQueryParams({
             ...params,
             keyword: searchValue || undefined,
-            page: 1, // Reset to first page when searching
+            page: 1, // Trở về trang đầu khi tìm kiếm
           });
           navigate({ search: newQuery });
         }}
       >
-        Search
+        Tìm kiếm
       </Button>
     </div>
   );

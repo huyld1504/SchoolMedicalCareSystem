@@ -39,16 +39,16 @@ const FilterPopover = () => {
       [field]: value,
     }));
   };
+
   const {
     data: roles,
-    isLoading: loadingRoles,
-    error: rolesError,
   } = useQueryRoles();
+
   const handleApplyFilters = () => {
     const newQuery = createQueryParams({
       ...params,
       ...filterValues,
-      page: 1, // Reset to first page when filtering
+      page: 1, // Quay về trang đầu khi lọc
     });
     navigate({ search: newQuery });
     handleFilterClose();
@@ -79,7 +79,7 @@ const FilterPopover = () => {
         onClick={handleFilterClick}
         sx={{ minWidth: 120 }}
       >
-        Filter
+        Lọc
       </Button>
 
       <Popover
@@ -97,17 +97,17 @@ const FilterPopover = () => {
       >
         <Box sx={{ p: 3, minWidth: 300 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
-            Filter Options
+            Tùy chọn lọc
           </Typography>
 
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Role</InputLabel>
+            <InputLabel>Vai trò</InputLabel>
             <Select
               value={filterValues.roleId}
-              label="Role"
+              label="Vai trò"
               onChange={(e) => handleFilterChange("roleId", e.target.value)}
             >
-              <MenuItem value="">All Roles</MenuItem>
+              <MenuItem value="">Tất cả vai trò</MenuItem>
               {roles?.data?.map((role) => (
                 <MenuItem key={role._id} value={role._id}>
                   {role.name}
