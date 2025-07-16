@@ -2,16 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
     Box, Container, Typography, Card, CardContent, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Button, CircularProgress,
-    Alert, Tooltip, Grid, Chip, Stack,
-    FormControl, Select, MenuItem,
+    Alert, Tooltip, Grid, Stack,
     Dialog, DialogTitle, DialogContent, DialogActions, TextField, DialogContentText,
     Checkbox,
 } from '@mui/material';
 import {
-    ArrowBack as BackIcon, Print as PrintIcon, Person as PersonIcon,
-    ThumbUpAlt as ApproveIcon, Cancel as CancelIcon, Edit as EditIcon, Save as SaveIcon,
+    ArrowBack as BackIcon, Person as PersonIcon,
+    ThumbUpAlt as ApproveIcon, Cancel as CancelIcon,
     History as HistoryIcon, Warning as WarningIcon,
-    PlaylistAddCheck as BatchRecordIcon, Add as AddIcon, Autorenew as RefillIcon,
+    PlaylistAddCheck as BatchRecordIcon, Add as AddIcon,
+    Close as CloseIcon,
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
@@ -19,6 +19,12 @@ import medicalOrderApi from '../../api/medicalOrderApi';
 import { formattedDate } from '../../utils/date.utils';
 import { useSelector } from 'react-redux';
 
+// --- CẢI TIẾN: Thêm import cho Lightbox để zoom ảnh ---
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/styles.css";
+
+// Các hằng số và state ban đầu không thay đổi...
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
     approved: { label: 'Đã duyệt', color: 'success' },
@@ -30,9 +36,9 @@ const initialNewMedicineState = {
     medicineName: '',
     dosage: '',
     type: 'kê đơn',
-    time: '[]',
+    time: '',
     note: '',
-    quantity: 10,
+    quantity: 1,
 };
 
 const MedicalOrderDetailPage = () => {
@@ -45,21 +51,17 @@ const MedicalOrderDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [isEditingStatus, setIsEditingStatus] = useState(false);
-    const [newStatus, setNewStatus] = useState('');
     const [usageHistory, setUsageHistory] = useState([]);
-
     const [isAddRecordModalOpen, setAddRecordModalOpen] = useState(false);
     const [selectionForRecord, setSelectionForRecord] = useState({});
-
-    const [isRefillModalOpen, setIsRefillModalOpen] = useState(false);
-    const [refillData, setRefillData] = useState({ detail: null, additionalQuantity: 10 });
     const [isAddNewModalOpen, setIsAddNewModalOpen] = useState(false);
     const [newMedicine, setNewMedicine] = useState(initialNewMedicineState);
-
     const [isRejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
-
+    
+    // --- TÁCH BIỆT 2 CHỨC NĂNG ---
+    const [isImageZoomOpen, setImageZoomOpen] = useState(false); // Cho lightbox zoom
+    const [isImageModalOpen, setImageModalOpen] = useState(false); // Cho modal thêm thuốc
 
     // --- DATA LOADING ---
     const loadData = useCallback(async () => {
@@ -74,9 +76,6 @@ const MedicalOrderDetailPage = () => {
 
             if (detailsResponse.isSuccess && detailsResponse.data) {
                 setOrderData(detailsResponse.data);
-                console.log(('Order details loaded:', detailsResponse.data.order));
-                setNewStatus(detailsResponse.data.order.status);
-
             } else {
                 setError('Không tìm thấy thông tin đơn gửi thuốc.');
             }
@@ -104,7 +103,6 @@ const MedicalOrderDetailPage = () => {
             await medicalOrderApi.updateStatus(orderId, payload);
             const statusLabel = statusMap[payload.status]?.label || payload.status;
             toast.success(`Cập nhật trạng thái thành "${statusLabel}" thành công!`);
-            setIsEditingStatus(false);
             await loadData();
         } catch (err) {
             toast.error('Cập nhật trạng thái thất bại.');
@@ -119,13 +117,7 @@ const MedicalOrderDetailPage = () => {
             toast.warn('Vui lòng nhập lý do từ chối.');
             return;
         }
-
-        const payload = {
-            status: 'canceled',
-            note: rejectionReason,
-        };
-
-        await handleUpdateStatus(payload);
+        await handleUpdateStatus({ status: 'canceled', note: rejectionReason });
         handleCloseRejectModal();
     };
 
@@ -138,15 +130,7 @@ const MedicalOrderDetailPage = () => {
             handleUpdateStatus({ status: 'completed' });
         }
     }, [orderData, handleUpdateStatus]);
-
-    const handleSaveStatus = () => {
-        if (newStatus !== orderData.order.status) {
-            handleUpdateStatus({ status: newStatus });
-        } else {
-            setIsEditingStatus(false);
-        }
-    };
-
+    
     const handleSelectionChange = (detail) => {
         setSelectionForRecord(prev => {
             const newSelection = { ...prev };
@@ -174,53 +158,34 @@ const MedicalOrderDetailPage = () => {
     };
 
     const handleOpenAddRecordModal = () => setAddRecordModalOpen(true);
-    const handleCloseAddRecordModal = () => setAddRecordModalOpen(false);
+    const handleCloseAddRecordModal = () => {
+        setAddRecordModalOpen(false);
+        setSelectionForRecord({});
+    };
 
     const handleQuantityChangeInModal = (detailId, quantity) => {
         const newQuantity = Number(quantity);
         setSelectionForRecord(prev => ({
             ...prev,
-            [detailId]: {
-                ...prev[detailId],
-                quantity: newQuantity,
-            }
+            [detailId]: { ...prev[detailId], quantity: newQuantity }
         }));
     };
 
     const handleSubmitRecord = async () => {
-        const itemsToRecord = Object.values(selectionForRecord)
-            .filter(item => item.quantity > 0)
-            .map(item => ({
-                medicalOrderDetailId: item.detail._id,
-                quantity: item.quantity,
-            }));
-
-        if (itemsToRecord.length === 0) {
-            toast.warn('Vui lòng nhập số lượng cho ít nhất một loại thuốc.');
-            return;
-        }
-
+        const itemsToRecord = Object.values(selectionForRecord).filter(item => item.quantity > 0).map(item => ({ medicalOrderDetailId: item.detail._id, quantity: item.quantity }));
+        if (itemsToRecord.length === 0) { toast.warn('Vui lòng nhập số lượng.'); return; }
         setIsUpdating(true);
         try {
-            const recordData = { items: itemsToRecord };
-            await medicalOrderApi.addRecord(orderId, recordData);
+            await medicalOrderApi.addRecord(orderId, { items: itemsToRecord });
             toast.success(`Đã ghi nhận thành công ${itemsToRecord.length} loại thuốc.`);
             handleCloseAddRecordModal();
-            setSelectionForRecord({});
             await loadData();
         } catch (err) {
             toast.error('Ghi nhận thất bại.');
-            console.error('Failed to add record:', err.response?.data || err);
         } finally {
             setIsUpdating(false);
         }
     };
-
-    const handleOpenRefillModal = (detail) => {
-        setRefillData({ detail, additionalQuantity: 10 });
-        setIsRefillModalOpen(true);
-    };
-    const handleCloseRefillModal = () => setIsRefillModalOpen(false);
 
     const handleOpenRejectModal = () => setRejectModalOpen(true);
     const handleCloseRejectModal = () => {
@@ -228,99 +193,84 @@ const MedicalOrderDetailPage = () => {
         setRejectionReason('');
     };
 
-    const handleSubmitRefill = async () => {
-        setIsUpdating(true);
-        try {
-            const { detail, additionalQuantity } = refillData;
-            const payload = {
-                medicalOrderDetails: [{
-                    _id: detail._id,
-                    medicineName: detail.medicineName,
-                    dosage: detail.dosage,
-                    type: detail.type,
-                    time: detail.time,
-                    note: detail.note,
-                    quantity: detail.quantity + additionalQuantity,
-                }]
-            };
-            await medicalOrderApi.additionalDetail(orderId, payload);
-            toast.success(`Đã bổ sung ${additionalQuantity} viên ${detail.medicineName}.`);
-            handleCloseRefillModal();
-            await loadData();
-        } catch (err) {
-            toast.error("Bổ sung thuốc thất bại.");
-            console.error("Refill failed:", err.response?.data || err);
-        } finally {
-            setIsUpdating(false);
-        }
-    };
-
+    // --- HANDLERS CHO THÊM THUỐC (2 MODAL SONG SONG) ---
     const handleOpenAddNewModal = () => {
         setNewMedicine(initialNewMedicineState);
         setIsAddNewModalOpen(true);
+        // Mở modal ảnh cùng lúc nếu có ảnh
+        if (orderData?.order?.imageURL) {
+            setImageModalOpen(true);
+        }
     };
-    const handleCloseAddNewModal = () => setIsAddNewModalOpen(false);
 
-    const handleNewMedicineFormChange = (e) => {
+    // CHỈ đóng modal form, GIỮ NGUYÊN modal ảnh
+    const handleCloseFormModal = () => {
+        setIsAddNewModalOpen(false);
+        setNewMedicine(initialNewMedicineState);
+        // KHÔNG đóng modal ảnh ở đây
+    };
+
+    // Hàm đóng riêng cho modal ảnh
+    const handleCloseImageModal = () => {
+        setImageModalOpen(false);
+    };
+
+    // Hàm đóng CẢ 2 modal cùng lúc
+    const handleCloseAllModals = () => {
+        setIsAddNewModalOpen(false);
+        setImageModalOpen(false);
+        setNewMedicine(initialNewMedicineState);
+    };
+
+    const   handleNewMedicineFormChange = (e) => {
         const { name, value } = e.target;
         setNewMedicine(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmitNewMedicine = async () => {
-        if (!newMedicine.medicineName || !newMedicine.medicineName.trim()) {
-            toast.warn('Vui lòng nhập tên thuốc.');
-            return;
+   const handleSubmitNewMedicine = async () => {
+    if (!newMedicine.medicineName.trim() || !newMedicine.dosage.trim()) {
+        toast.warn('Vui lòng nhập tên thuốc và liều lượng.');
+        return;
+    }
+    setIsUpdating(true);
+    try {
+        const finalMedicineData = { ...newMedicine };
+        
+        // Nếu API mong đợi time là string, giữ nguyên format
+        // Hoặc convert thành JSON string nếu cần
+        if (typeof finalMedicineData.time === 'string' && finalMedicineData.time.trim() !== '') {
+            // Nếu API cần array dưới dạng JSON string
+            const timeArray = finalMedicineData.time.split(',').map(t => t.trim()).filter(Boolean);
+            finalMedicineData.time = JSON.stringify(timeArray);
+        } else {
+            finalMedicineData.time = ''; // Hoặc '[]' nếu API cần JSON array string
         }
-        if (!newMedicine.dosage || !newMedicine.dosage.trim()) {
-            toast.warn('Vui lòng nhập liều lượng.');
-            return;
-        }
+        
+        const payload = { medicalOrderDetails: [finalMedicineData] };
+        await medicalOrderApi.additionalDetail(orderId, payload);
+        toast.success(`Đã thêm thuốc mới: ${newMedicine.medicineName}.`);
+        handleCloseAllModals();
+        await loadData();
+    } catch (err) {
+        toast.error("Thêm thuốc mới thất bại.");
+        console.error('Error adding medicine:', err);
+    } finally {
+        setIsUpdating(false);
+    }
+};
 
-        setIsUpdating(true);
-        try {
-            const medicineDataForPayload = {
-                medicineName: newMedicine.medicineName,
-                dosage: newMedicine.dosage,
-                type: newMedicine.type,
-                time: newMedicine.time,
-                quantity: newMedicine.quantity,
-            };
-            if (newMedicine.note && newMedicine.note.trim() !== '') {
-                medicineDataForPayload.note = newMedicine.note;
-            }
-            const payload = { medicalOrderDetails: [medicineDataForPayload] };
-
-            await medicalOrderApi.additionalDetail(orderId, payload);
-            toast.success(`Đã thêm thuốc mới: ${newMedicine.medicineName}.`);
-            handleCloseAddNewModal();
-            await loadData();
-        } catch (err) {
-            toast.error("Thêm thuốc mới thất bại.");
-            console.error("Add new medicine failed:", err.response?.data || err);
-        } finally {
-            setIsUpdating(false);
-        }
-    };
-
+    
     const handleBack = () => navigate(-1);
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString('vi-VN');
     const formatTime = (timeData) => {
         if (!timeData) return 'N/A';
-        let timeArray = [];
-        if (Array.isArray(timeData)) {
-            timeArray = timeData;
-        } else if (typeof timeData === 'string') {
-            try {
-                timeArray = JSON.parse(timeData);
-            } catch (e) {
-                const cleanedString = timeData.replace(/^\[|\]$/g, '');
-                timeArray = cleanedString.split(',').map(item => item.trim().replace(/^['"]|['"]$/g, ''));
-            }
-        } else {
+        try {
+            const timeArray = Array.isArray(timeData) ? timeData : JSON.parse(timeData);
+            if (!Array.isArray(timeArray) || timeArray.length === 0) return 'N/A';
+            return timeArray.map(t => String(t).charAt(0).toUpperCase() + String(t).slice(1)).join(', ');
+        } catch (e) {
             return String(timeData);
         }
-        if (!Array.isArray(timeArray) || timeArray.length === 0) return 'N/A';
-        return timeArray.map(t => (typeof t === 'string' && t.length > 0 ? t.charAt(0).toUpperCase() + t.slice(1) : t)).join(', ');
     };
 
     if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}><CircularProgress /></Box>; }
@@ -328,7 +278,6 @@ const MedicalOrderDetailPage = () => {
     if (!orderData || !orderData.order || !orderData.details) { return <Container maxWidth="lg" sx={{ py: 3 }}><Alert severity="info">Không có dữ liệu.</Alert></Container>; }
 
     const { order: medicalOrder, details: medicalOrderDetails } = orderData;
-    const currentStatusInfo = statusMap[medicalOrder.status] || { label: medicalOrder.status, color: 'default' };
     const numSelected = Object.keys(selectionForRecord).length;
     const rowCount = medicalOrderDetails.filter(d => d.quantity > 0).length;
 
@@ -343,89 +292,53 @@ const MedicalOrderDetailPage = () => {
                 <Stack direction="row" spacing={2} alignItems="center">
                     {medicalOrder.status === 'pending' && user.role === "nurse" && (
                         <>
-                            <Button
-                                variant="outlined"
-                                color="error"
-                                startIcon={<CancelIcon />}
-                                onClick={handleOpenRejectModal}
-                                disabled={isUpdating}
-                            >
-                                Từ chối
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="success"
-                                startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <ApproveIcon />}
-                                onClick={() => handleUpdateStatus({ status: 'approved' })}
-                                disabled={isUpdating}
-                            >
-                                Duyệt
-                            </Button>
+                            <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={handleOpenRejectModal} disabled={isUpdating}>Từ chối</Button>
+                            <Button variant="contained" color="success" startIcon={isUpdating ? <CircularProgress size={20} color="inherit" /> : <ApproveIcon />} onClick={() => handleUpdateStatus({ status: 'approved' })} disabled={isUpdating}>Duyệt</Button>
                         </>
                     )}
                 </Stack>
             </Box>
+
             {medicalOrder.imageURL ? (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: { xs: 'column', md: 'row' },
-                        gap: 2,
-                        mb: 3,
-                    }}
-                >
-                    {/* Bên trái: Thông tin + Ảnh */}
-                    <Card
-                        sx={{
-                            flex: 1,
-                            maxWidth: { md: '50%' },
-                            mb: { xs: 2, md: 0 },
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 3 }}>
+                    <Card sx={{ flex: 1, maxWidth: { md: '50%' }, mb: { xs: 2, md: 0 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <CardContent sx={{ width: '100%' }}>
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
                             <Box sx={{ mb: 2 }}>
                                 <Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography>
                                 <Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography>
-                                <Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || '—'}</Typography>
+                                <Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || 'không có'}</Typography>
                             </Box>
                             <Box sx={{ textAlign: 'center' }}>
+                                {/* --- GIỮ NGUYÊN CHỨC NĂNG ZOOM --- */}
                                 <img
                                     src={medicalOrder.imageURL}
                                     alt="Ảnh đơn thuốc"
-                                    style={{ maxWidth: 500, maxHeight: 550, borderRadius: 8, boxShadow: '0 2px 8px #0002' }}
+                                    onClick={() => setImageZoomOpen(true)} // Mở lightbox zoom
+                                    style={{
+                                        maxWidth: 500,
+                                        maxHeight: 550,
+                                        borderRadius: 8,
+                                        boxShadow: '0 2px 8px #0002',
+                                        cursor: 'pointer',
+                                    }}
                                 />
                                 <Typography variant="caption" display="block" sx={{ mt: 1, color: 'text.secondary' }}>
-                                    Ảnh đơn thuốc
+                                    Ảnh đơn thuốc (Nhấn để xem & zoom)
                                 </Typography>
                             </Box>
                         </CardContent>
                     </Card>
 
-                    {/* Bên phải: Danh sách thuốc */}
-                    <Card
-                        sx={{
-                            flex: 1,
-                            maxWidth: { md: '50%' },
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}
-                    >
+                    <Card sx={{ flex: 1, maxWidth: { md: '50%' }, display: 'flex', flexDirection: 'column' }}>
                         <CardContent sx={{ p: 0 }}>
                             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
                                 <Stack direction="row" spacing={1}>
                                     {medicalOrder.status === 'approved' && user.role === "nurse" && (
                                         <>
-                                            <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
-                                                Cho uống thuốc ({numSelected})
-                                            </Button>
-                                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>
-                                                Thêm thuốc mới
-                                            </Button>
+                                            <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>Cho uống thuốc ({numSelected})</Button>
+                                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>Thêm thuốc mới</Button>
                                         </>
                                     )}
                                 </Stack>
@@ -439,6 +352,7 @@ const MedicalOrderDetailPage = () => {
                                             </TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
                                             <TableCell align="center" sx={{ fontWeight: 'bold' }}>Liều lượng</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Loại</TableCell>
                                             <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
@@ -457,9 +371,10 @@ const MedicalOrderDetailPage = () => {
                                                         {detail.quantity <= 2 && (<Tooltip title="Số lượng sắp hết!"><WarningIcon color="warning" sx={{ fontSize: 16, ml: 1, verticalAlign: 'middle' }} /></Tooltip>)}
                                                     </TableCell>
                                                     <TableCell align="center">{detail.dosage}</TableCell>
+                                                    <TableCell align="center">{detail.type}</TableCell>
                                                     <TableCell align="center">{detail.quantity}</TableCell>
                                                     <TableCell>{formatTime(detail.time)}</TableCell>
-                                                    <TableCell>{detail.note || '—'}</TableCell>
+                                                    <TableCell>{detail.note || 'không có'}</TableCell>
                                                 </TableRow>
                                             );
                                         })}
@@ -471,7 +386,6 @@ const MedicalOrderDetailPage = () => {
                 </Box>
             ) : (
                 <>
-                    {/* Layout cũ khi không có ảnh */}
                     <Card sx={{ mb: 3 }}>
                         <CardContent>
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
@@ -489,12 +403,8 @@ const MedicalOrderDetailPage = () => {
                                 <Stack direction="row" spacing={1}>
                                     {medicalOrder.status === 'approved' && user.role === "nurse" && (
                                         <>
-                                            <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>
-                                                Cho uống thuốc ({numSelected})
-                                            </Button>
-                                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>
-                                                Thêm thuốc mới
-                                            </Button>
+                                            <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>Cho uống thuốc ({numSelected})</Button>
+                                            <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>Thêm thuốc mới</Button>
                                         </>
                                     )}
                                 </Stack>
@@ -508,6 +418,7 @@ const MedicalOrderDetailPage = () => {
                                             </TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>Tên thuốc</TableCell>
                                             <TableCell align="center" sx={{ fontWeight: 'bold' }}>Liều lượng</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Loại</TableCell>
                                             <TableCell align="center" sx={{ fontWeight: 'bold' }}>SL còn lại</TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>Thời gian uống</TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>Ghi chú</TableCell>
@@ -526,9 +437,10 @@ const MedicalOrderDetailPage = () => {
                                                         {detail.quantity <= 2 && (<Tooltip title="Số lượng sắp hết!"><WarningIcon color="warning" sx={{ fontSize: 16, ml: 1, verticalAlign: 'middle' }} /></Tooltip>)}
                                                     </TableCell>
                                                     <TableCell align="center">{detail.dosage}</TableCell>
+                                                    <TableCell align="center">{detail.type}</TableCell>
                                                     <TableCell align="center">{detail.quantity}</TableCell>
                                                     <TableCell>{formatTime(detail.time)}</TableCell>
-                                                    <TableCell>{detail.note || '—'}</TableCell>
+                                                    <TableCell>{detail.note || 'không có'}</TableCell>
                                                 </TableRow>
                                             );
                                         })}
@@ -540,9 +452,6 @@ const MedicalOrderDetailPage = () => {
                 </>
             )}
 
-
-
-            {/* THAY ĐỔI: Khôi phục lại đầy đủ phần Lịch sử sử dụng thuốc */}
             {usageHistory && usageHistory.length > 0 && (
                 <Card>
                     <CardContent>
@@ -578,7 +487,7 @@ const MedicalOrderDetailPage = () => {
                 </Card>
             )}
 
-            {/* Các Dialogs không đổi */}
+            {/* Modal ghi nhận sử dụng thuốc */}
             <Dialog open={isAddRecordModalOpen} onClose={handleCloseAddRecordModal} PaperProps={{ sx: { width: '35%' } }}>
                 <DialogTitle>Ghi nhận sử dụng thuốc</DialogTitle>
                 <DialogContent>
@@ -599,76 +508,257 @@ const MedicalOrderDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={isRefillModalOpen} onClose={handleCloseRefillModal}>
-                <DialogTitle>Bổ sung số lượng</DialogTitle>
-                <DialogContent>
-                    <Typography gutterBottom>Bổ sung cho: <strong>{refillData.detail?.medicineName}</strong></Typography>
-                    <TextField autoFocus margin="dense" label="Số lượng bổ sung" type="number" fullWidth variant="outlined" value={refillData.additionalQuantity} onChange={(e) => setRefillData(prev => ({ ...prev, additionalQuantity: Number(e.target.value) }))} inputProps={{ min: 1 }} />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseRefillModal} disabled={isUpdating}>Hủy</Button>
-                    <Button onClick={handleSubmitRefill} variant="contained" disabled={isUpdating}>{isUpdating ? <CircularProgress size={24} /> : 'Xác nhận'}</Button>
-                </DialogActions>
-            </Dialog>
-
-            <Dialog open={isAddNewModalOpen} onClose={handleCloseAddNewModal} PaperProps={{
-                sx: {
-                    position: 'absolute',
-                    right: 70,
-                    top: 90,
-                    width: 500,
-                }
-            }}>
-                <DialogTitle>Thêm thuốc mới vào đơn</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={2} sx={{ pt: 1 }}>
-                        <TextField required name="medicineName" label="Tên thuốc" value={newMedicine.medicineName} onChange={handleNewMedicineFormChange} fullWidth />
-                        <TextField required name="dosage" label="Liều lượng (vd: 500mg)" value={newMedicine.dosage} onChange={handleNewMedicineFormChange} fullWidth />
-                        <TextField name="time" label="Thời gian uống (vd: [sáng, tối])" value={newMedicine.time} onChange={handleNewMedicineFormChange} fullWidth />
-                        <TextField name="quantity" label="Số lượng ban đầu" type="number" value={newMedicine.quantity} onChange={handleNewMedicineFormChange} fullWidth />
-                        <TextField name="note" label="Ghi chú" value={newMedicine.note} onChange={handleNewMedicineFormChange} fullWidth multiline rows={2} />
+            {/* --- MODAL THÊM THUỐC (BÊN TRÁI) --- */}
+            <Dialog
+                open={isAddNewModalOpen}
+                onClose={handleCloseFormModal}
+                disableEscapeKeyDown={false}
+                PaperProps={{
+                    sx: {
+                        position: 'fixed',
+                        left: 50,
+                        top: 50,
+                        width: 450,
+                        maxWidth: 450,
+                        margin: 0,
+                        zIndex: 1200,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                    }
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: 'rgba(0,0,0,0.1)',
+                        zIndex: 1199,
+                    }
+                }}
+            >
+                <DialogTitle sx={{ 
+                    background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                    color: 'white',
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    py: 2,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    📋 Thêm thuốc mới
+                    <Box>
+                        <Tooltip title="Đóng cả 2 modal">
+                            <Button 
+                                onClick={handleCloseAllModals}
+                                sx={{ 
+                                    color: 'white', 
+                                    minWidth: 'auto',
+                                    px: 1,
+                                    mr: 1,
+                                    fontSize: '0.75rem'
+                                }}
+                                size="small"
+                            >
+                                Đóng tất cả
+                            </Button>
+                        </Tooltip>
+                        <IconButton 
+                            onClick={handleCloseFormModal}
+                            sx={{ color: 'white' }}
+                            size="small"
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                </DialogTitle>
+                <DialogContent sx={{ px: 3, py: 2 }}>
+                    <Stack spacing={2.5}>
+                        <TextField 
+                            required 
+                            name="medicineName" 
+                            label="Tên thuốc" 
+                            value={newMedicine.medicineName} 
+                            onChange={handleNewMedicineFormChange} 
+                            fullWidth 
+                            size="small"
+                            autoFocus
+                        />
+                        <TextField 
+                            required 
+                            name="dosage" 
+                            label="Liều lượng" 
+                            value={newMedicine.dosage} 
+                            onChange={handleNewMedicineFormChange} 
+                            fullWidth 
+                            size="small"
+                            placeholder="vd: 500mg"
+                        />
+                         <TextField 
+                            required 
+                            name="medicineName" 
+                            label="Loại" 
+                            value={newMedicine.type} 
+                            onChange={handleNewMedicineFormChange} 
+                            fullWidth 
+                            size="small"
+                              placeholder="vd: viên,nước"
+                            autoFocus
+                        />
+                        <TextField 
+                            name="time" 
+                            label="Thời gian uống" 
+                            value={newMedicine.time} 
+                            onChange={handleNewMedicineFormChange} 
+                            fullWidth 
+                            size="small"
+                            placeholder="vd: sáng, tối"
+                            helperText="Các buổi cách nhau bằng dấu phẩy"
+                        />
+                        <TextField 
+                            name="quantity" 
+                            label="Số lượng" 
+                            type="number" 
+                            value={newMedicine.quantity} 
+                            onChange={handleNewMedicineFormChange} 
+                            fullWidth 
+                            size="small"
+                            inputProps={{ min: 1 }}
+                        />
+                        <TextField 
+                            name="note" 
+                            label="Ghi chú" 
+                            value={newMedicine.note} 
+                            onChange={handleNewMedicineFormChange} 
+                            fullWidth 
+                            size="small"
+                            multiline 
+                            rows={2} 
+                        />
                     </Stack>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAddNewModal} disabled={isUpdating}>Hủy</Button>
-                    <Button onClick={handleSubmitNewMedicine} variant="contained" disabled={isUpdating}>{isUpdating ? <CircularProgress size={24} /> : 'Lưu thuốc'}</Button>
+                <DialogActions sx={{ px: 3, py: 2, bg: '#f8f9fa' }}>
+                    <Button onClick={handleCloseFormModal} disabled={isUpdating}>
+                        Hủy
+                    </Button>
+                    <Button 
+                        onClick={handleSubmitNewMedicine} 
+                        variant="contained" 
+                        disabled={isUpdating}
+                        sx={{ minWidth: 120 }}
+                    >
+                        {isUpdating ? <CircularProgress size={20} /> : 'Thêm thuốc'}
+                    </Button>
                 </DialogActions>
             </Dialog>
 
+            {/* --- MODAL HIỂN THỊ ẢNH CHO THÊM THUỐC (BÊN PHẢI) --- */}
+            <Dialog
+                open={isImageModalOpen}
+                onClose={handleCloseImageModal}
+                disableEscapeKeyDown={true}
+                PaperProps={{
+                    sx: {
+                        position: 'fixed',
+                        right: 50,
+                        top: 50,
+                        width:600,
+                        maxWidth: 1000,
+                        margin: 0,
+                        zIndex: 1201,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                        borderRadius: 2,
+                    }
+                }}
+                BackdropProps={{
+                    sx: {
+                        backgroundColor: 'transparent',
+                        zIndex: 1200,
+                    }
+                }}
+            >
+                <DialogTitle sx={{ 
+                    background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+                    color: 'white',
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    py: 2,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    📄 Đơn thuốc tham khảo
+                    <IconButton 
+                        onClick={handleCloseImageModal}
+                        sx={{ color: 'white' }}
+                        size="small"
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent sx={{ p: 2, textAlign: 'center' }}>
+                    {medicalOrder.imageURL && (
+                        <img
+                            src={medicalOrder.imageURL}
+                            alt="Đơn thuốc"
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '70vh',
+                                objectFit: 'contain',
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                            }}
+                        />
+                    )}
+                </DialogContent>
+                <DialogActions sx={{ px: 3, py: 2, justifyContent: 'center' }}>
+                    <Button 
+                        onClick={handleCloseImageModal}
+                        variant="outlined"
+                    >
+                        Đóng ảnh
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Modal từ chối đơn */}
             <Dialog open={isRejectModalOpen} onClose={handleCloseRejectModal} fullWidth maxWidth="sm">
                 <DialogTitle>Lý do từ chối đơn gửi thuốc</DialogTitle>
                 <DialogContent>
                     <DialogContentText sx={{ mb: 2 }}>
                         Vui lòng nhập lý do từ chối.
                     </DialogContentText>
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="rejectionReason"
-                        name="rejectionReason"
-                        label="Lý do từ chối"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        multiline
-                        rows={3}
-                        value={rejectionReason}
-                        onChange={(e) => setRejectionReason(e.target.value)}
+                    <TextField 
+                        autoFocus 
+                        required 
+                        margin="dense" 
+                        id="rejectionReason" 
+                        name="rejectionReason" 
+                        label="Lý do từ chối" 
+                        type="text" 
+                        fullWidth 
+                        variant="outlined" 
+                        multiline 
+                        rows={3} 
+                        value={rejectionReason} 
+                        onChange={(e) => setRejectionReason(e.target.value)} 
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseRejectModal} disabled={isUpdating}>Hủy</Button>
-                    <Button
-                        onClick={handleRejectOrder}
-                        variant="contained"
-                        color="error"
-                        disabled={isUpdating || !rejectionReason.trim()}
-                    >
+                    <Button onClick={handleRejectOrder} variant="contained" color="error" disabled={isUpdating || !rejectionReason.trim()}>
                         {isUpdating ? <CircularProgress size={24} /> : 'Xác nhận Từ chối'}
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* --- GIỮ NGUYÊN LIGHTBOX CHO CHỨC NĂNG ZOOM --- */}
+            <Lightbox
+                open={isImageZoomOpen}
+                close={() => setImageZoomOpen(false)}
+                slides={medicalOrder.imageURL ? [{ src: medicalOrder.imageURL }] : []}
+                plugins={[Zoom]}
+                styles={{
+                    container: { zIndex: 1500 }, // Cao nhất để zoom
+                }}
+            />
         </Container>
     );
 };

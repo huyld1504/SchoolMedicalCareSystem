@@ -356,7 +356,7 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                                     Ngày Bắt đầu
                                 </TableCell>
                                 <TableCell align="center" sx={{ fontWeight: 700, width: '15%' }}>
-                                    Ngày Kết thúc
+                                    Ngày Kết thúc   
                                 </TableCell>
                                 <TableCell align="center" sx={{ fontWeight: 700, width: '12%' }}>
                                     Trạng thái
@@ -408,7 +408,7 @@ const MedicalOrdersTable = ({ orders, paginationInfo, onViewDetails, loading }) 
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap'
                                             }}
-                                            title={order.note}
+                                           
                                         >
                                             {order.note || 'Không có ghi chú'}
                                         </Typography>
