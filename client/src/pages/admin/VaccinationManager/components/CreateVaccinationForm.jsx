@@ -88,8 +88,8 @@ const CreateVaccinationForm = ({ onSuccess }) => {
     if (!form.vaccineType.trim()) return "Loại vắc xin là bắt buộc";
     if (!form.targetAudience.trim()) return "Đối tượng tiêm là bắt buộc";
     if (!form.startDate.trim()) return "Ngày bắt đầu là bắt buộc";
-    if (!form.injection.trim()) return "Phương pháp tiêm là bắt buộc";
-    if (!form.dosage.trim()) return "Liều lượng là bắt buộc";
+    if (!String(form.injection).trim()) return "Số mũi tiêm là bắt buộc";
+    if (!String(form.dosage).trim()) return "Liều lượng là bắt buộc";
     if (form.endDate && form.startDate && new Date(form.endDate) < new Date(form.startDate)) {
       return "Ngày kết thúc phải sau ngày bắt đầu";
     }
