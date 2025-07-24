@@ -248,7 +248,7 @@ const EditCampaign = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Mô tả vaccine"
+                  label="Mô tả vaccine *"
                   multiline
                   rows={3}
                   value={formData.vaccineDescription}
@@ -261,10 +261,10 @@ const EditCampaign = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Phương pháp tiêm"
+                  label="Số mũi tiêm *"
                   value={formData.injection}
                   onChange={(e) => handleInputChange('injection', e.target.value)}
-                  placeholder="Ví dụ: Tiêm bắp, Tiêm dưới da..."
+                  placeholder="Ví dụ: 1, 2..."
                 />
               </Grid>
 
@@ -272,7 +272,7 @@ const EditCampaign = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Liều lượng"
+                  label="Liều lượng *"
                   value={formData.dosage}
                   onChange={(e) => handleInputChange('dosage', e.target.value)}
                   placeholder="Ví dụ: 0.5ml, 1 liều..."
@@ -286,7 +286,8 @@ const EditCampaign = () => {
                   <Select
                     value={formData.status}
                     label="Trạng thái"
-                    onChange={(e) => handleInputChange('status', e.target.value)}                  >
+                    onChange={(e) => handleInputChange('status', e.target.value)}
+                  >
                     <MenuItem value="planned">Đã lên kế hoạch</MenuItem>
                     <MenuItem value="ongoing">Đang hoạt động</MenuItem>
                     <MenuItem value="completed">Hoàn thành</MenuItem>
