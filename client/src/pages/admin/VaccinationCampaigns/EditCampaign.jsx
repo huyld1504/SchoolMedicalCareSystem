@@ -567,7 +567,6 @@ const EditCampaign = () => {
                   </Grid>
                 </Grid>
               </Box>
-
               {/* Action Buttons */}
               <Paper 
                 elevation={0} 
