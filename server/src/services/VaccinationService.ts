@@ -6,6 +6,7 @@ import { IVaccinationCampaign } from "@src/models/VaccinationCampaign";
 import { IVaccinationParticipation } from "@src/models/VaccinationParticipation";
 import { Types } from "mongoose";
 import { VaccinationCampaignQueryBuilder, VaccinationParticipationQueryBuilder } from "@src/payload/request/filter/vaccination.request";
+import { Dayjs } from "dayjs";
 
 class VaccinationService {
   private campaignRepo = new VaccinationCampaignRepository();
@@ -38,6 +39,28 @@ class VaccinationService {
     if (!campaign) {
       throw new ApplicationError("Campaign not found");
     }
+
+    // Business rules for status updates
+    if (updateData.status) {
+      const currentDate = new Date();
+      const campaignStartDate = new Date(campaign.startDate);
+      const campaignEndDate = new Date(campaign.endDate);
+
+      // Rule 1: Cannot set status to "ongoing" if campaign hasn't started yet
+      if (updateData.status === 'ongoing' && currentDate < campaignStartDate) {
+        throw new ApplicationError(
+          `Cannot set campaign status to "ongoing" because the campaign has not started yet. Campaign start date is ${campaignStartDate.toLocaleDateString()}`
+        );
+      }
+
+      // Rule 2: Cannot set status to "completed" if campaign hasn't ended yet
+      if (updateData.status === 'completed' && currentDate < campaignEndDate) {
+        throw new ApplicationError(
+          `Cannot set campaign status to "completed" because the campaign has not ended yet. Campaign end date is ${campaignEndDate.toLocaleDateString()}`
+        );
+      }
+    }
+
     await this.campaignRepo.updateCampaign(campaignId, updateData, adminId);
     if (updateData.status === 'completed' || updateData.status === 'canceled') {
       await this.participationRepo.cancelPendingParticipations(campaignId);
@@ -147,7 +170,9 @@ class VaccinationService {
 
     if (participation.vaccinationStatus === "completed") {
       throw new ApplicationError("This student has already been vaccinated");
-    } return this.participationRepo.recordVaccination(
+    }
+
+    return this.participationRepo.recordVaccination(
       participationId,
       nurseId,
       status,
@@ -241,7 +266,7 @@ class VaccinationService {
   ): Promise<IVaccinationParticipation | null> {
     return this.updateParentConsent(participationId, parentId, consent, note);
   }
-
+  
   /**
    * Search campaigns with advanced filters
    */
