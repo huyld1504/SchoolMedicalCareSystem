@@ -312,37 +312,37 @@ const MedicalEventAddPage = () => {
             let hasError = false;
 
             if (!formData.dateHappened || !(formData.dateHappened instanceof Date) || isNaN(formData.dateHappened.getTime())) {
-                newErrors.dateHappened = 'Vui lòng chọn ngày và giờ hợp lệ';
+                newErrors.dateHappened = 'Chọn ngày và giờ hợp lệ';
                 hasError = true;
             }
 
             if (!formData.type || !formData.type.trim()) {
-                newErrors.type = 'Vui lòng chọn loại sự kiện';
+                newErrors.type = 'Chọn loại sự kiện';
                 hasError = true;
             }
 
             if (!formData.level || !formData.level.toString().trim()) {
-                newErrors.level = 'Vui lòng chọn mức độ';
+                newErrors.level = 'Chọn mức độ';
                 hasError = true;
             }
 
             if (!formData.description || !formData.description.trim()) {
-                newErrors.description = 'Vui lòng nhập mô tả chi tiết';
+                newErrors.description = 'Nhập mô tả chi tiết';
                 hasError = true;
             }
 
             if (!formData.solution || !formData.solution.trim()) {
-                newErrors.solution = 'Vui lòng nhập giải pháp/điều trị';
+                newErrors.solution = 'Nhập giải pháp/điều trị';
                 hasError = true;
             }
 
             if (!formData.status || !formData.status.trim()) {
-                newErrors.status = 'Vui lòng chọn trạng thái';
+                newErrors.status = 'Chọn trạng thái';
                 hasError = true;
             }
 
             if (studentsJoin.length === 0 && !studentId) {
-                newErrors.studentsJoin = 'Vui lòng thêm ít nhất một học sinh tham gia';
+                newErrors.studentsJoin = 'Thêm ít nhất một học sinh ';
                 hasError = true;
             }
 
@@ -352,7 +352,7 @@ const MedicalEventAddPage = () => {
             }
 
             if (!formData.imageURL || !formData.imageURL.trim()) {
-                newErrors.imageURL = 'Vui lòng chọn hình ảnh cho sự kiện';
+                newErrors.imageURL = 'Chọn hình ảnh cho sự kiện';
                 hasError = true;
             }
 
@@ -475,12 +475,12 @@ const MedicalEventAddPage = () => {
         const searchNameTerm = searchStudentName.trim();
 
         if (!searchCodeTerm && !searchNameTerm) {
-            toast.error('Vui lòng nhập mã học sinh hoặc tên học sinh');
+            toast.error('Nhập mã học sinh hoặc tên học sinh');
             return;
         }
 
         if (!foundStudent || foundStudent.length === 0) {
-            toast.error('Vui lòng tìm kiếm học sinh trước khi thêm');
+            toast.error('Tìm kiếm học sinh trước khi thêm');
             return;
         }
 
@@ -488,7 +488,7 @@ const MedicalEventAddPage = () => {
         if (foundStudent.length === 1) {
             handleAddSpecificStudent(foundStudent[0]);
         } else {
-            toast.info('Có nhiều học sinh được tìm thấy. Vui lòng chọn học sinh cụ thể từ danh sách bên dưới');
+            toast.info('Có nhiều học sinh được tìm thấy. Chọn học sinh cụ thể từ danh sách bên dưới');
         }
     };
     const handleRemoveStudent = (studentId) => {
@@ -808,7 +808,7 @@ const MedicalEventAddPage = () => {
                                                         Không tìm thấy học sinh với từ khóa tìm kiếm
                                                     </Typography>
                                                     <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
-                                                        Vui lòng kiểm tra lại mã học sinh hoặc tên học sinh
+                                                        Kiểm tra lại mã học sinh hoặc tên học sinh
                                                     </Typography>
                                                 </Box>
                                             )}
