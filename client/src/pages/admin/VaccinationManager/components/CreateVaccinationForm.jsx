@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import vaccinationApi from "../../../../api/vaccinationApi";
 import { useDispatch, useSelector } from "react-redux";
 import { da } from "date-fns/locale";
+import { formatForDateInput } from "../../../../utils/date.utils";
 
 const initialState = {
   id: "",
@@ -170,7 +171,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           label="Ngày bắt đầu"
           type="date"
           InputLabelProps={{ shrink: true }}
-          value={form.startDate}
+          value={formatForDateInput(form.startDate)}
           onChange={(e) => handleChange("startDate", e.target.value)}
           fullWidth
         />
@@ -178,7 +179,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           label="Ngày kết thúc"
           type="date"
           InputLabelProps={{ shrink: true }}
-          value={form.endDate}
+         value={formatForDateInput(form.endDate)}
           onChange={(e) => handleChange("endDate", e.target.value)}
           fullWidth
           inputProps={{
