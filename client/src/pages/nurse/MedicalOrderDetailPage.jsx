@@ -45,12 +45,6 @@ const MODAL_THEME = {
         padding: '16px 24px',
         borderRadius: '8px 8px 0 0',
     },
-    headerImage: {
-        background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-        color: 'white',
-        padding: '16px 24px',
-        borderRadius: '8px 8px 0 0',
-    },
     footer: {
         backgroundColor: '#ffffff',
         borderTop: '1px solid #e0e0e0',
@@ -59,7 +53,6 @@ const MODAL_THEME = {
     }
 };
 
-// Các hằng số và state ban đầu không thay đổi...
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
     approved: { label: 'Đã duyệt', color: 'success' },
@@ -94,10 +87,8 @@ const MedicalOrderDetailPage = () => {
     const [isRejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
 
-    // --- TÁCH BIỆT 2 CHỨC NĂNG ---
+    // --- TÁCH BIỆT 2 CHỨC NĂNG (KHÔNG CẦN NỮA, CHỈ DÙNG 1 MODAL) ---
     const [isImageZoomOpen, setImageZoomOpen] = useState(false);
-    const [isImageModalOpen, setImageModalOpen] = useState(false);
-    const [isAddingMedicine, setIsAddingMedicine] = useState(false);
 
     // --- DATA LOADING ---
     const loadData = useCallback(async () => {
@@ -238,31 +229,14 @@ const MedicalOrderDetailPage = () => {
         setRejectionReason('');
     };
 
-    // --- HANDLERS CHO THÊM NHIỀU THUỐC ---
+    // --- HANDLERS CHO THÊM NHIỀU THUỐC (SỬA: CHỈ 1 MODAL KẾT HỢP) ---
     const handleOpenAddNewModal = () => {
         setNewMedicines([{ ...initialNewMedicineState }]);
-        setIsAddingMedicine(true);
         setIsAddNewModalOpen(true);
-        if (orderData?.order?.imageURL) {
-            setImageModalOpen(true);
-        }
     };
 
-    const handleCloseFormModal = () => {
+    const handleCloseAddNewModal = () => {
         setIsAddNewModalOpen(false);
-        setNewMedicines([{ ...initialNewMedicineState }]);
-    };
-
-    const handleCloseImageModal = () => {
-        if (!isAddingMedicine) {
-            setImageModalOpen(false);
-        }
-    };
-
-    const handleCloseAllModals = () => {
-        setIsAddNewModalOpen(false);
-        setImageModalOpen(false);
-        setIsAddingMedicine(false);
         setNewMedicines([{ ...initialNewMedicineState }]);
     };
 
@@ -283,12 +257,14 @@ const MedicalOrderDetailPage = () => {
     };
 
     const handleSubmitNewMedicines = async () => {
-        const validMedicines = newMedicines.filter(med =>
-            med.medicineName.trim() && med.dosage.trim()
+        const validMedicines = newMedicines.filter(med => 
+            med.medicineName.trim() && 
+            med.dosage.trim() && 
+            Number(med.quantity) > 0
         );
 
         if (validMedicines.length === 0) {
-            toast.warn('Vui lòng nhập ít nhất một thuốc với tên và liều lượng.');
+            toast.warn('Vui lòng nhập ít nhất một thuốc hợp lệ (tên, liều lượng, số lượng > 0).');
             return;
         }
 
@@ -300,7 +276,7 @@ const MedicalOrderDetailPage = () => {
                     const timeArray = finalMedicineData.time.split(',').map(t => t.trim()).filter(Boolean);
                     finalMedicineData.time = JSON.stringify(timeArray);
                 } else {
-                    finalMedicineData.time = '';
+                    finalMedicineData.time = JSON.stringify([]);
                 }
                 return finalMedicineData;
             });
@@ -308,10 +284,11 @@ const MedicalOrderDetailPage = () => {
             const payload = { medicalOrderDetails: processedMedicines };
             await medicalOrderApi.additionalDetail(orderId, payload);
             toast.success(`Đã thêm thành công ${validMedicines.length} loại thuốc mới!`);
-            handleCloseAllModals();
+            handleCloseAddNewModal();
             await loadData();
         } catch (err) {
-            toast.error("Thêm thuốc mới thất bại.");
+            const errorMessage = err.response?.data?.message || 'Lỗi không xác định';
+            toast.error(`Thêm thuốc mới thất bại: ${errorMessage}`);
             console.error('Error adding medicines:', err);
         } finally {
             setIsUpdating(false);
@@ -395,7 +372,6 @@ const MedicalOrderDetailPage = () => {
                             </Box>
                         </CardContent>
                     </Card>
-
                     <Card sx={{ flex: 1, maxWidth: { md: '50%' }, display: 'flex', flexDirection: 'column' }}>
                         <CardContent sx={{ p: 0 }}>
                             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -575,302 +551,254 @@ const MedicalOrderDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* --- MODAL THÊM THUỐC (CẢI TIẾN VỚI THEME) --- */}
-            <Dialog
-                open={isAddNewModalOpen}
-                onClose={handleCloseFormModal}
-                disableEscapeKeyDown={false}
-                disableRestoreFocus={true}
-                disableAutoFocus={false}
-                disableEnforceFocus={false}
-                maxWidth="md"
-                fullWidth
-                PaperProps={{
-                    sx: {
-                        ...MODAL_THEME.container,
-                        position: 'fixed',
-                        left: 50,
-                        top: 50,
-                        width: '45%',
-                        maxWidth: 600,
-                        height: '85vh',
-                        margin: 0,
-                        zIndex: 1400,
-                    }
-                }}
-                BackdropProps={{
-                    sx: {
-                        ...MODAL_THEME.backdrop,
-                        zIndex: 1399,
-                    }
-                }}
-            >
-                <DialogTitle sx={{
-                    ...MODAL_THEME.header,
-                    fontSize: '1.1rem',
-                    fontWeight: 600,
-                    py: 2,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                }}>
-                    📋 Thêm thuốc mới ({newMedicines.length} thuốc)
-                    <Box>
-                        <Tooltip title="Thêm dòng thuốc mới">
-                            <Button
-                                onClick={addMedicineRow}
-                                sx={{
-                                    color: 'white',
-                                    minWidth: 'auto',
-                                    px: 1,
-                                    mr: 1,
-                                    fontSize: '0.75rem'
-                                }}
-                                size="small"
-                                startIcon={<AddIcon />}
-                            >
-                                Thêm dòng
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title="Đóng cả 2 modal">
-                            <Button
-                                onClick={handleCloseAllModals}
-                                sx={{
-                                    color: 'white',
-                                    minWidth: 'auto',
-                                    px: 1,
-                                    mr: 1,
-                                    fontSize: '0.75rem'
-                                }}
-                                size="small"
-                            >
-                                Đóng tất cả
-                            </Button>
-                        </Tooltip>
-                        <IconButton
-                            onClick={handleCloseFormModal}
-                            sx={{ color: 'white' }}
-                            size="small"
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </Box>
-                </DialogTitle>
-                <DialogContent sx={{ 
-                    ...MODAL_THEME.content,
-                    px: 3, 
-                    py: 2, 
-                    maxHeight: '70vh', 
-                    overflowY: 'auto' 
-                }}>
-                    <Stack spacing={3}>
-                        {newMedicines.map((medicine, index) => (
-                            <Box key={index} sx={{
-                                p: 2,
-                                border: 1,
-                                borderColor: 'grey.300',
-                                borderRadius: 2,
-                                position: 'relative',
-                                backgroundColor: '#ffffff', // Background trắng cho từng card
-                            }}>
-                                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
-                                    Thuốc #{index + 1}
-                                </Typography>
-
-                                {newMedicines.length > 1 && (
-                                    <IconButton
-                                        onClick={() => removeMedicineRow(index)}
-                                        sx={{
-                                            position: 'absolute',
-                                            top: 8,
-                                            right: 8,
-                                            color: 'error.main'
-                                        }}
-                                        size="small"
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                )}
-
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            required
-                                            label="Tên thuốc"
-                                            value={medicine.medicineName}
-                                            onChange={(e) => handleMedicineFormChange(index, 'medicineName', e.target.value)}
-                                            fullWidth
-                                            size="small"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            required
-                                            label="Liều lượng"
-                                            value={medicine.dosage}
-                                            onChange={(e) => handleMedicineFormChange(index, 'dosage', e.target.value)}
-                                            fullWidth
-                                            size="small"
-                                            placeholder="vd: 500mg"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Loại"
-                                            value={medicine.type}
-                                            onChange={(e) => handleMedicineFormChange(index, 'type', e.target.value)}
-                                            fullWidth
-                                            size="small"
-                                            placeholder="vd: viên, nước"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Số lượng"
-                                            type="number"
-                                            value={medicine.quantity}
-                                            onChange={(e) => handleMedicineFormChange(index, 'quantity', e.target.value)}
-                                            fullWidth
-                                            size="small"
-                                            inputProps={{ min: 1 }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            label="Thời gian uống"
-                                            value={medicine.time}
-                                            onChange={(e) => handleMedicineFormChange(index, 'time', e.target.value)}
-                                            fullWidth
-                                            size="small"
-                                            placeholder="vd: sáng, tối"
-                                            helperText="Các buổi cách nhau bằng dấu phẩy"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            label="Ghi chú"
-                                            value={medicine.note}
-                                            onChange={(e) => handleMedicineFormChange(index, 'note', e.target.value)}
-                                            fullWidth
-                                            size="small"
-                                            multiline
-                                            rows={2}
-                                        />
-                                    </Grid>
-                                </Grid>
-
-                                {index < newMedicines.length - 1 && <Divider sx={{ mt: 2 }} />}
-                            </Box>
-                        ))}
-                    </Stack>
-                </DialogContent>
-                <DialogActions sx={{ 
-                    ...MODAL_THEME.footer,
-                    px: 3, 
-                    py: 2,
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    gap: 2
-                }}>
-                    <Button onClick={handleCloseFormModal} disabled={isUpdating}>
-                        Hủy
-                    </Button>
-                    <Button
-                        onClick={handleSubmitNewMedicines}
-                        variant="contained"
-                        disabled={isUpdating}
-                        sx={{ minWidth: 140 }}
-                    >
-                        {isUpdating ? <CircularProgress size={20} /> : `Thêm ${newMedicines.length} thuốc`}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* --- DIV CONTAINER CHO MODAL ẢNH (CẢI TIẾN VỚI THEME) --- */}
-            {isImageModalOpen && (
-                <div
-                    style={{
-                        ...MODAL_THEME.container,
-                        position: 'fixed',
-                        right: 50,
-                        top: 50,
-                        width: '45%',
-                        maxWidth: 700,
-                        height: '85vh',
-                        zIndex: 1200,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
+           
+{/* --- MODAL THÊM THUỐC KẾT HỢP (NỬA FORM BÊN TRÁI, NỬA ẢNH BÊN PHẢI) --- */}
+<Dialog
+    open={isAddNewModalOpen}
+    onClose={handleCloseAddNewModal}
+    disableEscapeKeyDown={false}
+    disableRestoreFocus={true}
+    disableAutoFocus={false}
+    disableEnforceFocus={false}
+    maxWidth="lg"
+    fullWidth
+    PaperProps={{
+        sx: {
+            ...MODAL_THEME.container,
+            height: '90vh',
+            width: '95%',
+            maxWidth: 1200,
+            margin: 'auto',
+            zIndex: 1400,
+        }
+    }}
+    BackdropProps={{
+        sx: {
+            ...MODAL_THEME.backdrop,
+            zIndex: 1399,
+        }
+    }}
+>
+    <DialogTitle sx={{
+        ...MODAL_THEME.header,
+        fontSize: '1.1rem',
+        fontWeight: 600,
+        py: 2,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    }}>
+        📋 Thêm thuốc mới ({newMedicines.length} thuốc)
+        <Box>
+            <Tooltip title="Thêm dòng thuốc mới">
+                <Button
+                    onClick={addMedicineRow}
+                    sx={{
+                        color: 'white',
+                        minWidth: 'auto',
+                        px: 1,
+                        mr: 1,
+                        fontSize: '0.75rem'
                     }}
+                    size="small"
+                    startIcon={<AddIcon />}
                 >
-                    {/* Header */}
-                    <div style={{
-                        ...MODAL_THEME.headerImage,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}>
-                        <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
-                                Hình ảnh đơn thuốc
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            {isAddingMedicine && (
-                                <Typography variant="body2" sx={{ mr: 2, opacity: 0.9, color: 'white' }}>
-                                    (Đang thêm thuốc...)
-                                </Typography>
+                    Thêm Thuốc
+                </Button>
+            </Tooltip>
+            <IconButton
+                onClick={handleCloseAddNewModal}
+                sx={{ color: 'white' }}
+                size="small"
+            >
+                <CloseIcon />
+            </IconButton>
+        </Box>
+    </DialogTitle>
+    <DialogContent sx={{ 
+        ...MODAL_THEME.content,
+        p: 0,
+        height: '100%',
+        overflow: 'hidden'
+    }}>
+        <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'row',
+            height: '100%',
+            overflow: 'hidden'
+        }}>
+            {/* Nửa trái: Form thêm thuốc (cố định bên trái) */}
+            <Box sx={{
+                width: medicalOrder?.imageURL ? '50%' : '100%',
+                p: 3,
+                overflowY: 'auto',
+                borderRight: medicalOrder?.imageURL ? '1px solid #e0e0e0' : 'none',
+                backgroundColor: '#ffffff'
+            }}>
+                <Stack spacing={3}>
+                    {newMedicines.map((medicine, index) => (
+                        <Box key={index} sx={{
+                            p: 2,
+                            border: 1,
+                            borderColor: 'grey.300',
+                            borderRadius: 2,
+                            position: 'relative',
+                            backgroundColor: '#ffffff',
+                        }}>
+                            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
+                                Thuốc #{index + 1}
+                            </Typography>
+                            {newMedicines.length > 1 && (
+                                <IconButton
+                                    onClick={() => removeMedicineRow(index)}
+                                    sx={{
+                                        position: 'absolute',
+                                        top: 8,
+                                        right: 8,
+                                        color: 'error.main'
+                                    }}
+                                    size="small"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
                             )}
-                            <IconButton
-                                onClick={isAddingMedicine ? handleCloseAllModals : handleCloseImageModal}
-                                sx={{ color: 'white' }}
-                                size="small"
-                            >
-                                <CloseIcon />
-                            </IconButton>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        required
+                                        label="Tên thuốc"
+                                        value={medicine.medicineName}
+                                        onChange={(e) => handleMedicineFormChange(index, 'medicineName', e.target.value)}
+                                        fullWidth
+                                        size="small"
+                                        autoFocus={index === 0}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        required
+                                        label="Liều lượng"
+                                        value={medicine.dosage}
+                                        onChange={(e) => handleMedicineFormChange(index, 'dosage', e.target.value)}
+                                        fullWidth
+                                        size="small"
+                                        placeholder="vd: 500mg"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Loại"
+                                        value={medicine.type}
+                                        onChange={(e) => handleMedicineFormChange(index, 'type', e.target.value)}
+                                        fullWidth
+                                        size="small"
+                                        placeholder="vd: viên, nước"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Số lượng"
+                                        type="number"
+                                        value={medicine.quantity}
+                                        onChange={(e) => handleMedicineFormChange(index, 'quantity', Number(e.target.value))}
+                                        fullWidth
+                                        size="small"
+                                        inputProps={{ min: 1 }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Thời gian uống"
+                                        value={medicine.time}
+                                        onChange={(e) => handleMedicineFormChange(index, 'time', e.target.value)}
+                                        fullWidth
+                                        size="small"
+                                        placeholder="vd: sáng, tối"
+                                        helperText="Các buổi cách nhau bằng dấu phẩy"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Ghi chú"
+                                        value={medicine.note}
+                                        onChange={(e) => handleMedicineFormChange(index, 'note', e.target.value)}
+                                        fullWidth
+                                        size="small"
+                                        multiline
+                                        rows={2}
+                                    />
+                                </Grid>
+                            </Grid>
+                            {index < newMedicines.length - 1 && <Divider sx={{ mt: 2 }} />}
                         </Box>
-                    </div>
+                    ))}
+                </Stack>
+            </Box>
 
-                    {/* Content */}
-                    <div style={{
-                        ...MODAL_THEME.content,
-                        flex: 1,
-                        padding: 16,
-                        textAlign: 'center',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'auto',
-                    }}>
-                        {medicalOrder.imageURL && (
-                            <img
-                                src={medicalOrder.imageURL}
-                                alt="Đơn thuốc"
-                                style={{
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
-                                    objectFit: 'contain',
-                                    borderRadius: 8,
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                                }}
-                            />
-                        )}
-                    </div>
-
-                    {/* Footer */}
-                    <div style={{
-                        ...MODAL_THEME.footer,
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}>
-                        <Button
-                            onClick={isAddingMedicine ? handleCloseAllModals : handleCloseImageModal}
-                            variant="outlined"
-                            size="small"
-                        >
-                            {isAddingMedicine ? 'Đóng cả 2 modal' : 'Đóng ảnh'}
-                        </Button>
-                    </div>
-                </div>
+            {/* Nửa phải: Hình ảnh (cố định bên phải) */}
+            {medicalOrder?.imageURL && (
+                <Box sx={{
+                    width: '50%',
+                    p: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'auto',
+                    backgroundColor: '#f8f9fa',
+                }}>
+                    <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
+                        📷 Hình ảnh đơn thuốc
+                    </Typography>
+                    <Typography variant="caption" sx={{ mb: 2, color: 'text.secondary' }}>
+                        Nhấn vào ảnh để zoom phóng to
+                    </Typography>
+                    <img
+                        src={medicalOrder.imageURL}
+                        alt="Đơn thuốc"
+                        onClick={() => setImageZoomOpen(true)}
+                        style={{
+                            maxWidth: '100%',
+                            maxHeight: '75vh',
+                            objectFit: 'contain',
+                            borderRadius: 8,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            cursor: 'pointer',
+                            border: '2px solid #e0e0e0',
+                            transition: 'transform 0.2s ease-in-out',
+                        }}
+                        onMouseOver={(e) => e.target.style.transform = 'scale(1.02)'}
+                        onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                    />
+                </Box>
             )}
+        </Box>
+    </DialogContent>
+    <DialogActions sx={{ 
+        ...MODAL_THEME.footer,
+        px: 3, 
+        py: 2,
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: 2
+    }}>
+        <Button onClick={handleCloseAddNewModal} disabled={isUpdating}>
+            Hủy
+        </Button>
+        <Button
+            onClick={handleSubmitNewMedicines}
+            variant="contained"
+            disabled={isUpdating || newMedicines.every(med => !med.medicineName.trim() || !med.dosage.trim() || Number(med.quantity) <= 0)}
+            sx={{ minWidth: 140 }}
+        >
+            {isUpdating ? <CircularProgress size={20} /> : `Thêm ${newMedicines.length} thuốc`}
+        </Button>
+    </DialogActions>
+</Dialog>
+
+
+
+
 
             {/* Modal từ chối đơn */}
             <Dialog open={isRejectModalOpen} onClose={handleCloseRejectModal} fullWidth maxWidth="sm">
