@@ -1,4 +1,6 @@
+// ===== IMPORTS =====
 import React, { useState, useEffect, useCallback } from 'react';
+// Import các components UI từ Material-UI
 import {
     Box, Container, Typography, Card, CardContent, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, IconButton, Button, CircularProgress,
@@ -6,6 +8,7 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions, TextField, DialogContentText,
     Checkbox, Divider, FormControl, InputLabel, Select, MenuItem,
 } from '@mui/material';
+// Import các icons từ Material-UI
 import {
     ArrowBack as BackIcon, Person as PersonIcon,
     ThumbUpAlt as ApproveIcon, Cancel as CancelIcon,
@@ -13,38 +16,48 @@ import {
     PlaylistAddCheck as BatchRecordIcon, Add as AddIcon,
     Close as CloseIcon, Delete as DeleteIcon,
 } from '@mui/icons-material';
+// Import hooks cho routing
 import { useParams, useNavigate } from 'react-router';
+// Import thư viện hiển thị toast notifications
 import { toast } from 'react-toastify';
+// Import API để gọi backend
 import medicalOrderApi from '../../api/medicalOrderApi';
+// Import utility functions cho xử lý ngày tháng
 import { formattedDate } from '../../utils/date.utils';
+// Import Redux hooks để lấy thông tin user
 import { useSelector } from 'react-redux';
 
-// --- CẢI TIẾN: Thêm import cho Lightbox để zoom ảnh ---
+// ===== LIGHTBOX IMPORTS (Thư viện để zoom ảnh) =====
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 
-// --- THEME CONSTANTS CHO MODAL CONSISTENCY ---
+// ===== THEME CONSTANTS (Định nghĩa style cho các modal) =====
 const MODAL_THEME = {
+    // Style cho container modal
     container: {
         backgroundColor: '#ffffff',
         borderRadius: 8,
         boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         border: '1px solid #e0e0e0',
     },
+    // Style cho nội dung modal
     content: {
         backgroundColor: '#f8f9fa',
         borderRadius: 4,
     },
+    // Style cho backdrop (lớp phủ mờ phía sau modal)
     backdrop: {
         backgroundColor: 'rgba(0,0,0,0.05)', // Backdrop rất nhẹ
     },
+    // Style cho header modal
     header: {
         background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
         color: 'white',
         padding: '16px 24px',
         borderRadius: '8px 8px 0 0',
     },
+    // Style cho footer modal
     footer: {
         backgroundColor: '#ffffff',
         borderTop: '1px solid #e0e0e0',
@@ -53,6 +66,7 @@ const MODAL_THEME = {
     }
 };
 
+// ===== STATUS MAPPING (Mapping các trạng thái đơn thuốc) =====
 const statusMap = {
     pending: { label: 'Chờ duyệt', color: 'warning' },
     approved: { label: 'Đã duyệt', color: 'success' },
@@ -60,15 +74,17 @@ const statusMap = {
     completed: { label: 'Đã hoàn thành', color: 'primary' },
 };
 
+// ===== INITIAL STATE CHO FORM THÊM THUỐC MỚI =====
 const initialNewMedicineState = {
-    medicineName: '',
-    dosage: '',
-    type: 'viên',
-    time: '',
-    note: '',
-    quantity: 1,
+    medicineName: '',    // Tên thuốc
+    dosage: '',          // Liều lượng (vd: 500mg)
+    type: 'viên',        // Loại thuốc (viên, gói, chai...)
+    time: '',            // Thời gian uống
+    note: '',            // Ghi chú
+    quantity: 1,         // Số lượng
 };
 
+// ===== DROPDOWN OPTIONS CHO LOẠI THUỐC =====
 const medicineTypeOptions = [
     { value: 'viên', label: 'Viên' },
     { value: 'gói', label: 'Gói' },
@@ -78,6 +94,7 @@ const medicineTypeOptions = [
     { value: 'lọ', label: 'Lọ' },
 ];
 
+// ===== DROPDOWN OPTIONS CHO THỜI GIAN UỐNG THUỐC =====
 const medicineTimeOptions = [
     { value: 'Sáng', label: 'Sáng (1 lần/ngày)' },
     { value: 'Trưa', label: 'Trưa (1 lần/ngày)' },
@@ -88,48 +105,70 @@ const medicineTimeOptions = [
     { value: 'Sáng-Trưa-Chiều', label: 'Sáng - Trưa - Chiều (3 lần/ngày)' },
 ];
 
+// ===== MAIN COMPONENT =====
 const MedicalOrderDetailPage = () => {
+    // ===== HOOKS =====
+    // Lấy thông tin user từ Redux store
     const { user } = useSelector((state) => state.auth);
+    // Lấy orderId từ URL parameters
     const { orderId } = useParams();
+    // Hook để điều hướng
     const navigate = useNavigate();
 
-    // --- STATE MANAGEMENT ---
+    // ===== STATE MANAGEMENT =====
+    // State lưu dữ liệu đơn thuốc (bao gồm thông tin đơn và danh sách thuốc)
     const [orderData, setOrderData] = useState(null);
+    // State loading khi đang tải dữ liệu
     const [loading, setLoading] = useState(true);
+    // State lưu thông báo lỗi
     const [error, setError] = useState(null);
+    // State loading khi đang cập nhật (duyệt, từ chối, thêm thuốc...)
     const [isUpdating, setIsUpdating] = useState(false);
+    // State lưu lịch sử sử dụng thuốc
     const [usageHistory, setUsageHistory] = useState([]);
-    const [isAddRecordModalOpen, setAddRecordModalOpen] = useState(false);
-    const [selectionForRecord, setSelectionForRecord] = useState({});
-    const [isAddNewModalOpen, setIsAddNewModalOpen] = useState(false);
-    const [newMedicines, setNewMedicines] = useState([{ ...initialNewMedicineState }]);
-    const [isRejectModalOpen, setRejectModalOpen] = useState(false);
-    const [rejectionReason, setRejectionReason] = useState('');
 
-    // --- TÁCH BIỆT 2 CHỨC NĂNG (KHÔNG CẦN NỮA, CHỈ DÙNG 1 MODAL) ---
+    // ===== MODAL STATES =====
+    // State điều khiển modal ghi nhận sử dụng thuốc
+    const [isAddRecordModalOpen, setAddRecordModalOpen] = useState(false);
+    // State lưu các thuốc được chọn để ghi nhận (dạng: {detailId: {detail, quantity}})
+    const [selectionForRecord, setSelectionForRecord] = useState({});
+    // State điều khiển modal thêm thuốc mới
+    const [isAddNewModalOpen, setIsAddNewModalOpen] = useState(false);
+    // State lưu danh sách thuốc mới cần thêm (array)
+    const [newMedicines, setNewMedicines] = useState([{ ...initialNewMedicineState }]);
+    // State điều khiển modal từ chối đơn
+    const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+    // State lưu lý do từ chối
+    const [rejectionReason, setRejectionReason] = useState('');
+    // State điều khiển lightbox zoom ảnh
     const [isImageZoomOpen, setImageZoomOpen] = useState(false);
 
-    // --- DATA LOADING ---
+    // ===== DATA LOADING FUNCTION =====
+    // Function để tải dữ liệu từ server (sử dụng useCallback để tránh re-render không cần thiết)
     const loadData = useCallback(async () => {
-        if (!orderId) return;
+        if (!orderId) return; // Nếu không có orderId thì không làm gì
         setLoading(true);
         setError(null);
         try {
+            // Gọi đồng thời 2 API: lấy chi tiết đơn thuốc và lấy lịch sử sử dụng
             const [detailsResponse, historyResponse] = await Promise.all([
-                medicalOrderApi.getDetail(orderId),
-                medicalOrderApi.getRecord(orderId)
+                medicalOrderApi.getDetail(orderId),    // API lấy chi tiết đơn thuốc
+                medicalOrderApi.getRecord(orderId)     // API lấy lịch sử sử dụng thuốc
             ]);
 
+            // Xử lý response chi tiết đơn thuốc
             if (detailsResponse.isSuccess && detailsResponse.data) {
                 setOrderData(detailsResponse.data);
             } else {
                 setError('Không tìm thấy thông tin đơn gửi thuốc.');
             }
 
+            // Xử lý response lịch sử sử dụng
             if (historyResponse.isSuccess && historyResponse.data) {
                 setUsageHistory(historyResponse.data.records || []);
             }
         } catch (err) {
+            // Xử lý lỗi
             setError('Đã xảy ra lỗi khi tải dữ liệu.');
             toast.error('Lỗi: không thể tải dữ liệu.');
             console.error(err);
@@ -138,17 +177,23 @@ const MedicalOrderDetailPage = () => {
         }
     }, [orderId]);
 
+    // ===== EFFECT HOOK =====
+    // Tải dữ liệu khi component mount hoặc khi loadData thay đổi
     useEffect(() => {
         loadData();
     }, [loadData]);
 
-    // --- HANDLERS ---
+    // ===== EVENT HANDLERS =====
+
+    // Handler cập nhật trạng thái đơn thuốc (duyệt/từ chối/hoàn thành)
     const handleUpdateStatus = useCallback(async (payload) => {
         setIsUpdating(true);
         try {
+            // Gọi API cập nhật trạng thái
             await medicalOrderApi.updateStatus(orderId, payload);
             const statusLabel = statusMap[payload.status]?.label || payload.status;
             toast.success(`Cập nhật trạng thái thành "${statusLabel}" thành công!`);
+            // Reload dữ liệu sau khi cập nhật thành công
             await loadData();
         } catch (err) {
             toast.error('Cập nhật trạng thái thất bại.');
@@ -158,15 +203,19 @@ const MedicalOrderDetailPage = () => {
         }
     }, [orderId, loadData]);
 
+    // Handler từ chối đơn thuốc
     const handleRejectOrder = async () => {
+        // Kiểm tra xem có nhập lý do từ chối chưa
         if (!rejectionReason.trim()) {
             toast.warn('Vui lòng nhập lý do từ chối.');
             return;
         }
+        // Cập nhật trạng thái thành 'canceled' kèm lý do
         await handleUpdateStatus({ status: 'canceled', note: rejectionReason });
         handleCloseRejectModal();
     };
 
+    // Utility function chuyển đổi giới tính sang tiếng Việt
     const changeGenderToVN = (gender) => {
         if (!gender) return 'Không xác định';
         const genderMap = {
@@ -176,30 +225,47 @@ const MedicalOrderDetailPage = () => {
         return genderMap[gender.toString().toLowerCase()] || 'Không xác định';
     };
 
+    // ===== AUTO-COMPLETE EFFECT =====
+    // Effect để tự động chuyển trạng thái thành 'completed' khi tất cả thuốc đã hết
     useEffect(() => {
+        // Chỉ thực hiện kiểm tra khi:
+        // 1. Có dữ liệu đơn thuốc
+        // 2. Đơn thuốc đã được duyệt (status = 'approved')
         if (!orderData || !orderData.order || !orderData.details || orderData.order.status !== 'approved') {
             return;
         }
-        const allMedicinesFinished = orderData.details.length > 0 && orderData.details.every(detail => detail.quantity === 0);
+
+        // Kiểm tra xem tất cả thuốc đã hết chưa (quantity = 0)
+        const allMedicinesFinished = orderData.details.length > 0 &&
+            orderData.details.every(detail => detail.quantity === 0);
+
+        // Nếu tất cả thuốc đã hết, tự động chuyển sang trạng thái 'completed'
         if (allMedicinesFinished) {
             handleUpdateStatus({ status: 'completed' });
         }
     }, [orderData, handleUpdateStatus]);
 
+    // ===== CHECKBOX SELECTION HANDLERS =====
+
+    // Handler thay đổi lựa chọn từng thuốc trong bảng
     const handleSelectionChange = (detail) => {
         setSelectionForRecord(prev => {
             const newSelection = { ...prev };
+            // Nếu thuốc đã được chọn thì bỏ chọn, ngược lại thì chọn
             if (newSelection[detail._id]) {
                 delete newSelection[detail._id];
             } else {
+                // Mặc định số lượng = 1 khi chọn
                 newSelection[detail._id] = { detail: detail, quantity: 1 };
             }
             return newSelection;
         });
     };
 
+    // Handler chọn/bỏ chọn tất cả thuốc
     const handleSelectAllClick = (event) => {
         if (event.target.checked && orderData && orderData.details) {
+            // Chọn tất cả thuốc còn số lượng > 0
             const newSelections = {};
             orderData.details.forEach(detail => {
                 if (detail.quantity > 0) {
@@ -209,15 +275,22 @@ const MedicalOrderDetailPage = () => {
             setSelectionForRecord(newSelections);
             return;
         }
+        // Bỏ chọn tất cả
         setSelectionForRecord({});
     };
 
+    // ===== MODAL HANDLERS - GHI NHẬN SỬ DỤNG THUỐC =====
+
+    // Mở modal ghi nhận sử dụng thuốc
     const handleOpenAddRecordModal = () => setAddRecordModalOpen(true);
+
+    // Đóng modal và reset selections
     const handleCloseAddRecordModal = () => {
         setAddRecordModalOpen(false);
         setSelectionForRecord({});
     };
 
+    // Thay đổi số lượng thuốc đã sử dụng trong modal
     const handleQuantityChangeInModal = (detailId, quantity) => {
         const newQuantity = Number(quantity);
         setSelectionForRecord(prev => ({
@@ -226,14 +299,28 @@ const MedicalOrderDetailPage = () => {
         }));
     };
 
+    // Submit ghi nhận sử dụng thuốc
     const handleSubmitRecord = async () => {
-        const itemsToRecord = Object.values(selectionForRecord).filter(item => item.quantity > 0).map(item => ({ medicalOrderDetailId: item.detail._id, quantity: item.quantity }));
-        if (itemsToRecord.length === 0) { toast.warn('Vui lòng nhập số lượng.'); return; }
+        // Lọc ra các thuốc có số lượng > 0
+        const itemsToRecord = Object.values(selectionForRecord)
+            .filter(item => item.quantity > 0)
+            .map(item => ({
+                medicalOrderDetailId: item.detail._id,
+                quantity: item.quantity
+            }));
+
+        if (itemsToRecord.length === 0) {
+            toast.warn('Vui lòng nhập số lượng.');
+            return;
+        }
+
         setIsUpdating(true);
         try {
+            // Gọi API ghi nhận sử dụng thuốc
             await medicalOrderApi.addRecord(orderId, { items: itemsToRecord });
             toast.success(`Đã ghi nhận thành công ${itemsToRecord.length} loại thuốc.`);
             handleCloseAddRecordModal();
+            // Reload dữ liệu để cập nhật số lượng còn lại
             await loadData();
         } catch (err) {
             toast.error('Ghi nhận thất bại.');
@@ -242,40 +329,54 @@ const MedicalOrderDetailPage = () => {
         }
     };
 
+    // ===== MODAL HANDLERS - TỪ CHỐI ĐỢN =====
+
+    // Mở modal từ chối đơn
     const handleOpenRejectModal = () => setRejectModalOpen(true);
+
+    // Đóng modal và reset lý do từ chối
     const handleCloseRejectModal = () => {
         setRejectModalOpen(false);
         setRejectionReason('');
     };
 
-    // --- HANDLERS CHO THÊM NHIỀU THUỐC (SỬA: CHỈ 1 MODAL KẾT HỢP) ---
+    // ===== MODAL HANDLERS - THÊM THUỐC MỚI =====
+
+    // Mở modal thêm thuốc mới
     const handleOpenAddNewModal = () => {
+        // Reset form về trạng thái ban đầu (1 thuốc trống)
         setNewMedicines([{ ...initialNewMedicineState }]);
         setIsAddNewModalOpen(true);
     };
 
+    // Đóng modal và reset form
     const handleCloseAddNewModal = () => {
         setIsAddNewModalOpen(false);
         setNewMedicines([{ ...initialNewMedicineState }]);
     };
 
+    // Thêm một dòng thuốc mới vào form
     const addMedicineRow = () => {
         setNewMedicines([...newMedicines, { ...initialNewMedicineState }]);
     };
 
+    // Xóa một dòng thuốc khỏi form (chỉ được xóa khi có > 1 dòng)
     const removeMedicineRow = (index) => {
         if (newMedicines.length > 1) {
             setNewMedicines(newMedicines.filter((_, i) => i !== index));
         }
     };
 
+    // Thay đổi giá trị trong form thuốc
     const handleMedicineFormChange = (index, field, value) => {
         const updatedMedicines = [...newMedicines];
         updatedMedicines[index] = { ...updatedMedicines[index], [field]: value };
         setNewMedicines(updatedMedicines);
     };
 
+    // Submit thêm thuốc mới
     const handleSubmitNewMedicines = async () => {
+        // Lọc ra các thuốc hợp lệ (có tên, liều lượng và số lượng > 0)
         const validMedicines = newMedicines.filter(med =>
             med.medicineName.trim() &&
             med.dosage.trim() &&
@@ -289,8 +390,10 @@ const MedicalOrderDetailPage = () => {
 
         setIsUpdating(true);
         try {
+            // Xử lý dữ liệu trước khi gửi lên server
             const processedMedicines = validMedicines.map(medicine => {
                 const finalMedicineData = { ...medicine };
+                // Xử lý trường 'time': chuyển từ string thành JSON array
                 if (typeof finalMedicineData.time === 'string' && finalMedicineData.time.trim() !== '') {
                     // Với dropdown, time đã là giá trị đơn lẻ, chỉ cần chuyển thành array
                     const timeArray = [finalMedicineData.time.trim()];
@@ -301,10 +404,12 @@ const MedicalOrderDetailPage = () => {
                 return finalMedicineData;
             });
 
+            // Gọi API thêm thuốc mới
             const payload = { medicalOrderDetails: processedMedicines };
             await medicalOrderApi.additionalDetail(orderId, payload);
             toast.success(`Đã thêm thành công ${validMedicines.length} loại thuốc mới!`);
             handleCloseAddNewModal();
+            // Reload dữ liệu để hiển thị thuốc mới
             await loadData();
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'Lỗi không xác định';
@@ -315,37 +420,80 @@ const MedicalOrderDetailPage = () => {
         }
     };
 
+    // ===== UTILITY FUNCTIONS =====
+
+    // Điều hướng về trang trước
     const handleBack = () => navigate(-1);
+
+    // Format ngày tháng cho hiển thị
     const formatDate = (dateString) => new Date(dateString).toLocaleDateString('vi-VN');
+
+    // Format thời gian uống thuốc từ JSON string thành chuỗi hiển thị
     const formatTime = (timeData) => {
         if (!timeData) return 'N/A';
         try {
+            // Parse từ JSON string thành array
             const timeArray = Array.isArray(timeData) ? timeData : JSON.parse(timeData);
             if (!Array.isArray(timeArray) || timeArray.length === 0) return 'N/A';
+            // Viết hoa chữ cái đầu và join bằng dấu phẩy
             return timeArray.map(t => String(t).charAt(0).toUpperCase() + String(t).slice(1)).join(', ');
         } catch (e) {
+            // Fallback nếu parse lỗi
             return String(timeData);
         }
     };
 
-    if (loading) { return <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}><CircularProgress /></Box>; }
-    if (error) { return <Container maxWidth="lg" sx={{ py: 3 }}><Alert severity="error">{error}</Alert></Container>; }
-    if (!orderData || !orderData.order || !orderData.details) { return <Container maxWidth="lg" sx={{ py: 3 }}><Alert severity="info">Không có dữ liệu.</Alert></Container>; }
+    // ===== EARLY RETURNS (Xử lý các trường hợp đặc biệt) =====
 
+    // Hiển thị loading spinner khi đang tải dữ liệu
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    // Hiển thị thông báo lỗi nếu có lỗi
+    if (error) {
+        return (
+            <Container maxWidth="lg" sx={{ py: 3 }}>
+                <Alert severity="error">{error}</Alert>
+            </Container>
+        );
+    }
+
+    // Hiển thị thông báo không có dữ liệu nếu không tải được dữ liệu
+    if (!orderData || !orderData.order || !orderData.details) {
+        return (
+            <Container maxWidth="lg" sx={{ py: 3 }}>
+                <Alert severity="info">Không có dữ liệu.</Alert>
+            </Container>
+        );
+    }
+
+    // ===== DESTRUCTURE DATA =====
+    // Tách dữ liệu từ orderData để dễ sử dụng
     const { order: medicalOrder, details: medicalOrderDetails } = orderData;
+    // Tính toán số lượng thuốc được chọn và tổng số thuốc còn lại
     const numSelected = Object.keys(selectionForRecord).length;
     const rowCount = medicalOrderDetails.filter(d => d.quantity > 0).length;
 
+    // ===== MAIN RENDER =====
     return (
         <Container maxWidth="lg" sx={{ py: 3 }}>
-            {/* Header */}
+            {/* ===== HEADER SECTION ===== */}
+            {/* Header với title và các nút action (duyệt/từ chối) */}
             <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {/* Nút quay lại */}
                     <IconButton onClick={handleBack} sx={{ mr: 2 }}><BackIcon /></IconButton>
+                    {/* Icon và title */}
                     <PersonIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
                     <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>Chi tiết Đơn gửi thuốc</Typography>
                 </Box>
                 <Stack direction="row" spacing={2} alignItems="center">
+                    {/* Chỉ hiển thị nút duyệt/từ chối khi đơn đang pending và user là nurse */}
                     {medicalOrder.status === 'pending' && user.role === "nurse" && (
                         <>
                             <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={handleOpenRejectModal} disabled={isUpdating}>Từ chối</Button>
@@ -355,17 +503,24 @@ const MedicalOrderDetailPage = () => {
                 </Stack>
             </Box>
 
-            {/* Phần hiển thị thông tin */}
+            {/* ===== MAIN CONTENT SECTION ===== */}
+            {/* Phần hiển thị thông tin - Layout khác nhau tùy thuộc vào có ảnh hay không */}
+
+            {/* LAYOUT CÓ ẢNH: Chia 2 cột (thông tin + ảnh bên trái, danh sách thuốc bên phải) */}
             {medicalOrder.imageURL ? (
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 3 }}>
+                    {/* CỘT TRÁI: Thông tin chung + Thông tin học sinh + Ảnh */}
                     <Card sx={{ flex: 1, maxWidth: { md: '50%' }, mb: { xs: 2, md: 0 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <CardContent sx={{ width: '100%' }}>
+                            {/* Thông tin chung về đơn thuốc */}
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
                             <Box sx={{ mb: 2 }}>
                                 <Typography><strong>Ngày bắt đầu:</strong> {formatDate(medicalOrder.startDate)}</Typography>
                                 <Typography><strong>Ngày kết thúc:</strong> {formatDate(medicalOrder.endDate)}</Typography>
                                 <Typography><strong>Ghi chú/Lý do:</strong> {medicalOrder.note || 'không có'}</Typography>
                             </Box>
+
+                            {/* Thông tin học sinh */}
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin học sinh</Typography>
                             <Box sx={{ mb: 2 }}>
                                 <Typography><strong>Tên học sinh:</strong> {medicalOrder.ChildId.name}</Typography>
@@ -373,6 +528,8 @@ const MedicalOrderDetailPage = () => {
                                 <Typography><strong>Ngày sinh:</strong> {formatDate(medicalOrder.ChildId.birthdate)}</Typography>
                                 <Typography><strong>Mã học sinh:</strong> {medicalOrder.ChildId.studentCode}</Typography>
                             </Box>
+
+                            {/* Ảnh đơn thuốc (có thể click để zoom) */}
                             <Box sx={{ textAlign: 'center' }}>
                                 <img
                                     src={medicalOrder.imageURL}
@@ -392,19 +549,27 @@ const MedicalOrderDetailPage = () => {
                             </Box>
                         </CardContent>
                     </Card>
+
+                    {/* CỘT PHẢI: Danh sách thuốc */}
                     <Card sx={{ flex: 1, maxWidth: { md: '50%' }, display: 'flex', flexDirection: 'column' }}>
                         <CardContent sx={{ p: 0 }}>
+                            {/* Header của bảng thuốc với các nút action */}
                             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
                                 <Stack direction="row" spacing={1}>
+                                    {/* Chỉ hiển thị nút khi đơn đã duyệt và user là nurse */}
                                     {medicalOrder.status === 'approved' && user.role === "nurse" && (
                                         <>
+                                            {/* Nút cho uống thuốc (hiển thị số thuốc đã chọn) */}
                                             <Button variant="contained" startIcon={<BatchRecordIcon />} disabled={numSelected === 0} onClick={handleOpenAddRecordModal}>Cho uống thuốc ({numSelected})</Button>
+                                            {/* Nút thêm thuốc mới */}
                                             <Button variant="outlined" startIcon={<AddIcon />} onClick={handleOpenAddNewModal}>Thêm thuốc mới</Button>
                                         </>
                                     )}
                                 </Stack>
                             </Box>
+
+                            {/* Bảng danh sách thuốc */}
                             <TableContainer>
                                 <Table>
                                     <TableHead>
@@ -447,7 +612,9 @@ const MedicalOrderDetailPage = () => {
                     </Card>
                 </Box>
             ) : (
+                // LAYOUT KHÔNG CÓ ẢNH: Layout đơn giản với thông tin chung ở trên, danh sách thuốc ở dưới
                 <>
+                    {/* Card thông tin chung */}
                     <Card sx={{ mb: 3 }}>
                         <CardContent>
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>Thông tin chung</Typography>
@@ -458,8 +625,11 @@ const MedicalOrderDetailPage = () => {
                             </Grid>
                         </CardContent>
                     </Card>
+
+                    {/* Card danh sách thuốc */}
                     <Card sx={{ mb: 3 }}>
                         <CardContent sx={{ p: 0 }}>
+                            {/* Header với các nút action */}
                             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Typography variant="h6" sx={{ fontWeight: 600 }}>Danh sách Thuốc</Typography>
                                 <Stack direction="row" spacing={1}>
@@ -471,6 +641,8 @@ const MedicalOrderDetailPage = () => {
                                     )}
                                 </Stack>
                             </Box>
+
+                            {/* Bảng thuốc (giống với layout có ảnh) */}
                             <TableContainer>
                                 <Table>
                                     <TableHead>
@@ -514,7 +686,8 @@ const MedicalOrderDetailPage = () => {
                 </>
             )}
 
-            {/* Lịch sử sử dụng thuốc */}
+            {/* ===== LỊCH SỬ SỬ DỤNG THUỐC ===== */}
+            {/* Chỉ hiển thị khi có lịch sử sử dụng */}
             {usageHistory && usageHistory.length > 0 && (
                 <Card>
                     <CardContent>
@@ -533,6 +706,7 @@ const MedicalOrderDetailPage = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
+                                    {/* Flatten các records và items để hiển thị từng dòng */}
                                     {usageHistory.map(record => (
                                         record.items.map(item => (
                                             <TableRow key={`${record._id}-${item._id}`}>
@@ -550,29 +724,44 @@ const MedicalOrderDetailPage = () => {
                 </Card>
             )}
 
-            {/* Modal ghi nhận sử dụng thuốc */}
+            {/* ===== MODAL GHI NHẬN SỬ DỤNG THUỐC ===== */}
+            {/* Modal để ghi nhận số lượng thuốc đã sử dụng */}
             <Dialog open={isAddRecordModalOpen} onClose={handleCloseAddRecordModal} PaperProps={{ sx: { width: '35%' } }}>
                 <DialogTitle>Ghi nhận sử dụng thuốc</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ mt: 1 }}>
                         {Object.keys(selectionForRecord).length > 0 ? (
+                            // Hiển thị danh sách thuốc được chọn với input số lượng
                             Object.values(selectionForRecord).map(({ detail, quantity }) => (
                                 <Box key={detail._id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                     <Typography sx={{ flexGrow: 1 }}>{detail.medicineName}</Typography>
-                                    <TextField label="SL đã dùng" type="number" size="small" variant="outlined" value={quantity} onChange={(e) => handleQuantityChangeInModal(detail._id, e.target.value)} inputProps={{ min: 1, max: detail.quantity }} sx={{ width: '120px' }} />
+                                    <TextField
+                                        label="SL đã dùng"
+                                        type="number"
+                                        size="small"
+                                        variant="outlined"
+                                        value={quantity}
+                                        onChange={(e) => handleQuantityChangeInModal(detail._id, e.target.value)}
+                                        inputProps={{ min: 1, max: detail.quantity }}
+                                        sx={{ width: '120px' }}
+                                    />
                                 </Box>
                             ))
-                        ) : (<Typography>Không có thuốc nào được chọn.</Typography>)}
+                        ) : (
+                            <Typography>Không có thuốc nào được chọn.</Typography>
+                        )}
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAddRecordModal} disabled={isUpdating}>Hủy</Button>
-                    <Button onClick={handleSubmitRecord} variant="contained" disabled={isUpdating || numSelected === 0}>{isUpdating ? <CircularProgress size={24} /> : 'Xác nhận tất cả'}</Button>
+                    <Button onClick={handleSubmitRecord} variant="contained" disabled={isUpdating || numSelected === 0}>
+                        {isUpdating ? <CircularProgress size={24} /> : 'Xác nhận tất cả'}
+                    </Button>
                 </DialogActions>
             </Dialog>
 
-
-            {/* --- MODAL THÊM THUỐC KẾT HỢP (NỬA FORM BÊN TRÁI, NỬA ẢNH BÊN PHẢI) --- */}
+            {/* ===== MODAL THÊM THUỐC MỚI ===== */}
+            {/* Modal lớn với layout chia 2 cột: form bên trái, ảnh bên phải */}
             <Dialog
                 open={isAddNewModalOpen}
                 onClose={handleCloseAddNewModal}
@@ -647,7 +836,7 @@ const MedicalOrderDetailPage = () => {
                         height: '100%',
                         overflow: 'hidden'
                     }}>
-                        {/* Nửa trái: Form thêm thuốc (cố định bên trái) */}
+                        {/* ===== NỬA TRÁI: FORM THÊM THUỐC ===== */}
                         <Box sx={{
                             width: medicalOrder?.imageURL ? '50%' : '100%',
                             p: 3,
@@ -656,6 +845,7 @@ const MedicalOrderDetailPage = () => {
                             backgroundColor: '#ffffff'
                         }}>
                             <Stack spacing={3}>
+                                {/* Lặp qua từng thuốc trong mảng newMedicines */}
                                 {newMedicines.map((medicine, index) => (
                                     <Box key={index} sx={{
                                         p: 2,
@@ -668,6 +858,7 @@ const MedicalOrderDetailPage = () => {
                                         <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
                                             Thuốc #{index + 1}
                                         </Typography>
+                                        {/* Nút xóa thuốc (chỉ hiển thị khi có > 1 thuốc) */}
                                         {newMedicines.length > 1 && (
                                             <IconButton
                                                 onClick={() => removeMedicineRow(index)}
@@ -682,6 +873,7 @@ const MedicalOrderDetailPage = () => {
                                                 <DeleteIcon />
                                             </IconButton>
                                         )}
+                                        {/* Form fields cho từng thuốc */}
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
@@ -766,7 +958,8 @@ const MedicalOrderDetailPage = () => {
                             </Stack>
                         </Box>
 
-                        {/* Nửa phải: Hình ảnh (cố định bên phải) */}
+                        {/* ===== NỬA PHẢI: HÌNH ẢNH ĐƠN THUỐC ===== */}
+                        {/* Chỉ hiển thị khi có ảnh */}
                         {medicalOrder?.imageURL && (
                             <Box sx={{
                                 width: '50%',
@@ -784,6 +977,7 @@ const MedicalOrderDetailPage = () => {
                                 <Typography variant="caption" sx={{ mb: 2, color: 'text.secondary' }}>
                                     Nhấn vào ảnh để zoom phóng to
                                 </Typography>
+                                {/* Ảnh có thể click để zoom */}
                                 <img
                                     src={medicalOrder.imageURL}
                                     alt="Đơn thuốc"
@@ -831,7 +1025,8 @@ const MedicalOrderDetailPage = () => {
 
 
 
-            {/* Modal từ chối đơn */}
+            {/* ===== MODAL TỪ CHỐI ĐƠN ===== */}
+            {/* Modal để nhập lý do từ chối đơn thuốc */}
             <Dialog open={isRejectModalOpen} onClose={handleCloseRejectModal} fullWidth maxWidth="sm">
                 <DialogTitle>Lý do từ chối đơn gửi thuốc</DialogTitle>
                 <DialogContent>
@@ -862,18 +1057,20 @@ const MedicalOrderDetailPage = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Lightbox cho zoom ảnh */}
+            {/* ===== LIGHTBOX ZOOM ẢNH ===== */}
+            {/* Component zoom ảnh sử dụng thư viện yet-another-react-lightbox */}
             <Lightbox
                 open={isImageZoomOpen}
                 close={() => setImageZoomOpen(false)}
                 slides={medicalOrder.imageURL ? [{ src: medicalOrder.imageURL }] : []}
-                plugins={[Zoom]}
+                plugins={[Zoom]} // Plugin zoom để phóng to/thu nhỏ ảnh
                 styles={{
-                    container: { zIndex: 1500 },
+                    container: { zIndex: 1500 }, // Z-index cao để hiển thị trên tất cả
                 }}
             />
         </Container>
     );
 };
 
+// ===== EXPORT COMPONENT =====
 export default MedicalOrderDetailPage;
