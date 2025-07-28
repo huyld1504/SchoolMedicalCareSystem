@@ -17,7 +17,7 @@ class ChildService {
     });
     if (existingChild) {
       throw new ApplicationError(
-        "A child with the same student code or medical coverage ID already exists."
+        "Học sinh với mã sinh viên hoặc ID bảo hiểm y tế đã tồn tại"
       );
     }
     const child = new Child({

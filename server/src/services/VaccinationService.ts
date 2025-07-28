@@ -37,7 +37,7 @@ class VaccinationService {
   ): Promise<void> {
     const campaign = await this.campaignRepo.findById(campaignId);
     if (!campaign) {
-      throw new ApplicationError("Campaign not found");
+      throw new ApplicationError("Không tìm thấy chiến dịch tiêm chủng");
     }
 
     // Business rules for status updates
@@ -49,14 +49,14 @@ class VaccinationService {
       // Rule 1: Cannot set status to "ongoing" if campaign hasn't started yet
       if (updateData.status === 'ongoing' && currentDate < campaignStartDate) {
         throw new ApplicationError(
-          `Cannot set campaign status to "ongoing" because the campaign has not started yet. Campaign start date is ${campaignStartDate.toLocaleDateString()}`
+          `Không thể đặt trạng thái chiến dịch thành "đang diễn ra" vì chiến dịch chưa bắt đầu. Ngày bắt đầu chiến dịch: ${campaignStartDate.toLocaleDateString()}`
         );
       }
 
       // Rule 2: Cannot set status to "completed" if campaign hasn't ended yet
       if (updateData.status === 'completed' && currentDate < campaignEndDate) {
         throw new ApplicationError(
-          `Cannot set campaign status to "completed" because the campaign has not ended yet. Campaign end date is ${campaignEndDate.toLocaleDateString()}`
+          `Không thể đặt trạng thái chiến dịch thành "hoàn thành" vì chiến dịch chưa kết thúc. Ngày kết thúc chiến dịch: ${campaignEndDate.toLocaleDateString()}`
         );
       }
     }
@@ -94,7 +94,7 @@ class VaccinationService {
     );
 
     if (!campaign) {
-      throw new ApplicationError("Campaign not found or access denied");
+      throw new ApplicationError("Không tìm thấy chiến dịch tiêm chủng hoặc bị từ chối truy cập");
     }
 
     return campaign;
@@ -111,23 +111,44 @@ class VaccinationService {
     // Kiểm tra campaign tồn tại
     const campaign = await this.campaignRepo.findById(campaignId);
     if (!campaign) {
-      throw new ApplicationError("Campaign not found");
+      throw new ApplicationError("Không tìm thấy chiến dịch tiêm chủng");
     }
 
     // Kiểm tra campaign status (chỉ thêm được khi planned)
     if (campaign.status !== "planned") {
-      throw new ApplicationError("Can only add students to planned campaigns");
+      throw new ApplicationError("Chỉ có thể thêm học sinh vào các chiến dịch đang trong trạng thái lên kế hoạch");
+    }
+
+    // Kiểm tra học sinh trùng lặp trong danh sách được gửi lên
+    const uniqueStudentIds = Array.from(new Set(studentIds));
+    if (uniqueStudentIds.length !== studentIds.length) {
+      throw new ApplicationError("Danh sách học sinh có ID trùng lặp, vui lòng kiểm tra lại");
+    }
+
+    // Kiểm tra học sinh đã tồn tại trong chiến dịch
+    const existingParticipations = await this.participationRepo.findByCampaignAndStudents(
+      campaignId,
+      uniqueStudentIds
+    );
+
+    if (existingParticipations.length > 0) {
+      const existingStudentIds = existingParticipations.map((p: any) => p.student.toString());
+      const duplicateStudentIds = uniqueStudentIds.filter(id => existingStudentIds.includes(id));
+
+      throw new ApplicationError(
+        `Các học sinh sau đã được thêm vào chiến dịch này rồi: ${duplicateStudentIds.join(', ')}`
+      );
     }
 
     try {
       await this.participationRepo.addStudentsToCampaign(
         campaignId,
-        studentIds,
+        uniqueStudentIds,
         adminId
       );
     } catch (error: any) {
       if (error.code === 11000) {
-        throw new ApplicationError("Some students are already added to this campaign");
+        throw new ApplicationError("Một số học sinh đã được thêm vào chiến dịch này rồi");
       }
       throw error;
     }
@@ -161,15 +182,15 @@ class VaccinationService {
     // Kiểm tra participation tồn tại và đã được approve
     const participation = await this.participationRepo.findById(participationId);
     if (!participation) {
-      throw new ApplicationError("Participation record not found");
+      throw new ApplicationError("Không tìm thấy bản ghi tham gia tiêm chủng");
     }
 
     if (participation.parentConsent !== "approved") {
-      throw new ApplicationError("Parent consent is required before vaccination");
+      throw new ApplicationError("Cần có sự đồng ý của phụ huynh trước khi tiêm chủng");
     }
 
     if (participation.vaccinationStatus === "completed") {
-      throw new ApplicationError("This student has already been vaccinated");
+      throw new ApplicationError("Học sinh này đã được tiêm chủng rồi");
     }
 
     return this.participationRepo.recordVaccination(
@@ -243,7 +264,7 @@ class VaccinationService {
         userId
       );
       if (!campaign) {
-        throw new ApplicationError("Campaign not found or access denied");
+        throw new ApplicationError("Không tìm thấy chiến dịch tiêm chủng hoặc bị từ chối truy cập");
       }
     }
 
@@ -266,7 +287,7 @@ class VaccinationService {
   ): Promise<IVaccinationParticipation | null> {
     return this.updateParentConsent(participationId, parentId, consent, note);
   }
-  
+
   /**
    * Search campaigns with advanced filters
    */

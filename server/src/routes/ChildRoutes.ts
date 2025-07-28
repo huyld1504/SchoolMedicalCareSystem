@@ -17,7 +17,7 @@ async function add(req: IReq, res: IRes) {
   await childService.add(value, req.user._id);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "Child added successfully"
+    "Thêm học sinh thành công"
   );
   res.status(HttpStatusCodes.CREATED).json(response);
 }
@@ -31,7 +31,7 @@ async function get(req: IReq, res: IRes) {
   );
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Children retrieved successfully",
+    "Lấy danh sách học sinh thành công",
     children
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -40,29 +40,29 @@ async function get(req: IReq, res: IRes) {
 async function getById(req: IReq, res: IRes) {
   const childId = req.params.id;
   if (!childId) {
-    throw new ValidationError("Child ID is required");
+    throw new ValidationError("Yêu cầu ID học sinh");
   }
 
   const userRole = await Role.findById(req.user?.roleId);
-  if(userRole?.name === "parent") {
+  if (userRole?.name === "parent") {
     const child = await Child.findOne({ _id: childId, userId: req.user?._id });
     if (!child) {
-      throw new ValidationError("Child not found or you do not have permission to access this child's data");
+      throw new ValidationError("Không tìm thấy học sinh hoặc bạn không có quyền truy cập dữ liệu của học sinh này");
     }
     const response: ApiResponse = new ApiResponse(
       HttpStatusCodes.OK,
-      "Child retrieved successfully",
+      "Lấy thông tin học sinh thành công",
       child
     );
     return res.status(HttpStatusCodes.OK).json(response);
   }
   const child = await Child.findById(childId);
   if (!child) {
-    throw new ValidationError("Child not found");
-  } 
+    throw new ValidationError("Không tìm thấy học sinh");
+  }
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Child retrieved successfully",
+    "Lấy thông tin học sinh thành công",
     child
   );
   res.status(HttpStatusCodes.OK).json(response);

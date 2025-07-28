@@ -24,15 +24,15 @@ class MedicalRecordService {
     const medicalOrder = await MedicalOrder.findById(medicalOrderId);
 
     if (!medicalOrder) {
-      throw new ApplicationError("Medical order not found");
+      throw new ApplicationError("Không tìm thấy đơn thuốc");
     }
 
     if (
       medicalOrder.status === "completed" ||
-      medicalOrder.status === "cancelled"
+      medicalOrder.status === "canceled"
     ) {
       throw new ApplicationError(
-        "Medical order already completed or cancelled, cannot add medical record"
+        "Đơn thuốc đã hoàn thành hoặc bị hủy, không thể thêm hồ sơ y tế"
       );
     }
 
@@ -46,7 +46,7 @@ class MedicalRecordService {
     });
 
     if (existingDetails.length !== detailIds.length) {
-      throw new ApplicationError("Some medical order details not found");
+      throw new ApplicationError("Một số chi tiết đơn thuốc không tìm thấy");
     }
 
     // 3. Validate quantities
@@ -57,13 +57,13 @@ class MedicalRecordService {
 
       if (!detail) {
         throw new ApplicationError(
-          `Detail ${item.medicalOrderDetailId} not found`
+          `Không tìm thấy chi tiết ${item.medicalOrderDetailId}`
         );
       }
 
       if (item.quantity > detail.quantity) {
         throw new ApplicationError(
-          `Requested quantity (${item.quantity}) exceeds available quantity (${detail.quantity}) for ${detail.medicineName}`
+          `Số lượng ${item.quantity} vượt quá số lượng có sẵn ${detail.quantity} cho chi tiết ${item.medicalOrderDetailId}`
         );
       }
     }
@@ -97,7 +97,7 @@ class MedicalRecordService {
 
         return {
           medicalRecordId: medicalRecord._id,
-          name: detail?.medicineName || "Unknown",
+          name: detail?.medicineName || "Không rõ",
           quantity: item.quantity,
           medicalOrderDetailId: item.medicalOrderDetailId,
         };

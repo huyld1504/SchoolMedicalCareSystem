@@ -43,7 +43,7 @@ async function login(req: IReq, res: IRes) {
   const loginResult = await UserService.login(email, password);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Login successful",
+    "Đăng nhập thành công",
     loginResult
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -62,7 +62,7 @@ async function register(req: IReq, res: IRes) {
   await UserService.register(value);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "User registered successfully"
+    "Đăng ký người dùng thành công"
   );
   res.status(HttpStatusCodes.CREATED).json(response);
 }
@@ -71,21 +71,21 @@ const verifyToken = async (req: IReq, res: IRes) => {
   const user = req.user;
   console.log(user);
   const userRole: IRole | null = await roleService.getById(user.roleId);
-  if(!userRole) {
-    throw new ValidationError("User role not found"); 
+  if (!userRole) {
+    throw new ValidationError("Không tìm thấy vai trò người dùng");
   }
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Token verified successfully",
+    "Xác thực token thành công",
     {
       id: user._id,
       email: user.email,
       role: userRole.name,
     });
 
-    return res.status(HttpStatusCodes.OK).json(response);
-}
+  return res.status(HttpStatusCodes.OK).json(response);
+};
 
 export default {
   login,

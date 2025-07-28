@@ -23,7 +23,7 @@ async function add(req: IReq, res: IRes) {
   await medicalOrderService.add(value, req.user._id);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "Medical record created successfully"
+    "Tạo hồ sơ y tế thành công"
   );
   res.status(HttpStatusCodes.CREATED).json(response);
 }
@@ -40,7 +40,7 @@ async function get(req: IReq, res: IRes) {
     .json(
       new ApiResponse(
         HttpStatusCodes.OK,
-        "Medical orders retrieved successfully",
+        "Lấy danh sách đơn thuốc thành công",
         children
       )
     );
@@ -52,21 +52,21 @@ async function updateStatus(req: IReq, res: IRes) {
   const note: string = req.body.note as string;
 
   if (!id || !status) {
-    throw new ValidationError("ID and status are required");
+    throw new ValidationError("Yêu cầu ID và trạng thái");
   }
 
   await medicalOrderService.updateStatus(id, status, note);
   res
     .status(HttpStatusCodes.OK)
     .json(
-      new ApiResponse(HttpStatusCodes.OK, "Medical order status updated", "")
+      new ApiResponse(HttpStatusCodes.OK, "Cập nhật trạng thái đơn thuốc thành công", "")
     );
 }
 
 async function getById(req: IReq, res: IRes) {
   const id: string = req.params.id as string;
   if (!id) {
-    throw new ValidationError("ID is required");
+    throw new ValidationError("Yêu cầu ID");
   }
   const medicalOrder = await medicalOrderService.getMedicalOrderById(id);
   res
@@ -74,7 +74,7 @@ async function getById(req: IReq, res: IRes) {
     .json(
       new ApiResponse(
         HttpStatusCodes.OK,
-        "Medical order retrieved successfully",
+        "Lấy thông tin đơn thuốc thành công",
         medicalOrder
       )
     );
@@ -83,7 +83,7 @@ async function getById(req: IReq, res: IRes) {
 async function addRecord(req: IReq, res: IRes) {
   const id: string = req.params.id as string;
   if (!id) {
-    throw new ValidationError("ID is required");
+    throw new ValidationError("Yêu cầu ID");
   }
 
   const { error, value } = medicalRecordSchema.validate(req.body);
@@ -95,14 +95,14 @@ async function addRecord(req: IReq, res: IRes) {
   res
     .status(HttpStatusCodes.CREATED)
     .json(
-      new ApiResponse(HttpStatusCodes.CREATED, "Medical order record added", "")
+      new ApiResponse(HttpStatusCodes.CREATED, "Thêm hồ sơ đơn thuốc thành công", "")
     );
 }
 
 async function getRecords(req: IReq, res: IRes) {
   const id: string = req.params.id as string;
   if (!id) {
-    throw new ValidationError("ID is required");
+    throw new ValidationError("Yêu cầu ID");
   }
   const queryBuilder = new MedicalRecordQueryBuilder(req.query);
   const records = await medicalRecordService.getRecordsByMedicalOrderId(
@@ -114,7 +114,7 @@ async function getRecords(req: IReq, res: IRes) {
     .json(
       new ApiResponse(
         HttpStatusCodes.OK,
-        "Medical order records retrieved successfully",
+        "Lấy hồ sơ đơn thuốc thành công",
         records
       )
     );
@@ -123,7 +123,7 @@ async function getRecords(req: IReq, res: IRes) {
 async function additionalMedicalDetails(req: IReq, res: IRes) {
   const id: string = req.params.id as string;
   if (!id) {
-    throw new ValidationError("ID is required");
+    throw new ValidationError("Yêu cầu ID");
   }
   const { error, value } = additionalDetailsSchema.validate(req.body);
   if (error) {
@@ -135,7 +135,7 @@ async function additionalMedicalDetails(req: IReq, res: IRes) {
     .json(
       new ApiResponse(
         HttpStatusCodes.OK,
-        "Medical order additional details updated successfully",
+        "Cập nhật thông tin bổ sung đơn thuốc thành công",
         ""
       )
     );
