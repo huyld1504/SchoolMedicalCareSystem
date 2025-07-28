@@ -14,9 +14,8 @@ import {
 } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import vaccinationApi from "../../../../api/vaccinationApi";
-import { useDispatch, useSelector } from "react-redux";
-import { da } from "date-fns/locale";
-import { formatForDateInput } from "../../../../utils/date.utils";
+import {  useSelector } from "react-redux";
+
 
 const initialState = {
   id: "",
@@ -74,7 +73,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
       };
       return vaccinationApi.createVaccination(newData);
     },
-    onSuccess: (res) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vaccinations"] });
       if (onSuccess) {
         onSuccess();
@@ -96,8 +95,6 @@ const CreateVaccinationForm = ({ onSuccess }) => {
     }
     return "";
   };
-
-  const dispatch = useDispatch();
   const { vaccination } = useSelector((state) => state.managerVaccination);
 
   useEffect(() => {

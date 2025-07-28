@@ -1,6 +1,5 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-
 import {
   Chip,
   CircularProgress,
@@ -22,6 +21,7 @@ import useQueryParams, {
 import { useNavigate } from "react-router";
 import SearchFilter from "./SearchFilter";
 import FilterPopover from "./FilterPopover";
+import { useQueryRoles } from "../../../../hooks/query/queryRole";
 
 const AccountTable = () => {
   const params = useQueryParams();
@@ -31,6 +31,10 @@ const AccountTable = () => {
     queryKey: ["users", params],
     queryFn: () => userApi.getUsers({ ...params }),
   });
+
+  const {
+    data: roles,
+  } = useQueryRoles();
 
   const handleChangePage = (event, newPage) => {
     const newQuery = createQueryParams({
@@ -51,7 +55,7 @@ const AccountTable = () => {
   if (isError) {
     return (
       <Typography color="error" align="center" sx={{ mt: 2 }}>
-        Error: {error?.message || "Failed to load users."}
+        Lỗi: {error?.message || "Không thể tải danh sách người dùng."}
       </Typography>
     );
   }
@@ -61,15 +65,20 @@ const AccountTable = () => {
   const page = data?.data?.page || 0;
   const totalPages = data?.data?.totalPages || 0;
 
+  const getRoleNameById = (roleId) => {
+    const role = roles?.data?.find((r) => r._id === roleId);
+    return role ? role.name : "Không rõ";
+  };
+
   return (
     <Box>
-      {/* Search and Filter Bar */}
+      {/* Thanh tìm kiếm và bộ lọc */}
       <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
         <SearchFilter />
         <FilterPopover />
       </Box>
 
-      {/* Results Summary */}
+      {/* Thông tin tổng */}
       <Box
         sx={{
           mb: 2,
@@ -79,39 +88,30 @@ const AccountTable = () => {
         }}
       >
         <Typography variant="body2" color="text.secondary">
-          Showing {users.length} of {total} users
+          Hiển thị {users.length} trong tổng số {total} người dùng
         </Typography>
-        {(params.search || params.roleId || params.isActive) && (
-          <Chip
-            label="Filters applied"
-            color="primary"
-            size="small"
-            variant="outlined"
-          />
-        )}
       </Box>
 
-      {/* Table */}
+      {/* Bảng dữ liệu */}
       <Paper>
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
+                <TableCell>Họ tên</TableCell>
                 <TableCell>Email</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Role ID</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
+                <TableCell>Vai trò</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Ngày tạo</TableCell>
+                <TableCell>Ngày cập nhật</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    No users found.
+                    Không tìm thấy người dùng nào.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -120,20 +120,19 @@ const AccountTable = () => {
                     <TableCell>{user._id}</TableCell>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.phone}</TableCell>
-                    <TableCell>{user.roleId}</TableCell>
+                    <TableCell>{getRoleNameById(user.roleId)}</TableCell>
                     <TableCell>
                       <Chip
-                        label={user.isActive ? "Active" : "Inactive"}
+                        label={user.isActive ? "Đang hoạt động" : "Ngừng hoạt động"}
                         color={user.isActive ? "success" : "error"}
                         size="small"
                       />
                     </TableCell>
                     <TableCell>
-                      {new Date(user.createdAt).toLocaleString()}
+                      {new Date(user.createdAt).toLocaleString("vi-VN")}
                     </TableCell>
                     <TableCell>
-                      {new Date(user.updatedAt).toLocaleString()}
+                      {new Date(user.updatedAt).toLocaleString("vi-VN")}
                     </TableCell>
                   </TableRow>
                 ))

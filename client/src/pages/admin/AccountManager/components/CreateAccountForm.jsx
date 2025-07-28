@@ -15,7 +15,6 @@ import React, { useState } from "react";
 import userApi from "../../../../api/userApi";
 import { useQueryRoles } from "../../../../hooks/query/queryRole";
 
-
 const initialState = {
   name: "",
   email: "",
@@ -31,6 +30,7 @@ const CreateAccountForm = ({ onSuccess }) => {
     data: roles,
     isLoading: loadingRoles,
   } = useQueryRoles();
+
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data) => userApi.createUser(data),
@@ -43,7 +43,7 @@ const CreateAccountForm = ({ onSuccess }) => {
     },
     onError: (err) => {
       setError(
-        err?.response?.data?.message || "Failed to create account. Try again."
+        err?.response?.data?.message || "Tạo tài khoản thất bại. Vui lòng thử lại."
       );
     },
   });
@@ -57,16 +57,13 @@ const CreateAccountForm = ({ onSuccess }) => {
   };
 
   const validate = () => {
-    if (!form.name.trim()) return "Name is required";
-    if (!form.email.trim()) return "Email is required";
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) return "Invalid email";
+    if (!form.name.trim()) return "Vui lòng nhập họ tên";
+    if (!form.email.trim()) return "Vui lòng nhập email";
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email))
+      return "Email không hợp lệ";
     if (!form.password.trim() || form.password.length < 6)
-      return "Password must be at least 6 characters";
-    if (!form.roleId) return "Role is required";
-  
-    if (!form.phone || !form.phone.trim()) return "Phone is required";
-    if (!/^[0-9]{9,11}$/.test(form.phone)) return "Invalid phone number";
-  
+      return "Mật khẩu phải có ít nhất 6 ký tự";
+    if (!form.roleId) return "Vui lòng chọn vai trò";
     return "";
   };
   
@@ -85,11 +82,11 @@ const CreateAccountForm = ({ onSuccess }) => {
   return (
     <Paper sx={{ p: 3, maxWidth: 400, mx: "auto" }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
-        Create New Account
+        Tạo tài khoản mới
       </Typography>
       <form onSubmit={handleSubmit} autoComplete="off">
         <TextField
-          label="Name"
+          label="Họ tên"
           name="name"
           value={form.name}
           onChange={handleChange}
@@ -105,7 +102,7 @@ const CreateAccountForm = ({ onSuccess }) => {
           sx={{ mb: 2 }}
         />
         <TextField
-          label="Password"
+          label="Mật khẩu"
           name="password"
           type="password"
           value={form.password}
@@ -123,15 +120,15 @@ const CreateAccountForm = ({ onSuccess }) => {
           sx={{ mb: 2 }}
         />
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Role</InputLabel>
+          <InputLabel>Vai trò</InputLabel>
           <Select
             name="roleId"
             value={form.roleId}
-            label="Role"
+            label="Vai trò"
             onChange={handleChange}
             disabled={loadingRoles}
           >
-            <MenuItem value="">Select Role</MenuItem>
+            <MenuItem value="">Chọn vai trò</MenuItem>
             {roles?.data?.map((role) => (
               <MenuItem key={role._id} value={role._id}>
                 {role.name}
@@ -156,7 +153,7 @@ const CreateAccountForm = ({ onSuccess }) => {
           {mutation.isLoading ? (
             <CircularProgress size={24} />
           ) : (
-            "Create Account"
+            "Tạo tài khoản"
           )}
         </Button>
       </form>
