@@ -73,6 +73,10 @@ export default {
     AddStudents: "/add-students/:campaignId",
     GetParticipations: "/participations/:campaignId",
     Search: "/search",
+    // Scheduler management endpoints
+    ManualUpdate: "/scheduler/manual-update",
+    SchedulerStatus: "/scheduler/status",
+    RestartScheduler: "/scheduler/restart",
   },
   VaccinationParticipation: {
     Base: "/vaccination-participations",

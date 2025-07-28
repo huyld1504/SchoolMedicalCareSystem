@@ -220,6 +220,23 @@ vaccinationCampaignRouter.get(
   VaccinationRoutes.searchCampaigns
 );
 
+// Scheduler Management routes (Admin only)
+vaccinationCampaignRouter.post(
+  Paths.VaccinationCampaign.ManualUpdate,
+  [transform(), auth(), authRoles(["admin"])],
+  VaccinationRoutes.manualUpdateCampaignStatus
+);
+vaccinationCampaignRouter.get(
+  Paths.VaccinationCampaign.SchedulerStatus,
+  [transform(), auth(), authRoles(["admin"])],
+  VaccinationRoutes.getSchedulerStatus
+);
+vaccinationCampaignRouter.post(
+  Paths.VaccinationCampaign.RestartScheduler,
+  [transform(), auth(), authRoles(["admin"])],
+  VaccinationRoutes.restartScheduler
+);
+
 // Vaccination Participation routes
 vaccinationParticipationRouter.put(
   Paths.VaccinationParticipation.ParentConsent,

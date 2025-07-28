@@ -57,12 +57,12 @@ export const addUserSchema = Joi.object({
     "any.required": "ID vai trò là bắt buộc"
   }),
   phone: Joi.string()
-  .pattern(/^[0-9]{9,11}$/) 
-  .required().messages({
-    "string.base": "Số điện thoại phải là một chuỗi ký tự",
-    "string.pattern.base": "Số điện thoại phải có từ 9-11 chữ số",
-    "any.required": "Số điện thoại là bắt buộc"
-  })
+    .pattern(/^[0-9]{9,11}$/)
+    .required().messages({
+      "string.base": "Số điện thoại phải là một chuỗi ký tự",
+      "string.pattern.base": "Số điện thoại phải có từ 9-11 chữ số",
+      "any.required": "Số điện thoại là bắt buộc"
+    })
 });
 
 export const addChildSchema = Joi.object({
@@ -76,7 +76,7 @@ export const addChildSchema = Joi.object({
     "date.base": "Ngày sinh phải là một ngày hợp lệ",
     "date.iso": "Ngày sinh phải theo định dạng ISO 8601",
     "any.required": "Ngày sinh là bắt buộc"
-  }), 
+  }),
   studentCode: Joi.string().required().messages({
     "string.base": "Mã học sinh phải là một chuỗi ký tự",
     "any.required": "Mã học sinh là bắt buộc"
@@ -96,13 +96,13 @@ export const addChildSchema = Joi.object({
     "number.min": "Chiều cao phải ít nhất 30cm",
     "number.max": "Chiều cao không được vượt quá 250cm",
     "any.required": "Chiều cao là bắt buộc"
-  }), 
+  }),
   weight: Joi.number().min(1).max(300).required().messages({
     "number.base": "Cân nặng phải là một số",
     "number.min": "Cân nặng phải ít nhất 1kg",
     "number.max": "Cân nặng không được vượt quá 300kg",
     "any.required": "Cân nặng là bắt buộc"
-  }), 
+  }),
   bloodType: Joi.string()
     .valid(
       "A",

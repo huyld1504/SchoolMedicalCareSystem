@@ -2,6 +2,7 @@ import HttpStatusCodes from "@src/common/constants/HttpStatusCodes";
 import { ApiResponse } from "@src/common/util/util.api-response";
 import { ValidationError, ApplicationError } from "@src/common/util/util.route-errors";
 import VaccinationService from "@src/services/VaccinationService";
+import campaignSchedulerService from "@src/services/CampaignSchedulerService";
 import { Role } from "@src/models/Role";
 import {
   createCampaignSchema,
@@ -34,6 +35,16 @@ async function getUserRole(req: IReq): Promise<string> {
   }
 
   return role.name;
+}
+
+/**
+ * Check if user is admin
+ */
+async function checkAdminRole(req: IReq): Promise<void> {
+  const userRole = await getUserRole(req);
+  if (userRole !== 'admin') {
+    throw new ApplicationError("Chỉ admin mới có quyền thực hiện chức năng này");
+  }
 }
 
 /******************************************************************************
@@ -372,8 +383,86 @@ async function searchParentParticipations(req: IReq, res: IRes) {
 }
 
 /******************************************************************************
-                                    Export
+                        Campaign Scheduler Controllers
 ******************************************************************************/
+
+/**
+ * Cập nhật thủ công trạng thái campaign (Admin only)
+ */
+async function manualUpdateCampaignStatus(req: IReq, res: IRes) {
+  if (!req.user) {
+    throw new ValidationError("Cần xác thực người dùng");
+  }
+
+  await checkAdminRole(req);
+
+  const result = await campaignSchedulerService.manualUpdate();
+
+  const response = new ApiResponse(
+    HttpStatusCodes.OK,
+    "Cập nhật trạng thái campaign thành công",
+    {
+      campaignsStarted: result.started,
+      campaignsCompleted: result.completed,
+      timestamp: new Date().toISOString()
+    }
+  );
+  res.status(HttpStatusCodes.OK).json(response);
+}
+
+/**
+ * Lấy thông tin scheduler status (Admin only)
+ */
+async function getSchedulerStatus(req: IReq, res: IRes) {
+  if (!req.user) {
+    throw new ValidationError("Cần xác thực người dùng");
+  }
+
+  await checkAdminRole(req);
+
+  const isRunning = campaignSchedulerService.isRunning();
+  const nextRunTime = campaignSchedulerService.getNextRunTime();
+
+  const response = new ApiResponse(
+    HttpStatusCodes.OK,
+    "Lấy thông tin scheduler thành công",
+    {
+      isRunning,
+      nextRunTime: nextRunTime?.toISOString() || null,
+      timezone: "Asia/Ho_Chi_Minh",
+      schedule: "Daily at 00:01"
+    }
+  );
+  res.status(HttpStatusCodes.OK).json(response);
+}
+
+/**
+ * Khởi động lại scheduler (Admin only)
+ */
+async function restartScheduler(req: IReq, res: IRes) {
+  if (!req.user) {
+    throw new ValidationError("Cần xác thực người dùng");
+  }
+
+  await checkAdminRole(req);
+
+  campaignSchedulerService.stopScheduler();
+  campaignSchedulerService.startScheduler();
+
+  const response = new ApiResponse(
+    HttpStatusCodes.OK,
+    "Khởi động lại scheduler thành công",
+    {
+      status: "restarted",
+      timestamp: new Date().toISOString()
+    }
+  );
+  res.status(HttpStatusCodes.OK).json(response);
+}
+
+/******************************************************************************
+                                    Export
+*****************************************************************************/
 
 export default {
   // Campaign management
@@ -390,4 +479,9 @@ export default {
   recordVaccination,
   searchParticipations,
   searchParentParticipations,
+
+  // Campaign Scheduler management
+  manualUpdateCampaignStatus,
+  getSchedulerStatus,
+  restartScheduler,
 } as const;

@@ -80,7 +80,7 @@ export const updateMedicalEventSchema = Joi.object({
     "number.max": "Mức độ phải từ 1 đến 5"
   }),
   status: Joi.string().valid("Đã xử lí", "Chờ xử lí", "Đang xử lí").optional().messages({
-    "string.base": "Trạng thái phải là một chuỗi ký tự",  
+    "string.base": "Trạng thái phải là một chuỗi ký tự",
     "any.only": "Trạng thái phải là 'Đã xử lí', 'Chờ xử lí' hoặc 'Đang xử lí'"
   }),
   imageURL: Joi.string().uri().optional().messages({
