@@ -220,11 +220,11 @@ router.post(
 );
 
 router.delete(
-  '/:publicId',
-  auth(),
+  '/delete',
+  [transform(), auth()],
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const { publicId } = req.params;
+      const { publicId } = req.body;
 
       if (!publicId) {
         res.status(400).json({

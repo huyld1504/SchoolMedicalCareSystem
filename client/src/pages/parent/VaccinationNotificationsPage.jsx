@@ -219,13 +219,15 @@ const VaccinationNotificationsPage = () => {
   const getConsentColor = (consent) => {
     switch (consent) {
       case 'approved':
-        return '#2e7d32'; 
+        return '#2e7d32';
       case 'denied':
-        return '#d32f2f'; 
+        return '#d32f2f';
+      case 'canceled':
+        return '#d32f2f';
       case 'pending':
-        return '#ed6c02'; 
+        return '#ed6c02';
       default:
-        return '#757575'; 
+        return '#757575';
     }
   };
 
@@ -237,6 +239,8 @@ const VaccinationNotificationsPage = () => {
         return 'Đã từ chối';
       case 'pending':
         return 'Chờ phản hồi';
+      case 'canceled':
+        return 'Đã hủy';
       default:
         return 'Không xác định';
     }
@@ -251,7 +255,7 @@ const VaccinationNotificationsPage = () => {
         return '#1976d2'; // Xanh dương
       case 'missed':
         return '#ed6c02'; // Cam
-      case 'cancelled':
+      case 'canceled':
         return '#d32f2f'; // Đỏ
       default:
         return '#757575'; // Xám
@@ -266,7 +270,7 @@ const VaccinationNotificationsPage = () => {
         return 'Đã lên lịch';
       case 'missed':
         return 'Bỏ lỡ';
-      case 'cancelled':
+      case 'canceled':
         return 'Đã hủy';
       default:
         return 'Không xác định';
@@ -366,7 +370,7 @@ const VaccinationNotificationsPage = () => {
                   <MenuItem value="scheduled" sx={{ fontSize: '14px' }}>Đã lên lịch</MenuItem>
                   <MenuItem value="completed" sx={{ fontSize: '14px' }}>Đã tiêm</MenuItem>
                   <MenuItem value="missed" sx={{ fontSize: '14px' }}>Bỏ lỡ</MenuItem>
-                  <MenuItem value="cancelled" sx={{ fontSize: '14px' }}>Đã hủy</MenuItem>
+                  <MenuItem value="canceled" sx={{ fontSize: '14px' }}>Đã hủy</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -413,19 +417,19 @@ const VaccinationNotificationsPage = () => {
               Danh sách thông báo tiêm chủng ({paginationInfo.total} thông báo)
             </Typography>
 
-            <TableContainer 
-              component={Paper} 
+            <TableContainer
+              component={Paper}
               variant="outlined"
               sx={{
                 '&::-webkit-scrollbar': {
-                  width: 10, 
+                  width: 10,
                   height: 10,
                   background: 'rgba(0,0,0,0.05)'
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  background: '#bcd6ee', 
+                  background: '#bcd6ee',
                   borderRadius: 8,
-                  minHeight: 40, 
+                  minHeight: 40,
                   border: '2px solid #f5f5f5',
                 },
               }}>
@@ -455,15 +459,15 @@ const VaccinationNotificationsPage = () => {
                       }}
                     >
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1, color: '#1976d2', fontWeight: 700 }}>{(paginationInfo.page - 1) * paginationInfo.limit + index + 1}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.name || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.studentCode || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineName || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineType || 'N/A'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.name || 'Không có'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.studentCode || 'Không có'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineName || 'Không có'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineType || 'Không có'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{formatDate(notification.campaign?.startDate)}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
+                        <Typography
+                          variant="body2"
+                          sx={{
                             color: getConsentColor(notification.parentConsent),
                             fontWeight: 600,
                             fontSize: '0.93rem'
@@ -473,9 +477,9 @@ const VaccinationNotificationsPage = () => {
                         </Typography>
                       </TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
+                        <Typography
+                          variant="body2"
+                          sx={{
                             color: getVaccinationStatusColor(notification.vaccinationStatus),
                             fontWeight: 600,
                             fontSize: '0.93rem'

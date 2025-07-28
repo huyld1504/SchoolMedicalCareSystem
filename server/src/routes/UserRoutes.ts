@@ -46,7 +46,7 @@ async function add(req: IReq, res: IRes) {
   await UserService.addOne(value);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "User created successfully"
+    "Tạo người dùng thành công"
   );
   res.status(HttpStatusCodes.CREATED).json(response);
 }
@@ -74,7 +74,7 @@ async function getUsersWithPagination(req: IReq, res: IRes) {
   const users = await UserService.getUsersWithPagination(queryBuilder);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Users retrieved successfully",
+    "Lấy danh sách người dùng thành công",
     users
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -93,7 +93,7 @@ async function searchUsers(req: IReq, res: IRes) {
   const users = await UserService.searchUsers(query || "", options);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Users retrieved successfully",
+    "Tìm kiếm người dùng thành công",
     users
   );
   res.status(HttpStatusCodes.OK).json(response);

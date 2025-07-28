@@ -15,4 +15,5 @@ export interface IAddUserRequest {
   email: string;
   password: string;
   roleId: ObjectId;
+  phone: string;
 }

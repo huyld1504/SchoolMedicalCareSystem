@@ -242,22 +242,6 @@ const StudentsPage = () => {
                         Tổng số học sinh: {paginationInfo.total}
                     </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                        onClick={handleExport}
-                    >
-                        Xuất Excel
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<PrintIcon />}
-                        onClick={handlePrint}
-                    >
-                        In danh sách
-                    </Button>
-                </Box>
             </Box>
             
             {/* Filters and Search */}
@@ -385,7 +369,7 @@ const StudentsPage = () => {
                                             <TableCell sx={{ fontWeight: 600, color: '#000000' }}>Tuổi</TableCell>
                                             <TableCell sx={{ fontWeight: 600, color: '#000000' }}>Ngày sinh</TableCell>
                                             <TableCell sx={{ fontWeight: 600, color: '#000000' }}>Mã bảo hiểm</TableCell>
-                                            <TableCell sx={{ fontWeight: 600, color: '#000000' }}>Trạng thái sức khỏe</TableCell>
+                                            
                                             <TableCell sx={{ fontWeight: 600, color: '#000000' }} align="center">Thao tác</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -445,11 +429,7 @@ const StudentsPage = () => {
                                                             {student.medicalConverageId || 'N/A'}
                                                         </Typography>
                                                     </TableCell>
-                                                    <TableCell>
-                                                        <Typography variant="body2" sx={{ color: '#000000' }}>
-                                                            Bình thường
-                                                        </Typography>
-                                                    </TableCell>
+                                                   
                                                     <TableCell align="center">
                                                         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                                                             <Tooltip title="Hồ sơ y tế">

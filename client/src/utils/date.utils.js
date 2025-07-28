@@ -57,11 +57,11 @@ export const formatDateRange = (startDate, endDate) => {
   if (startDate && endDate) {
     const start = dayjs(startDate);
     const end = dayjs(endDate);
-    
+
     if (start.isSame(end, 'day')) {
       return `${start.format('DD/MM/YYYY')} (${start.format('HH:mm')} - ${end.format('HH:mm')})`;
     }
-    
+
     return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format('DD/MM/YYYY HH:mm')}`;
   }
   return "";
@@ -73,4 +73,12 @@ export const isValidDate = (date) => {
     return dayjs(date).isValid();
   }
   return false;
+};
+
+// Định dạng ngày cho input HTML date (YYYY-MM-DD)
+export const formatForDateInput = (date) => {
+  if (date) {
+    return dayjs(date).format("YYYY-MM-DD");
+  }
+  return "";
 };

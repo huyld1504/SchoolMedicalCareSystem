@@ -34,7 +34,7 @@ const statusMap = {
   planned: "Kế hoạch",
   ongoing: "Đang diễn ra",
   completed: "Đã hoàn thành",
-  cancelled: "Đã hủy",
+  canceled: "Đã hủy",
 };
 
 function formatDate(dateStr) {

@@ -279,7 +279,7 @@ const VaccinationCampaignsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
@@ -288,7 +288,7 @@ const VaccinationCampaignsPage = () => {
       case 'planned': return 'warning';
       case 'ongoing': return 'info';
       case 'completed': return 'success';
-      case 'cancelled': return 'error';
+      case 'canceled': return 'error';
       default: return 'default';
     }
   };
@@ -298,7 +298,7 @@ const VaccinationCampaignsPage = () => {
       case 'planned': return 'Sắp diễn ra';
       case 'ongoing': return 'Đang diễn ra';
       case 'completed': return 'Đã hoàn thành';
-      case 'cancelled': return 'Đã hủy';
+      case 'canceled': return 'Đã hủy';
       default: return status;
     }
   };
@@ -353,7 +353,7 @@ const VaccinationCampaignsPage = () => {
                   <MenuItem value="planned">Sắp diễn ra</MenuItem>
                   <MenuItem value="ongoing">Đang diễn ra</MenuItem>
                   <MenuItem value="completed">Đã hoàn thành</MenuItem>
-                  <MenuItem value="cancelled">Đã hủy</MenuItem>
+                  <MenuItem value="canceled">Đã hủy</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

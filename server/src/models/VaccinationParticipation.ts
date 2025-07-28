@@ -8,7 +8,7 @@ export interface IVaccinationParticipation extends Document {
   parentNote?: string;       // Ghi chú từ phụ huynh
   parentConsentDate?: Date;  // Ngày phụ huynh phản hồi
   // Quy trình tiêm chủng
-  vaccinationStatus: 'scheduled' | 'completed' | 'missed' | 'cancelled';
+  vaccinationStatus: 'scheduled' | 'completed' | 'missed' | 'canceled';
   vaccinationDate?: Date;    // Ngày thực hiện tiêm
   vaccinatedNurse?: Types.ObjectId;  // Y tá thực hiện (chỉ có khi completed)
   nurseNote?: string;        // Ghi chú từ y tá
@@ -37,7 +37,7 @@ const schema = new Schema({
   // Quy trình tiêm chủng
   vaccinationStatus: {
     type: String,
-    enum: ['scheduled', 'completed', 'missed', 'cancelled'],
+    enum: ['scheduled', 'completed', 'missed', 'canceled'],
     default: 'scheduled',
   },
   vaccinationDate: { type: Date },

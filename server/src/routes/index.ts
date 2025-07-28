@@ -73,6 +73,11 @@ childRouter.get(
   [transform(), auth(), authRoles(["parent", "nurse", "admin"])],
   ChildRoutes.get
 );
+childRouter.get(
+  Paths.Child.GetById,
+  [transform(), auth(), authRoles(["parent", "nurse", "admin"])],
+  ChildRoutes.getById
+);
 /******************************************************************************
                                 Health Profile routes
 ******************************************************************************/

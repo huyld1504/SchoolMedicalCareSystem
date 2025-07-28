@@ -573,7 +573,8 @@ const MedicalEventsPage = () => {
                                         <MenuItem value="1" sx={{ fontSize: '14px' }}>Nhẹ</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>                        {/* Status filter */}
+                            </Grid>                        
+                            {/* Status filter */}
                             <Grid item xs={12} sm={6} md={2}>
                                 <FormControl fullWidth size="small" sx={{ minWidth: '120px' }}>
                                     <InputLabel>Trạng thái</InputLabel>
@@ -793,7 +794,7 @@ const MedicalEventsPage = () => {
                                                         sx={{
                                                             fontSize: '0.875rem',
                                                             color: '#424242',
-                                                            fontWeight: 400
+                                                            fontWeight: 500
                                                         }}
                                                     >
                                                         {getEventTypeLabel(event.type)}

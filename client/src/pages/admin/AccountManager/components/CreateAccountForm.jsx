@@ -20,6 +20,7 @@ const initialState = {
   email: "",
   password: "",
   roleId: "",
+  phone:""
 };
 
 const CreateAccountForm = ({ onSuccess }) => {
@@ -65,6 +66,7 @@ const CreateAccountForm = ({ onSuccess }) => {
     if (!form.roleId) return "Vui lòng chọn vai trò";
     return "";
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,6 +106,15 @@ const CreateAccountForm = ({ onSuccess }) => {
           name="password"
           type="password"
           value={form.password}
+          onChange={handleChange}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+         <TextField
+          label="Phone"
+          name="phone"
+          type="text"
+          value={form.phone}
           onChange={handleChange}
           fullWidth
           sx={{ mb: 2 }}

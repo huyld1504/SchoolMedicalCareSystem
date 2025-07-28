@@ -73,7 +73,7 @@ const VaccinationParticipationsPage = () => {
     vaccinationDateFrom: '',
     vaccinationDateTo: '',
     page: 1,
-    limit: 20
+    limit: 10
   });
 
   // Applied search state (used for actual API calls)
@@ -84,14 +84,14 @@ const VaccinationParticipationsPage = () => {
     vaccinationDateFrom: searchParams.get('vaccinationDateFrom') || '',
     vaccinationDateTo: searchParams.get('vaccinationDateTo') || '',
     page: parseInt(searchParams.get('page')) || 1,
-    limit: 20
+    limit: 10
   });
 
   // State cho pagination
   const [paginationInfo, setPaginationInfo] = useState({
     total: 0,
     page: 1,
-    limit: 20,
+    limit: 10,
     totalPages: 0
   });
 
@@ -156,7 +156,7 @@ const VaccinationParticipationsPage = () => {
       // Load all participations without any filters for client-side filtering
       const apiQuery = {
         page: 1,
-        limit: 100, // Large limit to get all participations
+        limit: 10, // Large limit to get all participations
         // No filters - load everything for client-side filtering
       };
 
@@ -339,12 +339,12 @@ const VaccinationParticipationsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
   const formatDateTime = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Chưa tiêm';
     return new Date(dateString).toLocaleString('vi-VN');
   };
 
@@ -353,6 +353,7 @@ const VaccinationParticipationsPage = () => {
       case 'approved': return 'success';
       case 'denied': return 'error';
       case 'pending': return 'warning';
+      case 'canceled': return 'error';
       default: return 'default';
     }
   };
@@ -362,6 +363,7 @@ const VaccinationParticipationsPage = () => {
       case 'approved': return 'Đã đồng ý';
       case 'denied': return 'Từ chối';
       case 'pending': return 'Chờ phản hồi';
+      case 'canceled': return 'Đã hủy';
       default: return consent;
     }
   };
@@ -369,8 +371,8 @@ const VaccinationParticipationsPage = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed': return 'success';
-      case 'missed': return 'error';
-      case 'cancelled': return 'warning';
+      case 'missed': return 'warning';
+      case 'canceled': return 'error';
       case 'scheduled': return 'info';
       default: return 'default';
     }
@@ -380,7 +382,7 @@ const VaccinationParticipationsPage = () => {
     switch (status) {
       case 'completed': return 'Đã tiêm';
       case 'missed': return 'Bỏ lỡ';
-      case 'cancelled': return 'Đã hủy';
+      case 'canceled': return 'Đã hủy';
       case 'scheduled': return 'Đã lên lịch';
       default: return status;
     }
@@ -459,7 +461,7 @@ const VaccinationParticipationsPage = () => {
                     <MenuItem value="scheduled">Đã lên lịch</MenuItem>
                     <MenuItem value="completed">Đã tiêm</MenuItem>
                     <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                    <MenuItem value="cancelled">Đã hủy</MenuItem>
+                    <MenuItem value="canceled">Đã hủy</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -558,10 +560,10 @@ const VaccinationParticipationsPage = () => {
                               </Avatar>
                               <Box>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                  {participation.student?.name || 'N/A'}
+                                  {participation.student?.name || 'Không có'}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                  {participation.student?.studentCode || 'N/A'}
+                                  {participation.student?.studentCode || 'Không có'}
                                 </Typography>
                               </Box>
                             </Box>
@@ -584,33 +586,30 @@ const VaccinationParticipationsPage = () => {
                             />
                           </TableCell>
                           <TableCell>
-                            {formatDateTime(participation.vaccinationDate)}
+                            {formatDateTime(participation.vaccinationDate) || 'Chưa tiêm'}
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{
-                              maxWidth: 150,
-                              overflow: 'initial',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              title: participation.parentNote || 'Không có ghi chú'
+                              maxWidth: 200,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}>
                               {participation.parentNote || 'Không có ghi chú'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{
-                              maxWidth: 150,
-                              overflow: 'initial',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              title: participation.nurseNote || 'Không có ghi chú'
+                              maxWidth: 200,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}>
                               {participation.nurseNote || 'Không có ghi chú'}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
                             {participation.parentConsent === 'approved' &&
-                              participation.vaccinationStatus === 'scheduled' && (
+                              participation.vaccinationStatus === 'scheduled' &&
+                              campaign?.status === 'ongoing' && (
                                 <Tooltip title="Ghi nhận kết quả tiêm">
                                   <IconButton
                                     size="small"
@@ -667,7 +666,7 @@ const VaccinationParticipationsPage = () => {
                       >
                         <MenuItem value="completed">Đã tiêm thành công</MenuItem>
                         <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                        <MenuItem value="cancelled">Hủy tiêm</MenuItem>
+                        <MenuItem value="canceled">Hủy tiêm</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

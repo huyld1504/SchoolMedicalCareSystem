@@ -301,7 +301,7 @@ const AddChildPage = () => {
                                         onChange={handleChange}
                                         error={!!formErrors.studentCode}
                                         helperText={formErrors.studentCode}
-                                        placeholder="Ví dụ: HS2025001"
+                                        placeholder="Ví dụ: K17-1234"
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -320,8 +320,7 @@ const AddChildPage = () => {
                                         name="medicalConverageId"
                                         value={formData.medicalConverageId}
                                         onChange={handleChange}
-                                        placeholder="Ví dụ: DN1234567890123"
-                                        helperText="Không bắt buộc - có thể bổ sung sau"
+                                        placeholder="Ví dụ: 12390123"
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                                     />
                                 </Grid>
@@ -433,7 +432,7 @@ const AddChildPage = () => {
                                         value={formData.vision}
                                         onChange={handleChange}
                                         placeholder="Ví dụ: 10/10, 8/10"
-                                        helperText="Không bắt buộc"
+                                        required
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -632,130 +631,184 @@ const AddChildPage = () => {
                                     </Typography>
                                 </Box>
                             </Box>
-                            <Grid container spacing={3} sx={{ minHeight: '400px' }}>
-                                {/* Thông tin cơ bản */}
-                                <Grid item xs={6} sx={{ display: 'flex' }}>
-                                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, bgcolor: 'primary.50', flex: 1, minHeight: '350px' }}>
-                                        <Typography variant="h6" sx={{ mb: 3, color: 'primary.main', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
-                                            <Person sx={{ mr: 1 }} />
+
+                            {/* Thông tin cơ bản - Hiển thị theo hàng ngang */}
+                            <Card elevation={3} sx={{ mb: 3 }}>
+                                <CardContent sx={{ p: 3 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                                        <Person sx={{ fontSize: 28, color: 'primary.main', mr: 2 }} />
+                                        <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
                                             Thông tin cơ bản
                                         </Typography>
-                                        <Stack spacing={1.5}>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Tên:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.name || '---'}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 4 }}>
+                                        <Box sx={{ display: 'flex', flex: 1, gap: 4, flexWrap: 'wrap', minWidth: '300px' }}>
+                                            <Box sx={{ flex: '1 1 200px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Họ và tên:</Typography>
+                                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                                    {formData.name || '---'}
+                                                </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Ngày sinh:</Typography>
+                                            <Box sx={{ flex: '1 1 150px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Ngày sinh:</Typography>
                                                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
                                                     {formData.birthdate ? new Date(formData.birthdate).toLocaleDateString('vi-VN') : '---'}
                                                 </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Giới tính:</Typography>
+                                            <Box sx={{ flex: '1 1 120px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Giới tính:</Typography>
                                                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                                    {formData.gender === 'male' ? 'Nam' : formData.gender === 'female' ? 'Nữ' : formData.gender === 'other' ? 'Khác' : '---'}
+                                                    {formData.gender === 'male' ? '👦 Nam' : formData.gender === 'female' ? '👧 Nữ' : '---'}
                                                 </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Mã học sinh:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.studentCode || '---'}</Typography>
+                                            <Box sx={{ flex: '1 1 150px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Mã học sinh:</Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {formData.studentCode || '---'}
+                                                </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Mã BHYT:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.medicalConverageId || 'Chưa có'}</Typography>
+                                            <Box sx={{ flex: '1 1 200px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Mã BHYT:</Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {formData.medicalConverageId || 'Chưa có'}
+                                                </Typography>
                                             </Box>
-                                        </Stack>
-                                    </Paper>
-                                </Grid>
-                                {/* Thông tin sức khỏe */}
-                                <Grid item xs={6} sx={{ display: 'flex' }}>
-                                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, bgcolor: 'error.50', flex: 1, minHeight: '350px' }}>
-                                        <Typography variant="h6" sx={{ mb: 3, color: 'error.main', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
-                                            <LocalHospital sx={{ mr: 1 }} />
-                                            Thông tin sức khỏe
+                                        </Box>
+                                    </Box>
+                                </CardContent>
+                            </Card>
+
+                            {/* Thông tin sức khỏe - Hiển thị theo hàng ngang */}
+                            <Card elevation={3} sx={{ mb: 3 }}>
+                                <CardContent sx={{ p: 3 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                                        <LocalHospital sx={{ fontSize: 28, color: 'error.main', mr: 2 }} />
+                                        <Typography variant="h6" sx={{ fontWeight: 600, color: 'error.main' }}>
+                                            Thông tin sức khỏe cơ bản
                                         </Typography>
-                                        <Stack spacing={1.5}>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Chiều cao:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.height ? `${formData.height} cm` : '---'}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 4, mb: 3 }}>
+                                        <Box sx={{ display: 'flex', flex: 1, gap: 4, flexWrap: 'wrap', minWidth: '300px' }}>
+                                            <Box sx={{ flex: '1 1 120px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Chiều cao:</Typography>
+                                                <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                                                    {formData.height ? `${formData.height} cm` : '---'}
+                                                </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Cân nặng:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.weight ? `${formData.weight} kg` : '---'}</Typography>
+                                            <Box sx={{ flex: '1 1 120px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Cân nặng:</Typography>
+                                                <Typography variant="h6" sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                                                    {formData.weight ? `${formData.weight} kg` : '---'}
+                                                </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Nhóm máu:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.bloodType || '---'}</Typography>
+                                            <Box sx={{ flex: '1 1 120px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Nhóm máu:</Typography>
+                                                <Chip
+                                                    label={formData.bloodType ? `🩸 ${formData.bloodType}` : '---'}
+                                                    color={formData.bloodType ? 'error' : 'default'}
+                                                    variant="outlined"
+                                                    sx={{ fontWeight: 600 }}
+                                                />
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Thị lực:</Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>{formData.vision || 'Chưa có'}</Typography>
+                                            <Box sx={{ flex: '1 1 120px' }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Thị lực:</Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {formData.vision || 'Chưa có'}
+                                                </Typography>
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Dị ứng:</Typography>
-                                                <Box sx={{ mt: 0.5 }}>
-                                                    {formData.allergies.length > 0 ? (
-                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                            {formData.allergies.map((item, index) => (
-                                                                <Chip
-                                                                    key={index}
-                                                                    label={item}
-                                                                    size="small"
-                                                                    color="warning"
-                                                                    variant="outlined"
-                                                                />
-                                                            ))}
-                                                        </Box>
-                                                    ) : (
-                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>Không có</Typography>
-                                                    )}
-                                                </Box>
+                                        </Box>
+                                    </Box>
+
+                                    <Divider sx={{ my: 3 }} />
+
+                                    {/* Thông tin y tế chi tiết */}
+                                    <Typography variant="h6" sx={{ fontWeight: 600, color: 'error.main', mb: 2 }}>
+                                        Thông tin y tế chi tiết
+                                    </Typography>
+
+                                    <Grid container spacing={12}>
+                                        <Grid item xs={12} md={4}>
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
+                                                Dị ứng:
+                                            </Typography>
+                                            <Box sx={{ minHeight: 60 }}>
+                                                {formData.allergies.length > 0 ? (
+                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                        {formData.allergies.map((item, index) => (
+                                                            <Chip
+                                                                key={index}
+                                                                label={item}
+                                                                size="small"
+                                                                color="warning"
+                                                                variant="outlined"
+                                                                sx={{ fontWeight: 500 }}
+                                                            />
+                                                        ))}
+                                                    </Box>
+                                                ) : (
+                                                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'success.main', fontStyle: 'italic' }}>
+                                                        Không có dị ứng
+                                                    </Typography>
+                                                )}
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Bệnh mãn tính:</Typography>
-                                                <Box sx={{ mt: 0.5 }}>
-                                                    {formData.chronicDiseases.length > 0 ? (
-                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                            {formData.chronicDiseases.map((item, index) => (
-                                                                <Chip
-                                                                    key={index}
-                                                                    label={item}
-                                                                    size="small"
-                                                                    color="error"
-                                                                    variant="outlined"
-                                                                />
-                                                            ))}
-                                                        </Box>
-                                                    ) : (
-                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>Không có</Typography>
-                                                    )}
-                                                </Box>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={4}>
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
+                                                Bệnh mãn tính:
+                                            </Typography>
+                                            <Box sx={{ minHeight: 60 }}>
+                                                {formData.chronicDiseases.length > 0 ? (
+                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                        {formData.chronicDiseases.map((item, index) => (
+                                                            <Chip
+                                                                key={index}
+                                                                label={item}
+                                                                size="small"
+                                                                color="error"
+                                                                variant="outlined"
+                                                                sx={{ fontWeight: 500 }}
+                                                            />
+                                                        ))}
+                                                    </Box>
+                                                ) : (
+                                                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'success.main', fontStyle: 'italic' }}>
+                                                        Không có bệnh mãn tính
+                                                    </Typography>
+                                                )}
                                             </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">Thiết bị hỗ trợ:</Typography>
-                                                <Box sx={{ mt: 0.5 }}>
-                                                    {formData.devicesSupport.length > 0 ? (
-                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                            {formData.devicesSupport.map((item, index) => (
-                                                                <Chip
-                                                                    key={index}
-                                                                    label={item}
-                                                                    size="small"
-                                                                    color="info"
-                                                                    variant="outlined"
-                                                                />
-                                                            ))}
-                                                        </Box>
-                                                    ) : (
-                                                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary' }}>Không có</Typography>
-                                                    )}
-                                                </Box>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={4}>
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
+                                                Thiết bị hỗ trợ:
+                                            </Typography>
+                                            <Box sx={{ minHeight: 60 }}>
+                                                {formData.devicesSupport.length > 0 ? (
+                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                        {formData.devicesSupport.map((item, index) => (
+                                                            <Chip
+                                                                key={index}
+                                                                label={item}
+                                                                size="small"
+                                                                color="info"
+                                                                variant="outlined"
+                                                                sx={{ fontWeight: 500 }}
+                                                            />
+                                                        ))}
+                                                    </Box>
+                                                ) : (
+                                                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'success.main', fontStyle: 'italic' }}>
+                                                        Không cần thiết bị hỗ trợ
+                                                    </Typography>
+                                                )}
                                             </Box>
-                                        </Stack>
-                                    </Paper>
-                                </Grid>
-                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </CardContent>
+                            </Card>
                         </CardContent>
                     </Card>
                 );

@@ -21,6 +21,9 @@ const initialState = {
   id: "",
   vaccineName: "",
   vaccineType: "",
+  vaccineDescription: "",
+  injection: "",
+  dosage: "",
   targetAudience: "",
   startDate: "",
   endDate: "",
@@ -31,7 +34,7 @@ const statusOptions = [
   { value: "planned", label: "Kế hoạch" },
   { value: "ongoing", label: "Đang diễn ra" },
   { value: "completed", label: "Đã hoàn thành" },
-  { value: "cancelled", label: "Đã hủy" },
+  { value: "canceled", label: "Đã hủy" },
 ];
 
 const CreateVaccinationForm = ({ onSuccess }) => {
@@ -48,6 +51,9 @@ const CreateVaccinationForm = ({ onSuccess }) => {
         const newData = {
           vaccineName: data.vaccineName,
           vaccineType: data.vaccineType,
+          vaccineDescription: data.vaccineDescription,
+          injection: data.injection,
+          dosage: data.dosage,
           targetAudience: data.targetAudience,
           startDate: data.startDate,
           endDate: data.endDate,
@@ -58,6 +64,9 @@ const CreateVaccinationForm = ({ onSuccess }) => {
       const newData = {
         vaccineName: data.vaccineName,
         vaccineType: data.vaccineType,
+        vaccineDescription: data.vaccineDescription,
+        injection: data.injection,
+        dosage: data.dosage,
         targetAudience: data.targetAudience,
         startDate: data.startDate,
         endDate: data.endDate,
@@ -79,6 +88,8 @@ const CreateVaccinationForm = ({ onSuccess }) => {
     if (!form.vaccineType.trim()) return "Loại vắc xin là bắt buộc";
     if (!form.targetAudience.trim()) return "Đối tượng tiêm là bắt buộc";
     if (!form.startDate.trim()) return "Ngày bắt đầu là bắt buộc";
+    if (!String(form.injection).trim()) return "Số mũi tiêm là bắt buộc";
+    if (!String(form.dosage).trim()) return "Liều lượng là bắt buộc";
     if (form.endDate && form.startDate && new Date(form.endDate) < new Date(form.startDate)) {
       return "Ngày kết thúc phải sau ngày bắt đầu";
     }
@@ -126,6 +137,28 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           fullWidth
         />
         <TextField
+          label="Mô tả vắc xin"
+          value={form.vaccineDescription}
+          onChange={(e) => handleChange("vaccineDescription", e.target.value)}
+          multiline
+          rows={2}
+          fullWidth
+        />
+        <TextField
+          label="Số mũi tiêm"
+          value={form.injection}
+          onChange={(e) => handleChange("injection", e.target.value)}
+          fullWidth
+
+        />
+        <TextField
+          label="Liều lượng"
+          value={form.dosage}
+          onChange={(e) => handleChange("dosage", e.target.value)}
+          fullWidth
+          placeholder="Ví dụ: 0.5ml, 0.5cc"
+        />
+        <TextField
           label="Đối tượng tiêm"
           value={form.targetAudience}
           onChange={(e) => handleChange("targetAudience", e.target.value)}
@@ -135,7 +168,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           label="Ngày bắt đầu"
           type="date"
           InputLabelProps={{ shrink: true }}
-          value={form.startDate}
+          value={formatForDateInput(form.startDate)}
           onChange={(e) => handleChange("startDate", e.target.value)}
           fullWidth
         />
@@ -143,7 +176,7 @@ const CreateVaccinationForm = ({ onSuccess }) => {
           label="Ngày kết thúc"
           type="date"
           InputLabelProps={{ shrink: true }}
-          value={form.endDate}
+         value={formatForDateInput(form.endDate)}
           onChange={(e) => handleChange("endDate", e.target.value)}
           fullWidth
           inputProps={{

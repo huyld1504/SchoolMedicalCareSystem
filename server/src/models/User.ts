@@ -9,11 +9,14 @@ export interface IUser extends Document {
   password: string;
   /** Password */
   name: string;
+  phone ?: string;
   encryptPassword: (password: string) => string;
   validPassword: (password: string) => boolean;
 
   /** Role id */
   roleId: Types.ObjectId | IRole;
+
+  phone : string;
 
   isActive: boolean;
 }
@@ -27,6 +30,7 @@ const schema = new Schema(
     name: { type: String, required: true },
     roleId: { type: Types.ObjectId, ref: "Role", required: true },
     isActive: { type: Boolean, default: true },
+    phone : { type: String, required: true },
   },
   {
     timestamps: {

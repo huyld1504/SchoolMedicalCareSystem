@@ -24,7 +24,7 @@ import { UserQueryBuilder } from "@src/payload/request/filter/user.request";
                                 Constants
 ******************************************************************************/
 
-export const USER_NOT_FOUND_ERR = "User not found";
+export const USER_NOT_FOUND_ERR = "Không tìm thấy người dùng";
 
 /******************************************************************************
                                 Functions
@@ -38,14 +38,14 @@ class UserService {
     const exists = await this.userRepo.findByEmail(user.email);
 
     if (exists) {
-      throw new ApplicationError("Email already exists");
+      throw new ApplicationError("Email đã tồn tại");
     }
     const existsRole = await Role.findById(user.roleId);
     if (!existsRole) {
-      throw new ApplicationError("Role does not exist");
+      throw new ApplicationError("Vai trò không tồn tại");
     }
     if (existsRole.name === "admin") {
-      throw new ApplicationError("You cannot create a user with admin role");
+      throw new ApplicationError("Bạn không thể tạo người dùng với vai trò quản trị");
     }
     const saveUser = new User(user);
     saveUser.roleId = existsRole.id;
@@ -102,10 +102,10 @@ class UserService {
       .populate<{ roleId: IRole }>("roleId", "name")
       .exec();
     if (!user) {
-      throw new ApplicationError("User or password is incorrect");
+      throw new ApplicationError("Người dùng hoặc mật khẩu không chính xác");
     }
     if (user.password !== password) {
-      throw new ApplicationError("Invalid password");
+      throw new ApplicationError("Mật khẩu không đúng.");
     }
     const payloadToken: Record<string, any> = {
       id: user.id,
@@ -132,7 +132,7 @@ class UserService {
   async register(user: IRegisterRequest): Promise<void> {
     const exists = await this.userRepo.findByEmail(user.email);
     if (exists) {
-      throw new ApplicationError("Email already exists");
+      throw new ApplicationError("Email đã tồn tại");
     }
     const saveUser = new User(user);
     const roleAdmin = await Role.findOne({ name: "admin" });
