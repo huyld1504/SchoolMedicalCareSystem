@@ -339,12 +339,12 @@ const VaccinationParticipationsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
   const formatDateTime = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Chưa tiêm';
     return new Date(dateString).toLocaleString('vi-VN');
   };
 
@@ -560,10 +560,10 @@ const VaccinationParticipationsPage = () => {
                               </Avatar>
                               <Box>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                  {participation.student?.name || 'N/A'}
+                                  {participation.student?.name || 'Không có'}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                  {participation.student?.studentCode || 'N/A'}
+                                  {participation.student?.studentCode || 'Không có'}
                                 </Typography>
                               </Box>
                             </Box>
@@ -586,33 +586,30 @@ const VaccinationParticipationsPage = () => {
                             />
                           </TableCell>
                           <TableCell>
-                            {formatDateTime(participation.vaccinationDate)}
+                            {formatDateTime(participation.vaccinationDate) || 'Chưa tiêm'}
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{
-                              maxWidth: 150,
-                              overflow: 'initial',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              title: participation.parentNote || 'Không có ghi chú'
+                              maxWidth: 200,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}>
                               {participation.parentNote || 'Không có ghi chú'}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{
-                              maxWidth: 150,
-                              overflow: 'initial',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              title: participation.nurseNote || 'Không có ghi chú'
+                              maxWidth: 200,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}>
                               {participation.nurseNote || 'Không có ghi chú'}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
                             {participation.parentConsent === 'approved' &&
-                              participation.vaccinationStatus === 'scheduled' && (
+                              participation.vaccinationStatus === 'scheduled' &&
+                              campaign?.status === 'ongoing' && (
                                 <Tooltip title="Ghi nhận kết quả tiêm">
                                   <IconButton
                                     size="small"

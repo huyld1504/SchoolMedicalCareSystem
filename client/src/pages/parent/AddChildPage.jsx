@@ -301,7 +301,7 @@ const AddChildPage = () => {
                                         onChange={handleChange}
                                         error={!!formErrors.studentCode}
                                         helperText={formErrors.studentCode}
-                                        placeholder="Ví dụ: HS2025001"
+                                        placeholder="Ví dụ: K17-1234"
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -320,8 +320,7 @@ const AddChildPage = () => {
                                         name="medicalConverageId"
                                         value={formData.medicalConverageId}
                                         onChange={handleChange}
-                                        placeholder="Ví dụ: DN1234567890123"
-                                        helperText="Không bắt buộc - có thể bổ sung sau"
+                                        placeholder="Ví dụ: 12390123"
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                                     />
                                 </Grid>
@@ -433,7 +432,7 @@ const AddChildPage = () => {
                                         value={formData.vision}
                                         onChange={handleChange}
                                         placeholder="Ví dụ: 10/10, 8/10"
-                                        helperText="Không bắt buộc"
+                                        required
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -750,7 +749,7 @@ const AddChildPage = () => {
                                                     </Box>
                                                 ) : (
                                                     <Typography variant="body2" sx={{ fontWeight: 500, color: 'success.main', fontStyle: 'italic' }}>
-                                                        ✅ Không có dị ứng
+                                                        Không có dị ứng
                                                     </Typography>
                                                 )}
                                             </Box>
@@ -802,7 +801,7 @@ const AddChildPage = () => {
                                                     </Box>
                                                 ) : (
                                                     <Typography variant="body2" sx={{ fontWeight: 500, color: 'success.main', fontStyle: 'italic' }}>
-                                                        ✅ Không cần thiết bị hỗ trợ
+                                                        Không cần thiết bị hỗ trợ
                                                     </Typography>
                                                 )}
                                             </Box>

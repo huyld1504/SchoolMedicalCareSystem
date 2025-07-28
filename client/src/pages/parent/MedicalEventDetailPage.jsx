@@ -125,7 +125,7 @@ const MedicalEventDetailPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: '2-digit',
@@ -245,10 +245,10 @@ const MedicalEventDetailPage = () => {
                           const studentData = student.studentId || student;
                           return (
                             <TableRow key={index} sx={{ '&:last-child td': { border: 0 } }}>
-                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>{studentData.name || 'N/A'}</TableCell>
-                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>{studentData.studentCode || 'N/A'}</TableCell>
+                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>{studentData.name || 'Không có'}</TableCell>
+                              <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>{studentData.studentCode || 'Không có'}</TableCell>
                               <TableCell align="center" sx={{ fontSize: '0.9rem', py: 1 }}>
-                                {studentData.medicalConverageId || 'N/A'}
+                                {studentData.medicalConverageId || 'Không có'}
                               </TableCell>
                             </TableRow>
                           );

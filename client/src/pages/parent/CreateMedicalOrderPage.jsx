@@ -412,26 +412,26 @@ const CreateMedicalOrderPage = () => {
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="body2" color="text.secondary">Họ tên:</Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                        {child?.name || 'N/A'}
+                                        {child?.name || 'Không có'}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="body2" color="text.secondary">Ngày sinh:</Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                        {child?.birthdate ? new Date(child.birthdate).toLocaleDateString('vi-VN') : 'N/A'}
+                                        {child?.birthdate ? new Date(child.birthdate).toLocaleDateString('vi-VN') : 'Không có'}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="body2" color="text.secondary">Mã học sinh:</Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                        {child?.studentCode || 'N/A'}
+                                        {child?.studentCode || 'Không có'}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="body2" color="text.secondary">Giới tính:</Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
                                         {child?.gender === 'male' ? 'Nam' :
-                                            child?.gender === 'female' ? 'Nữ' : 'N/A'}
+                                            child?.gender === 'female' ? 'Nữ' : 'Không có'}
                                     </Typography>
                                 </Grid>
                             </Grid>

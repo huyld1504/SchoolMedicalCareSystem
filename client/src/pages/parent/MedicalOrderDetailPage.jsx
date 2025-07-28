@@ -92,7 +92,7 @@ const MedicalOrderDetailPage = () => {
 
           // Load child info if we have ChildId
           if (orderData.ChildId) {
-            await loadChildInfo(orderData.ChildId);
+            await loadChildInfo(orderData.ChildId._id);
           }
         } else {
           setError('Không tìm thấy thông tin đơn thuốc');
@@ -108,6 +108,7 @@ const MedicalOrderDetailPage = () => {
       try {
         const childResponse = await childApi.getChildById(childId);
         if (childResponse && childResponse.data) {
+          console.log('Child info loaded:', childResponse.data);
           setChildInfo(childResponse.data);
         }
       } catch (err) {
@@ -144,22 +145,11 @@ const MedicalOrderDetailPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
-    });
-  };
-
-  const formatDateTime = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleString('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
     });
   };
 
@@ -301,10 +291,10 @@ const MedicalOrderDetailPage = () => {
                       </Avatar>
                       <Box>
                         <Typography variant="body1" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
-                          {childInfo?.name || 'N/A'}
+                          {childInfo?.name || 'Không có'}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem' }}>
-                          ID: {childInfo.studentCode || 'N/A'}
+                          ID: {childInfo?.studentCode || 'Không có'}
                         </Typography>
                       </Box>
                     </Box>
@@ -423,79 +413,86 @@ const MedicalOrderDetailPage = () => {
                   Chi tiết thuốc ({orderDetails.length} loại)
                 </Typography>
 
-                {/* Mỗi detail thuốc là một section riêng biệt */}
-                {orderDetails.map((detail, index) => (
-                  <Box key={detail._id} sx={{ mb: 2, p: 2, border: '2px solid #e0e0e0', borderRadius: 2, bgcolor: 'grey.50', boxShadow: 1 }}>
-                    {/* Tiêu đề thuốc */}
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5, color: 'primary.main', display: 'flex', alignItems: 'center', fontSize: '1.2rem' }}>
-                      <Box
-                        sx={{
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                          borderRadius: '50%',
-                          width: 28,
-                          height: 28,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '0.9rem',
-                          fontWeight: 700,
-                          mr: 2
-                        }}
-                      >
-                        {index + 1}
-                      </Box>
-                      {detail.medicineName}
-                    </Typography>
-
-                    {/* Bảng thông tin thuốc - tất cả trên một hàng */}
-                    <Table sx={{ '& .MuiTableCell-root': { fontSize: '0.9rem', py: 1, border: '1px solid #e0e0e0' } }}>
-                      <TableHead>
-                        <TableRow sx={{ bgcolor: 'primary.main' }}>
-                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Liều lượng</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Loại</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Thời gian uống</TableCell>
-                          <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Số lượng</TableCell>
-                          {detail.note && <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1, fontSize: '0.95rem' }}>Ghi chú</TableCell>}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow sx={{ bgcolor: 'white' }}>
-                          <TableCell sx={{ textAlign: 'center', fontWeight: 500, py: 1 }}>
+                {/* Tất cả thuốc trong một bảng duy nhất */}
+                <Box sx={{ p: 2, border: '2px solid #e0e0e0', borderRadius: 2, bgcolor: 'grey.50', boxShadow: 1 }}>
+                  <Table sx={{ '& .MuiTableCell-root': { fontSize: '0.9rem', py: 1.5, border: '1px solid #e0e0e0' } }}>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: 'primary.main' }}>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>STT</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>Tên thuốc</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>Liều lượng</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>Loại</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>Thời gian uống</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>Số lượng</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: 'white', textAlign: 'center', py: 1.5, fontSize: '0.95rem' }}>Ghi chú</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {orderDetails.map((detail, index) => (
+                        <TableRow key={detail._id} sx={{ bgcolor: 'white', '&:hover': { bgcolor: 'grey.100' } }}>
+                          <TableCell sx={{ textAlign: 'center', py: 1.5 }}>
+                            <Box
+                              sx={{
+                                bgcolor: 'primary.main',
+                                color: 'white',
+                                borderRadius: '50%',
+                                width: 28,
+                                height: 28,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.9rem',
+                                fontWeight: 700,
+                                mx: 'auto'
+                              }}
+                            >
+                              {index + 1}
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center', fontWeight: 600, py: 1.5 }}>
+                            <Typography variant="body2" sx={{ color: 'primary.main', fontSize: '1rem', fontWeight: 600 }}>
+                              {detail.medicineName}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center', fontWeight: 500, py: 1.5 }}>
                             <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.95rem', fontWeight: 600 }}>
                               {detail.dosage}
                             </Typography>
                           </TableCell>
-                          <TableCell sx={{ textAlign: 'center', py: 1 }}>
+                          <TableCell sx={{ textAlign: 'center', py: 1.5 }}>
                             <Chip
                               label={detail.type}
                               sx={{ bgcolor: 'info.light', color: 'info.contrastText', fontWeight: 500, fontSize: '0.85rem', height: 28, px: 1 }}
                             />
                           </TableCell>
-                          <TableCell sx={{ textAlign: 'center', fontWeight: 500, py: 1 }}>
+                          <TableCell sx={{ textAlign: 'center', fontWeight: 500, py: 1.5 }}>
                             <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.95rem', fontWeight: 600 }}>
                               {detail.time}
                             </Typography>
                           </TableCell>
-                          <TableCell sx={{ textAlign: 'center', py: 1 }}>
+                          <TableCell sx={{ textAlign: 'center', py: 1.5 }}>
                             <Chip
                               label={`${detail.quantity}`}
                               color="primary"
                               sx={{ fontWeight: 600, fontSize: '0.85rem', height: 28, px: 1 }}
                             />
                           </TableCell>
-                          {detail.note && (
-                            <TableCell sx={{ textAlign: 'center', maxWidth: 150, py: 1 }}>
-                              <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary', fontSize: '0.85rem' }}>
-                                {detail.note}
-                              </Typography>
-                            </TableCell>
-                          )}
+                          <TableCell sx={{ textAlign: 'center', maxWidth: 200, py: 1.5 }}>
+                            <Typography variant="body2" sx={{
+                              fontStyle: 'italic',
+                              color: 'text.secondary',
+                              fontSize: '0.85rem',
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
+                            }}>
+                              {detail.note || 'Không có ghi chú'}
+                            </Typography>
+                          </TableCell>
                         </TableRow>
-                      </TableBody>
-                    </Table>
-                  </Box>
-                ))}
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
               </Box>
             )}
           </CardContent>
