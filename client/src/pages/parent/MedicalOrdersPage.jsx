@@ -348,7 +348,7 @@ const MedicalOrdersPage = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return 'Không có';
         return new Date(dateString).toLocaleDateString('vi-VN');
     };
 
@@ -384,7 +384,7 @@ const MedicalOrdersPage = () => {
 
     const getChildName = (childId) => {
         const child = children.find(c => c._id === childId);
-        return child ? child.name : 'N/A';
+        return child ? child.name : 'Không có';
     };
 
     return (
@@ -608,9 +608,8 @@ const MedicalOrdersPage = () => {
                                                     <TableCell>
                                                         <Typography variant="body2" sx={{
                                                             maxWidth: 200,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap'
+                                                            wordWrap: 'break-word',
+                                                            whiteSpace: 'normal'
                                                         }}>
                                                             {order.note || 'Không có ghi chú'}
                                                         </Typography>
@@ -723,7 +722,7 @@ const MedicalOrdersPage = () => {
                                                     <TableCell>{item.name || 'Không rõ tên thuốc'}</TableCell>
                                                     <TableCell align="center">{item.quantity}</TableCell>
                                                     <TableCell>{new Date(item.createdAt).toLocaleString('vi-VN')}</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name || 'N/A'}</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name || 'Không có'}</TableCell>
                                                 </TableRow>
                                             ))
                                         ))}

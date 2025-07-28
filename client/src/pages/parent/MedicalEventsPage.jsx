@@ -237,7 +237,7 @@ const MedicalEventsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Trống';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: '2-digit',
@@ -264,7 +264,7 @@ const MedicalEventsPage = () => {
       2: { color: 'warning', label: 'Trung bình' },
       3: { color: 'error', label: 'Khẩn cấp' }
     };
-    const config = levelMap[level] || { color: 'default', label: 'N/A' };
+    const config = levelMap[level] || { color: 'default', label: 'Trống' };
     return <Chip label={config.label} color={config.color} size="small" />;
   };
 
@@ -305,24 +305,6 @@ const MedicalEventsPage = () => {
           >
             Theo dõi các sự kiện y tế của con em
           </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Tooltip title="Làm mới danh sách">
-            <IconButton
-              onClick={() => window.location.reload()}
-              color="primary"
-              sx={{
-                border: '1px solid',
-                borderColor: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.light'
-                },
-                p: { xs: 1, sm: 1.5 }
-              }}
-            >
-              <RefreshIcon sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }} />
-            </IconButton>
-          </Tooltip>
         </Box>
       </Box>
 
@@ -480,10 +462,10 @@ const MedicalEventsPage = () => {
                         <TableCell>
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {event.childInfo?.name || 'N/A'}
+                              {event.childInfo?.name || 'Trống'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {event.childInfo?.studentCode || 'N/A'}
+                              {event.childInfo?.studentCode || 'Trống'}
                             </Typography>
                           </Box>
                         </TableCell>
@@ -493,10 +475,9 @@ const MedicalEventsPage = () => {
                           <Typography
                             variant="body2"
                             sx={{
-                              maxWidth: 200,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                              maxWidth: 300,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}
                           >
                             {event.description || 'Không có mô tả'}

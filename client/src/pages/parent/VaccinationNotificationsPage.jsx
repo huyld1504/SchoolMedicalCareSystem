@@ -459,10 +459,10 @@ const VaccinationNotificationsPage = () => {
                       }}
                     >
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1, color: '#1976d2', fontWeight: 700 }}>{(paginationInfo.page - 1) * paginationInfo.limit + index + 1}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.name || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.studentCode || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineName || 'N/A'}</TableCell>
-                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineType || 'N/A'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.name || 'Không có'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.student?.studentCode || 'Không có'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineName || 'Không có'}</TableCell>
+                      <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{notification.campaign?.vaccineType || 'Không có'}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>{formatDate(notification.campaign?.startDate)}</TableCell>
                       <TableCell align="center" sx={{ fontSize: '0.93rem', whiteSpace: 'nowrap', py: 1 }}>
                         <Typography

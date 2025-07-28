@@ -90,18 +90,36 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
   };
   // Hàm parse JSON data cho các field array với xử lý dấu ngoặc vuông
   const parseHealthData = (data) => {
-    if (!data || data === '1' || data === '') return [];
+    if (!data) return [];
 
-    // Loại bỏ dấu ngoặc vuông trước khi xử lý
-    const cleanData = removeBrackets(data);
+    // Loại bỏ các giá trị không hợp lệ
+    if (data === '1' || data === '' || data === '[]' || data === 'null' || data === 'undefined') {
+      return [];
+    }
+
+    // Nếu data đã là array, return luôn
+    if (Array.isArray(data)) {
+      return data.filter(item => item && item.toString().trim() !== '');
+    }
+
+    // Convert to string để xử lý
+    const dataStr = data.toString().trim();
+
+    // Loại bỏ dấu ngoặc vuông nếu có
+    const cleanData = dataStr.replace(/^\[|\]$/g, '').trim();
+
+    if (!cleanData) return [];
 
     try {
-      // Nếu data là JSON string, parse nó
-      const parsed = JSON.parse(cleanData);
-      return Array.isArray(parsed) ? parsed : [];
+      // Thử parse JSON trước
+      const parsed = JSON.parse('[' + cleanData + ']');
+      return Array.isArray(parsed) ? parsed.filter(item => item && item.toString().trim() !== '') : [];
     } catch {
-      // Nếu không parse được, coi như string và split bằng dấu phẩy
-      return cleanData.split(',').map(item => item.trim()).filter(item => item);
+      // Nếu không parse được, split bằng dấu phẩy
+      return cleanData
+        .split(',')
+        .map(item => item.replace(/['"]/g, '').trim())
+        .filter(item => item && item !== 'null' && item !== 'undefined');
     }
   };
 
@@ -214,7 +232,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
                     Chiều cao
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                    {profile?.height || 'N/A'} cm
+                    {profile?.height || 'Không có'} cm
                   </Typography>
                 </Paper>
               </Grid>
@@ -225,7 +243,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
                     Cân nặng
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                    {profile?.weight || 'N/A'} kg
+                    {profile?.weight || 'Không có'} kg
                   </Typography>
                 </Paper>
               </Grid>
@@ -236,7 +254,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
                     Nhóm máu
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                    {profile?.bloodType || 'N/A'}
+                    {profile?.bloodType || 'Không có'}
                   </Typography>
                 </Paper>
               </Grid>
@@ -247,7 +265,7 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
                     Thị lực
                   </Typography>
                   <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                    {profile?.vision || 'N/A'}
+                    {profile?.vision || 'Không có'}
                   </Typography>
                 </Paper>
               </Grid>
@@ -259,100 +277,125 @@ const HealthProfileDetailModal = ({ open, onClose, profileId, childId }) => {
             </Typography>
 
             <Grid container spacing={2}>
+              {/* Dị ứng */}
               {(() => {
                 const allergiesData = parseHealthData(profile?.allergies);
-                return allergiesData.length > 0 && (
-                  <Grid item xs={12} md={4}>
-                    <Box sx={{ p: 2, bgcolor: '#fff8e1', borderRadius: 1, border: '1px solid #ffcc02' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                        <Warning sx={{ color: '#f57c00', mr: 1, mt: 0.5, fontSize: 20 }} />
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e65100' }}>
-                          Dị ứng
-                        </Typography>
+                console.log('Allergies data:', profile?.allergies, 'Parsed:', allergiesData);
+
+                if (allergiesData.length > 0) {
+                  return (
+                    <Grid item xs={12} md={4}>
+                      <Box sx={{ p: 2, bgcolor: '#fff8e1', borderRadius: 1, border: '1px solid #ffcc02' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                          <Warning sx={{ color: '#f57c00', mr: 1, mt: 0.5, fontSize: 20 }} />
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#e65100' }}>
+                            Dị ứng
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {allergiesData.map((item, index) => (
+                            <Chip
+                              key={index}
+                              label={item}
+                              size="small"
+                              color="warning"
+                              variant="outlined"
+                            />
+                          ))}
+                        </Box>
                       </Box>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {allergiesData.map((item, index) => (
-                          <Chip
-                            key={index}
-                            label={item}
-                            size="small"
-                            color="warning"
-                            variant="outlined"
-                          />
-                        ))}
-                      </Box>
-                    </Box>
-                  </Grid>
-                );
+                    </Grid>
+                  );
+                }
+                return null;
               })()}
 
+              {/* Bệnh mãn tính */}
               {(() => {
                 const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
-                return chronicDiseasesData.length > 0 && (
-                  <Grid item xs={12} md={4}>
-                    <Box sx={{ p: 2, bgcolor: '#fce4ec', borderRadius: 1, border: '1px solid #f8bbd9' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                        <LocalHospital sx={{ color: '#c2185b', mr: 1, mt: 0.5, fontSize: 20 }} />
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#ad1457' }}>
-                          Bệnh mãn tính
-                        </Typography>
+                console.log('Chronic diseases data:', profile?.chronicDiseases, 'Parsed:', chronicDiseasesData);
+
+                if (chronicDiseasesData.length > 0) {
+                  return (
+                    <Grid item xs={12} md={4}>
+                      <Box sx={{ p: 2, bgcolor: '#fce4ec', borderRadius: 1, border: '1px solid #f8bbd9' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                          <LocalHospital sx={{ color: '#c2185b', mr: 1, mt: 0.5, fontSize: 20 }} />
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#ad1457' }}>
+                            Bệnh mãn tính
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {chronicDiseasesData.map((item, index) => (
+                            <Chip
+                              key={index}
+                              label={item}
+                              size="small"
+                              color="error"
+                              variant="outlined"
+                            />
+                          ))}
+                        </Box>
                       </Box>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {chronicDiseasesData.map((item, index) => (
-                          <Chip
-                            key={index}
-                            label={item}
-                            size="small"
-                            color="error"
-                            variant="outlined"
-                          />
-                        ))}
-                      </Box>
-                    </Box>
-                  </Grid>
-                );
+                    </Grid>
+                  );
+                }
+                return null;
               })()}
 
+              {/* Thiết bị hỗ trợ */}
               {(() => {
                 const devicesSupportData = parseHealthData(profile?.devicesSupport);
-                return devicesSupportData.length > 0 && (
-                  <Grid item xs={12} md={4}>
-                    <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #90caf9' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                        <AccessibleForward sx={{ color: '#1976d2', mr: 1, mt: 0.5, fontSize: 20 }} />
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1565c0' }}>
-                          Thiết bị hỗ trợ
-                        </Typography>
+                console.log('Devices support data:', profile?.devicesSupport, 'Parsed:', devicesSupportData);
+
+                if (devicesSupportData.length > 0) {
+                  return (
+                    <Grid item xs={12} md={4}>
+                      <Box sx={{ p: 2, bgcolor: '#e3f2fd', borderRadius: 1, border: '1px solid #90caf9' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                          <AccessibleForward sx={{ color: '#1976d2', mr: 1, mt: 0.5, fontSize: 20 }} />
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1565c0' }}>
+                            Thiết bị hỗ trợ
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {devicesSupportData.map((item, index) => (
+                            <Chip
+                              key={index}
+                              label={item}
+                              size="small"
+                              color="info"
+                              variant="outlined"
+                            />
+                          ))}
+                        </Box>
                       </Box>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {devicesSupportData.map((item, index) => (<Chip
-                          key={index}
-                          label={item}
-                          size="small"
-                          color="info"
-                          variant="outlined"
-                        />
-                        ))}
-                      </Box>
-                    </Box>
-                  </Grid>
-                );
+                    </Grid>
+                  );
+                }
+                return null;
               })()}
 
+              {/* Hiển thị thông báo nếu không có dữ liệu */}
               {(() => {
                 const allergiesData = parseHealthData(profile?.allergies);
                 const chronicDiseasesData = parseHealthData(profile?.chronicDiseases);
                 const devicesSupportData = parseHealthData(profile?.devicesSupport);
 
-                return (allergiesData.length === 0 && chronicDiseasesData.length === 0 && devicesSupportData.length === 0) && (
-                  <Grid item xs={12}>
-                    <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1, border: '1px solid #e0e0e0' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Không có thông tin sức khỏe bổ sung nào được ghi nhận
-                      </Typography>
-                    </Box>
-                  </Grid>
-                );
+                const hasAnyData = allergiesData.length > 0 || chronicDiseasesData.length > 0 || devicesSupportData.length > 0;
+
+                if (!hasAnyData) {
+                  return (
+                    <Grid item xs={12}>
+                      <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#f5f5f5', borderRadius: 1, border: '1px solid #e0e0e0' }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Không có thông tin sức khỏe bổ sung nào được ghi nhận
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  );
+                }
+                return null;
               })()}
             </Grid>
 

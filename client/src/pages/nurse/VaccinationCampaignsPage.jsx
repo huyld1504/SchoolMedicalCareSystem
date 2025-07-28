@@ -279,7 +279,7 @@ const VaccinationCampaignsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 

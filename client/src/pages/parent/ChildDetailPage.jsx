@@ -128,15 +128,51 @@ const ChildDetailPage = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setSelectedProfileId(null);
-    }; const hasHealthNotes = (profile) => {
-        // Xử lý data để loại bỏ dấu ngoặc vuông khi kiểm tra
-        const processedProfile = processHealthDataForDisplay(profile);
+    };
 
-        console.log('Processed profile for display:', processedProfile);
+    const hasHealthNotes = (profile) => {
+        // Kiểm tra xem có dữ liệu ghi chú sức khỏe hay không
+        const checkArray = (data) => {
+            if (!data) return false;
+            if (data === '1' || data === '' || data === '[]' || data === 'null') return false;
 
-        return (processedProfile.allergies && processedProfile.allergies !== '1' && processedProfile.allergies.trim() !== '') ||
-            (processedProfile.chronicDiseases && processedProfile.chronicDiseases !== '1' && processedProfile.chronicDiseases.trim() !== '') ||
-            (processedProfile.devicesSupport && processedProfile.devicesSupport !== '1' && processedProfile.devicesSupport.trim() !== '');
+            // Nếu là array
+            if (Array.isArray(data)) {
+                return data.length > 0 && data.some(item => item && item.toString().trim() !== '');
+            }
+
+            // Nếu là string
+            const dataStr = data.toString().trim();
+            if (dataStr === '' || dataStr === '1' || dataStr === '[]' || dataStr === 'null') return false;
+
+            // Thử parse JSON
+            try {
+                const parsed = JSON.parse(dataStr);
+                if (Array.isArray(parsed)) {
+                    return parsed.length > 0 && parsed.some(item => item && item.toString().trim() !== '');
+                }
+                return !!parsed;
+            } catch {
+                // Nếu không parse được, coi như string và kiểm tra có nội dung hay không
+                return dataStr.length > 0;
+            }
+        };
+
+        const hasAllergies = checkArray(profile?.allergies);
+        const hasChronicDiseases = checkArray(profile?.chronicDiseases);
+        const hasDevicesSupport = checkArray(profile?.devicesSupport);
+
+        console.log('Health notes check for profile:', profile._id, {
+            allergies: profile?.allergies,
+            hasAllergies,
+            chronicDiseases: profile?.chronicDiseases,
+            hasChronicDiseases,
+            devicesSupport: profile?.devicesSupport,
+            hasDevicesSupport,
+            result: hasAllergies || hasChronicDiseases || hasDevicesSupport
+        });
+
+        return hasAllergies || hasChronicDiseases || hasDevicesSupport;
     };
 
     const getEventLevelColor = (level) => {
@@ -205,7 +241,7 @@ const ChildDetailPage = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                                 Thông tin cơ bản
                             </Typography>
-                        </Box>                          
+                        </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
                             <Box sx={{ display: 'flex', flex: 1, gap: 4, flexWrap: 'wrap', minWidth: '300px' }}>
                                 <Box sx={{ flex: '1 1 150px' }}>
@@ -241,15 +277,6 @@ const ChildDetailPage = () => {
                                         sx={{ mt: 0.5 }}
                                     />
                                 </Box>
-                            </Box>                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                                {/* <Button
-                                    variant="outlined"
-                                    startIcon={<Edit />}
-                                    onClick={() => navigate(`/parent/children/${id}/edit`)}
-                                    size="small"
-                                >
-                                    Chỉnh sửa
-                                </Button> */}
                             </Box>
                         </Box>
                     </CardContent>
@@ -330,9 +357,10 @@ const ChildDetailPage = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <Typography variant="body2">
-                                                    {profile.vision || 'N/A'}
+                                                    {profile.vision || 'không có'}
                                                 </Typography>
-                                            </TableCell>                                                <TableCell>
+                                            </TableCell>
+                                            <TableCell>
                                                 {hasHealthNotes(profile) ? (
                                                     <Chip
                                                         label={getHealthNoteLabel(true)}
@@ -447,12 +475,12 @@ const ChildDetailPage = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <Typography variant="body2" sx={{ maxWidth: 200 }}>
-                                                        {event.description || 'N/A'}
+                                                        {event.description || 'Không có mô tả'}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Typography variant="body2" sx={{ maxWidth: 200 }}>
-                                                        {event.note || 'N/A'}
+                                                        {event.note || 'Không có ghi chú'}
                                                     </Typography>
                                                 </TableCell>                                                <TableCell>
                                                     <Chip
