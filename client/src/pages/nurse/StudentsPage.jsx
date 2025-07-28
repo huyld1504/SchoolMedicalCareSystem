@@ -242,22 +242,6 @@ const StudentsPage = () => {
                         Tổng số học sinh: {paginationInfo.total}
                     </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                        onClick={handleExport}
-                    >
-                        Xuất Excel
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        startIcon={<PrintIcon />}
-                        onClick={handlePrint}
-                    >
-                        In danh sách
-                    </Button>
-                </Box>
             </Box>
             
             {/* Filters and Search */}

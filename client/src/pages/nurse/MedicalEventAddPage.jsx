@@ -69,6 +69,18 @@ const MedicalEventAddPage = () => {
         imageURL: ''
     });
 
+    // Error state for form validation
+    const [errors, setErrors] = useState({
+        dateHappened: '',
+        type: '',
+        level: '',
+        description: '',
+        solution: '',
+        status: '',
+        studentsJoin: '',
+        imageURL: ''
+    });
+
     // Image upload state
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -154,6 +166,14 @@ const MedicalEventAddPage = () => {
             ...prev,
             [field]: value
         }));
+        
+        // Clear error when user starts typing
+        if (errors[field]) {
+            setErrors(prev => ({
+                ...prev,
+                [field]: ''
+            }));
+        }
     };
 
     const handleBack = () => {
@@ -176,7 +196,10 @@ const MedicalEventAddPage = () => {
                 // Validate file type
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                 if (!allowedTypes.includes(file.type)) {
-                    toast.error('Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)');
+                    setErrors(prev => ({
+                        ...prev,
+                        imageURL: 'Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)'
+                    }));
                     setUploadingImage(false);
                     return;
                 }
@@ -184,9 +207,20 @@ const MedicalEventAddPage = () => {
                 // Validate file size (max 5MB)
                 const maxSize = 5 * 1024 * 1024; // 5MB
                 if (file.size > maxSize) {
-                    toast.error('Kích thước file không được vượt quá 5MB');
+                    setErrors(prev => ({
+                        ...prev,
+                        imageURL: 'Kích thước file không được vượt quá 5MB'
+                    }));
                     setUploadingImage(false);
                     return;
+                }
+
+                // Clear any existing image error
+                if (errors.imageURL) {
+                    setErrors(prev => ({
+                        ...prev,
+                        imageURL: ''
+                    }));
                 }
 
                 const response = await cloudinaryApi.uploadImage(file);
@@ -201,13 +235,19 @@ const MedicalEventAddPage = () => {
                     }));
                     toast.success(response.message || 'Tải ảnh lên thành công');
                 } else {
-                    toast.error(response.message || 'Lỗi khi tải ảnh lên');
+                    setErrors(prev => ({
+                        ...prev,
+                        imageURL: response.message || 'Lỗi khi tải ảnh lên'
+                    }));
                 }
                 setUploadingImage(false);
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.message || 'Lỗi khi tải ảnh lên');
+            setErrors(prev => ({
+                ...prev,
+                imageURL: error.message || 'Lỗi khi tải ảnh lên'
+            }));
             setUploadingImage(false);
         } finally {
             // Reset input file
@@ -255,35 +295,69 @@ const MedicalEventAddPage = () => {
         try {
             setSaving(true);
 
-            // Validate required fields
-            const requiredFields = [
-                { field: 'dateHappened', message: 'ngày sự kiện' },
-                { field: 'type', message: 'loại sự kiện' },
-                { field: 'level', message: 'mức độ' },
-                { field: 'description', message: 'mô tả chi tiết' },
-                { field: 'solution', message: 'giải pháp/điều trị' },
-                { field: 'status', message: 'trạng thái' }
-            ];
+            // Clear previous errors
+            setErrors({
+                dateHappened: '',
+                type: '',
+                level: '',
+                description: '',
+                solution: '',
+                status: '',
+                studentsJoin: '',
+                imageURL: ''
+            });
 
-            for (const { field, message } of requiredFields) {
-                if (!formData[field] || (typeof formData[field] === 'string' && !formData[field].trim())) {
-                    toast.error(`Vui lòng điền ${message}`);
-                    return;
-                }
+            // Validate required fields
+            const newErrors = {};
+            let hasError = false;
+
+            if (!formData.dateHappened || !(formData.dateHappened instanceof Date) || isNaN(formData.dateHappened.getTime())) {
+                newErrors.dateHappened = 'Chọn ngày và giờ hợp lệ';
+                hasError = true;
+            }
+
+            if (!formData.type || !formData.type.trim()) {
+                newErrors.type = 'Chọn loại sự kiện';
+                hasError = true;
+            }
+
+            if (!formData.level || !formData.level.toString().trim()) {
+                newErrors.level = 'Chọn mức độ';
+                hasError = true;
+            }
+
+            if (!formData.description || !formData.description.trim()) {
+                newErrors.description = 'Nhập mô tả chi tiết';
+                hasError = true;
+            }
+
+            if (!formData.solution || !formData.solution.trim()) {
+                newErrors.solution = 'Nhập giải pháp/điều trị';
+                hasError = true;
+            }
+
+            if (!formData.status || !formData.status.trim()) {
+                newErrors.status = 'Chọn trạng thái';
+                hasError = true;
             }
 
             if (studentsJoin.length === 0 && !studentId) {
-                toast.error('Vui lòng thêm ít nhất một học sinh tham gia');
-                return;
+                newErrors.studentsJoin = 'Thêm ít nhất một học sinh ';
+                hasError = true;
             }
 
             if (studentId && studentsJoin.length === 0) {
-                toast.warning('Đang tải thông tin học sinh, vui lòng thử lại sau giây lát...');
-                return;
+                newErrors.studentsJoin = 'Đang tải thông tin học sinh, vui lòng thử lại sau giây lát...';
+                hasError = true;
             }
 
-            if (!(formData.dateHappened instanceof Date) || isNaN(formData.dateHappened.getTime())) {
-                toast.error('Vui lòng chọn ngày và giờ hợp lệ');
+            if (!formData.imageURL || !formData.imageURL.trim()) {
+                newErrors.imageURL = 'Chọn hình ảnh cho sự kiện';
+                hasError = true;
+            }
+
+            if (hasError) {
+                setErrors(newErrors);
                 return;
             }
 
@@ -386,18 +460,27 @@ const MedicalEventAddPage = () => {
         };
 
         setStudentsJoin(prev => [...prev, studentToAdd]);
+        
+        // Clear studentsJoin error when student is added
+        if (errors.studentsJoin) {
+            setErrors(prev => ({
+                ...prev,
+                studentsJoin: ''
+            }));
+        }
+        
         toast.success(`Đã thêm học sinh ${student.name} thành công`);
     }; const handleAddStudent = async () => {
         const searchCodeTerm = searchStudentCode.trim();
         const searchNameTerm = searchStudentName.trim();
 
         if (!searchCodeTerm && !searchNameTerm) {
-            toast.error('Vui lòng nhập mã học sinh hoặc tên học sinh');
+            toast.error('Nhập mã học sinh hoặc tên học sinh');
             return;
         }
 
         if (!foundStudent || foundStudent.length === 0) {
-            toast.error('Vui lòng tìm kiếm học sinh trước khi thêm');
+            toast.error('Tìm kiếm học sinh trước khi thêm');
             return;
         }
 
@@ -405,7 +488,7 @@ const MedicalEventAddPage = () => {
         if (foundStudent.length === 1) {
             handleAddSpecificStudent(foundStudent[0]);
         } else {
-            toast.info('Có nhiều học sinh được tìm thấy. Vui lòng chọn học sinh cụ thể từ danh sách bên dưới');
+            toast.info('Có nhiều học sinh được tìm thấy. Chọn học sinh cụ thể từ danh sách bên dưới');
         }
     };
     const handleRemoveStudent = (studentId) => {
@@ -488,8 +571,8 @@ const MedicalEventAddPage = () => {
                                                 textField: {
                                                     size: 'small',
                                                     fullWidth: true,
-                                                    error: !formData.dateHappened,
-                                                    helperText: !formData.dateHappened ? 'Vui lòng chọn ngày và giờ' : ''
+                                                    error: !!errors.dateHappened,
+                                                    helperText: errors.dateHappened
                                                 }
                                             }}
                                         />
@@ -567,8 +650,16 @@ const MedicalEventAddPage = () => {
                                                             setSearchStatus('');
                                                         }
                                                     }}
-                                                    sx={{ minWidth: 200 }}
+                                                    sx={{ 
+                                                        minWidth: 200,
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: errors.studentsJoin ? 'error.main' : 'primary.main'
+                                                            }
+                                                        }
+                                                    }}
                                                     placeholder="Nhập mã học sinh..."
+                                                    error={!!errors.studentsJoin}
                                                     onKeyPress={(e) => {
                                                         if (e.key === 'Enter') {
                                                             handleAddStudent();
@@ -598,8 +689,16 @@ const MedicalEventAddPage = () => {
                                                             setSearchStatus('');
                                                         }
                                                     }}
-                                                    sx={{ minWidth: 200 }}
+                                                    sx={{ 
+                                                        minWidth: 200,
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: errors.studentsJoin ? 'error.main' : 'primary.main'
+                                                            }
+                                                        }
+                                                    }}
                                                     placeholder="Nhập tên học sinh..."
+                                                    error={!!errors.studentsJoin}
                                                     onKeyPress={(e) => {
                                                         if (e.key === 'Enter') {
                                                             handleAddStudent();
@@ -709,11 +808,18 @@ const MedicalEventAddPage = () => {
                                                         Không tìm thấy học sinh với từ khóa tìm kiếm
                                                     </Typography>
                                                     <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
-                                                        Vui lòng kiểm tra lại mã học sinh hoặc tên học sinh
+                                                        Kiểm tra lại mã học sinh hoặc tên học sinh
                                                     </Typography>
                                                 </Box>
                                             )}
                                         </Box>
+                                        {errors.studentsJoin && (
+                                            <Box sx={{ mt: 1 }}>
+                                                <Typography variant="caption" color="error">
+                                                    {errors.studentsJoin}
+                                                </Typography>
+                                            </Box>
+                                        )}
                                     </TableCell>
                                 </TableRow>
 
@@ -722,7 +828,7 @@ const MedicalEventAddPage = () => {
                                         Loại sự kiện: *
                                     </TableCell>
                                     <TableCell>
-                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
+                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }} error={!!errors.type}>
                                             <InputLabel>Loại sự kiện</InputLabel>
                                             <Select
                                                 value={formData.type}
@@ -733,6 +839,11 @@ const MedicalEventAddPage = () => {
                                                 <MenuItem value="chấn thương">Chấn thương</MenuItem>
                                                 <MenuItem value="bệnh">Bệnh</MenuItem>
                                             </Select>
+                                            {errors.type && (
+                                                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
+                                                    {errors.type}
+                                                </Typography>
+                                            )}
                                         </FormControl>
                                     </TableCell>
                                 </TableRow>
@@ -742,7 +853,7 @@ const MedicalEventAddPage = () => {
                                         Mức độ: *
                                     </TableCell>
                                     <TableCell>
-                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
+                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }} error={!!errors.level}>
                                             <InputLabel>Mức độ</InputLabel>
                                             <Select
                                                 value={formData.level}
@@ -753,6 +864,11 @@ const MedicalEventAddPage = () => {
                                                 <MenuItem value="2">Trung bình</MenuItem>
                                                 <MenuItem value="1">Nhẹ</MenuItem>
                                             </Select>
+                                            {errors.level && (
+                                                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
+                                                    {errors.level}
+                                                </Typography>
+                                            )}
                                         </FormControl>
                                     </TableCell>
                                 </TableRow>
@@ -769,6 +885,8 @@ const MedicalEventAddPage = () => {
                                             onChange={(e) => handleInputChange('description', e.target.value)}
                                             fullWidth
                                             placeholder="Nhập mô tả chi tiết về sự kiện y tế..."
+                                            error={!!errors.description}
+                                            helperText={errors.description}
                                         />
                                     </TableCell>
                                 </TableRow>
@@ -785,6 +903,8 @@ const MedicalEventAddPage = () => {
                                             onChange={(e) => handleInputChange('solution', e.target.value)}
                                             fullWidth
                                             placeholder="Nhập giải pháp điều trị..."
+                                            error={!!errors.solution}
+                                            helperText={errors.solution}
                                         />
                                     </TableCell>
                                 </TableRow>
@@ -807,7 +927,7 @@ const MedicalEventAddPage = () => {
 
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
-                                        Hình ảnh sự kiện:
+                                        Hình ảnh sự kiện: *
                                     </TableCell>
                                     <TableCell>
                                         <Box>
@@ -865,6 +985,13 @@ const MedicalEventAddPage = () => {
                                                 </Box>
                                             )}
 
+                                            {/* Error message for image upload */}
+                                            {errors.imageURL && (
+                                                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                                                    {errors.imageURL}
+                                                </Typography>
+                                            )}
+
                                             {/* Upload guidelines */}
                                             <Typography variant="caption" sx={{
                                                 display: 'block',
@@ -883,6 +1010,15 @@ const MedicalEventAddPage = () => {
                                                     startIcon={<UploadIcon />}
                                                     disabled={uploadingImage}
                                                     sx={{ minWidth: 160 }}
+                                                    onClick={() => {
+                                                        // Clear image error when user clicks to upload
+                                                        if (errors.imageURL) {
+                                                            setErrors(prev => ({
+                                                                ...prev,
+                                                                imageURL: ''
+                                                            }));
+                                                        }
+                                                    }}
                                                 >
                                                     {uploadingImage ? 'Đang tải...' : 'Chọn ảnh'}
                                                     <input
@@ -903,7 +1039,7 @@ const MedicalEventAddPage = () => {
                                         Trạng thái: *
                                     </TableCell>
                                     <TableCell>
-                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }}>
+                                        <FormControl size="small" sx={{ minWidth: 150, maxWidth: 250 }} error={!!errors.status}>
                                             <InputLabel>Trạng thái</InputLabel>
                                             <Select
                                                 value={formData.status}
@@ -914,6 +1050,11 @@ const MedicalEventAddPage = () => {
                                                 <MenuItem value="Đang xử lí">Đang xử lí</MenuItem>
                                                 <MenuItem value="Chờ xử lí">Chờ xử lí</MenuItem>
                                             </Select>
+                                            {errors.status && (
+                                                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
+                                                    {errors.status}
+                                                </Typography>
+                                            )}
                                         </FormControl>
                                     </TableCell>
                                 </TableRow>
