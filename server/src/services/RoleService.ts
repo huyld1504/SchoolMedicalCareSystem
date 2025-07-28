@@ -5,7 +5,7 @@ class RoleService {
   async add(name: string): Promise<void> {
     const roleExists = await Role.exists({ name });
     if (roleExists) {
-      throw new ApplicationError("Role already exists");
+      throw new ApplicationError("Vai trò đã tồn tại");
     }
     Role.create({ name });
   }
@@ -13,7 +13,7 @@ class RoleService {
   async getAll(): Promise<IRole[]> {
     const roles = await Role.find();
     if (!roles || roles.length === 0) {
-      throw new ApplicationError("No roles found");
+      throw new ApplicationError("Không tìm thấy vai trò");
     }
     return roles;
   }

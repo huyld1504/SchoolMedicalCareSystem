@@ -25,12 +25,12 @@ import { IReq, IRes } from "./common/types";
  */
 async function getUserRole(req: IReq): Promise<string> {
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const role = await Role.findById(req.user.roleId);
   if (!role) {
-    throw new ValidationError("User role not found");
+    throw new ValidationError("Không tìm thấy vai trò người dùng");
   }
 
   return role.name;
@@ -51,14 +51,14 @@ async function createCampaign(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const campaign = await VaccinationService.createCampaign(value, req.user.id.toString());
 
   const response = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "Vaccination campaign created successfully",
+    "Tạo chiến dịch tiêm chủng thành công",
     campaign
   );
   res.status(HttpStatusCodes.CREATED).json(response);
@@ -75,7 +75,7 @@ async function updateCampaign(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const { campaignId } = req.params;
@@ -87,7 +87,7 @@ async function updateCampaign(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Vaccination campaign updated successfully",
+    "Cập nhật chiến dịch tiêm chủng thành công",
     campaign
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -104,7 +104,7 @@ async function getAllCampaigns(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const userRole = await getUserRole(req);
@@ -121,7 +121,7 @@ async function getAllCampaigns(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Vaccination campaigns retrieved successfully",
+    "Lấy danh sách chiến dịch tiêm chủng thành công",
     campaigns
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -132,7 +132,7 @@ async function getAllCampaigns(req: IReq, res: IRes) {
  */
 async function getCampaignById(req: IReq, res: IRes) {
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const userRole = await getUserRole(req);
@@ -146,7 +146,7 @@ async function getCampaignById(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Vaccination campaign retrieved successfully",
+    "Lấy thông tin chiến dịch tiêm chủng thành công",
     campaign
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -163,7 +163,7 @@ async function addStudentsToCampaign(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const { campaignId } = req.params;
@@ -177,7 +177,7 @@ async function addStudentsToCampaign(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Students added to campaign successfully"
+    "Thêm học sinh vào chiến dịch thành công"
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
@@ -193,7 +193,7 @@ async function searchCampaigns(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const userRole = await getUserRole(req);
@@ -207,7 +207,7 @@ async function searchCampaigns(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Vaccination campaigns searched successfully",
+    "Tìm kiếm chiến dịch tiêm chủng thành công",
     campaigns
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -228,7 +228,7 @@ async function getCampaignParticipations(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const userRole = await getUserRole(req);
@@ -248,7 +248,7 @@ async function getCampaignParticipations(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Campaign participations retrieved successfully",
+    "Lấy danh sách tham gia chiến dịch thành công",
     participations
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -265,7 +265,7 @@ async function parentConsent(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const { participationId } = req.params;
@@ -280,7 +280,7 @@ async function parentConsent(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Parent consent recorded successfully"
+    "Ghi nhận đồng ý của phụ huynh thành công"
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
@@ -296,8 +296,9 @@ async function recordVaccination(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
-  }  const { participationId } = req.params;
+    throw new ValidationError("Cần xác thực người dùng");
+  }
+  const { participationId } = req.params;
   const { status, vaccinationDate, note } = value;
 
   await VaccinationService.recordVaccination(
@@ -310,7 +311,7 @@ async function recordVaccination(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Vaccination result recorded successfully"
+    "Ghi nhận kết quả tiêm chủng thành công"
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
@@ -326,7 +327,7 @@ async function searchParticipations(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const queryBuilder = new VaccinationParticipationQueryBuilder(value);
@@ -335,7 +336,7 @@ async function searchParticipations(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Vaccination participations searched successfully",
+    "Tìm kiếm tham gia tiêm chủng thành công",
     participations
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -352,7 +353,7 @@ async function searchParentParticipations(req: IReq, res: IRes) {
   }
 
   if (!req.user) {
-    throw new ValidationError("User authentication required");
+    throw new ValidationError("Cần xác thực người dùng");
   }
 
   const queryBuilder = new VaccinationParticipationQueryBuilder(value);
@@ -364,7 +365,7 @@ async function searchParentParticipations(req: IReq, res: IRes) {
 
   const response = new ApiResponse(
     HttpStatusCodes.OK,
-    "Parent participations searched successfully",
+    "Tìm kiếm tham gia của phụ huynh thành công",
     participations
   );
   res.status(HttpStatusCodes.OK).json(response);
