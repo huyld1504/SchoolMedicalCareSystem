@@ -9,23 +9,23 @@ export const medicalRecordSchema = Joi.object({
           .length(24)
           .required()
           .messages({
-            "string.hex": "MedicalOrderDetailId must be a valid ObjectId",
-            "string.length": "MedicalOrderDetailId must be 24 characters long",
-            "any.required": "MedicalOrderDetailId is required",
+            "string.hex": "ID chi tiết đơn thuốc phải là ObjectId hợp lệ",
+            "string.length": "ID chi tiết đơn thuốc phải có độ dài 24 ký tự",
+            "any.required": "ID chi tiết đơn thuốc là bắt buộc",
           }),
         quantity: Joi.number().integer().min(1).required().messages({
-          "number.base": "Quantity must be a number",
-          "number.integer": "Quantity must be an integer",
-          "number.min": "Quantity must be at least 1",
-          "any.required": "Quantity is required",
+          "number.base": "Số lượng phải là một số",
+          "number.integer": "Số lượng phải là số nguyên",
+          "number.min": "Số lượng phải ít nhất là 1",
+          "any.required": "Số lượng là bắt buộc",
         }),
       })
     )
     .min(1)
     .required()
     .messages({
-      "array.base": "Items must be an array",
-      "array.min": "At least one item is required",
-      "any.required": "Items are required",
+      "array.base": "Danh sách mục phải là một mảng",
+      "array.min": "Ít nhất phải có một mục",
+      "any.required": "Danh sách mục là bắt buộc",
     }),
 });
