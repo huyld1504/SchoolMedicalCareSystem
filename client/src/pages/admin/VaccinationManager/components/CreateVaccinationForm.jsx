@@ -29,6 +29,11 @@ const initialState = {
   endDate: "",
   status: "",
 };
+const formatForDateInput = (date) => {
+  if (date) {
+    return new Date(date).toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
+  } 
+}
 
 const statusOptions = [
   { value: "planned", label: "Kế hoạch" },

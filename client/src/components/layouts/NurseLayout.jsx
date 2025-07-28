@@ -230,14 +230,8 @@ const NurseLayout = () => {
             }}
           ></Typography>
 
-          {/* Notifications */}
-          <Tooltip title="Thông báo">
-            <IconButton sx={{ mr: 1, color: "text.primary" }}>
-              <Badge badgeContent={3} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
+          
+         
 
           {/* Profile Menu */}
           <Tooltip title="Tài khoản">
