@@ -277,10 +277,12 @@ const MedicalEventEditPage = () => {
         }
     };
 
+    // Hàm xử lý khi người dùng nhấn nút "Cập nhật"
     const handleSubmit = async () => {
         try {
-            setSaving(true);
-            // Validate required fields (tất cả trừ ghi chú)
+            setSaving(true); // Bật trạng thái loading
+
+            // Các trường bắt buộc cần được điền
             const requiredFields = [
                 { field: 'dateHappened', message: 'ngày sự kiện' },
                 { field: 'type', message: 'loại sự kiện' },
@@ -290,7 +292,7 @@ const MedicalEventEditPage = () => {
                 { field: 'status', message: 'trạng thái' }
             ];
 
-            // Kiểm tra các trường bắt buộc
+            // Kiểm tra xem tất cả các trường bắt buộc đã được điền chưa
             for (const { field, message } of requiredFields) {
                 if (!formData[field] || (typeof formData[field] === 'string' && !formData[field].trim())) {
                     toast.error(`Vui lòng điền ${message}`);
@@ -298,21 +300,21 @@ const MedicalEventEditPage = () => {
                 }
             }
 
-            // Kiểm tra ít nhất một học sinh tham gia
+            // Phải có ít nhất một học sinh tham gia sự kiện
             if (studentsJoin.length === 0) {
                 toast.error('Vui lòng thêm ít nhất một học sinh tham gia');
                 return;
             }
 
-            // Validate date is valid
+            // Kiểm tra ngày xảy ra sự kiện có hợp lệ không
             if (!(formData.dateHappened instanceof Date) || isNaN(formData.dateHappened.getTime())) {
                 toast.error('Vui lòng chọn ngày và giờ hợp lệ');
                 return;
             }
 
-            // Prepare data for API
+            // Chuẩn bị dữ liệu gửi lên server
             const updateData = {
-                dateHappened: formData.dateHappened.toISOString(),
+                dateHappened: formData.dateHappened.toISOString(), // định dạng lại ngày
                 type: formData.type,
                 level: parseInt(formData.level),
                 description: formData.description,
@@ -320,33 +322,39 @@ const MedicalEventEditPage = () => {
                 note: formData.note,
                 status: formData.status,
                 studentJoin: studentsJoin.map(student => ({
-                    studentId: student.id
+                    studentId: student.id // chỉ cần ID học sinh
                 })),
-                imageURL: formData.imageURL || ""
+                imageURL: formData.imageURL || "" // nếu có ảnh kèm theo
             };
 
             console.log('Updating medical event with data:', updateData);
+
+            // Gọi API để cập nhật dữ liệu
             const response = await medicalEventAPI.update(eventId, updateData);
             console.log('Update response:', response);
 
+            // Nếu cập nhật thành công
             if (response.isSuccess) {
                 toast.success('Cập nhật sự kiện y tế thành công');
 
+                // Điều hướng về danh sách sự kiện y tế theo học sinh nếu có, nếu không thì về danh sách chung
                 if (studentId) {
                     navigate(`/nurse/medical-events/${studentId}`);
                 } else {
                     navigate('/nurse/medical-events');
                 }
             } else {
+                // Hiển thị lỗi nếu API trả về không thành công
                 toast.error(response.message || 'Lỗi khi cập nhật sự kiện y tế');
             }
         } catch (error) {
             console.error('Error updating medical event:', error);
             toast.error('Lỗi khi cập nhật sự kiện y tế');
         } finally {
-            setSaving(false);
+            setSaving(false); // Tắt trạng thái loading
         }
     };
+
 
     const handleBack = () => {
         if (studentId) {
@@ -356,57 +364,69 @@ const MedicalEventEditPage = () => {
         }
     };
 
-    // Functions để quản lý học sinh tham gia
+    // Hàm tìm kiếm sinh viên dựa trên từ khóa và loại tìm kiếm (mặc định là 'general')
     const handleSearchStudent = async (searchTerm, searchType = 'general') => {
+        // Nếu từ khóa tìm kiếm rỗng sau khi loại bỏ khoảng trắng
         if (!searchTerm.trim()) {
-            setFoundStudent([]);
-            setSearchStatus('');
-            return;
+            setFoundStudent([]);     // Xóa danh sách sinh viên đã tìm được
+            setSearchStatus('');     // Đặt lại trạng thái tìm kiếm
+            return;                  // Thoát khỏi hàm
         }
 
         try {
-            setSearchStatus('searching');
+            setSearchStatus('searching'); // Cập nhật trạng thái đang tìm kiếm
 
             console.log(`Searching for student with ${searchType}:`, searchTerm.trim());
+
+            // Gọi API để lấy danh sách sinh viên dựa trên từ khóa
             const response = await studentsApi.getAllStudents({
-                keyword: searchTerm.trim(),
-                page: 1,
-                populate: 'userId'
+                keyword: searchTerm.trim(), // Từ khóa tìm kiếm
+                page: 1,                    // Trang số 1 (có thể dùng phân trang)
+                populate: 'userId'          // Lấy thêm thông tin từ bảng liên kết (userId)
             });
 
             console.log('API response:', response);
 
+            // Lấy dữ liệu sinh viên từ phản hồi
+            // Ưu tiên lấy từ response.data.records, nếu không có thì lấy trực tiếp response.data
             const studentsData = response.data?.records || response.data || [];
 
+            // Nếu phản hồi thành công và có sinh viên
             if (response.isSuccess && studentsData.length > 0) {
                 console.log('Students found:', studentsData);
-                setFoundStudent(studentsData);
-                setSearchStatus('found');
+                setFoundStudent(studentsData);   // Cập nhật danh sách sinh viên
+                setSearchStatus('found');        // Đặt trạng thái là "đã tìm thấy"
             } else {
+                // Nếu không tìm thấy sinh viên hoặc API không thành công
                 console.log('No students found or API error:', response);
-                setFoundStudent([]);
-                setSearchStatus('not-found');
+                setFoundStudent([]);             // Xóa danh sách sinh viên
+                setSearchStatus('not-found');    // Cập nhật trạng thái "không tìm thấy"
             }
         } catch (error) {
+            // Nếu có lỗi xảy ra trong quá trình gọi API
             console.error('Error finding student:', error);
-            setFoundStudent([]);
-            setSearchStatus('not-found');
+            setFoundStudent([]);                 // Xóa danh sách sinh viên
+            setSearchStatus('not-found');        // Cập nhật trạng thái "không tìm thấy"
         }
     };
 
+
+    // Hàm xử lý thêm một học sinh cụ thể vào danh sách tham gia sự kiện
     const handleAddSpecificStudent = (student) => {
+        // Kiểm tra thông tin học sinh có hợp lệ không
         if (!student) {
             toast.error('Thông tin học sinh không hợp lệ');
             return;
         }
 
+        // Kiểm tra học sinh đã có trong danh sách chưa (dựa trên ID)
         const existingStudent = studentsJoin.find(s => s.id === (student._id || student.id));
         if (existingStudent) {
             toast.error('Học sinh này đã có trong danh sách');
             return;
         }
 
-        // Create a complete student object with parent information
+        // Tạo đối tượng học sinh đầy đủ, bao gồm thông tin phụ huynh
         const studentToAdd = {
             id: student._id || student.id,
             name: student.name || '',
@@ -419,41 +439,61 @@ const MedicalEventEditPage = () => {
             parentPhone: student.userId?.phone || 'Không có thông tin',
         };
 
+        // Cập nhật danh sách học sinh tham gia bằng cách thêm học sinh mới
         setStudentsJoin(prev => [...prev, studentToAdd]);
+
+        // Thông báo thành công
         toast.success(`Đã thêm học sinh ${student.name} thành công`);
     };
 
+
+    // Hàm xử lý thêm học sinh vào sự kiện y tế
     const handleAddStudent = async () => {
+        // Chuẩn hóa chuỗi tìm kiếm (loại bỏ khoảng trắng đầu/cuối)
         const searchCodeTerm = searchStudentCode.trim();
         const searchNameTerm = searchStudentName.trim();
 
+        // Nếu không nhập mã hoặc tên học sinh, hiển thị lỗi
         if (!searchCodeTerm && !searchNameTerm) {
             toast.error('Vui lòng nhập mã học sinh hoặc tên học sinh');
             return;
         }
 
+        // Nếu chưa tìm thấy học sinh nào, yêu cầu tìm kiếm trước
         if (!foundStudent || foundStudent.length === 0) {
             toast.error('Vui lòng tìm kiếm học sinh trước khi thêm');
             return;
         }
 
-        // If only one student found, add that student
+        // Nếu chỉ tìm thấy đúng 1 học sinh, thêm học sinh đó
         if (foundStudent.length === 1) {
             handleAddSpecificStudent(foundStudent[0]);
         } else {
+            // Nếu có nhiều học sinh, yêu cầu chọn cụ thể
             toast.info('Có nhiều học sinh được tìm thấy. Vui lòng chọn học sinh cụ thể từ danh sách bên dưới');
         }
     };
 
+    // Hàm xóa học sinh khỏi danh sách đã chọn
     const handleRemoveStudent = (studentId) => {
+        // Loại bỏ học sinh có id khớp với studentId khỏi danh sách studentsJoin
         setStudentsJoin(prev => prev.filter(s => s.id !== studentId));
+
+        // Hiển thị thông báo xóa thành công
         toast.success('Đã xóa học sinh khỏi danh sách');
     };
 
+
+    // Hàm đặt xóa bộ lọc
     const handleResetSearch = () => {
+        // Xóa nội dung trong ô tìm kiếm mã học sinh và tên học sinh
         setSearchStudentCode('');
         setSearchStudentName('');
+
+        // Xóa kết quả học sinh đã tìm được
         setFoundStudent([]);
+
+        // Xóa trạng thái tìm kiếm (nếu có hiển thị trạng thái như "đang tìm...", "tìm thấy", v.v.)
         setSearchStatus('');
     };
 

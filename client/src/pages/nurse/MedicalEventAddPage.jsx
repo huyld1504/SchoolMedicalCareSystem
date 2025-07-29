@@ -42,22 +42,36 @@ import medicalEventAPI from '../../api/medicalEventApi';
 import studentsApi from '../../api/studentsApi';
 import cloudinaryApi from '../../api/cloudinaryApi';
 
+// Component chính để thêm sự kiện y tế
 const MedicalEventAddPage = () => {
+    // Lấy studentId từ URL nếu có, ktra xem trang hiện tại có phải là trang thêm sự kiện y tế cho học sinh cụ thể không
     const { studentId } = useParams();
     const navigate = useNavigate();
 
-    const [studentInfo, setStudentInfo] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);    // State để quản lý học sinh tham gia
+    // State chính
+    const [studentInfo, setStudentInfo] = useState(null);       // Thông tin học sinh (nếu có studentId)
+    const [loading, setLoading] = useState(true);               // Trạng thái đang tải
+    const [saving, setSaving] = useState(false);                // Trạng thái đang lưu
+
+    // Quản lý học sinh tham gia sự kiện
     const [studentsJoin, setStudentsJoin] = useState([]);
     const [searchStudentCode, setSearchStudentCode] = useState('');
     const [searchStudentName, setSearchStudentName] = useState('');
     const [foundStudent, setFoundStudent] = useState([]);
     const [searchStatus, setSearchStatus] = useState('');
     const [searchTimeout, setSearchTimeout] = useState(null);
-    const [imagePublicId, setImagePublicId] = useState(null);
 
-    // Form state
+    // Quản lý ảnh
+    const [imagePublicId, setImagePublicId] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+
+    // Quản lý modal hiển thị ảnh
+    const [openImageModal, setOpenImageModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+
+    // Dữ liệu form sự kiện
     const [formData, setFormData] = useState({
         dateHappened: new Date(),
         type: '',
@@ -69,7 +83,7 @@ const MedicalEventAddPage = () => {
         imageURL: ''
     });
 
-    // Error state for form validation
+    // Quản lý lỗi các trường nhập
     const [errors, setErrors] = useState({
         dateHappened: '',
         type: '',
@@ -81,79 +95,42 @@ const MedicalEventAddPage = () => {
         imageURL: ''
     });
 
-    // Image upload state
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
-    const [uploadingImage, setUploadingImage] = useState(false);
-
-    // Image modal state
-    const [openImageModal, setOpenImageModal] = useState(false);
-    const [modalImageUrl, setModalImageUrl] = useState('');
+    // Load thông tin nếu có studentId
     useEffect(() => {
         const loadData = async () => {
             if (studentId) {
-                await loadStudentInfo();
                 await addStudentToList();
             }
             setLoading(false);
         };
         loadData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [studentId]);
 
-    const loadStudentInfo = async () => {
-        try {
-            if (studentId) {
-                const response = await studentsApi.getAllStudents({
-                    keyword: '',
-                    page: 1,
-                    populate: 'userId' // Thêm populate để lấy thông tin user
-                });
-
-                if (response.isSuccess && response.data) {
-                    const studentsData = response.data?.records || response.data || [];
-                    const student = studentsData.find(s => s._id === studentId || s.id === studentId);
-
-                    if (student) {
-                        // Set student info without redundant logging
-                        setStudentInfo(student);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error loading student info:', error);
-        }
-    };
-
+    // Thêm học sinh vào danh sách tham gia
     const addStudentToList = async () => {
         try {
-            if (studentId) {
-                const response = await studentsApi.getAllStudents({
-                    keyword: '',
-                    page: 1,
-                    populate: 'userId'
-                });
+            const response = await studentsApi.getAllStudents({
+                keyword: '',
+                page: 1,
+                populate: 'userId'
+            });
 
-                if (response.isSuccess && response.data) {
-                    const studentsData = response.data?.records || response.data || [];
-                    const student = studentsData.find(s => s._id === studentId || s.id === studentId);
+            if (response.isSuccess) {
+                const studentsData = response.data?.records || response.data || [];
+                const student = studentsData.find(s => s._id === studentId || s.id === studentId);
 
-                    if (student) {
-                        // Create student data without redundant logging
-                        const studentData = {
-                            id: student._id || student.id,
-                            name: student.name || '',
-                            studentCode: student.studentCode || '',
-                            gender: student.gender || '',
-                            userId: student.userId,
-                            medicalConverageId: student.medicalConverageId,
-                            parentName: student.userId?.name || 'N/A',
-                            parentEmail: student.userId?.email || 'N/A'
-                        };
-
-                        console.log('StudentData userId details:', student.userId);
-                        setStudentsJoin([studentData]);
-                    }
+                if (student) {
+                    const studentData = {
+                        id: student._id || student.id,
+                        name: student.name || '',
+                        studentCode: student.studentCode || '',
+                        gender: student.gender || '',
+                        userId: student.userId,
+                        medicalConverageId: student.medicalConverageId,
+                        parentName: student.userId?.name || 'Không có thông tin',
+                        parentEmail: student.userId?.email || 'Không có thông tin',
+                    };
+                    setStudentsJoin([studentData]);
                 }
             }
         } catch (error) {
@@ -161,243 +138,189 @@ const MedicalEventAddPage = () => {
         }
     };
 
+    // Xử lý thay đổi dữ liệu form
     const handleInputChange = (field, value) => {
+        //cập nhật giá trị mới cho một trường cụ thể trong form
+        // đồng thời giữ nguyên các giá trị khác trong form
+        setFormData(prev => ({ ...prev, [field]: value }));
+        if (errors[field]) {
+            // Kiểm tra nếu trường đó đang có lỗi 
+            setErrors(prev => ({ ...prev, [field]: '' })); //Xóa lỗi của trường đó (gán chuỗi rỗng), khi người dùng nhập lại
+        }
+    };
+
+    // Quay lại trang trước
+    const handleBack = () => {
+        navigate(studentId ? `/nurse/medical-events/${studentId}` : '/nurse/medical-events');
+    };
+
+    // Upload ảnh từ người dùng
+    const handleImageSelect = async (event) => {
+        // Lấy file ảnh đầu tiên được chọn
+        const file = event.target.files[0];
+        if (!file) return; // Nếu không có file nào thì thoát luôn
+
+        // Hiển thị trạng thái đang tải ảnh
+        setUploadingImage(true);
+        toast.info('Đang tải ảnh lên...');
+
+        // Kiểm tra định dạng ảnh có hợp lệ không
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            // Nếu không đúng định dạng thì hiển thị lỗi và dừng lại
+            setErrors(prev => ({ ...prev, imageURL: 'Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)' }));
+            setUploadingImage(false);
+            return;
+        }
+
+        // Kiểm tra kích thước ảnh (tối đa 5MB)
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            // Nếu file quá lớn thì hiển thị lỗi và dừng lại
+            setErrors(prev => ({ ...prev, imageURL: 'Kích thước file không được vượt quá 5MB' }));
+            setUploadingImage(false);
+            return;
+        }
+
+        // Gọi API (ví dụ Cloudinary) để upload ảnh
+        const response = await cloudinaryApi.uploadImage(file);
+
+        if (response.success) {
+            // Nếu upload thành công:
+            // - Lưu file đã chọn
+            // - Hiển thị ảnh preview
+            // - Lưu publicId để sau này có thể xoá
+            // - Cập nhật formData với URL ảnh
+            setSelectedImage(file);
+            setImagePreview(response.data.imageUrl);
+            setImagePublicId(response.data.publicId);
+            setFormData(prev => ({ ...prev, imageURL: response.data.imageUrl }));
+            toast.success('Tải ảnh thành công');
+        } else {
+            // Nếu upload thất bại thì hiển thị lỗi
+            setErrors(prev => ({ ...prev, imageURL: response.message || 'Lỗi khi tải ảnh' }));
+        }
+
+        // Kết thúc trạng thái tải ảnh
+        setUploadingImage(false);
+
+        // Reset lại input file để cho phép chọn lại cùng một ảnh nếu cần
+        document.getElementById('image-upload-input').value = '';
+    };
+
+
+    // Xóa ảnh đã chọn và upload
+    const handleRemoveImage = async () => {
+        // Gọi API để xóa ảnh khỏi Cloudinary thông qua publicId
+        const response = await cloudinaryApi.deleteImage(imagePublicId);
+
+        // Nếu xóa thành công thì thông báo thành công
+        if (response.success) toast.success('Xóa ảnh thành công');
+
+        // Reset lại các state liên quan đến ảnh
+        setSelectedImage(null);           // Xóa file đã chọn
+        setImagePreview(null);            // Xóa ảnh hiển thị preview
         setFormData(prev => ({
             ...prev,
-            [field]: value
+            imageURL: ''                  // Xóa URL ảnh trong formData
         }));
-        
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({
-                ...prev,
-                [field]: ''
-            }));
-        }
+
+        // Reset input file để có thể chọn lại ảnh khác
+        document.getElementById('image-upload-input').value = '';
     };
 
-    const handleBack = () => {
-        if (studentId) {
-            navigate(`/nurse/medical-events/${studentId}`);
-        } else {
-            navigate('/nurse/medical-events');
-        }
-    };
 
-    // Image upload functions
-    const handleImageSelect = async (event) => {
-        try {
-            const file = event.target.files[0];
-            if (file) {
-                // Set loading state
-                setUploadingImage(true);
-                toast.info('Đang tải ảnh lên...');
-
-                // Validate file type
-                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-                if (!allowedTypes.includes(file.type)) {
-                    setErrors(prev => ({
-                        ...prev,
-                        imageURL: 'Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)'
-                    }));
-                    setUploadingImage(false);
-                    return;
-                }
-
-                // Validate file size (max 5MB)
-                const maxSize = 5 * 1024 * 1024; // 5MB
-                if (file.size > maxSize) {
-                    setErrors(prev => ({
-                        ...prev,
-                        imageURL: 'Kích thước file không được vượt quá 5MB'
-                    }));
-                    setUploadingImage(false);
-                    return;
-                }
-
-                // Clear any existing image error
-                if (errors.imageURL) {
-                    setErrors(prev => ({
-                        ...prev,
-                        imageURL: ''
-                    }));
-                }
-
-                const response = await cloudinaryApi.uploadImage(file);
-                console.log(response);
-                if (response.success) {
-                    setSelectedImage(file);
-                    setImagePreview(response.data.imageUrl);
-                    setImagePublicId(response.data.publicId);
-                    setFormData(prev => ({
-                        ...prev,
-                        imageURL: response.data.imageUrl // Set the image URL in formData
-                    }));
-                    toast.success(response.message || 'Tải ảnh lên thành công');
-                } else {
-                    setErrors(prev => ({
-                        ...prev,
-                        imageURL: response.message || 'Lỗi khi tải ảnh lên'
-                    }));
-                }
-                setUploadingImage(false);
-            }
-        } catch (error) {
-            console.log(error);
-            setErrors(prev => ({
-                ...prev,
-                imageURL: error.message || 'Lỗi khi tải ảnh lên'
-            }));
-            setUploadingImage(false);
-        } finally {
-            // Reset input file
-            const fileInput = document.getElementById('image-upload-input');
-            if (fileInput) {
-                fileInput.value = '';
-            }
-        }
-    };
-    const handleRemoveImage = async () => {
-        try {
-            const response = await cloudinaryApi.deleteImage(imagePublicId);
-            console.log(response);
-            if (response.success) {
-                toast.success(response.message || 'Xóa ảnh thành công');
-            }
-            setSelectedImage(null);
-            setImagePreview(null);
-            setFormData(prev => ({
-                ...prev,
-                imageURL: '' // Clear the image URL from formData
-            }));
-            // Reset input file
-            const fileInput = document.getElementById('image-upload-input');
-            if (fileInput) {
-                fileInput.value = '';
-            }
-        } catch (error) {
-            toast.error(error.message || 'Lỗi khi xóa ảnh');
-        }
-    };
-
-    // Image modal handlers
+    // Khi người dùng click vào ảnh, hiển thị ảnh trong modal
     const handleImageClick = (imageUrl) => {
-        setModalImageUrl(imageUrl);
-        setOpenImageModal(true);
+        setModalImageUrl(imageUrl);      // Lưu URL ảnh vào state để hiển thị trong modal
+        setOpenImageModal(true);         // Mở modal hiển thị ảnh
     };
 
+    // Đóng modal hiển thị ảnh
     const handleCloseImageModal = () => {
-        setOpenImageModal(false);
-        setModalImageUrl('');
+        setOpenImageModal(false);        // Tắt modal
+        setModalImageUrl('');            // Xóa URL ảnh khỏi state
     };
 
+    // Gửi dữ liệu form lên server
     const handleSubmit = async () => {
-        try {
-            setSaving(true);
+        setSaving(true);
+        setErrors({ ...errors }); // Reset errors
 
-            // Clear previous errors
-            setErrors({
-                dateHappened: '',
-                type: '',
-                level: '',
-                description: '',
-                solution: '',
-                status: '',
-                studentsJoin: '',
-                imageURL: ''
-            });
+        const newErrors = {};
+        let hasError = false;
 
-            // Validate required fields
-            const newErrors = {};
-            let hasError = false;
-
-            if (!formData.dateHappened || !(formData.dateHappened instanceof Date) || isNaN(formData.dateHappened.getTime())) {
-                newErrors.dateHappened = 'Chọn ngày và giờ hợp lệ';
-                hasError = true;
-            }
-
-            if (!formData.type || !formData.type.trim()) {
-                newErrors.type = 'Chọn loại sự kiện';
-                hasError = true;
-            }
-
-            if (!formData.level || !formData.level.toString().trim()) {
-                newErrors.level = 'Chọn mức độ';
-                hasError = true;
-            }
-
-            if (!formData.description || !formData.description.trim()) {
-                newErrors.description = 'Nhập mô tả chi tiết';
-                hasError = true;
-            }
-
-            if (!formData.solution || !formData.solution.trim()) {
-                newErrors.solution = 'Nhập giải pháp/điều trị';
-                hasError = true;
-            }
-
-            if (!formData.status || !formData.status.trim()) {
-                newErrors.status = 'Chọn trạng thái';
-                hasError = true;
-            }
-
-            if (studentsJoin.length === 0 && !studentId) {
-                newErrors.studentsJoin = 'Thêm ít nhất một học sinh ';
-                hasError = true;
-            }
-
-            if (studentId && studentsJoin.length === 0) {
-                newErrors.studentsJoin = 'Đang tải thông tin học sinh, vui lòng thử lại sau giây lát...';
-                hasError = true;
-            }
-
-            if (!formData.imageURL || !formData.imageURL.trim()) {
-                newErrors.imageURL = 'Chọn hình ảnh cho sự kiện';
-                hasError = true;
-            }
-
-            if (hasError) {
-                setErrors(newErrors);
-                return;
-            }
-
-            // Prepare data for API
-            const createData = {
-                dateHappened: formData.dateHappened.toISOString(),
-                type: formData.type,
-                level: parseInt(formData.level),
-                description: formData.description,
-                solution: formData.solution,
-                note: formData.note,
-                status: formData.status,
-                studentJoin: studentsJoin.map(student => ({
-                    studentId: student.id
-                })),
-                imageURL: formData.imageURL
-            };
-
-            console.log('Creating medical event with data:', createData);
-            const response = await medicalEventAPI.create(createData);
-            console.log('Create response:', response);
-
-            if (response.isSuccess) {
-                toast.success('Tạo sự kiện y tế thành công');
-
-                if (studentId) {
-                    navigate(`/nurse/medical-events/${studentId}`);
-                } else {
-                    navigate('/nurse/medical-events');
-                }
-            } else {
-                toast.error(response.message || 'Lỗi khi tạo sự kiện y tế');
-            }
-        } catch (error) {
-            console.error('Error creating medical event:', error);
-            toast.error('Lỗi khi tạo sự kiện y tế');
-        } finally {
-            setSaving(false);
+        // Validate từng trường
+        if (!formData.dateHappened || isNaN(new Date(formData.dateHappened))) {
+            newErrors.dateHappened = 'Chọn ngày và giờ hợp lệ';
+            hasError = true;
         }
-    };    // Functions để quản lý học sinh tham gia
+
+        if (!formData.type.trim()) {
+            newErrors.type = 'Chọn loại sự kiện';
+            hasError = true;
+        }
+
+        if (!formData.level.toString().trim()) {
+            newErrors.level = 'Chọn mức độ';
+            hasError = true;
+        }
+
+        if (!formData.description.trim()) {
+            newErrors.description = 'Nhập mô tả chi tiết';
+            hasError = true;
+        }
+
+        if (!formData.solution.trim()) {
+            newErrors.solution = 'Nhập giải pháp';
+            hasError = true;
+        }
+
+        if (!formData.status.trim()) {
+            newErrors.status = 'Chọn trạng thái';
+            hasError = true;
+        }
+
+        if (studentsJoin.length === 0 && !studentId) {
+            newErrors.studentsJoin = 'Thêm ít nhất một học sinh';
+            hasError = true;
+        }
+
+        if (!formData.imageURL.trim()) {
+            newErrors.imageURL = 'Chọn hình ảnh';
+            hasError = true;
+        }
+
+        if (hasError) {
+            setErrors(newErrors);
+            setSaving(false);
+            return;
+        }
+
+        // Tạo object gửi lên API
+        const createData = {
+            dateHappened: formData.dateHappened.toISOString(),
+            type: formData.type,
+            level: parseInt(formData.level),
+            description: formData.description,
+            solution: formData.solution,
+            note: formData.note,
+            status: formData.status,
+            studentJoin: studentsJoin.map(student => ({ studentId: student.id })),
+            imageURL: formData.imageURL
+        };
+
+        const response = await medicalEventAPI.create(createData);
+        if (response.isSuccess) {
+            toast.success('Tạo sự kiện y tế thành công');
+            navigate(studentId ? `/nurse/medical-events/${studentId}` : '/nurse/medical-events');
+        } else {
+            toast.error(response.message || 'Tạo thất bại');
+        }
+        setSaving(false);
+    };
+
+    // Tìm học sinh từ mã hoặc tên
     const handleSearchStudent = async (searchTerm, searchType = 'general') => {
         if (!searchTerm.trim()) {
             setFoundStudent([]);
@@ -405,48 +328,25 @@ const MedicalEventAddPage = () => {
             return;
         }
 
-        try {
-            setSearchStatus('searching');
+        setSearchStatus('searching');
 
-            console.log(`Searching for student with ${searchType}:`, searchTerm.trim());
-            const response = await studentsApi.getAllStudents({
-                keyword: searchTerm.trim(),
-                page: 1
-            });
+        //Gửi request lấy danh sách student theo từ khoá tìm kiếm (nếu có), và luôn bắt đầu từ trang 1.
+        const response = await studentsApi.getAllStudents({ keyword: searchTerm.trim(), page: 1 });
+        //Lấy ra danh sách sinh viên từ response
+        const studentsData = response.data?.records || response.data || [];
 
-            console.log('API response:', response);
-
-            const studentsData = response.data?.records || response.data || [];
-
-            if (response.isSuccess && studentsData.length > 0) {
-                console.log('Students found:', studentsData);
-                setFoundStudent(studentsData);
-                setSearchStatus('found');
-            } else {
-                console.log('No students found or API error:', response);
-                setFoundStudent([]);
-                setSearchStatus('not-found');
-            }
-        } catch (error) {
-            console.error('Error finding student:', error);
+        if (response.isSuccess && studentsData.length > 0) {
+            //Nếu như gọi request thành công và tìm thấy học sinh
+            setFoundStudent(studentsData);
+            setSearchStatus('found');
+        } else {
             setFoundStudent([]);
             setSearchStatus('not-found');
         }
     };
 
+    // Thêm học sinh cụ thể vào danh sách tham gia
     const handleAddSpecificStudent = (student) => {
-        if (!student) {
-            toast.error('Thông tin học sinh không hợp lệ');
-            return;
-        }
-
-        const existingStudent = studentsJoin.find(s => s.id === (student._id || student.id));
-        if (existingStudent) {
-            toast.error('Học sinh này đã có trong danh sách');
-            return;
-        }
-
-        // Create a complete student object with parent information
         const studentToAdd = {
             id: student._id || student.id,
             name: student.name || '',
@@ -460,42 +360,22 @@ const MedicalEventAddPage = () => {
         };
 
         setStudentsJoin(prev => [...prev, studentToAdd]);
-        
-        // Clear studentsJoin error when student is added
         if (errors.studentsJoin) {
-            setErrors(prev => ({
-                ...prev,
-                studentsJoin: ''
-            }));
-        }
-        
-        toast.success(`Đã thêm học sinh ${student.name} thành công`);
-    }; const handleAddStudent = async () => {
-        const searchCodeTerm = searchStudentCode.trim();
-        const searchNameTerm = searchStudentName.trim();
-
-        if (!searchCodeTerm && !searchNameTerm) {
-            toast.error('Nhập mã học sinh hoặc tên học sinh');
-            return;
+            setErrors(prev => ({ ...prev, studentsJoin: '' }));
         }
 
-        if (!foundStudent || foundStudent.length === 0) {
-            toast.error('Tìm kiếm học sinh trước khi thêm');
-            return;
-        }
-
-        // If only one student found, add that student
-        if (foundStudent.length === 1) {
-            handleAddSpecificStudent(foundStudent[0]);
-        } else {
-            toast.info('Có nhiều học sinh được tìm thấy. Chọn học sinh cụ thể từ danh sách bên dưới');
-        }
+        toast.success(`Đã thêm học sinh ${student.name}`);
     };
+
+    // Xóa học sinh khỏi danh sách tham gia
     const handleRemoveStudent = (studentId) => {
+        // Cập nhật danh sách học sinh, loại bỏ học sinh có id trùng với studentId
         setStudentsJoin(prev => prev.filter(s => s.id !== studentId));
-        toast.success('Đã xóa học sinh khỏi danh sách');
+
+        toast.success('Đã xóa học sinh');
     };
 
+    // Reset tìm kiếm học sinh
     const handleResetSearch = () => {
         setSearchStudentCode('');
         setSearchStudentName('');
@@ -503,12 +383,14 @@ const MedicalEventAddPage = () => {
         setSearchStatus('');
     };
 
+    // Hiển thị giá trị thay thế nếu không có dữ liệu
     const getDisplayValue = (value) => {
-        if (value === null || value === undefined) return 'N/A';
+        if (value === null || value === undefined) return 'Không có';
         if (value === '') return 'Không có';
         return value;
     };
 
+    // Giao diện loading
     if (loading) {
         return (
             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
@@ -527,20 +409,15 @@ const MedicalEventAddPage = () => {
                 {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {/* Icon back lại trang trước */}
                         <IconButton onClick={handleBack} sx={{ mr: 2 }}>
                             <BackIcon />
                         </IconButton>
+                        {/* Icon y tế */}
                         <MedicalIcon sx={{ mr: 2, color: 'primary.main', fontSize: 32 }} />
-                        <Box>
-                            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-                                Tạo sự kiện y tế mới
-                            </Typography>
-                            {studentInfo && (
-                                <Typography variant="h6" color="text.secondary">
-                                    Học sinh: {studentInfo.name} (Mã HS: {studentInfo.studentCode})
-                                </Typography>
-                            )}
-                        </Box>
+                        <Typography variant="h4" component="h1">
+                            Tạo sự kiện y tế mới
+                        </Typography>
                     </Box>
                 </Box>
 
@@ -555,6 +432,7 @@ const MedicalEventAddPage = () => {
                         </Box>
                         <Divider sx={{ mb: 2 }} />
 
+                        {/* Ngày sự kiện */}
                         <Table sx={{ '& .MuiTableCell-root': { fontSize: '1rem', py: 2.5 } }}>
                             <TableBody>
                                 <TableRow>
@@ -582,6 +460,7 @@ const MedicalEventAddPage = () => {
                                 {/* Thông tin học sinh */}
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>Thông tin học sinh: *</TableCell>
+                                    {/* Bảng thông tin học sinh */}
                                     <TableCell>
                                         {studentsJoin.length > 0 && (
                                             <Table size="small" sx={{ border: '1px solid #e0e0e0', borderRadius: '4px', mb: 2 }}>
@@ -596,21 +475,21 @@ const MedicalEventAddPage = () => {
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
+                                                    {/* Duyệt qua danh sách học sinh đã tham gia */}
                                                     {studentsJoin.map((student) => (
                                                         <TableRow key={student.id} sx={{ '&:last-child td': { border: 0 } }}>
-                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'N/A'}</TableCell>
-                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'N/A'}</TableCell>
+                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>{student.name || 'Không có thông tin'}</TableCell>
+                                                            <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>{student.studentCode || 'Không có thông tin'}</TableCell>
                                                             <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>
-                                                                {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A'}
+                                                                {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'Không có thông tin'}
                                                             </TableCell>
                                                             <TableCell align="start" sx={{ fontSize: '0.75rem', py: 1 }}>
-                                                                <Box>
-                                                                    <div>{student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'Không có thông tin')}</div>
-                                                                </Box>
+                                                                {student.parentName || (student.userId && typeof student.userId === 'object' ? student.userId.name : 'Không có thông tin')}
                                                             </TableCell>
                                                             <TableCell align="start" sx={{ fontSize: '0.85rem', py: 1 }}>
-                                                                <div style={{ color: '#666', fontSize: '1rem' }}>{student.parentPhone || (student.userId && typeof student.userId === 'object' ? student.userId.phone : 'Không có thông tin')}</div>
+                                                                {student.parentPhone || (student.userId && typeof student.userId === 'object' ? student.userId.phone : 'Không có thông tin')}
                                                             </TableCell>
+                                                            {/* Button delete học sinh */}
                                                             <TableCell align="start" sx={{ py: 1 }}>
                                                                 <IconButton
                                                                     size="small"
@@ -625,48 +504,58 @@ const MedicalEventAddPage = () => {
                                                 </TableBody>
                                             </Table>
                                         )}
+
                                         {/* Form thêm học sinh mới */}
                                         <Box>
-                                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 1, flexWrap: 'wrap' }}>
+                                            {/* Nhập liệu tìm kiếm học sinh */}
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 2,
+                                                    alignItems: 'center',
+                                                    mt: 1,
+                                                    flexWrap: 'wrap', // Cho phép các ô nhập xuống dòng khi màn hình hẹp
+                                                }}
+                                            >
+                                                {/* Ô nhập mã học sinh */}
                                                 <TextField
                                                     size="small"
                                                     label="Mã học sinh"
                                                     value={searchStudentCode}
                                                     onChange={(e) => {
-                                                        const newValue = e.target.value;
-                                                        setSearchStudentCode(newValue);
+                                                        const newValue = e.target.value; //Lấy giá trị mới từ ô nhập
+                                                        setSearchStudentCode(newValue); // Cập nhật giá trị
 
+                                                        // Xoá timeout cũ nếu còn
                                                         if (searchTimeout) {
                                                             clearTimeout(searchTimeout);
                                                         }
 
+                                                        // Nếu có nhập dữ liệu thì thực hiện tìm kiếm sau 500ms
                                                         if (newValue.trim()) {
                                                             const timeout = setTimeout(() => {
                                                                 handleSearchStudent(newValue, 'studentCode');
                                                             }, 500);
-                                                            setSearchTimeout(timeout);
+                                                            setSearchTimeout(timeout); //Lưu lại timeout này vào biến searchTimeout để có thể hủy timeout cũ nếu người dùng tiếp tục gõ.
                                                         } else if (!searchStudentName.trim()) {
+                                                            // Nếu cả mã và tên đều trống thì reset danh sách kết quả
                                                             setFoundStudent([]);
                                                             setSearchStatus('');
                                                         }
                                                     }}
-                                                    sx={{ 
+                                                    sx={{
                                                         minWidth: 200,
                                                         '& .MuiOutlinedInput-root': {
                                                             '&.Mui-focused fieldset': {
-                                                                borderColor: errors.studentsJoin ? 'error.main' : 'primary.main'
-                                                            }
-                                                        }
+                                                                borderColor: errors.studentsJoin ? 'error.main' : 'primary.main',
+                                                            },
+                                                        },
                                                     }}
                                                     placeholder="Nhập mã học sinh..."
                                                     error={!!errors.studentsJoin}
-                                                    onKeyPress={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            handleAddStudent();
-                                                        }
-                                                    }}
                                                 />
 
+                                                {/* Ô nhập tên học sinh */}
                                                 <TextField
                                                     size="small"
                                                     label="Tên học sinh"
@@ -689,26 +578,20 @@ const MedicalEventAddPage = () => {
                                                             setSearchStatus('');
                                                         }
                                                     }}
-                                                    sx={{ 
+                                                    sx={{
                                                         minWidth: 200,
                                                         '& .MuiOutlinedInput-root': {
                                                             '&.Mui-focused fieldset': {
-                                                                borderColor: errors.studentsJoin ? 'error.main' : 'primary.main'
-                                                            }
-                                                        }
+                                                                borderColor: errors.studentsJoin ? 'error.main' : 'primary.main',
+                                                            },
+                                                        },
                                                     }}
                                                     placeholder="Nhập tên học sinh..."
                                                     error={!!errors.studentsJoin}
-                                                    onKeyPress={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            handleAddStudent();
-                                                        }
-                                                    }}
                                                 />
-                                                <Button
-                                                    variant='contained'
-                                                    onClick={handleResetSearch}
-                                                >
+
+                                                {/* Nút reset bộ lọc */}
+                                                <Button variant="contained" onClick={handleResetSearch}>
                                                     Xóa bộ lọc
                                                 </Button>
                                             </Box>
@@ -725,83 +608,134 @@ const MedicalEventAddPage = () => {
                                                 </Box>
                                             )}
 
-                                            {/* Hiển thị trạng thái tìm kiếm */}
+                                            {/* Hiển thị trạng thái "đang tìm kiếm" sẽ hiện khi đnag gửi request chưa có kết quả*/}
                                             {searchStatus === 'searching' && (
                                                 <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                    <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Typography
+                                                        variant="body2"
+                                                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                                                    >
                                                         <CircularProgress size={16} />
                                                         Đang tìm kiếm học sinh...
                                                     </Typography>
                                                 </Box>
                                             )}
 
-                                            {/* Hiển thị danh sách học sinh tìm được */}
-                                            {searchStatus === 'found' && foundStudent && foundStudent.length > 0 && (
-                                                <Box sx={{ mt: 1, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                                                    <Typography variant="body2" sx={{ fontWeight: 600, p: 2, bgcolor: 'grey.50', borderBottom: '1px solid #e0e0e0' }}>
-                                                        Tìm thấy {foundStudent.length} học sinh:
-                                                    </Typography>
+                                            {/* Hiển thị kết quả khi tìm được học sinh */}
+                                            {searchStatus === 'found' &&
+                                                foundStudent &&
+                                                foundStudent.length > 0 && (
+                                                    <Box sx={{ mt: 1, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{
+                                                                fontWeight: 600,
+                                                                p: 2,
+                                                                bgcolor: 'grey.50',
+                                                                borderBottom: '1px solid #e0e0e0',
+                                                            }}
+                                                        >
+                                                            Tìm thấy {foundStudent.length} học sinh:
+                                                        </Typography>
 
-                                                    <Box sx={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                                        {foundStudent.map((student, index) => (
-                                                            <Box
-                                                                key={student._id || student.id || index}
-                                                                sx={{
-                                                                    p: 2,
-                                                                    borderBottom: index < foundStudent.length - 1 ? '1px solid #f0f0f0' : 'none',
-                                                                    '&:hover': { bgcolor: 'grey.50' }
-                                                                }}
-                                                            >
-                                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                                                    <Box sx={{ flex: 1 }}>
-                                                                        <Box sx={{ display: 'flex', gap: 3, mb: 1 }}>
-                                                                            <Typography variant="body2">
-                                                                                <strong>Tên HS:</strong> {student.name || 'N/A'}
-                                                                            </Typography>
-                                                                            <Typography variant="body2">
-                                                                                <strong>Mã HS:</strong> {student.studentCode || 'N/A'}
-                                                                            </Typography>
-                                                                            <Typography variant="body2">
-                                                                                <strong>Giới tính:</strong> {student.gender === 'male' ? 'Nam' : student.gender === 'female' ? 'Nữ' : 'N/A'}
-                                                                            </Typography>
-                                                                        </Box>
-
-                                                                        {/* Thông tin phụ huynh */}
-                                                                        <Box sx={{ mt: 1, p: 1, bgcolor: 'grey.50', borderRadius: 1 }}>
-                                                                            <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}>
-                                                                                Thông tin phụ huynh:
-                                                                            </Typography>
-                                                                            <Box sx={{ display: 'flex', gap: 3 }}>
-                                                                                <Typography variant="caption">
-                                                                                    <strong>Tên:</strong> {student.userId?.name || 'Không có thông tin'}
+                                                        {/* Danh sách học sinh hiển thị dưới dạng thẻ */}
+                                                        <Box sx={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                                            {foundStudent.map((student, index) => (
+                                                                <Box
+                                                                    key={student._id || student.id || index}
+                                                                    sx={{
+                                                                        p: 2,
+                                                                        borderBottom:
+                                                                            index < foundStudent.length - 1
+                                                                                ? '1px solid #f0f0f0'
+                                                                                : 'none',
+                                                                        '&:hover': { bgcolor: 'grey.50' },
+                                                                    }}
+                                                                >
+                                                                    <Box
+                                                                        sx={{
+                                                                            display: 'flex',
+                                                                            justifyContent: 'space-between',
+                                                                            alignItems: 'flex-start',
+                                                                        }}
+                                                                    >
+                                                                        {/* Thông tin học sinh */}
+                                                                        <Box sx={{ flex: 1 }}>
+                                                                            <Box sx={{ display: 'flex', gap: 3, mb: 1 }}>
+                                                                                <Typography variant="body2">
+                                                                                    <strong>Tên HS:</strong> {student.name || 'Không có thông tin'}
                                                                                 </Typography>
-                                                                                <Typography variant="caption">
-                                                                                    <strong>Email:</strong> {student.userId?.email || 'Không có thông tin'}
+                                                                                <Typography variant="body2">
+                                                                                    <strong>Mã HS:</strong> {student.studentCode || 'Không có thông tin'}
                                                                                 </Typography>
-                                                                                <Typography variant="caption">
-                                                                                    <strong>Số điện thoại:</strong> {student.userId?.phone || 'Không có thông tin'}
+                                                                                <Typography variant="body2">
+                                                                                    <strong>Giới tính:</strong>{' '}
+                                                                                    {student.gender === 'male'
+                                                                                        ? 'Nam'
+                                                                                        : student.gender === 'female'
+                                                                                            ? 'Nữ'
+                                                                                            : 'Không có thông tin'}
                                                                                 </Typography>
                                                                             </Box>
-                                                                        </Box>
-                                                                    </Box>
 
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        size="small"
-                                                                        startIcon={<AddIcon />}
-                                                                        onClick={() => handleAddSpecificStudent(student)}
-                                                                        disabled={studentsJoin.some(s => s.id === (student._id || student.id))}
-                                                                        sx={{ ml: 2, minWidth: '80px' }}
-                                                                    >
-                                                                        {studentsJoin.some(s => s.id === (student._id || student.id)) ? 'Đã thêm' : 'Thêm'}
-                                                                    </Button>
+                                                                            {/* Thông tin phụ huynh */}
+                                                                            <Box
+                                                                                sx={{
+                                                                                    mt: 1,
+                                                                                    p: 1,
+                                                                                    bgcolor: 'grey.50',
+                                                                                    borderRadius: 1,
+                                                                                }}
+                                                                            >
+                                                                                <Typography
+                                                                                    variant="caption"
+                                                                                    sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}
+                                                                                >
+                                                                                    Thông tin phụ huynh:
+                                                                                </Typography>
+                                                                                <Box sx={{ display: 'flex', gap: 3 }}>
+                                                                                    <Typography variant="caption">
+                                                                                        <strong>Tên:</strong>{' '}
+                                                                                        {student.userId?.name || 'Không có thông tin'}
+                                                                                    </Typography>
+                                                                                    <Typography variant="caption">
+                                                                                        <strong>Email:</strong>{' '}
+                                                                                        {student.userId?.email || 'Không có thông tin'}
+                                                                                    </Typography>
+                                                                                    <Typography variant="caption">
+                                                                                        <strong>SĐT:</strong>{' '}
+                                                                                        {student.userId?.phone || 'Không có thông tin'}
+                                                                                    </Typography>
+                                                                                </Box>
+                                                                            </Box>
+                                                                        </Box>
+
+                                                                        {/* Nút thêm học sinh */}
+                                                                        <Button
+                                                                            variant="contained"
+                                                                            size="small"
+                                                                            startIcon={<AddIcon />}
+                                                                            onClick={() => handleAddSpecificStudent(student)}
+                                                                            disabled={studentsJoin.some(
+                                                                                (s) => s.id === (student._id || student.id)
+                                                                            )} // ktra học sinh đã có trong danh sách studentsJoin chưa
+                                                                            sx={{ ml: 2, minWidth: '80px' }}
+                                                                        >
+                                                                            {studentsJoin.some(
+                                                                                (s) => s.id === (student._id || student.id)
+                                                                            )
+                                                                                ? 'Đã thêm'
+                                                                                : 'Thêm'}
+                                                                        </Button>
+                                                                    </Box>
                                                                 </Box>
-                                                            </Box>
-                                                        ))}
+                                                            ))}
+                                                        </Box>
                                                     </Box>
-                                                </Box>
-                                            )}
-                                            {/* Hiển thị khi không tìm thấy */}
+                                                )
+                                            }
+
+                                            {/* Trường hợp không tìm thấy học sinh */}
                                             {searchStatus === 'not-found' && (searchStudentCode.trim() || searchStudentName.trim()) && (
                                                 <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                                                     <Typography variant="body2">
@@ -813,6 +747,8 @@ const MedicalEventAddPage = () => {
                                                 </Box>
                                             )}
                                         </Box>
+
+                                        {/* Hiển thị thông báo lỗi nếu có*/}
                                         {errors.studentsJoin && (
                                             <Box sx={{ mt: 1 }}>
                                                 <Typography variant="caption" color="error">
@@ -823,6 +759,7 @@ const MedicalEventAddPage = () => {
                                     </TableCell>
                                 </TableRow>
 
+                                {/* Loại sự kiện */}
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Loại sự kiện: *
@@ -925,6 +862,7 @@ const MedicalEventAddPage = () => {
                                     </TableCell>
                                 </TableRow>
 
+                                {/* Uploadình ảnh */}
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Hình ảnh sự kiện: *
@@ -1011,7 +949,7 @@ const MedicalEventAddPage = () => {
                                                     disabled={uploadingImage}
                                                     sx={{ minWidth: 160 }}
                                                     onClick={() => {
-                                                        // Clear image error when user clicks to upload
+                                                        // Xóa lỗi hình ảnh khi người dùng nhấp để tải lên                                                        
                                                         if (errors.imageURL) {
                                                             setErrors(prev => ({
                                                                 ...prev,
@@ -1061,7 +999,7 @@ const MedicalEventAddPage = () => {
                             </TableBody>
                         </Table>
 
-                        {/* Note about required fields */}
+                        {/* Lưu ý về các trường bắt buộc */}
                         <Box sx={{ mt: 3, p: 2, bgcolor: 'warning.light', borderRadius: 1 }}>
                             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
                                 * Các trường bắt buộc phải điền đầy đủ

@@ -41,7 +41,6 @@ import {
     FilterList as FilterIcon,
     CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
 import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import studentsApi from '../../api/studentsApi';
