@@ -27,7 +27,6 @@ import {
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { toast } from 'react-toastify';
 import medicalEventAPI from '../../api/medicalEventApi';
-import studentsApi from '../../api/studentsApi';
 
 const MedicalEventDetailPage = () => {
     const { studentId, eventId } = useParams();
@@ -41,35 +40,53 @@ const MedicalEventDetailPage = () => {
     const [modalImageUrl, setModalImageUrl] = useState('');
 
     useEffect(() => {
+        // Lấy dữ liệu sự kiện từ location.state nếu có
         const eventDataFromState = location.state?.eventData;
         const isUpdated = location.state?.updated;
 
         if (eventDataFromState) {
+            // Nếu có dữ liệu sự kiện được truyền từ trang trước (qua location.state), thì set vào state local
             setMedicalEvent(eventDataFromState);
             setLoading(false);
+
+            // Nếu là hành động cập nhật (isUpdated == true), hiển thị thông báo thành công
             if (isUpdated) toast.success('Dữ liệu sự kiện y tế đã được cập nhật');
         } else {
+            // Nếu không có dữ liệu sẵn, gọi API để load chi tiết sự kiện y tế theo eventId
             loadMedicalEventDetail();
         }
-        // eslint-disable-next-line
-    }, [eventId, location.state]);
+    }, [eventId, location.state]); // Chạy lại khi eventId hoặc location.state thay đổi
 
+
+    // Hàm tải thông tin chi tiết của một sự kiện y tế dựa trên eventId
     const loadMedicalEventDetail = async () => {
         try {
+            // Bắt đầu hiển thị trạng thái loading
             setLoading(true);
+
+            // Xóa thông báo lỗi cũ (nếu có)
             setError(null);
+
+            // Gọi API để lấy thông tin sự kiện y tế theo eventId
             const response = await medicalEventAPI.getEventById(eventId);
+
+            // Nếu gọi API thành công và có dữ liệu
             if (response.isSuccess && response.data) {
+                // Lưu dữ liệu vào state để hiển thị lên UI
                 setMedicalEvent(response.data);
             } else {
+                // Trường hợp không có dữ liệu hoặc response thất bại
                 setError('Không tìm thấy sự kiện y tế');
             }
         } catch (error) {
+            // Xử lý lỗi xảy ra trong quá trình gọi API
             setError('Lỗi khi tải thông tin sự kiện y tế');
         } finally {
+            // Tắt trạng thái loading sau khi xử lý xong
             setLoading(false);
         }
     };
+
 
     const handleBack = () => {
         if (studentId) {

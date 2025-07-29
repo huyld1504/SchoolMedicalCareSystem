@@ -39,12 +39,12 @@ const VaccinationNotificationDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Dialog state for consent
+  // Trạng thái hộp thoại để đồng ý
   const [consentDialogOpen, setConsentDialogOpen] = useState(false);
   const [consentType, setConsentType] = useState('');
   const [consentNote, setConsentNote] = useState('');
 
-  // Load notification detail từ state hoặc API
+  // Tải chi tiết thông báo từ trạng thái hoặc API
   useEffect(() => {
     // Kiểm tra xem có data từ state không
     if (location.state?.notificationData) {
@@ -61,17 +61,20 @@ const VaccinationNotificationDetailPage = () => {
     navigate('/parent/vaccination-notifications');
   };
 
+  // Hàm mở dialog xin ý kiến phụ huynh (consent dialog)
   const handleOpenConsentDialog = (type) => {
-    setConsentType(type);
-    setConsentNote('');
-    setConsentDialogOpen(true);
+    setConsentType(type);             // Đặt loại đồng ý (vắng mặt, tiêm, v.v.)
+    setConsentNote('');               // Xóa nội dung ghi chú cũ (nếu có)
+    setConsentDialogOpen(true);       // Hiển thị dialog
   };
 
+  // Hàm đóng dialog xin ý kiến phụ huynh
   const handleCloseConsentDialog = () => {
-    setConsentDialogOpen(false);
-    setConsentType('');
-    setConsentNote('');
+    setConsentDialogOpen(false);      // Ẩn dialog
+    setConsentType('');               // Reset loại đồng ý
+    setConsentNote('');               // Xóa ghi chú
   };
+
 
   const handleSubmitConsent = async () => {
     // Kiểm tra bắt buộc nhập ghi chú khi từ chối
@@ -120,14 +123,6 @@ const VaccinationNotificationDetailPage = () => {
     }
   };
 
-  // Check if campaign has started
-  const isCampaignStarted = () => {
-    if (!notification.campaign?.startDate) return false;
-    const startDate = new Date(notification.campaign.startDate);
-    const currentDate = new Date();
-    return currentDate >= startDate;
-  };
-
   // Format date
   const formatDate = (dateString) => {
     if (!dateString) return 'Chưa có';
@@ -142,39 +137,30 @@ const VaccinationNotificationDetailPage = () => {
     }
   };
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return 'Chưa có';
-    try {
-      return new Date(dateString).toLocaleDateString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (error) {
-      return 'Chưa có';
-    }
-  };
-
-  // Safe render function to handle objects
+  // Hàm render an toàn để hiển thị giá trị (bao gồm cả object)
   const safeRender = (value) => {
+    // Nếu giá trị là null, undefined hoặc chuỗi rỗng => trả về 'Chưa có'
     if (value === null || value === undefined || value === '') return 'Chưa có';
+
+    // Nếu là object (ví dụ: object JS, mảng, v.v.) => chuyển thành chuỗi JSON
     if (typeof value === 'object') return JSON.stringify(value);
+
+    // Nếu là kiểu dữ liệu khác (number, boolean, string, v.v.) => ép thành chuỗi
     return String(value);
   };
+
 
   // Get consent color and label
   const getConsentColor = (consent) => {
     switch (consent) {
       case 'approved':
-        return '#2e7d32'; 
+        return '#2e7d32';
       case 'denied':
-        return '#d32f2f'; 
+        return '#d32f2f';
       case 'pending':
-        return '#ed6c02'; 
+        return '#ed6c02';
       default:
-        return '#757575'; 
+        return '#757575';
     }
   };
 
