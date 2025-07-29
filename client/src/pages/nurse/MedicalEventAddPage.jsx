@@ -44,7 +44,7 @@ import cloudinaryApi from '../../api/cloudinaryApi';
 
 // Component chính để thêm sự kiện y tế
 const MedicalEventAddPage = () => {
-    // Lấy studentId từ URL nếu có
+    // Lấy studentId từ URL nếu có, ktra xem trang hiện tại có phải là trang thêm sự kiện y tế cho học sinh cụ thể không
     const { studentId } = useParams();
     const navigate = useNavigate();
 
@@ -99,32 +99,12 @@ const MedicalEventAddPage = () => {
     useEffect(() => {
         const loadData = async () => {
             if (studentId) {
-                await loadStudentInfo();
                 await addStudentToList();
             }
             setLoading(false);
         };
         loadData();
     }, [studentId]);
-
-    // Load thông tin học sinh từ API
-    const loadStudentInfo = async () => {
-        try {
-            const response = await studentsApi.getAllStudents({
-                keyword: '',
-                page: 1,
-                populate: 'userId'
-            });
-
-            if (response.isSuccess) {
-                const studentsData = response.data?.records || response.data || [];
-                const student = studentsData.find(s => s._id === studentId || s.id === studentId);
-                if (student) setStudentInfo(student);
-            }
-        } catch (error) {
-            console.error('Error loading student info:', error);
-        }
-    };
 
     // Thêm học sinh vào danh sách tham gia
     const addStudentToList = async () => {
@@ -147,8 +127,8 @@ const MedicalEventAddPage = () => {
                         gender: student.gender || '',
                         userId: student.userId,
                         medicalConverageId: student.medicalConverageId,
-                        parentName: student.userId?.name || 'N/A',
-                        parentEmail: student.userId?.email || 'N/A'
+                        parentName: student.userId?.name || 'Không có thông tin',
+                        parentEmail: student.userId?.email || 'Không có thông tin',
                     };
                     setStudentsJoin([studentData]);
                 }
@@ -160,9 +140,12 @@ const MedicalEventAddPage = () => {
 
     // Xử lý thay đổi dữ liệu form
     const handleInputChange = (field, value) => {
+        //cập nhật giá trị mới cho một trường cụ thể trong form
+        // đồng thời giữ nguyên các giá trị khác trong form
         setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: '' }));
+            // Kiểm tra nếu trường đó đang có lỗi 
+            setErrors(prev => ({ ...prev, [field]: '' })); //Xóa lỗi của trường đó (gán chuỗi rỗng), khi người dùng nhập lại
         }
     };
 
@@ -173,62 +156,90 @@ const MedicalEventAddPage = () => {
 
     // Upload ảnh từ người dùng
     const handleImageSelect = async (event) => {
+        // Lấy file ảnh đầu tiên được chọn
         const file = event.target.files[0];
-        if (!file) return;
+        if (!file) return; // Nếu không có file nào thì thoát luôn
 
+        // Hiển thị trạng thái đang tải ảnh
         setUploadingImage(true);
         toast.info('Đang tải ảnh lên...');
 
+        // Kiểm tra định dạng ảnh có hợp lệ không
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         if (!allowedTypes.includes(file.type)) {
+            // Nếu không đúng định dạng thì hiển thị lỗi và dừng lại
             setErrors(prev => ({ ...prev, imageURL: 'Chỉ chấp nhận file ảnh (JPEG, PNG, GIF)' }));
             setUploadingImage(false);
             return;
         }
 
+        // Kiểm tra kích thước ảnh (tối đa 5MB)
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
+            // Nếu file quá lớn thì hiển thị lỗi và dừng lại
             setErrors(prev => ({ ...prev, imageURL: 'Kích thước file không được vượt quá 5MB' }));
             setUploadingImage(false);
             return;
         }
 
+        // Gọi API (ví dụ Cloudinary) để upload ảnh
         const response = await cloudinaryApi.uploadImage(file);
+
         if (response.success) {
+            // Nếu upload thành công:
+            // - Lưu file đã chọn
+            // - Hiển thị ảnh preview
+            // - Lưu publicId để sau này có thể xoá
+            // - Cập nhật formData với URL ảnh
             setSelectedImage(file);
             setImagePreview(response.data.imageUrl);
             setImagePublicId(response.data.publicId);
             setFormData(prev => ({ ...prev, imageURL: response.data.imageUrl }));
             toast.success('Tải ảnh thành công');
         } else {
+            // Nếu upload thất bại thì hiển thị lỗi
             setErrors(prev => ({ ...prev, imageURL: response.message || 'Lỗi khi tải ảnh' }));
         }
+
+        // Kết thúc trạng thái tải ảnh
         setUploadingImage(false);
 
-        // Reset input file
+        // Reset lại input file để cho phép chọn lại cùng một ảnh nếu cần
         document.getElementById('image-upload-input').value = '';
     };
 
-    // Xóa ảnh đã chọn
+
+    // Xóa ảnh đã chọn và upload
     const handleRemoveImage = async () => {
+        // Gọi API để xóa ảnh khỏi Cloudinary thông qua publicId
         const response = await cloudinaryApi.deleteImage(imagePublicId);
+
+        // Nếu xóa thành công thì thông báo thành công
         if (response.success) toast.success('Xóa ảnh thành công');
 
-        setSelectedImage(null);
-        setImagePreview(null);
-        setFormData(prev => ({ ...prev, imageURL: '' }));
+        // Reset lại các state liên quan đến ảnh
+        setSelectedImage(null);           // Xóa file đã chọn
+        setImagePreview(null);            // Xóa ảnh hiển thị preview
+        setFormData(prev => ({
+            ...prev,
+            imageURL: ''                  // Xóa URL ảnh trong formData
+        }));
+
+        // Reset input file để có thể chọn lại ảnh khác
         document.getElementById('image-upload-input').value = '';
     };
 
-    // Hiển thị ảnh trong modal
+
+    // Khi người dùng click vào ảnh, hiển thị ảnh trong modal
     const handleImageClick = (imageUrl) => {
-        setModalImageUrl(imageUrl);
-        setOpenImageModal(true);
+        setModalImageUrl(imageUrl);      // Lưu URL ảnh vào state để hiển thị trong modal
+        setOpenImageModal(true);         // Mở modal hiển thị ảnh
     };
 
+    // Đóng modal hiển thị ảnh
     const handleCloseImageModal = () => {
-        setOpenImageModal(false);
-        setModalImageUrl('');
+        setOpenImageModal(false);        // Tắt modal
+        setModalImageUrl('');            // Xóa URL ảnh khỏi state
     };
 
     // Gửi dữ liệu form lên server
@@ -319,10 +330,13 @@ const MedicalEventAddPage = () => {
 
         setSearchStatus('searching');
 
+        //Gửi request lấy danh sách student theo từ khoá tìm kiếm (nếu có), và luôn bắt đầu từ trang 1.
         const response = await studentsApi.getAllStudents({ keyword: searchTerm.trim(), page: 1 });
+        //Lấy ra danh sách sinh viên từ response
         const studentsData = response.data?.records || response.data || [];
 
         if (response.isSuccess && studentsData.length > 0) {
+            //Nếu như gọi request thành công và tìm thấy học sinh
             setFoundStudent(studentsData);
             setSearchStatus('found');
         } else {
@@ -333,12 +347,6 @@ const MedicalEventAddPage = () => {
 
     // Thêm học sinh cụ thể vào danh sách tham gia
     const handleAddSpecificStudent = (student) => {
-        const exists = studentsJoin.find(s => s.id === (student._id || student.id));
-        if (exists) {
-            toast.error('Học sinh đã tồn tại');
-            return;
-        }
-
         const studentToAdd = {
             id: student._id || student.id,
             name: student.name || '',
@@ -359,28 +367,11 @@ const MedicalEventAddPage = () => {
         toast.success(`Đã thêm học sinh ${student.name}`);
     };
 
-    // Thêm học sinh từ danh sách đã tìm được
-    const handleAddStudent = async () => {
-        if (!searchStudentCode.trim() && !searchStudentName.trim()) {
-            toast.error('Nhập mã hoặc tên học sinh');
-            return;
-        }
-
-        if (!foundStudent.length) {
-            toast.error('Tìm học sinh trước');
-            return;
-        }
-
-        if (foundStudent.length === 1) {
-            handleAddSpecificStudent(foundStudent[0]);
-        } else {
-            toast.info('Có nhiều học sinh. Vui lòng chọn từ danh sách');
-        }
-    };
-
     // Xóa học sinh khỏi danh sách tham gia
     const handleRemoveStudent = (studentId) => {
+        // Cập nhật danh sách học sinh, loại bỏ học sinh có id trùng với studentId
         setStudentsJoin(prev => prev.filter(s => s.id !== studentId));
+
         toast.success('Đã xóa học sinh');
     };
 
@@ -394,7 +385,7 @@ const MedicalEventAddPage = () => {
 
     // Hiển thị giá trị thay thế nếu không có dữ liệu
     const getDisplayValue = (value) => {
-        if (value === null || value === undefined) return 'N/A';
+        if (value === null || value === undefined) return 'Không có';
         if (value === '') return 'Không có';
         return value;
     };
@@ -532,7 +523,7 @@ const MedicalEventAddPage = () => {
                                                     label="Mã học sinh"
                                                     value={searchStudentCode}
                                                     onChange={(e) => {
-                                                        const newValue = e.target.value;
+                                                        const newValue = e.target.value; //Lấy giá trị mới từ ô nhập
                                                         setSearchStudentCode(newValue); // Cập nhật giá trị
 
                                                         // Xoá timeout cũ nếu còn
@@ -545,7 +536,7 @@ const MedicalEventAddPage = () => {
                                                             const timeout = setTimeout(() => {
                                                                 handleSearchStudent(newValue, 'studentCode');
                                                             }, 500);
-                                                            setSearchTimeout(timeout);
+                                                            setSearchTimeout(timeout); //Lưu lại timeout này vào biến searchTimeout để có thể hủy timeout cũ nếu người dùng tiếp tục gõ.
                                                         } else if (!searchStudentName.trim()) {
                                                             // Nếu cả mã và tên đều trống thì reset danh sách kết quả
                                                             setFoundStudent([]);
@@ -562,11 +553,6 @@ const MedicalEventAddPage = () => {
                                                     }}
                                                     placeholder="Nhập mã học sinh..."
                                                     error={!!errors.studentsJoin}
-                                                    onKeyPress={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            handleAddStudent(); // Nhấn Enter để thêm học sinh
-                                                        }
-                                                    }}
                                                 />
 
                                                 {/* Ô nhập tên học sinh */}
@@ -602,13 +588,8 @@ const MedicalEventAddPage = () => {
                                                     }}
                                                     placeholder="Nhập tên học sinh..."
                                                     error={!!errors.studentsJoin}
-                                                    onKeyPress={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            handleAddStudent();
-                                                        }
-                                                    }}
                                                 />
-                                                
+
                                                 {/* Nút reset bộ lọc */}
                                                 <Button variant="contained" onClick={handleResetSearch}>
                                                     Xóa bộ lọc
@@ -627,7 +608,7 @@ const MedicalEventAddPage = () => {
                                                 </Box>
                                             )}
 
-                                            {/* Hiển thị trạng thái "đang tìm kiếm" */}
+                                            {/* Hiển thị trạng thái "đang tìm kiếm" sẽ hiện khi đnag gửi request chưa có kết quả*/}
                                             {searchStatus === 'searching' && (
                                                 <Box sx={{ mt: 1, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                                                     <Typography
@@ -737,7 +718,7 @@ const MedicalEventAddPage = () => {
                                                                             onClick={() => handleAddSpecificStudent(student)}
                                                                             disabled={studentsJoin.some(
                                                                                 (s) => s.id === (student._id || student.id)
-                                                                            )}
+                                                                            )} // ktra học sinh đã có trong danh sách studentsJoin chưa
                                                                             sx={{ ml: 2, minWidth: '80px' }}
                                                                         >
                                                                             {studentsJoin.some(
@@ -881,6 +862,7 @@ const MedicalEventAddPage = () => {
                                     </TableCell>
                                 </TableRow>
 
+                                {/* Uploadình ảnh */}
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 600, bgcolor: 'grey.50', fontSize: '1.1rem' }}>
                                         Hình ảnh sự kiện: *
@@ -967,7 +949,7 @@ const MedicalEventAddPage = () => {
                                                     disabled={uploadingImage}
                                                     sx={{ minWidth: 160 }}
                                                     onClick={() => {
-                                                        // Clear image error when user clicks to upload
+                                                        // Xóa lỗi hình ảnh khi người dùng nhấp để tải lên                                                        
                                                         if (errors.imageURL) {
                                                             setErrors(prev => ({
                                                                 ...prev,
@@ -1017,7 +999,7 @@ const MedicalEventAddPage = () => {
                             </TableBody>
                         </Table>
 
-                        {/* Note about required fields */}
+                        {/* Lưu ý về các trường bắt buộc */}
                         <Box sx={{ mt: 3, p: 2, bgcolor: 'warning.light', borderRadius: 1 }}>
                             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
                                 * Các trường bắt buộc phải điền đầy đủ
