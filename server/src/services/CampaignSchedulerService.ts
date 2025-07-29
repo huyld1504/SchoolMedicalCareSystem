@@ -81,7 +81,7 @@ class CampaignSchedulerService {
    * Logic chính để cập nhật trạng thái campaigns theo lịch trình
    * 
    * Quy trình:
-   * 1. Lấy ngày hiện tại (reset về đầu ngày để so sánh chính xác)
+   * 1. Lấy ngày hiện tại (reset về đầu ngày UTC để so sánh chính xác)
    * 2. Tìm và cập nhật campaigns cần chuyển từ "planned" -> "ongoing"
    * 3. Tìm và cập nhật campaigns cần chuyển từ "ongoing" -> "completed"
    * 4. Log kết quả chi tiết
@@ -92,10 +92,11 @@ class CampaignSchedulerService {
     try {
       logger.info('Starting campaign status update job...');
 
-      // Lấy ngày hiện tại và reset về đầu ngày (00:00:00.000)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      logger.info(`Current date for comparison: ${today.toISOString()}`);
+      // Lấy ngày hiện tại theo UTC và reset về đầu ngày (00:00:00.000 UTC)
+      // Điều này đảm bảo so sánh đúng với startDate/endDate trong database (cũng lưu theo UTC)
+      const now = new Date();
+      const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+      logger.info(`Current date for comparison (UTC): ${today.toISOString()}`);
 
       // BƯỚC 1: Xử lý campaigns cần chuyển từ "planned" sang "ongoing"
       await this.processPlannedToOngoingCampaigns(today);
@@ -286,9 +287,9 @@ class CampaignSchedulerService {
   async manualUpdate(): Promise<{ started: number; completed: number; }> {
     logger.info('Running manual campaign status update...');
 
-    // Chuẩn bị ngày hiện tại để so sánh
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Chuẩn bị ngày hiện tại theo UTC để so sánh (giống logic trong updateCampaignStatuses)
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
     // Query để đếm số campaigns sẽ được cập nhật (cho thống kê)
     const campaignsToStart = await VaccinationCampaign.find({
@@ -303,6 +304,8 @@ class CampaignSchedulerService {
 
     // Thực hiện cập nhật
     await this.updateCampaignStatuses();
+
+    logger.info(`Manual update completed: ${campaignsToStart.length} campaigns started, ${campaignsToComplete.length} campaigns completed`);
 
     // Trả về kết quả thống kê
     return {

@@ -14,6 +14,8 @@ import {
   participationQuerySchema
 } from "@src/schemas/vaccination.schema";
 import { VaccinationCampaignQueryBuilder, VaccinationParticipationQueryBuilder } from "@src/payload/request/filter/vaccination.request";
+import { VaccinationCampaign } from "@src/models/VaccinationCampaign";
+import logger from 'jet-logger';
 
 import { IReq, IRes } from "./common/types";
 
@@ -459,6 +461,8 @@ async function restartScheduler(req: IReq, res: IRes) {
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
+
+
 
 /******************************************************************************
                                     Export
