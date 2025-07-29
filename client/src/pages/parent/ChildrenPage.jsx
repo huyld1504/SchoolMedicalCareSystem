@@ -150,7 +150,7 @@ const ChildrenPage = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return 'Không có';
         return new Date(dateString).toLocaleDateString('vi-VN');
     };
 
@@ -167,7 +167,7 @@ const ChildrenPage = () => {
     };
 
     const calculateAge = (birthdate) => {
-        if (!birthdate) return 'N/A';
+        if (!birthdate) return 'Không có';
         const today = new Date();
         const birth = new Date(birthdate);
         let age = today.getFullYear() - birth.getFullYear();

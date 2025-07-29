@@ -183,7 +183,7 @@ const ParentLayout = () => {
             <Divider sx={{ my: 2 }} />
 
             {/* Settings and Logout */}
-            <List>
+            {/* <List>
                 <ListItem disablePadding>
                     <ListItemButton
                         onClick={handleLogout}
@@ -206,7 +206,7 @@ const ParentLayout = () => {
                         />
                     </ListItemButton>
                 </ListItem>
-            </List>
+            </List> */}
         </Box>
     );
 
@@ -240,13 +240,7 @@ const ParentLayout = () => {
 
                     {/* Notification and Profile */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Tooltip title="Thông báo">
-                            <IconButton color="inherit">
-                                <Badge badgeContent={3} color="error">
-                                    <NotificationsIcon />
-                                </Badge>
-                            </IconButton>
-                        </Tooltip>
+                        
 
                         <Tooltip title="Tài khoản">
                             <IconButton

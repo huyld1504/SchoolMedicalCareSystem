@@ -7,6 +7,7 @@ import { authUtils } from "../../utils/authUtil";
 export default function AppLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Check if user is authenticated and redirect accordingly
+  const currentPath = window.location.pathname;
   useEffect(() => {
     const authenticateUser = async () => {
       try {
@@ -24,15 +25,7 @@ export default function AppLayout() {
               "/",
             ].some((p) => pathName.startsWith(p))
           ) {
-            if (user.role === "nurse") {
-              navigate("/nurse/students");
-            } else if (user.role === "parent") {
-              navigate("/parent/children");
-            } else if (user.role === "admin") {
-              navigate("/admin");
-            } else {
-              navigate(-1);
-            }
+            navigate(currentPath);
           }
         } else {
           // If user is not authenticated and not on public pages, redirect to login

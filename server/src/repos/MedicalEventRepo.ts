@@ -221,11 +221,15 @@ export class MedicalEventRepository extends BaseRepository<IMedicalEvent> {
       this.model.find({ ...queryFilter })
         .populate({
           path: "studentJoin.studentId",
-          select: "name studentCode medicalConverageId gender"
+          select: "name studentCode medicalConverageId gender",
+          populate: {
+            path: 'userId',
+            select: 'name email _id isActive phone'
+          }
         })
         .populate({
           path: "userId",
-          select: "name email _id isActive"
+          select: "name email _id isActive phone"
         })
         .skip(query.getSkip())
         .limit(query.getLimit())
@@ -251,11 +255,15 @@ export class MedicalEventRepository extends BaseRepository<IMedicalEvent> {
     return this.model.findById(eventId)
       .populate({
         path: "userId",
-        select: "name email _id isActive"
+        select: "name email _id isActive phone"
       })
       .populate({
         path: "studentJoin.studentId",
-        select: "name studentCode medicalConverageId gender"
+        select: "name studentCode medicalConverageId gender",
+        populate: {
+          path: 'userId',
+          select: 'name email _id isActive phone'
+        }
       })
       .exec();
   }

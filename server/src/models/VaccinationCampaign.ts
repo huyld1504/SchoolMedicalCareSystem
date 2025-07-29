@@ -4,39 +4,47 @@ export interface IVaccinationCampaign extends Document {
   // Loại vaccine
   vaccineName: string;
   vaccineType: string;
+  vaccineDescription: string; // Mô tả chi tiết về vaccine (optional)
+  dosage: number; // Liều lượng vaccine (optional)
+  injection: number; // Cách tiêm (tiêm bắp, tiêm dưới da, etc.)
   // Đối tượng tiêm
-  targetAudience: string; // Ví dụ: "Học sinh lớp 1-3", "Toàn bộ học sinh", "Học sinh từ 6-12 tuổi"  // Thời gian bắt đầu và kết thúc
+  targetAudience: string; // Ví dụ: "Học sinh lớp 1-3", "Toàn bộ học sinh"
+  // Thời gian bắt đầu và kết thúc
   startDate: Date;
   endDate: Date;
   // Trạng thái chiến dịch
-  status: 'planned' | 'ongoing' | 'completed' | 'cancelled';
+  status: 'planned' | 'ongoing' | 'completed' | 'canceled';
   // Người tạo
   createdBy: Types.ObjectId; // Admin tạo chiến dịch
 }
 
-interface IVaccinationCampaignModel extends Model<IVaccinationCampaign> { };
+type IVaccinationCampaignModel = Model<IVaccinationCampaign>;
 
 const schema = new Schema({
   // Loại vaccine
-  vaccineName: { type: String, required: true }, // Tên vaccine cụ thể
-  vaccineType: { type: String, required: true }, // Loại vaccine (phòng bệnh gì)
+  vaccineName: { type: String, required: true },
+  vaccineType: { type: String, required: true },
+  vaccineDescription: { type: String, required: true },
+  dosage: { type: Number, required: true },
+  injection: { type: Number, required: true },
   // Đối tượng tiêm
-  targetAudience: { type: String, required: true },  // Thời gian bắt đầu và kết thúc
+  targetAudience: { type: String, required: true },
+  // Thời gian bắt đầu và kết thúc
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   // Trạng thái chiến dịch
   status: {
     type: String,
-    enum: ['planned', 'ongoing', 'completed', 'cancelled'],
-    default: 'planned'
+    enum: ['planned', 'ongoing', 'completed', 'canceled'],
+    default: 'planned',
   },
   // Người tạo
-  createdBy: { type: Types.ObjectId, ref: "User", required: true }
+  createdBy: { type: Types.ObjectId, ref: 'User', required: true },
 }, {
   timestamps: {
-    createdAt: "createdAt",
-    updatedAt: "updatedAt",
-  }
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+  },
 });
 
 /**
@@ -74,7 +82,8 @@ const schema = new Schema({
 //  */
 
 // // Index cho nurse role filtering (chỉ xem planned/ongoing campaigns)
-// // Query pattern: { status: { $in: ["planned", "ongoing"] }, startDate: { $gte: date } }
+// // Query pattern: { status: { $in: ["planned", "ongoing"] }, 
+// //   startDate: { $gte: date } }
 // schema.index({ status: 1, startDate: -1 }, {
 //   name: 'status_startdate_compound'
 // });
@@ -91,4 +100,4 @@ const schema = new Schema({
 //   name: 'startdate_single'
 // });
 
-export const VaccinationCampaign: IVaccinationCampaignModel = model<IVaccinationCampaign, IVaccinationCampaignModel>("VaccinationCampaign", schema);
+export const VaccinationCampaign: IVaccinationCampaignModel = model<IVaccinationCampaign, IVaccinationCampaignModel>('VaccinationCampaign', schema);

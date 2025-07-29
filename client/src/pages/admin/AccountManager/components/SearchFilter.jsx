@@ -27,9 +27,9 @@ const SearchFilter = () => {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", gap: 8 }}>
       <TextField
-        placeholder="Search users by name or email..."
+        placeholder="Tìm theo tên hoặc email..."
         value={searchValue}
         onChange={handleSearch}
         size="small"
@@ -42,7 +42,11 @@ const SearchFilter = () => {
           ),
           endAdornment: searchValue && (
             <InputAdornment position="end">
-              <IconButton size="small" onClick={handleClearSearch}>
+              <IconButton
+                size="small"
+                onClick={handleClearSearch}
+                aria-label="Xóa tìm kiếm"
+              >
                 <ClearIcon />
               </IconButton>
             </InputAdornment>
@@ -56,12 +60,12 @@ const SearchFilter = () => {
           const newQuery = createQueryParams({
             ...params,
             keyword: searchValue || undefined,
-            page: 1, // Reset to first page when searching
+            page: 1, // Trở về trang 1 khi tìm kiếm
           });
           navigate({ search: newQuery });
         }}
       >
-        Search
+        Tìm kiếm
       </Button>
     </div>
   );

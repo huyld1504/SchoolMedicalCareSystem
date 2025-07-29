@@ -237,7 +237,7 @@ const MedicalEventsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Trống';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: '2-digit',
@@ -253,6 +253,7 @@ const MedicalEventsPage = () => {
       'chấn thương': { color: 'warning', label: 'Chấn thương' },
       'bệnh': { color: 'info', label: 'Bệnh' },
     };
+
     const config = typeMap[type] || { color: 'default', label: type };
     return <Chip label={config.label} color={config.color} size="small" />;
   };
@@ -263,7 +264,7 @@ const MedicalEventsPage = () => {
       2: { color: 'warning', label: 'Trung bình' },
       3: { color: 'error', label: 'Khẩn cấp' }
     };
-    const config = levelMap[level] || { color: 'default', label: 'N/A' };
+    const config = levelMap[level] || { color: 'default', label: 'Trống' };
     return <Chip label={config.label} color={config.color} size="small" />;
   };
 
@@ -285,36 +286,40 @@ const MedicalEventsPage = () => {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              color: '#1a1a1a',
+              fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' }
+            }}
+          >
             Sự kiện y tế
           </Typography>
-          <Typography variant="h6" color="text.secondary">
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ fontSize: { xs: '1rem', sm: '1.1rem' } }}
+          >
             Theo dõi các sự kiện y tế của con em
           </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Tooltip title="Làm mới danh sách">
-            <IconButton
-              onClick={() => window.location.reload()}
-              color="primary"
-              sx={{
-                border: '1px solid',
-                borderColor: 'primary.main',
-                '&:hover': {
-                  backgroundColor: 'primary.light'
-                }
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
         </Box>
       </Box>
 
       {/* Filters */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
+      <Card sx={{ mb: 3, boxShadow: 2 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{
+              fontWeight: 600,
+              mb: 3,
+              fontSize: { xs: '1.1rem', sm: '1.3rem' }
+            }}
+          >
             Bộ lọc tìm kiếm
           </Typography>
           <Grid container spacing={2} alignItems="center">
@@ -457,10 +462,10 @@ const MedicalEventsPage = () => {
                         <TableCell>
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                              {event.childInfo?.name || 'N/A'}
+                              {event.childInfo?.name || 'Trống'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {event.childInfo?.studentCode || 'N/A'}
+                              {event.childInfo?.studentCode || 'Trống'}
                             </Typography>
                           </Box>
                         </TableCell>
@@ -470,10 +475,9 @@ const MedicalEventsPage = () => {
                           <Typography
                             variant="body2"
                             sx={{
-                              maxWidth: 200,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
+                              maxWidth: 300,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}
                           >
                             {event.description || 'Không có mô tả'}
@@ -497,19 +501,32 @@ const MedicalEventsPage = () => {
               </TableContainer>
 
               {/* Pagination */}
-              {paginationInfo.totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                  <Pagination
-                    count={paginationInfo.totalPages}
-                    page={filters.page}
-                    onChange={handlePageChange}
-                    color="primary"
-                    size="large"
-                    showFirstButton
-                    showLastButton
-                  />
-                </Box>
-              )}
+              <Box sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: 'end',
+                alignItems: 'center',
+                gap: 2,
+                mt: 4,
+                mb: 2
+              }}>
+                <Pagination
+                  count={paginationInfo.totalPages}
+                  page={filters.page}
+                  onChange={handlePageChange}
+                  color="primary"
+                  size="large"
+                  showFirstButton
+                  showLastButton
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      fontSize: { xs: '0.9rem', sm: '1rem' },
+                      minWidth: { xs: '36px', sm: '40px' },
+                      height: { xs: '36px', sm: '40px' }
+                    }
+                  }}
+                />
+              </Box>
             </>
           )}
         </CardContent>

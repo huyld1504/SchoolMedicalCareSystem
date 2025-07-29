@@ -39,6 +39,23 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
   }
 
   /**
+   * Find existing participations by campaign and students
+   * Chức năng: Tìm các tham gia đã tồn tại trong chiến dịch cho danh sách học sinh
+   * @param campaignId - ID của chiến dịch
+   * @param studentIds - Mảng ID của học sinh cần kiểm tra
+   * @return Promise<IVaccinationParticipation[]> - Danh sách các tham gia đã tồn tại
+   */
+  async findByCampaignAndStudents(
+    campaignId: string,
+    studentIds: string[]
+  ): Promise<IVaccinationParticipation[]> {
+    return VaccinationParticipation.find({
+      campaign: new Types.ObjectId(campaignId),
+      student: { $in: studentIds.map(id => new Types.ObjectId(id)) }
+    }).exec();
+  }
+
+  /**
    * Get participations by campaign
    * Chức năng: Lấy danh sách tham gia tiêm chủng theo chiến dịch
    * Tối ưu hóa:
@@ -150,7 +167,7 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
     const updateData: Partial<IVaccinationParticipation> = {
       parentConsent: consent,
       parentConsentDate: new Date(),
-      vaccinationStatus: consent === 'denied' ? 'cancelled' : 'scheduled'
+      vaccinationStatus: consent === 'denied' ? 'canceled' : 'scheduled'
     };
 
     // Add parent note if provided (required for denied, optional for approved)
@@ -178,7 +195,7 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
    */  async recordVaccination(
     participationId: string,
     nurseId: string,
-    status: 'completed' | 'missed' | 'cancelled',
+    status: 'completed' | 'missed' | 'canceled',
     vaccinationDate?: Date,
     note?: string
   ): Promise<IVaccinationParticipation | null> {
@@ -713,5 +730,35 @@ export class VaccinationParticipationRepository extends BaseRepository<IVaccinat
       limit: queryBuilder.getLimit(),
       totalPages: Math.ceil(total / queryBuilder.getLimit())
     };
+  }
+  /**
+   * Cancel pending participations when campaign is completed
+   * Chức năng: Tự động hủy tất cả phiếu tham gia có parentConsent = 'pending' 
+   * khi chiến dịch kết thúc (status = 'completed')
+   * 
+   * Business Rule: Khi chiến dịch kết thúc, tất cả phiếu chưa được phụ huynh 
+   * đồng ý sẽ tự động chuyển thành 'canceled'
+   * 
+   * @param campaignId - ID của chiến dịch đã hoàn thành
+   * @returns Promise<number> - Số lượng phiếu đã được cập nhật
+   */  public async cancelPendingParticipations(
+    campaignId: string,
+  ): Promise<number> {
+    const result = await VaccinationParticipation.updateMany(
+      {
+        campaign: new Types.ObjectId(campaignId),
+        parentConsent: 'pending',
+        vaccinationStatus: { $ne: 'completed' }, // Không cập nhật nếu đã tiêm
+      },
+      {
+        $set: {
+          parentConsent: 'canceled',
+          vaccinationStatus: 'canceled',
+          parentConsentDate: new Date(),
+        },
+      },
+    );
+
+    return result.modifiedCount;
   }
 }

@@ -47,10 +47,9 @@ import {
   Clear as ClearIcon,
   DateRange as DateRangeIcon
 } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { vi } from 'date-fns/locale';
@@ -59,30 +58,42 @@ import vaccinationApi from '../../api/vaccinationApi';
 const VaccinationParticipationsPage = () => {
   const navigate = useNavigate();
   const { campaignId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [campaign, setCampaign] = useState(null);
   const [participations, setParticipations] = useState([]);
+  const [allParticipations, setAllParticipations] = useState([]); // Store all participations for client-side filtering
   const [loading, setLoading] = useState(true);
 
-  // State cho query gọi API (theo pattern của các trang nurse khác)
-  const [query, setQuery] = useState({
-    page: 1,
-    limit: 20,
+  // Filter state (separate from applied search)
+  const [filters, setFilters] = useState({
     keyword: '',
-    consentStatus: '',
+    parentConsent: '',
     vaccinationStatus: '',
-    vaccinationDate: ''
+    vaccinationDateFrom: '',
+    vaccinationDateTo: '',
+    page: 1,
+    limit: 10
+  });
+
+  // Applied search state (used for actual API calls)
+  const [appliedSearch, setAppliedSearch] = useState({
+    keyword: searchParams.get('keyword') || '',
+    parentConsent: searchParams.get('parentConsent') || '',
+    vaccinationStatus: searchParams.get('vaccinationStatus') || '',
+    vaccinationDateFrom: searchParams.get('vaccinationDateFrom') || '',
+    vaccinationDateTo: searchParams.get('vaccinationDateTo') || '',
+    page: parseInt(searchParams.get('page')) || 1,
+    limit: 10
   });
 
   // State cho pagination
   const [paginationInfo, setPaginationInfo] = useState({
     total: 0,
     page: 1,
-    limit: 20,
+    limit: 10,
     totalPages: 0
   });
-
-  // State cho search input
-  const [searchInput, setSearchInput] = useState('');
 
   // Recording vaccination state
   const [recordingDialog, setRecordingDialog] = useState(false);
@@ -96,47 +107,162 @@ const VaccinationParticipationsPage = () => {
     loadCampaignDetails();
   }, [campaignId]);
 
-  // Load participations khi query thay đổi
+  // Load all participations on first load
   useEffect(() => {
-    loadParticipations();
-  }, [campaignId, query.page, query.limit, query.keyword, query.consentStatus, query.vaccinationStatus, query.vaccinationDate]); const loadParticipations = async () => {
+    if (campaignId) {
+      loadAllParticipations();
+    }
+  }, [campaignId]);
+
+  // Initialize filters from URL params on first load
+  useEffect(() => {
+    if (appliedSearch.keyword || appliedSearch.parentConsent || appliedSearch.vaccinationStatus || appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
+      // Copy appliedSearch to filters to show in form
+      setFilters({
+        keyword: appliedSearch.keyword,
+        parentConsent: appliedSearch.parentConsent,
+        vaccinationStatus: appliedSearch.vaccinationStatus,
+        vaccinationDateFrom: appliedSearch.vaccinationDateFrom,
+        vaccinationDateTo: appliedSearch.vaccinationDateTo,
+        page: appliedSearch.page,
+        limit: appliedSearch.limit
+      });
+    }
+  }, []); // Only run once on mount
+
+  // Apply client-side filtering when appliedSearch changes
+  useEffect(() => {
+    applyClientSideFiltering();
+  }, [appliedSearch, allParticipations]);
+
+  // Sync URL params with appliedSearch
+  useEffect(() => {
+    const newParams = new URLSearchParams();
+    if (appliedSearch.keyword) newParams.set('keyword', appliedSearch.keyword);
+    if (appliedSearch.parentConsent) newParams.set('parentConsent', appliedSearch.parentConsent);
+    if (appliedSearch.vaccinationStatus) newParams.set('vaccinationStatus', appliedSearch.vaccinationStatus);
+    if (appliedSearch.vaccinationDateFrom) newParams.set('vaccinationDateFrom', appliedSearch.vaccinationDateFrom);
+    if (appliedSearch.vaccinationDateTo) newParams.set('vaccinationDateTo', appliedSearch.vaccinationDateTo);
+    if (appliedSearch.page > 1) newParams.set('page', appliedSearch.page.toString());
+
+    setSearchParams(newParams);
+  }, [appliedSearch, setSearchParams]);
+
+  const loadAllParticipations = async () => {
     try {
       setLoading(true);
+      console.log('Loading all participations...');
 
-      console.log('Participation search query:', query);
+      // Load all participations without any filters for client-side filtering
+      const apiQuery = {
+        page: 1,
+        limit: 10, // Large limit to get all participations
+        // No filters - load everything for client-side filtering
+      };
 
-      const response = await vaccinationApi.campaigns.getParticipations(campaignId, query);
+      const response = await vaccinationApi.campaigns.getParticipations(campaignId, apiQuery);
 
       if (response?.isSuccess) {
-        setParticipations(response?.data?.records || []);
-        setPaginationInfo({
-          total: response?.data?.total || 0,
-          page: response?.data?.page || 1,
-          limit: response?.data?.limit || 20,
-          totalPages: response?.data?.totalPages || 0
-        });
+        setAllParticipations(response?.data?.records || []);
+        console.log('All participations loaded:', response?.data?.records?.length);
       } else {
-        setParticipations([]);
-        setPaginationInfo({
-          total: 0,
-          page: 1,
-          limit: 20,
-          totalPages: 0
-        });
+        setAllParticipations([]);
       }
     } catch (error) {
-      console.error('Error loading participations:', error);
+      console.error('Error loading all participations:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
+      setAllParticipations([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyClientSideFiltering = () => {
+    if (allParticipations.length === 0) {
       setParticipations([]);
       setPaginationInfo({
         total: 0,
         page: 1,
-        limit: 20,
+        limit: appliedSearch.limit,
         totalPages: 0
       });
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    let filteredParticipations = [...allParticipations];
+
+    // Apply keyword filter
+    if (appliedSearch.keyword) {
+      filteredParticipations = filteredParticipations.filter(participation =>
+        participation.student?.name?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        participation.student?.studentCode?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        participation.parentNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase()) ||
+        participation.nurseNote?.toLowerCase().includes(appliedSearch.keyword.toLowerCase())
+      );
+    }
+
+    // Apply consent status filter
+    if (appliedSearch.parentConsent) {
+      filteredParticipations = filteredParticipations.filter(participation =>
+        participation.parentConsent === appliedSearch.parentConsent
+      );
+    }
+
+    // Apply vaccination status filter
+    if (appliedSearch.vaccinationStatus) {
+      filteredParticipations = filteredParticipations.filter(participation =>
+        participation.vaccinationStatus === appliedSearch.vaccinationStatus
+      );
+    }
+
+    // Apply vaccination date range filter
+    if (appliedSearch.vaccinationDateFrom || appliedSearch.vaccinationDateTo) {
+      filteredParticipations = filteredParticipations.filter(participation => {
+        if (!participation.vaccinationDate) return false;
+
+        const participationDate = new Date(participation.vaccinationDate);
+        let isValid = true;
+
+        // Check from date
+        if (appliedSearch.vaccinationDateFrom) {
+          const fromDate = new Date(appliedSearch.vaccinationDateFrom);
+          fromDate.setHours(0, 0, 0, 0);
+          isValid = isValid && participationDate >= fromDate;
+        }
+
+        // Check to date
+        if (appliedSearch.vaccinationDateTo) {
+          const toDate = new Date(appliedSearch.vaccinationDateTo);
+          toDate.setHours(23, 59, 59, 999);
+          isValid = isValid && participationDate <= toDate;
+        }
+
+        return isValid;
+      });
+    }
+
+    // Apply pagination
+    const total = filteredParticipations.length;
+    const totalPages = Math.ceil(total / appliedSearch.limit);
+    const currentPage = Math.min(appliedSearch.page, totalPages || 1);
+    const startIndex = (currentPage - 1) * appliedSearch.limit;
+    const endIndex = startIndex + appliedSearch.limit;
+    const paginatedParticipations = filteredParticipations.slice(startIndex, endIndex);
+
+    setParticipations(paginatedParticipations);
+    setPaginationInfo({
+      total,
+      page: currentPage,
+      limit: appliedSearch.limit,
+      totalPages: totalPages || 1
+    });
+
+    console.log('Client-side filtering applied:', {
+      total: filteredParticipations.length,
+      page: currentPage,
+      totalPages,
+      displayedCount: paginatedParticipations.length
+    });
   };
 
   const loadCampaignDetails = async () => {
@@ -159,8 +285,8 @@ const VaccinationParticipationsPage = () => {
       ); if (response?.isSuccess) {
         toast.success('Đã ghi nhận kết quả tiêm chủng');
         setRecordingDialog(false);
-        // Trigger reload by calling loadParticipations
-        loadParticipations();
+        // Trigger reload by calling loadAllParticipations
+        loadAllParticipations();
       } else {
         toast.error('Không thể ghi nhận kết quả');
       }
@@ -179,61 +305,46 @@ const VaccinationParticipationsPage = () => {
     setRecordingDialog(true);
   };
 
-  // Search handlers
-  const handleSearchChange = (event) => {
-    setSearchInput(event.target.value);
-  };
-
-  const handleSearchSubmit = () => {
-    setQuery(prev => ({
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({
       ...prev,
-      keyword: searchInput,
-      page: 1 // Reset về page 1 khi search
+      [field]: value
     }));
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      handleSearchSubmit();
-    }
-  };
-
-  // Pagination handlers
   const handlePageChange = (event, newPage) => {
-    setQuery(prev => ({
-      ...prev,
-      page: newPage
-    }));
+    setAppliedSearch(prev => ({ ...prev, page: newPage }));
   };
 
-  // Filter handlers
-  const handleFilterClear = () => {
-    setSearchInput('');
-    setQuery({
-      page: 1,
-      limit: 20,
-      keyword: '',
-      consentStatus: '',
-      vaccinationStatus: '',
-      vaccinationDate: ''
+  const handleSearch = () => {
+    // Apply current filters to search and reset page
+    setAppliedSearch({
+      ...filters,
+      page: 1
     });
   };
 
-  const handleFilterChange = (field, value) => {
-    setQuery(prev => ({
-      ...prev,
-      [field]: value,
-      page: 1 // Reset to first page when filter changes
-    }));
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      keyword: '',
+      parentConsent: '',
+      vaccinationStatus: '',
+      vaccinationDateFrom: '',
+      vaccinationDateTo: '',
+      page: 1,
+      limit: 20
+    };
+    setFilters(clearedFilters);
+    setAppliedSearch(clearedFilters);
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Không có';
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
   const formatDateTime = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return 'Chưa tiêm';
     return new Date(dateString).toLocaleString('vi-VN');
   };
 
@@ -242,6 +353,7 @@ const VaccinationParticipationsPage = () => {
       case 'approved': return 'success';
       case 'denied': return 'error';
       case 'pending': return 'warning';
+      case 'canceled': return 'error';
       default: return 'default';
     }
   };
@@ -251,6 +363,7 @@ const VaccinationParticipationsPage = () => {
       case 'approved': return 'Đã đồng ý';
       case 'denied': return 'Từ chối';
       case 'pending': return 'Chờ phản hồi';
+      case 'canceled': return 'Đã hủy';
       default: return consent;
     }
   };
@@ -258,8 +371,8 @@ const VaccinationParticipationsPage = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed': return 'success';
-      case 'missed': return 'error';
-      case 'cancelled': return 'warning';
+      case 'missed': return 'warning';
+      case 'canceled': return 'error';
       case 'scheduled': return 'info';
       default: return 'default';
     }
@@ -269,7 +382,7 @@ const VaccinationParticipationsPage = () => {
     switch (status) {
       case 'completed': return 'Đã tiêm';
       case 'missed': return 'Bỏ lỡ';
-      case 'cancelled': return 'Đã hủy';
+      case 'canceled': return 'Đã hủy';
       case 'scheduled': return 'Đã lên lịch';
       default: return status;
     }
@@ -301,21 +414,23 @@ const VaccinationParticipationsPage = () => {
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Grid container spacing={2} alignItems="center">
-              {/* <Grid item xs={12} md={2}>
+              <Grid item xs={12} md={2}>
                 <TextField
                   fullWidth
-                  placeholder="Tên học sinh"
-                  value={query.keyword}
+                  placeholder="Tên, mã học sinh, ghi chú..."
+                  value={filters.keyword}
                   onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  size="small"
                 />
-              </Grid> */}
+              </Grid>
               <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
+                <FormControl fullWidth size="small">
                   <InputLabel>Đồng ý PH</InputLabel>
                   <Select
-                    value={query.consentStatus}
+                    value={filters.parentConsent}
                     label="Đồng ý PH"
-                    onChange={(e) => handleFilterChange('consentStatus', e.target.value)}
+                    onChange={(e) => handleFilterChange('parentConsent', e.target.value)}
                     sx={{
                       '& .MuiOutlinedInput-root': { borderRadius: 2 },
                       '& .MuiInputLabel-root': { whiteSpace: 'nowrap' },
@@ -330,10 +445,10 @@ const VaccinationParticipationsPage = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={2}>
-                <FormControl fullWidth>
+                <FormControl fullWidth size="small">
                   <InputLabel>Trạng thái tiêm</InputLabel>
                   <Select
-                    value={query.vaccinationStatus}
+                    value={filters.vaccinationStatus}
                     label="Trạng thái tiêm"
                     onChange={(e) => handleFilterChange('vaccinationStatus', e.target.value)}
                     sx={{
@@ -346,20 +461,53 @@ const VaccinationParticipationsPage = () => {
                     <MenuItem value="scheduled">Đã lên lịch</MenuItem>
                     <MenuItem value="completed">Đã tiêm</MenuItem>
                     <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                    <MenuItem value="cancelled">Đã hủy</MenuItem>
+                    <MenuItem value="canceled">Đã hủy</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
+              <Grid item xs={12} md={1.5}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Từ ngày"
+                  value={filters.vaccinationDateFrom}
+                  onChange={(e) => handleFilterChange('vaccinationDateFrom', e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12} md={1.5}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Đến ngày"
+                  value={filters.vaccinationDateTo}
+                  onChange={(e) => handleFilterChange('vaccinationDateTo', e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
 
+              <Grid item xs={12} md={1}>
+                <Button
+                  variant="contained"
+                  startIcon={<SearchIcon />}
+                  onClick={handleSearch}
+                  fullWidth
+                  sx={{ mr: 1 }}
+                >
+                  Tìm kiếm
+                </Button>
+              </Grid>
               <Grid item xs={12} md={1}>
                 <Button
                   variant="outlined"
                   color="error"
                   startIcon={<ClearIcon />}
-                  onClick={handleFilterClear}
+                  onClick={handleClearFilters}
                   fullWidth
                 >
-                  Xóa
+                  Xóa bộ lọc
                 </Button>
               </Grid>
             </Grid>
@@ -398,6 +546,7 @@ const VaccinationParticipationsPage = () => {
                         <TableCell sx={{ fontWeight: 600 }}>Trạng thái tiêm</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Ngày tiêm</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Ghi chú Phụ huynh</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Ghi chú Y tá</TableCell>
                         <TableCell sx={{ fontWeight: 600 }} align="center">Thao tác</TableCell>
                       </TableRow>
                     </TableHead>
@@ -411,10 +560,10 @@ const VaccinationParticipationsPage = () => {
                               </Avatar>
                               <Box>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                  {participation.student?.name || 'N/A'}
+                                  {participation.student?.name || 'Không có'}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                  {participation.student?.studentCode || 'N/A'}
+                                  {participation.student?.studentCode || 'Không có'}
                                 </Typography>
                               </Box>
                             </Box>
@@ -437,22 +586,30 @@ const VaccinationParticipationsPage = () => {
                             />
                           </TableCell>
                           <TableCell>
-                            {formatDateTime(participation.vaccinationDate)}
+                            {formatDateTime(participation.vaccinationDate) || 'Chưa tiêm'}
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" sx={{
-                              maxWidth: 150,
-                              overflow: 'initial',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              title: participation.parentNote || 'Không có ghi chú'
+                              maxWidth: 200,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
                             }}>
                               {participation.parentNote || 'Không có ghi chú'}
                             </Typography>
                           </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" sx={{
+                              maxWidth: 200,
+                              wordWrap: 'break-word',
+                              whiteSpace: 'normal'
+                            }}>
+                              {participation.nurseNote || 'Không có ghi chú'}
+                            </Typography>
+                          </TableCell>
                           <TableCell align="center">
                             {participation.parentConsent === 'approved' &&
-                              participation.vaccinationStatus === 'scheduled' && (
+                              participation.vaccinationStatus === 'scheduled' &&
+                              campaign?.status === 'ongoing' && (
                                 <Tooltip title="Ghi nhận kết quả tiêm">
                                   <IconButton
                                     size="small"
@@ -509,7 +666,7 @@ const VaccinationParticipationsPage = () => {
                       >
                         <MenuItem value="completed">Đã tiêm thành công</MenuItem>
                         <MenuItem value="missed">Bỏ lỡ</MenuItem>
-                        <MenuItem value="cancelled">Hủy tiêm</MenuItem>
+                        <MenuItem value="canceled">Hủy tiêm</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

@@ -43,6 +43,8 @@ import AccountManager from "../pages/admin/AccountManager";
 import VaccinationCampaigns from "../pages/admin/VaccinationCampaigns";
 import VaccinationCampaignDetail from "../pages/admin/VaccinationCampaignDetail";
 import EditCampaign from "../pages/admin/VaccinationCampaigns/EditCampaign";
+import AdminMedicalEventsPage from "../pages/admin/AdminMedicalEventsPage";
+import AdminMedicalEventDetailPage from "../pages/admin/AdminMedicalEventDetailPage";
 
 // Parent vaccination pages
 import VaccinationNotificationsPage from "../pages/parent/VaccinationNotificationsPage";
@@ -283,15 +285,14 @@ const router = createBrowserRouter([
 
       // admin routes
       {
-        path: "admin",
+        path: 'admin',
         element: (
-          <RoleProtectedRoute allowedRoles={["admin"]}>
+          <RoleProtectedRoute allowedRoles={['admin']}>
             <AdminLayout />
           </RoleProtectedRoute>
-        ),
-        children: [
+        ), children: [
           {
-            path: "users",
+            path: 'users',
             element: <AccountManager />,
           },
           {
@@ -304,50 +305,95 @@ const router = createBrowserRouter([
               {
                 path: ":campaignId",
                 element: <VaccinationCampaignDetail />,
-              },
-              {
+              }, {
                 path: "edit/:campaignId",
                 element: <EditCampaign />,
               },
+              {
+                path: "createCampaign",
+                element: <VaccinationManager />,
+              },
             ],
+          },
+          {
+            path: 'medical-events',
+            element: <AdminMedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/detail/:eventId',
+            element: <AdminMedicalEventDetailPage />,
           },
         ],
       },
       // Medical Orders Management
       {
-        path: "medical-orders",
+        path: 'medical-orders',
         children: [
+          // Admin có thể truy cập tất cả trang nurse
           {
-            index: true,
+            path: 'students',
+            element: <StudentsPage />,
+          },
+          {
+            path: 'health-profiles',
+            element: <HealthProfilesPage />,
+          },
+          {
+            path: 'health-profiles/:studentId',
+            element: <HealthProfilesPage />,
+          },
+          {
+            path: 'health-profiles/:studentId/add',
+            element: <AddHealthProfilePage />,
+          },
+          {
+            path: 'health-profiles/:studentId/edit',
+            element: <EditHealthProfilePage />,
+          },
+
+          {
+            path: 'medical-events',
+            element: <MedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+          {
+            path: 'medical-events/add',
+            element: <MedicalEventAddPage />,
+          },
+          {
+            path: 'medical-events/:studentId',
+            element: <MedicalEventsPage />,
+          },
+          {
+            path: 'medical-events/:studentId/detail/:eventId',
+            element: <MedicalEventDetailPage />,
+          },
+          {
+            path: 'medical-events/:studentId/add',
+            element: <MedicalEventAddPage />,
+          },
+          {
+            path: 'medical-events/edit/:eventId',
+            element: <MedicalEventEditPage />,
+          },
+          {
+            path: 'medical-events/:studentId/edit/:eventId',
+            element: <MedicalEventEditPage />,
+          },
+
+          {
+            path: 'medical-orders',
             element: <MedicalOrdersPage />,
           },
           {
-            path: "create",
-            element: <CreateMedicalOrderPage />,
+            path: 'medical-orders/:orderId',
+            element: <MedicalOrderDetailPage />,
           },
-          {
-            path: ":id",
-            element: <div>Medical Order Detail Page - Coming Soon</div>, // Placeholder
-          },
+
         ],
-      },
-    ],
-  },
-  // Medical Orders Management
-  {
-    path: "medical-orders",
-    children: [
-      {
-        index: true,
-        element: <MedicalOrdersPage />,
-      },
-      {
-        path: "create",
-        element: <CreateMedicalOrderPage />,
-      },
-      {
-        path: ":id",
-        element: <MedicalOrderDetailPage />,
       },
     ],
   },

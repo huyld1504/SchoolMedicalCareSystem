@@ -1,23 +1,16 @@
-import { addHealthProfileSchema, updateHealthProfileSchema } from "@src/schemas/healthProfile.schema";
-import {
-  PaginationOptions,
-  SortOptions,
-} from "./../common/interfaces/mongo.interface";
-import {
-  addHealthProfileSchema,
-  updateHealthProfileSchema,
-} from "@src/schemas/healthProfile.schema";
+import { PaginationOptions, PaginationResult, SortOptions } from './../common/interfaces/mongo.interface';
+import { addHealthProfileSchema } from "@src/schemas/healthProfile.schema";
 import { IReq, IRes } from "./common/types";
-import { AuthorizationError, ValidationError } from "@src/common/util/util.route-errors";
+import { ApplicationError, ValidationError } from "@src/common/util/util.route-errors";
 import healthProfileService from "@src/services/HealthProfileService";
 import { ApiResponse } from '@src/common/util/util.api-response';
 import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
 import { HealthProfileQueryBuilder } from '@src/payload/request/filter/healthProfile.request';
 import { Child } from '@src/models/Child';
-import { HealthProfile } from "@src/models/HealthProfile";
-import childService from "@src/services/ChildService";
-import roleService from "@src/services/RoleService";
-import { Role } from "@src/models/Role";
+import { IHealthProfile } from '@src/models/HealthProfile';
+import roleService from '@src/services/RoleService';
+import { child } from 'winston';
+import childService from '@src/services/ChildService';
 
 // Function to add a health profile
 // This function validates the request body against the schema and adds a health profile for the user.
@@ -27,13 +20,16 @@ async function add(req: IReq, res: IRes) {
     throw new ValidationError(error.details[0].message);
   }
 
-  const userId = req.user._id.toString();
-  console.log(userId);
+  const userId = (req.user as any)._id.toString();
+  const student = await childService.getById(value.studentId);
+  if (!student) {
+    throw new ApplicationError("Không tìm thấy học sinh.");
+  }
 
   await healthProfileService.addHealthProfile(value, userId);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "Health profile added successfully"
+    "Hồ sơ sức khỏe đã được thêm thành công"
   );
   res.status(HttpStatusCodes.CREATED).json(response);
 }
@@ -42,14 +38,17 @@ async function add(req: IReq, res: IRes) {
 // This function retrieves health profiles based on the query parameters provided in the request.
 async function searchProfiles(req: IReq, res: IRes) {
   const queryBuilder = new HealthProfileQueryBuilder(req.query);
-
+  const options: PaginationOptions = {
+    page: queryBuilder.getPage(),
+    limit: queryBuilder.getLimit()
+  };
   const profiles = await healthProfileService.searchHealthProfiles(
     queryBuilder
   );
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Health profiles retrieved successfully",
+    "Lấy hồ sơ sức khỏe thành công",
     profiles
   );
 
@@ -59,34 +58,22 @@ async function searchProfiles(req: IReq, res: IRes) {
 // Function to get health profiles by child ID
 // This function retrieves health profiles for a specific child based on their ID.
 async function getByChildId(req: IReq, res: IRes) {
-  const childId = req.params.childId;
-  const user = req.user;
-
-  const userRole = await roleService.getById(user.roleId.toString());
-
-  if (!childId) {
-    throw new ValidationError("Child ID is required.");
-  }
-
-  // Check if the user is a parent or guardian of the child
-  if (userRole.name === "parent") {
-    const child = await Child.findOne({ _id: childId, userId: user._id });
-    if (!child) {
-      throw new AuthorizationError("You do not have permission to access this child's health profile.");
-    }
-  }
-
+  const childId = req.params.childId as string;
   const query = new HealthProfileQueryBuilder(req.query);
-  query.childId = childId as string;
 
-  const profiles = await healthProfileService.findByChildIdWithPagination(
-    query.childId,
+  const student = await Child.findOne({ _id: childId });
+  if (!student) {
+    throw new ValidationError("Không tìm thấy học sinh.");
+  }
+
+  const profiles: PaginationResult<IHealthProfile> = await healthProfileService.findByChildIdWithPagination(
+    childId,
     query
   );
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Health profiles retrieved successfully",
+    "Lấy hồ sơ sức khỏe thành công",
     profiles
   );
   res.status(HttpStatusCodes.OK).json(response);
@@ -97,85 +84,61 @@ async function getByChildId(req: IReq, res: IRes) {
 async function getByChildIds(req: IReq, res: IRes) {
   const childIds = req.body.childIds;
   if (!Array.isArray(childIds) || childIds.length === 0) {
-    throw new ValidationError("Child IDs are required.");
+    throw new ValidationError("Cần có danh sách ID con em.");
   }
 
   const query = new HealthProfileQueryBuilder(req.query);
-  query.childIds = childIds;
-
-  const profiles = await healthProfileService.findByChildIdsWithPagination(
-    childIds,
-    query
-  );
+  const profiles = await healthProfileService.findByChildIdsWithPagination(childIds, query);
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Health profiles retrieved successfully",
+    "Lấy hồ sơ sức khỏe thành công",
     profiles
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
 
-// Function to get a health profile by ID
-// This function retrieves a specific health profile based on its ID.
+// Function to get health profile by ID
+// This function retrieves a specific health profile by its ID.
 async function getById(req: IReq, res: IRes) {
   const profileId = req.params.id as string;
-  const user = req.user as any;
-  const userRole = await Role.findById(user.roleId.toString()) as any;
-  if (!profileId) {
-    throw new ValidationError("Health profile ID is required.");
-  }
 
   const profile = await healthProfileService.getHealthProfileById(profileId);
   if (!profile) {
-    throw new ValidationError("Health profile not found.");
-  }
-
-  if (userRole.name === "parent") {
-    const child = await Child.findOne({ userId: user._id.toString() as string, _id: profile.studentId}) as any;
-    console.log("child", child);
-    if (!child) {
-      throw new AuthorizationError("You do not have permission to access this health profile.");
-    }
+    throw new ValidationError("Không tìm thấy hồ sơ sức khỏe.");
   }
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Health profile retrieved successfully",
+    "Lấy hồ sơ sức khỏe thành công",
     profile
   );
   res.status(HttpStatusCodes.OK).json(response);
 }
 
+// Function to update health profile by ID
+// This function updates a specific health profile by its ID.
 async function updateById(req: IReq, res: IRes) {
   const profileId = req.params.id as string;
-  if (!profileId) {
-    throw new ValidationError("Health profile ID is required.");
-  }
-
-  const { error, value } = updateHealthProfileSchema.validate(req.body);
+  const { error, value } = addHealthProfileSchema.validate(req.body);
 
   if (error) {
     throw new ValidationError(error.details[0].message);
   }
 
-  const updatedProfile = await healthProfileService.updateHealthProfile(
-    profileId,
-    value
-  );
+  const updatedProfile = await healthProfileService.updateHealthProfile(profileId, value);
   if (!updatedProfile) {
-    throw new ValidationError("Health profile not found.");
+    throw new ValidationError("Không tìm thấy hồ sơ sức khỏe để cập nhật.");
   }
+
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Health profile updated successfully",
+    "Cập nhật hồ sơ sức khỏe thành công",
     updatedProfile
   );
-
   res.status(HttpStatusCodes.OK).json(response);
 }
 
-// Exporting the functions as a module
 export default {
   add,
   searchProfiles,

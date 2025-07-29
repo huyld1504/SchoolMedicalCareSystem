@@ -348,7 +348,7 @@ const MedicalOrdersPage = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return 'Không có';
         return new Date(dateString).toLocaleDateString('vi-VN');
     };
 
@@ -357,7 +357,7 @@ const MedicalOrdersPage = () => {
             case 'pending': return 'warning';
             case 'approved': return 'info';
             case 'completed': return 'success';
-            case 'cancelled': return 'error';
+            case 'canceled': return 'error';
             default: return 'default';
         }
     };
@@ -367,7 +367,7 @@ const MedicalOrdersPage = () => {
             case 'pending': return 'Đang xử lý';
             case 'approved': return 'Đã duyệt'
             case 'completed': return 'Hoàn thành';
-            case 'cancelled': return 'Đã hủy';
+            case 'canceled': return 'Đã hủy';
             default: return 'Không xác định';
         }
     };
@@ -377,14 +377,14 @@ const MedicalOrdersPage = () => {
             case 'pending': return <ScheduleIcon />;
             case 'approved': return <ThumbUp />;
             case 'completed': return <CheckCircleIcon />;
-            case 'cancelled': return <CancelIcon />;
+            case 'canceled': return <CancelIcon />;
             default: return <HospitalIcon />;
         }
     };
 
     const getChildName = (childId) => {
         const child = children.find(c => c._id === childId);
-        return child ? child.name : 'N/A';
+        return child ? child.name : 'Không có';
     };
 
     return (
@@ -392,10 +392,23 @@ const MedicalOrdersPage = () => {
             <Container maxWidth="xl">                {/* Header */}
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
-                        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                        <Typography
+                            variant="h4"
+                            component="h1"
+                            gutterBottom
+                            sx={{
+                                fontWeight: 700,
+                                color: '#1a1a1a',
+                                fontSize: { xs: '1.8rem', sm: '2.2rem', md: '2.5rem' }
+                            }}
+                        >
                             Quản lý đơn thuốc
                         </Typography>
-                        <Typography variant="h6" color="text.secondary">
+                        <Typography
+                            variant="h6"
+                            color="text.secondary"
+                            sx={{ fontSize: { xs: '1rem', sm: '1.1rem' } }}
+                        >
                             Theo dõi và quản lý các đơn gửi thuốc của con em
                         </Typography>
                     </Box>
@@ -406,7 +419,10 @@ const MedicalOrdersPage = () => {
                             onClick={() => navigate('/parent/medical-orders/add')}
                             sx={{
                                 bgcolor: '#1976d2',
-                                '&:hover': { bgcolor: '#1565c0' }
+                                '&:hover': { bgcolor: '#1565c0' },
+                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                                px: { xs: 2, sm: 3 },
+                                py: { xs: 1, sm: 1.5 }
                             }}
                         >
                             Tạo đơn thuốc
@@ -477,7 +493,7 @@ const MedicalOrdersPage = () => {
                                             <MenuItem value="pending">Đang xử lý</MenuItem>
                                             <MenuItem value="approved">Đã duyệt</MenuItem>
                                             <MenuItem value="completed">Hoàn thành</MenuItem>
-                                            <MenuItem value="cancelled">Đã hủy</MenuItem>
+                                            <MenuItem value="canceled">Đã hủy</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Grid>
@@ -557,7 +573,6 @@ const MedicalOrdersPage = () => {
                                     <Table>
                                         <TableHead>
                                             <TableRow sx={{ bgcolor: '#f5f5f5' }}>
-                                                <TableCell sx={{ fontWeight: 600 }}>Mã đơn</TableCell>
                                                 <TableCell sx={{ fontWeight: 600 }}>Con em</TableCell>
                                                 <TableCell sx={{ fontWeight: 600 }}>Ngày tạo</TableCell>
                                                 <TableCell sx={{ fontWeight: 600 }}>Ngày bắt đầu</TableCell>
@@ -574,16 +589,6 @@ const MedicalOrdersPage = () => {
                                                     hover
                                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                 >
-                                                    <TableCell>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            <Avatar sx={{ bgcolor: getStatusColor(order.status) + '.main', mr: 2, width: 32, height: 32 }}>
-                                                                {getStatusIcon(order.status)}
-                                                            </Avatar>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                                                #{order._id?.slice(-6)}
-                                                            </Typography>
-                                                        </Box>
-                                                    </TableCell>
                                                     <TableCell>
                                                         {typeof order.ChildId === 'object' && order.ChildId?.name
                                                             ? order.ChildId.name
@@ -603,9 +608,8 @@ const MedicalOrdersPage = () => {
                                                     <TableCell>
                                                         <Typography variant="body2" sx={{
                                                             maxWidth: 200,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap'
+                                                            wordWrap: 'break-word',
+                                                            whiteSpace: 'normal'
                                                         }}>
                                                             {order.note || 'Không có ghi chú'}
                                                         </Typography>
@@ -636,17 +640,33 @@ const MedicalOrdersPage = () => {
                                 </TableContainer>
 
                                 {/* Pagination */}
-                                {paginationInfo.totalPages > 1 && (
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                                        <Pagination
-                                            count={paginationInfo.totalPages}
-                                            page={query.page}
-                                            onChange={handlePageChange}
-                                            color="primary"
-                                            size="large"
-                                        />
-                                    </Box>
-                                )}
+
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    justifyContent: 'end',
+                                    alignItems: 'center',
+                                    gap: 2,
+                                    mt: 4,
+                                    mb: 2
+                                }}>
+                                    <Pagination
+                                        count={paginationInfo.totalPages}
+                                        page={query.page}
+                                        onChange={handlePageChange}
+                                        color="primary"
+                                        size="large"
+                                        showFirstButton
+                                        showLastButton
+                                        sx={{
+                                            '& .MuiPaginationItem-root': {
+                                                fontSize: { xs: '0.9rem', sm: '1rem' },
+                                                minWidth: { xs: '36px', sm: '40px' },
+                                                height: { xs: '36px', sm: '40px' }
+                                            }
+                                        }}
+                                    />
+                                </Box>
                             </>
                         )}
                     </CardContent>
@@ -702,7 +722,7 @@ const MedicalOrdersPage = () => {
                                                     <TableCell>{item.name || 'Không rõ tên thuốc'}</TableCell>
                                                     <TableCell align="center">{item.quantity}</TableCell>
                                                     <TableCell>{new Date(item.createdAt).toLocaleString('vi-VN')}</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name || 'N/A'}</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>{record.userId?.name || 'Không có'}</TableCell>
                                                 </TableRow>
                                             ))
                                         ))}

@@ -67,18 +67,18 @@ const AdminLayout = () => {
       path: "/admin/vaccination-campaigns",
       active: location.pathname.includes("/admin/vaccination-campaigns"),
     },
-    {
-      text: "Quản lí tiêm chủng",
-      icon: <AssignmentIcon />,
-      path: "/admin/vaccinations",
-      active: location.pathname === "/admin/vaccinations",
-    },
-    {
-      text: "Sự kiện y tế",
-      icon: <MedicalServices />,
-      path: "/nurse/medical-events",
-      active: location.pathname.includes("/medical-events"),
-    },
+    // {
+    //   text: "Quản lí tiêm chủng",
+    //   icon: <AssignmentIcon />,
+    //   path: "/admin/vaccinations",
+    //   active: location.pathname === "/admin/vaccinations",
+    // },
+    // {
+    //   text: "Sự kiện y tế",
+    //   icon: <MedicalServices />,
+    //   path: "/nurse/medical-events",
+    //   active: location.pathname.includes("/medical-events"),
+    // },
   ];
 
   const handleDrawerToggle = () => {
@@ -227,14 +227,7 @@ const AdminLayout = () => {
             }}
           ></Typography>
 
-          {/* Notifications */}
-          <Tooltip title="Thông báo">
-            <IconButton sx={{ mr: 1, color: "text.primary" }}>
-              <Badge badgeContent={3} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
+         
 
           {/* Profile Menu */}
           <Tooltip title="Tài khoản">

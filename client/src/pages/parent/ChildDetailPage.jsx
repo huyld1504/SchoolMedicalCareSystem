@@ -46,6 +46,19 @@ import healthProfileAPI from '../../api/healthProfileApi';
 import medicalEventAPI from '../../api/medicalEventApi';
 import HealthProfileDetailModal from './HealthProfileDetailModal';
 import { removeBrackets, processHealthDataForDisplay } from '../../utils/string.utils';
+import {
+    getMedicalEventLevelColor,
+    getMedicalEventLevelLabel,
+    getMedicalEventStatusColor,
+    getMedicalEventStatusLabel,
+    getMedicalEventTypeColor,
+    getMedicalEventTypeLabel,
+    getHealthNoteColor,
+    getHealthNoteLabel,
+    getStudentStatusColor,
+    getStudentStatusLabel,
+    getBloodTypeColor
+} from '../../utils/colorUtils';
 
 const ChildDetailPage = () => {
     const navigate = useNavigate();
@@ -115,28 +128,55 @@ const ChildDetailPage = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setSelectedProfileId(null);
-    }; const hasHealthNotes = (profile) => {
-        // Xử lý data để loại bỏ dấu ngoặc vuông khi kiểm tra
-        const processedProfile = processHealthDataForDisplay(profile);
+    };
 
-        console.log('Processed profile for display:', processedProfile);
+    const hasHealthNotes = (profile) => {
+        // Kiểm tra xem có dữ liệu ghi chú sức khỏe hay không
+        const checkArray = (data) => {
+            if (!data) return false;
+            if (data === '1' || data === '' || data === '[]' || data === 'null') return false;
 
-        return (processedProfile.allergies && processedProfile.allergies !== '1' && processedProfile.allergies.trim() !== '') ||
-            (processedProfile.chronicDiseases && processedProfile.chronicDiseases !== '1' && processedProfile.chronicDiseases.trim() !== '') ||
-            (processedProfile.devicesSupport && processedProfile.devicesSupport !== '1' && processedProfile.devicesSupport.trim() !== '');
+            // Nếu là array
+            if (Array.isArray(data)) {
+                return data.length > 0 && data.some(item => item && item.toString().trim() !== '');
+            }
+
+            // Nếu là string
+            const dataStr = data.toString().trim();
+            if (dataStr === '' || dataStr === '1' || dataStr === '[]' || dataStr === 'null') return false;
+
+            // Thử parse JSON
+            try {
+                const parsed = JSON.parse(dataStr);
+                if (Array.isArray(parsed)) {
+                    return parsed.length > 0 && parsed.some(item => item && item.toString().trim() !== '');
+                }
+                return !!parsed;
+            } catch {
+                // Nếu không parse được, coi như string và kiểm tra có nội dung hay không
+                return dataStr.length > 0;
+            }
+        };
+
+        const hasAllergies = checkArray(profile?.allergies);
+        const hasChronicDiseases = checkArray(profile?.chronicDiseases);
+        const hasDevicesSupport = checkArray(profile?.devicesSupport);
+
+        console.log('Health notes check for profile:', profile._id, {
+            allergies: profile?.allergies,
+            hasAllergies,
+            chronicDiseases: profile?.chronicDiseases,
+            hasChronicDiseases,
+            devicesSupport: profile?.devicesSupport,
+            hasDevicesSupport,
+            result: hasAllergies || hasChronicDiseases || hasDevicesSupport
+        });
+
+        return hasAllergies || hasChronicDiseases || hasDevicesSupport;
     };
 
     const getEventLevelColor = (level) => {
-        switch (level) {
-            case 3:
-                return 'error';
-            case 2:
-                return 'warning';
-            case 1:
-                return 'success';
-            default:
-                return 'default';
-        }
+        return getMedicalEventLevelColor(level);
     };
 
     if (loading) {
@@ -201,7 +241,8 @@ const ChildDetailPage = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                                 Thông tin cơ bản
                             </Typography>
-                        </Box>                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
                             <Box sx={{ display: 'flex', flex: 1, gap: 4, flexWrap: 'wrap', minWidth: '300px' }}>
                                 <Box sx={{ flex: '1 1 150px' }}>
                                     <Typography variant="body2" color="text.secondary">Ngày sinh:</Typography>
@@ -230,21 +271,12 @@ const ChildDetailPage = () => {
                                 <Box sx={{ flex: '1 1 120px' }}>
                                     <Typography variant="body2" color="text.secondary">Trạng thái:</Typography>
                                     <Chip
-                                        label={child.isActive ? 'Đang học' : 'Không hoạt động'}
-                                        color={child.isActive ? 'success' : 'default'}
+                                        label={getStudentStatusLabel(child.isActive)}
+                                        color={getStudentStatusColor(child.isActive)}
                                         size="small"
                                         sx={{ mt: 0.5 }}
                                     />
                                 </Box>
-                            </Box>                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                                {/* <Button
-                                    variant="outlined"
-                                    startIcon={<Edit />}
-                                    onClick={() => navigate(`/parent/children/${id}/edit`)}
-                                    size="small"
-                                >
-                                    Chỉnh sửa
-                                </Button> */}
                             </Box>
                         </Box>
                     </CardContent>
@@ -318,20 +350,21 @@ const ChildDetailPage = () => {
                                             <TableCell>
                                                 <Chip
                                                     label={profile.bloodType}
-                                                    color="primary"
+                                                    color={getBloodTypeColor()}
                                                     size="small"
                                                     variant="outlined"
                                                 />
                                             </TableCell>
                                             <TableCell>
                                                 <Typography variant="body2">
-                                                    {profile.vision || 'N/A'}
+                                                    {profile.vision || 'không có'}
                                                 </Typography>
-                                            </TableCell>                                                <TableCell>
+                                            </TableCell>
+                                            <TableCell>
                                                 {hasHealthNotes(profile) ? (
                                                     <Chip
-                                                        label="Có"
-                                                        color="warning"
+                                                        label={getHealthNoteLabel(true)}
+                                                        color={getHealthNoteColor(true)}
                                                         size="small"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -341,8 +374,8 @@ const ChildDetailPage = () => {
                                                     />
                                                 ) : (
                                                     <Chip
-                                                        label="Không"
-                                                        color="default"
+                                                        label={getHealthNoteLabel(false)}
+                                                        color={getHealthNoteColor(false)}
                                                         size="small"
                                                         variant="outlined"
                                                     />
@@ -398,9 +431,6 @@ const ChildDetailPage = () => {
                                 <Typography variant="h6" color="text.secondary">
                                     Chưa có sự kiện y tế
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Các sự kiện y tế của con em sẽ được hiển thị tại đây
-                                </Typography>
                             </Box>
                         ) : (
                             <TableContainer component={Paper} variant="outlined">
@@ -430,35 +460,32 @@ const ChildDetailPage = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <Chip
-                                                        label={event.type || 'Khác'}
+                                                        label={getMedicalEventTypeLabel(event.type)}
+                                                        color={getMedicalEventTypeColor(event.type)}
                                                         size="small"
                                                         variant="outlined"
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <Chip
-                                                        label={event.level === 1 ? 'Nhẹ'
-                                                            : event.level === 2 ? 'Trung bình' : 'Khẩn cấp'
-                                                        }
-                                                        color={getEventLevelColor(event.level)}
+                                                        label={getMedicalEventLevelLabel(event.level)}
+                                                        color={getMedicalEventLevelColor(event.level)}
                                                         size="small"
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <Typography variant="body2" sx={{ maxWidth: 200 }}>
-                                                        {event.description || 'N/A'}
+                                                        {event.description || 'Không có mô tả'}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Typography variant="body2" sx={{ maxWidth: 200 }}>
-                                                        {event.note || 'N/A'}
+                                                        {event.note || 'Không có ghi chú'}
                                                     </Typography>
                                                 </TableCell>                                                <TableCell>
                                                     <Chip
-                                                        label={event.status}
-                                                        color={event.status === 'resolved' ? 'success' :
-                                                            event.status === 'ongoing' ? 'warning' :
-                                                                event.status === 'pending' ? 'error' : 'default'}
+                                                        label={getMedicalEventStatusLabel(event.status)}
+                                                        color={getMedicalEventStatusColor(event.status)}
                                                         size="small"
                                                     />
                                                 </TableCell>                                                <TableCell>

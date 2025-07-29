@@ -61,8 +61,10 @@ const NurseLayout = () => {
       path: "/nurse/students",
       active: location.pathname === "/nurse/students",
     },
+
+
     {
-      text: "Yêu cầu y tế",
+      text: "Đơn gửi thuốc",
       icon: <AssignmentIcon />,
       path: "/nurse/medical-orders",
       active: location.pathname === "/nurse/medical-orders",
@@ -228,14 +230,8 @@ const NurseLayout = () => {
             }}
           ></Typography>
 
-          {/* Notifications */}
-          <Tooltip title="Thông báo">
-            <IconButton sx={{ mr: 1, color: "text.primary" }}>
-              <Badge badgeContent={3} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
+          
+         
 
           {/* Profile Menu */}
           <Tooltip title="Tài khoản">

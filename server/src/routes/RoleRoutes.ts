@@ -4,11 +4,11 @@ import roleService from "@src/services/RoleService";
 import { ApiResponse } from "@src/common/util/util.api-response";
 
 async function add(req: IReq, res: IRes) {
-  const { role } = req.body as { role: string };
+  const { role } = req.body as { role: string; };
   await roleService.add(role);
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "Role created successfully",
+    "Tạo vai trò thành công",
     { role }
   );
   res.status(HttpStatusCodes.CREATED).json(response);
@@ -18,7 +18,7 @@ async function getAll(req: IReq, res: IRes) {
   const roles = await roleService.getAll();
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Roles retrieved successfully",
+    "Lấy danh sách vai trò thành công",
     roles
   );
   res.status(HttpStatusCodes.OK).json(response);

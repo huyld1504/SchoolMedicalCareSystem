@@ -26,7 +26,7 @@ class MedicalOrderService {
     });
     if (!existingChild) {
       throw new ApplicationError(
-        "Child not found or does not belong to the user"
+        "Không tìm thấy học sinh hoặc không có quyền truy cập"
       );
     }
     const newMedicalOrder = new MedicalOrder(medicalOrder);
@@ -96,12 +96,12 @@ class MedicalOrderService {
   ): Promise<void> {
     const medicalOrder = await MedicalOrder.findById(medicalOrderId);
     if (!medicalOrder) {
-      throw new ApplicationError("Medical order not found");
+      throw new ApplicationError("Không tìm thấy đơn thuốc");
     }
     medicalOrder.status = status;
     if (status === "canceled") {
       if (!note) {
-        throw new ApplicationError("Note is required for canceling the order");
+        throw new ApplicationError("Cần có ghi chú để hủy đơn gửi thuốc");
       }
       medicalOrder.note = note;
     }
@@ -112,10 +112,10 @@ class MedicalOrderService {
     order: IMedicalOrder;
     details: IMedicalOrderDetail[];
   }> {
-    const order = await MedicalOrder.findById(medicalOrderId).lean().exec();
+    const order = await MedicalOrder.findById(medicalOrderId).populate("ChildId").lean().exec();
 
     if (!order) {
-      throw new ApplicationError("Medical order not found");
+      throw new ApplicationError("Không tìm thấy đơn thuốc");
     }
 
     const details = await MedicalOrderDetail.find({
@@ -136,7 +136,7 @@ class MedicalOrderService {
   ): Promise<void> {
     const medicalOrder = await MedicalOrder.findById(medicalOrderId);
     if (!medicalOrder) {
-      throw new ApplicationError("Medical order not found");
+      throw new ApplicationError("Không tìm thấy đơn thuốc");
     }
 
     const orderObjectId = new Types.ObjectId(medicalOrderId);

@@ -185,7 +185,7 @@ const FilterPopover = () => {
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="ongoing">Đang hoạt động</MenuItem>
               <MenuItem value="completed">Hoàn thành</MenuItem>
-              <MenuItem value="cancelled">Đã hủy</MenuItem>
+              <MenuItem value="canceled">Đã hủy</MenuItem>
               <MenuItem value="planning">Chờ xử lý</MenuItem>
             </Select>
           </FormControl>

@@ -53,40 +53,6 @@ axiosClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        const originalRequest = error.config;
-
-        // Handle 401 Unauthorized errors (token expired)
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
-            try {
-                const refreshToken = getRefreshToken();
-                if (refreshToken) {
-                    // Attempt to refresh the token
-                    const response = await axios.post('http://localhost:3000/api/auth/refresh', {
-                        refreshToken: refreshToken
-                    });
-
-                    const { accessToken, refreshToken: newRefreshToken } = response.data;
-
-                    // Update stored tokens
-                    setAccessToken(accessToken);
-                    if (newRefreshToken) {
-                        setRefreshToken(newRefreshToken);
-                    }
-
-                    // Retry the original request with new token
-                    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                    return axiosClient(originalRequest);
-                }
-            } catch (refreshError) {
-                // Refresh failed, clear tokens and redirect to login
-                clearTokens();
-                window.location.href = '/login';
-                return Promise.reject(refreshError);
-            }
-        }
-
         // Handle other errors
         if (error.response) {
             // Server responded with error status

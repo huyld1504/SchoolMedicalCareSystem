@@ -20,7 +20,7 @@ async function create(req: IReq, res: IRes) {
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.CREATED,
-    "Medical event created successfully",
+    "Tạo sự kiện y tế thành công",
     null
   );
 
@@ -33,7 +33,7 @@ async function getAll(req: IReq, res: IRes) {
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Medical events retrieved successfully",
+    "Lấy danh sách sự kiện y tế thành công",
     medicalEvents
   );
 
@@ -41,16 +41,16 @@ async function getAll(req: IReq, res: IRes) {
 }
 
 async function getById(req: IReq, res: IRes) {
-  const eventId = req.params.eventId as string;
+  const eventId = req.params.id as string;
   const medicalEvent = await MedicalEventService.getMedicalEventById(eventId);
 
   if (!medicalEvent) {
-    throw new ValidationError("Medical event not found.");
+    throw new ValidationError("Không tìm thấy sự kiện y tế.");
   }
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Medical event retrieved successfully",
+    "Lấy thông tin sự kiện y tế thành công",
     medicalEvent
   );
 
@@ -64,7 +64,7 @@ async function getByStudentId(req: IReq, res: IRes) {
   const role = await roleService.getById(req.user.roleId.toString());
   const student = await ChildService.getById(studentId);
   if (student?.userId.toString() !== userId && role?.name === "parent") {
-    throw new AuthorizationError("You cannot access this student's medical events.");
+    throw new AuthorizationError("Bạn không có quyền truy cập sự kiện y tế của học sinh này.");
   }
 
   const queryBuilder = new MedicalEventQueryBuilder(req.query);
@@ -72,7 +72,7 @@ async function getByStudentId(req: IReq, res: IRes) {
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Medical events for student retrieved successfully",
+    "Lấy sự kiện y tế của học sinh thành công",
     medicalEvents
   );
 
@@ -90,12 +90,12 @@ async function updateById(req: IReq, res: IRes) {
   const updatedEvent: any = await MedicalEventService.updateMedicalEvent(eventId, value);
 
   if (!updatedEvent) {
-    throw new ValidationError("Medical event not found.");
+    throw new ValidationError("Không tìm thấy sự kiện y tế.");
   }
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Medical event updated successfully",
+    "Cập nhật sự kiện y tế thành công",
     updatedEvent
   );
 
@@ -107,12 +107,12 @@ async function deleteById(req: IReq, res: IRes) {
   const deletedEvent = await MedicalEventService.deleteMedicalEvent(eventId);
 
   if (!deletedEvent) {
-    throw new ValidationError("Medical event not found.");
+    throw new ValidationError("Khong tìm thấy sự kiện y tế.");
   }
 
   const response: ApiResponse = new ApiResponse(
     HttpStatusCodes.OK,
-    "Medical event deleted successfully",
+    "Xóa sự kiện y tế thành công",
     deletedEvent
   );
 
