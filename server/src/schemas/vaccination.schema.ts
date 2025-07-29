@@ -36,10 +36,19 @@ export const createCampaignSchema = Joi.object({
     "string.max": "Đối tượng mục tiêu không được vượt quá 200 ký tự",
     "any.required": "Đối tượng mục tiêu là bắt buộc"
   }),
-  startDate: Joi.date().iso().min('now').required().messages({
+  startDate: Joi.date().iso().custom((value, helpers) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of today
+    const inputDate = new Date(value);
+    
+    if (inputDate < today) {
+      return helpers.error('date.min');
+    }
+    return value;
+  }).required().messages({
     "date.base": "Ngày bắt đầu phải là một ngày hợp lệ",
     "date.iso": "Ngày bắt đầu phải theo định dạng ISO",
-    "date.min": "Ngày bắt đầu phải từ hiện tại trở đi",
+    "date.min": "Ngày bắt đầu phải từ hôm nay trở đi",
     "any.required": "Ngày bắt đầu là bắt buộc"
   }),
   endDate: Joi.date().iso().min(Joi.ref('startDate')).required().messages({
